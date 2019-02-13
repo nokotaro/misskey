@@ -1,8 +1,12 @@
 ChangeLog
 =========
+10.84.2.2
+----------
+temporary changes
+
 10.84.2.1
 ----------
-temporary
+temporary changes
 
 10.84.2
 ----------
