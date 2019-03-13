@@ -158,7 +158,6 @@ common:
     tips: "ヒント"
     hashtags: "ハッシュタグ"
   dev: "アプリの作成あかんかったわ。もっぺんやってみて。"
-  ai-chan-kawaii: "藍ちゃめっさべっぴんさんや"
   you: "あんさん"
 auth/views/form.vue:
   share-access: "あんたのプロデューサーに<i>{name}</i>がアクセスしようとしてるで？ええか？"

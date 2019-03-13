@@ -39,24 +39,24 @@ export const schemas = {
 			username: {
 				type: 'string',
 				description: 'The screen name, handle, or alias that this user identifies themselves with.',
-				example: 'ai'
+				example: 'natsuha'
 			},
 			name: {
 				type: 'string',
 				nullable: true,
 				description: 'The name of the user, as they’ve defined it.',
-				example: '藍'
+				example: '夏葉'
 			},
 			host: {
 				type: 'string',
 				nullable: true,
-				example: 'misskey.example.com'
+				example: 'natsuha.example.com'
 			},
 			description: {
 				type: 'string',
 				nullable: true,
 				description: 'The user-defined UTF-8 string describing their account.',
-				example: 'Hi masters, I am Ai!'
+				example: 'Hi producer, I am Natsuha!'
 			},
 			createdAt: {
 				type: 'string',

@@ -171,7 +171,6 @@ common:
     tips: "Conseils"
     hashtags: "Hashtags"
   dev: "Échec lors de la création de l’application. Veuillez réessayer."
-  ai-chan-kawaii: "Ai-Chan est mignonne !"
   you: "Vous"
 auth/views/form.vue:
   share-access: "Désirez-vous autoriser <i>{name}</i> à avoir accès à votre compte ?"

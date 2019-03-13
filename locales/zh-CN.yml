@@ -274,7 +274,6 @@ common:
     tips: "提示"
     hashtags: "标签"
   dev: "构建应用程序失败，请再试一次。"
-  ai-chan-kawaii: "小蓝真可爱"
   you: "您"
 auth/views/form.vue:
   share-access: "您要允许<i>{name}</i>来访问您的账户吗?"

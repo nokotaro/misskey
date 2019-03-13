@@ -274,7 +274,6 @@ common:
     tips: "팁"
     hashtags: "해시태그"
   dev: "앱을 만드는 데 실패했습니다. 다시 시도하시기 바랍니다."
-  ai-chan-kawaii: "아이쨩 귀여워"
   you: "당신"
 auth/views/form.vue:
   share-access: "<i>{name}</i>가 당신의 계정에 엑세스하도록 허용하시겠습니까?"

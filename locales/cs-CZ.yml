@@ -276,7 +276,6 @@ common:
     tips: "Tipy"
     hashtags: "Hashtagy"
   dev: "Nepodařilo se vytvořit aplikace. Prosím zkuste to znovu."
-  ai-chan-kawaii: "Ai-chan kawaii!"
   you: "Vy"
 auth/views/form.vue:
   share-access: "Chcete dovolit aplikaci <i>{name}</i> přístup k vašemu účtu?"
