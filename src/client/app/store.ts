@@ -13,7 +13,7 @@ const defaultSettings = {
 	tagTimelines: [],
 	fetchOnScroll: true,
 	remainDeletedNote: false,
-	showPostFormOnTopOfTl: false,
+	showPostFormOnTopOfTl: true,
 	suggestRecentHashtags: true,
 	showClockOnHeader: true,
 	circleIcons: true,
