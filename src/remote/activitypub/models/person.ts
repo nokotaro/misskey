@@ -178,7 +178,8 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 			...services,
 			tags,
 			isBot,
-			isCat: (person as any).isCat === true
+			isCat: (person as any).isCat === true,
+			avatarAngle: (person as any).avatarAngle
 		}) as IRemoteUser;
 	} catch (e) {
 		// duplicate key error

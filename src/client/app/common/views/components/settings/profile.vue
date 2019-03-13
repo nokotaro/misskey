@@ -51,6 +51,11 @@
 				<template #desc v-if="bannerUploading">{{ $t('uploading') }}<mk-ellipsis/></template>
 			</ui-input>
 
+			<ui-input v-model="avatarAngle">
+				<span>{{ $t('avatar-angle') }}</span>
+				<span slot="prefix"><fa icon="drafting-compass"/></span>
+			</ui-input>
+
 			<ui-button @click="save(true)"><fa :icon="faSave"/> {{ $t('save') }}</ui-button>
 		</ui-form>
 	</section>
@@ -143,6 +148,7 @@ export default Vue.extend({
 			birthday: null,
 			avatarId: null,
 			bannerId: null,
+			avatarAngle: null,
 			isCat: false,
 			isBot: false,
 			isLocked: false,
@@ -184,6 +190,7 @@ export default Vue.extend({
 		this.birthday = this.$store.state.i.profile.birthday;
 		this.avatarId = this.$store.state.i.avatarId;
 		this.bannerId = this.$store.state.i.bannerId;
+		this.avatarAngle = this.$store.state.i.avatarAngle;
 		this.isCat = this.$store.state.i.isCat;
 		this.isBot = this.$store.state.i.isBot;
 		this.isLocked = this.$store.state.i.isLocked;
@@ -247,6 +254,7 @@ export default Vue.extend({
 				birthday: this.birthday || null,
 				avatarId: this.avatarId || undefined,
 				bannerId: this.bannerId || undefined,
+				avatarAngle: this.avatarAngle || undefined,
 				isCat: !!this.isCat,
 				isBot: !!this.isBot,
 				isLocked: !!this.isLocked,

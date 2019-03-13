@@ -95,6 +95,7 @@ export default async (user: ILocalUser) => {
 		manuallyApprovesFollowers: user.isLocked,
 		publicKey: renderKey(user),
 		isCat: user.isCat,
-		attachment: attachment.length ? attachment : undefined
+		attachment: attachment.length ? attachment : undefined,
+		avatarAngle: user.avatarAngle
 	};
 };
