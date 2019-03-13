@@ -38,15 +38,6 @@ const postcss = {
 	},
 };
 
-class WebpackOnBuildPlugin {
-	constructor(readonly callback: (stats: any) => void) {
-	}
-
-	public apply(compiler: any) {
-		compiler.hooks.done.tap('WebpackOnBuildPlugin', this.callback);
-	}
-}
-
 module.exports = {
 	entry: {
 		desktop: './src/client/app/desktop/script.ts',
