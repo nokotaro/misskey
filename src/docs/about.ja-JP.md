@@ -1,3 +1,3 @@
-# Misskeyについて
+# twistaについて
 
-MisskeyはミニブログSNSです。
+twistaはミニブログSNSです。

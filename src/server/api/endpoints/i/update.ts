@@ -16,7 +16,7 @@ import { ApiError } from '../../error';
 
 export const meta = {
 	desc: {
-		'ja-JP': 'アカウント情報を更新します。',
+		'ja-JP': 'プロデューサー情報を更新します。',
 		'en-US': 'Update myself'
 	},
 
@@ -37,7 +37,7 @@ export const meta = {
 		description: {
 			validator: $.optional.nullable.str.pipe(isValidDescription),
 			desc: {
-				'ja-JP': 'アカウントの説明や自己紹介'
+				'ja-JP': 'プロデューサーの説明や自己紹介'
 			}
 		},
 
@@ -89,7 +89,7 @@ export const meta = {
 		isLocked: {
 			validator: $.optional.bool,
 			desc: {
-				'ja-JP': '鍵アカウントか否か'
+				'ja-JP': '鍵プロデューサーか否か'
 			}
 		},
 

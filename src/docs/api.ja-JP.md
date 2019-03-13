@@ -1,3 +1,3 @@
-# Misskey API
+# twista API
 
 [APIリファレンス](/api-doc)

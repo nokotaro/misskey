@@ -1,3 +1,3 @@
-# About Misskey
+# About twista
 
-Misskey is a mini blog SNS.
+twista is a mini blog SNS.

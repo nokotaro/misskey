@@ -137,9 +137,9 @@
 			localStorage.setItem('v', meta.version);
 
 			alert(
-				'Misskeyの新しいバージョンがあります。ページを再度読み込みします。' +
+				'twistaの新しいバージョンがあります。ページを再度読み込みします。' +
 				'\n\n' +
-				'New version of Misskey available. The page will be reloaded.');
+				'New version of twista available. The page will be reloaded.');
 
 			refresh();
 		}

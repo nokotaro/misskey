@@ -138,7 +138,7 @@ router.get('/tw/cb', async ctx => {
 		}) as ILocalUser;
 
 		if (user == null) {
-			ctx.throw(404, `@${result.screenName}と連携しているMisskeyアカウントはありませんでした...`);
+			ctx.throw(404, `@${result.screenName}と連携しているtwistaプロデューサーはありませんでした...`);
 			return;
 		}
 
@@ -175,7 +175,7 @@ router.get('/tw/cb', async ctx => {
 			}
 		});
 
-		ctx.body = `Twitter: @${result.screenName} を、Misskey: @${user.username} に接続しました！`;
+		ctx.body = `Twitter: @${result.screenName} を、twista: @${user.username} に接続しました！`;
 
 		// Publish i updated event
 		publishMainStream(user._id, 'meUpdated', await pack(user, user, {

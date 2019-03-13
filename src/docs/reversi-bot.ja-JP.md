@@ -1,5 +1,5 @@
-# MisskeyリバーシBotの開発
-Misskeyのリバーシ機能に対応したBotの開発方法をここに記します。
+# twistaリバーシBotの開発
+twistaのリバーシ機能に対応したBotの開発方法をここに記します。
 
 1. `games/reversi`ストリームに以下のパラメータを付けて接続する:
 	* `i`: botアカウントのAPIキー

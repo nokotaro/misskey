@@ -60,7 +60,7 @@ export const schemas = {
 			createdAt: {
 				type: 'string',
 				format: 'date-time',
-				description: 'The date that the user account was created on Misskey.'
+				description: 'The date that the user account was created on twista.'
 			},
 			followersCount: {
 				type: 'number',
@@ -107,7 +107,7 @@ export const schemas = {
 			createdAt: {
 				type: 'string',
 				format: 'date-time',
-				description: 'The date that the Note was created on Misskey.'
+				description: 'The date that the Note was created on twista.'
 			},
 			text: {
 				type: 'string'
@@ -157,7 +157,7 @@ export const schemas = {
 			createdAt: {
 				type: 'string',
 				format: 'date-time',
-				description: 'The date that the Drive file was created on Misskey.'
+				description: 'The date that the Drive file was created on twista.'
 			},
 			name: {
 				type: 'string',

@@ -137,7 +137,7 @@ export const meta = {
 		proxyAccount: {
 			validator: $.optional.nullable.str,
 			desc: {
-				'ja-JP': 'プロキシアカウントのユーザー名'
+				'ja-JP': 'プロキシプロデューサーのユーザー名'
 			}
 		},
 

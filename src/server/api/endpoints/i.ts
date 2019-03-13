@@ -5,7 +5,7 @@ export const meta = {
 	stability: 'stable',
 
 	desc: {
-		'ja-JP': '自分のアカウント情報を取得します。'
+		'ja-JP': '自分のプロデューサー情報を取得します。'
 	},
 
 	tags: ['account'],

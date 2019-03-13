@@ -87,7 +87,7 @@ export default Vue.extend({
 			stats: null,
 			banner: null,
 			host: toUnicode(host),
-			name: 'Misskey',
+			name: 'twista',
 			description: '',
 			photos: [],
 			announcements: []

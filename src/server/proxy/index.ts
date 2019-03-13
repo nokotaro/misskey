@@ -19,4 +19,4 @@ router.get('/:url*', proxyMedia);
 // Register router
 app.use(router.routes());
 
-module.exports = app;
+export default app;

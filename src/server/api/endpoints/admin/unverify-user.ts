@@ -5,7 +5,7 @@ import User from '../../../../models/user';
 
 export const meta = {
 	desc: {
-		'ja-JP': '指定したユーザーの公式アカウントを解除します。',
+		'ja-JP': '指定したユーザーの公式プロデューサーを解除します。',
 		'en-US': 'Mark a user as unverified.'
 	},
 

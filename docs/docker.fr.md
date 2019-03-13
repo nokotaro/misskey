@@ -1,20 +1,20 @@
 Guide Docker
 ================================================================
 
-Ce guide explique comment installer et configurer Misskey avec Docker.
+Ce guide explique comment installer et configurer twista avec Docker.
 
 [Version japonaise également disponible - Japanese version also available - 日本語版もあります](./docker.ja.md)  
 [Version anglaise également disponible - English version also available - 英語版もあります](./docker.en.md)
 
 ----------------------------------------------------------------
 
-*1.* Télécharger Misskey
+*1.* Télécharger twista
 ----------------------------------------------------------------
-1. `git clone -b master git://github.com/syuilo/misskey.git` Clone le dépôt de Misskey sur la branche master.
-2. `cd misskey` Naviguez dans le dossier du dépôt.
-3. `git checkout $(git tag -l | grep -v 'rc[0-9]*$' | sort -V | tail -n 1)` Checkout sur le tag de la [dernière version](https://github.com/syuilo/misskey/releases/latest).
+1. `git clone https://github.com/346design/twista.283.cloud.git twista` Clone le dépôt de twista.
+2. `cd twista` Naviguez dans le dossier du dépôt.
+3. `git checkout $(git tag -l | grep -v 'rc[0-9]*$' | sort -V | tail -n 1)` Checkout sur le tag de la [dernière version](https://github.com/346design/twista.283.cloud/releases/latest).
 
-*2.* Configuration de Misskey
+*2.* Configuration de twista
 ----------------------------------------------------------------
 1. `cp .config/example.yml .config/default.yml` Copiez le fichier `.config/example.yml` et renommez-le `default.yml`.
 2. `cp .config/mongo_initdb_example.js .config/mongo_initdb.js` Copie le fichier `.config/mongo_initdb_example.js` et le renomme en `mongo_initdb.js`.
@@ -24,7 +24,7 @@ Ce guide explique comment installer et configurer Misskey avec Docker.
 ----------------------------------------------------------------
 Editez `docker-compose.yml`.
 
-*4.* Contruire Misskey
+*4.* Contruire twista
 ----------------------------------------------------------------
 Contruire l'image Docker avec:
 
@@ -32,12 +32,12 @@ Contruire l'image Docker avec:
 
 *5.* C'est tout !
 ----------------------------------------------------------------
-Parfait, Vous avez un environnement prêt pour démarrer Misskey.
+Parfait, Vous avez un environnement prêt pour démarrer twista.
 
 ### Lancer normalement
 Utilisez la commande `docker-compose up -d`. GLHF!
 
-### How to update your Misskey server to the latest version
+### How to update your twista server to the latest version
 1. `git fetch`
 2. `git stash`
 3. `git checkout $(git tag -l | grep -v 'rc[0-9]*$' | sort -V | tail -n 1)`
@@ -59,7 +59,7 @@ Utilisez la commande `docker-compose up -d`. GLHF!
 ----------------------------------------------------------------
 1. `docker-compose -it web /bin/sh` Connexion dans le conteneur web
 2. `apk add curl` Ajout du paquet curl
-3. `curl -X PUT "es:9200/misskey" -H 'Content-Type: application/json' -d'{ "settings" : { "index" : { } }}'` Création de la base ES
+3. `curl -X PUT "es:9200/twista" -H 'Content-Type: application/json' -d'{ "settings" : { "index" : { } }}'` Création de la base ES
 4. `exit`
 
 ----------------------------------------------------------------

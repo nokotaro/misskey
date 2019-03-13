@@ -40,7 +40,6 @@ export default define({
 			this.$t('tips-line19'),
 			this.$t('tips-line20'),
 			this.$t('tips-line21'),
-			this.$t('tips-line23'),
 			this.$t('tips-line24'),
 			this.$t('tips-line25')
 		];

@@ -21,6 +21,10 @@ import wellKnown from './well-known';
 import config from '../config';
 import networkChart from '../services/chart/network';
 import apiServer from './api';
+import apiStreamingServer from './api/streaming';
+import fileServer from './file';
+import proxyServer from './proxy';
+import webServer from './web';
 import { sum } from '../prelude/array';
 import User from '../models/user';
 import Logger from '../misc/logger';
@@ -61,8 +65,8 @@ if (config.url.startsWith('https') && !config.disableHsts) {
 }
 
 app.use(mount('/api', apiServer));
-app.use(mount('/files', require('./file')));
-app.use(mount('/proxy', require('./proxy')));
+app.use(mount('/files', fileServer));
+app.use(mount('/proxy', proxyServer));
 
 // Init router
 const router = new Router();
@@ -93,7 +97,7 @@ router.get('/verify-email/:code', async ctx => {
 // Register router
 app.use(router.routes());
 
-app.use(mount(require('./web')));
+app.use(mount(webServer));
 
 function createServer() {
 	if (config.https) {
@@ -113,7 +117,7 @@ export const startServer = () => {
 	const server = createServer();
 
 	// Init stream server
-	require('./api/streaming')(server);
+	apiStreamingServer(server);
 
 	// Listen
 	server.listen(config.port);
@@ -125,7 +129,7 @@ export default () => new Promise(resolve => {
 	const server = createServer();
 
 	// Init stream server
-	require('./api/streaming')(server);
+	apiStreamingServer(server);
 
 	// Listen
 	server.listen(config.port, resolve);

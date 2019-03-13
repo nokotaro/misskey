@@ -43,7 +43,7 @@ export type Source = {
 };
 
 /**
- * Misskeyが自動的に(ユーザーが設定した情報から推論して)設定する情報
+ * twistaが自動的に(ユーザーが設定した情報から推論して)設定する情報
  */
 export type Mixin = {
 	host: string;

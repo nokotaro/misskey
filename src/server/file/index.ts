@@ -39,4 +39,4 @@ router.get('/:id/*', sendDriveFile);
 // Register router
 app.use(router.routes());
 
-module.exports = app;
+export default app;

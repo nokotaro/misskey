@@ -1,4 +1,4 @@
-Comment faire une sauvegarde de votre Misskey ?
+Comment faire une sauvegarde de votre twista ?
 ==========================
 
 Assurez-vous d'avoir installé **mongodb-tools**.

@@ -239,7 +239,7 @@ export const pack = async (
 	// _note._userを消す前か、_note.userを解決した後でないとホストがわからない
 	if (_note._user) {
 		const host = _note._user.host;
-		// 互換性のため。(古いMisskeyではNoteにemojisが無い)
+		// 互換性のため。(古いtwistaではNoteにemojisが無い)
 		if (_note.emojis == null) {
 			_note.emojis = Emoji.find({
 				host: host

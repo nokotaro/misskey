@@ -68,7 +68,7 @@ type IUserBase = {
 	isSilenced: boolean;
 
 	/**
-	 * 鍵アカウントか否か
+	 * 鍵プロデューサーか否か
 	 */
 	isLocked: boolean;
 
@@ -88,7 +88,7 @@ type IUserBase = {
 	autoAcceptFollowed: boolean;
 
 	/**
-	 * このアカウントに届いているフォローリクエストの数
+	 * このプロデューサーに届いているフォローリクエストの数
 	 */
 	pendingReceivedFollowRequestsCount: number;
 

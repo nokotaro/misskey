@@ -1,7 +1,7 @@
 import Meta, { IMeta } from '../models/meta';
 
 const defaultMeta: any = {
-	name: 'Misskey',
+	name: 'twista',
 	maintainer: {},
 	langs: [],
 	cacheRemoteFiles: true,

@@ -7,7 +7,7 @@ const Meta = db.get<IMeta>('meta');
 export default Meta;
 
 // 後方互換性のため。
-// 過去のMisskeyではインスタンス名や紹介を設定ファイルに記述していたのでそれを移行
+// 過去のtwistaではインスタンス名や紹介を設定ファイルに記述していたのでそれを移行
 if ((config as any).name) {
 	Meta.findOne({}).then(m => {
 		if (m != null && m.name == null) {

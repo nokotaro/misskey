@@ -1,10 +1,10 @@
 var user = {
-	user: 'example-misskey-user',
-	pwd: 'example-misskey-pass',
+	user: 'example-twista-user',
+	pwd: 'example-twista-pass',
 	roles: [
 	    {
 		    role: 'readWrite',
-		    db: 'misskey'
+		    db: 'twista'
 	    }
 	]
 };

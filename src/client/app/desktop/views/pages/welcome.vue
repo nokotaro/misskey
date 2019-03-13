@@ -13,7 +13,7 @@
 		<div class="body">
 			<div class="main block">
 				<div>
-					<h1 v-if="name != 'Misskey'">{{ name }}</h1>
+					<h1 v-if="name != 'twista'">{{ name }}</h1>
 					<h1 v-else><img svg-inline src="../../../../assets/title.svg" :alt="name"></h1>
 
 					<div class="info">
@@ -162,7 +162,7 @@ export default Vue.extend({
 			banner: null,
 			copyright,
 			host: toUnicode(host),
-			name: 'Misskey',
+			name: 'twista',
 			description: '',
 			announcements: [],
 			photos: []

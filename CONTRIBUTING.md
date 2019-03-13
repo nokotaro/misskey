@@ -12,7 +12,7 @@ Please use [Crowdin](https://crowdin.com/project/misskey) for localization.
 ![Crowdin](https://d322cqt584bo4o.cloudfront.net/misskey/localized.svg)
 
 ## Internationalization (i18n)
-Misskey uses [vue-i18n](https://github.com/kazupon/vue-i18n).
+twista uses [vue-i18n](https://github.com/kazupon/vue-i18n).
 
 ## Documentation
 * Documents for contributors are located in `/docs`.
@@ -23,7 +23,7 @@ Misskey uses [vue-i18n](https://github.com/kazupon/vue-i18n).
 * Test codes are located in `/test`.
 
 ## Continuous integration
-Misskey uses CircleCI for automated test.
+twista uses CircleCI for automated test.
 Configuration files are located in `/.circleci`.
 
 ## Glossary
@@ -61,7 +61,7 @@ export function something(foo: string): string {
 ```
 src ... ソースコード
 	@types ... 外部ライブラリなどの型定義
-	prelude ... Misskeyに関係ないかつ副作用なし
+	prelude ... twistaに関係ないかつ副作用なし
 	misc ... 副作用なしのユーティリティ処理
 	service ... 副作用ありの共通処理
 	queue ... ジョブキューとジョブ

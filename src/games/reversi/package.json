@@ -1,7 +1,7 @@
 {
   "name": "misskey-reversi",
   "version": "0.0.5",
-  "description": "Misskey reversi engine",
+  "description": "twista reversi engine",
   "keywords": [
     "misskey"
   ],

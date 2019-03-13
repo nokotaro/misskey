@@ -82,7 +82,7 @@ function validatePerson(x: any, uri: string) {
 /**
  * Personをフェッチします。
  *
- * Misskeyに対象のPersonが登録されていればそれを返します。
+ * twistaに対象のPersonが登録されていればそれを返します。
  */
 export async function fetchPerson(uri: string, resolver?: Resolver): Promise<IUser> {
 	if (typeof uri !== 'string') throw 'uri is not string';
@@ -273,7 +273,7 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 
 /**
  * Personの情報を更新します。
- * Misskeyに対象のPersonが登録されていなければ無視します。
+ * twistaに対象のPersonが登録されていなければ無視します。
  * @param uri URI of Person
  * @param resolver Resolver
  * @param hint Hint of Person object (この値が正当なPersonの場合、Remote resolveをせずに更新に利用します)
@@ -409,8 +409,8 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: obje
 /**
  * Personを解決します。
  *
- * Misskeyに対象のPersonが登録されていればそれを返し、そうでなければ
- * リモートサーバーからフェッチしてMisskeyに登録しそれを返します。
+ * twistaに対象のPersonが登録されていればそれを返し、そうでなければ
+ * リモートサーバーからフェッチしてtwistaに登録しそれを返します。
  */
 export async function resolvePerson(uri: string, verifier?: string, resolver?: Resolver): Promise<IUser> {
 	if (typeof uri !== 'string') throw 'uri is not string';

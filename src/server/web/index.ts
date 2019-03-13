@@ -2,7 +2,6 @@
  * Web Client Server
  */
 
-import * as os from 'os';
 import ms = require('ms');
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
@@ -13,14 +12,13 @@ import { ObjectID } from 'mongodb';
 
 import docs from './docs';
 import packFeed from './feed';
+import urlPreview from './url-preview';
 import User from '../../models/user';
 import parseAcct from '../../misc/acct/parse';
 import config from '../../config';
 import Note, { pack as packNote } from '../../models/note';
 import getNoteSummary from '../../misc/get-note-summary';
 import fetchMeta from '../../misc/fetch-meta';
-import Emoji from '../../models/emoji';
-import * as pkg from '../../../package.json';
 import { genOpenapiSpec } from '../api/openapi/gen-spec';
 
 const client = `${__dirname}/../../client/`;
@@ -90,7 +88,7 @@ router.get('/api-doc', async ctx => {
 });
 
 // URL preview endpoint
-router.get('/url', require('./url-preview'));
+router.get('/url', urlPreview);
 
 router.get('/api.json', async ctx => {
 	ctx.body = genOpenapiSpec();
@@ -211,8 +209,39 @@ router.get('/notes/:note', async ctx => {
 
 	ctx.status = 404;
 });
+
+/*
+// Article
+router.get('/articles/:article', async ctx => {
+	if (ObjectID.isValid(ctx.params.article)) {
+		const article = await Note.findOne({ _id: ctx.params.article });
+
+		if (article) {
+			const _article = await packNote(article);
+			const meta = await fetchMeta();
+			await ctx.render('article', {
+				article: _article,
+				summary: getNoteSummary(_article),
+				instanceName: meta.name
+			});
+
+			if (['public', 'home'].includes(article.visibility)) {
+				ctx.set('Cache-Control', 'public, max-age=180');
+			} else {
+				ctx.set('Cache-Control', 'private, max-age=0, must-revalidate');
+			}
+
+			return;
+		}
+	}
+
+	ctx.status = 404;
+});
+*/
+
 //#endregion
 
+/*
 router.get('/info', async ctx => {
 	const meta = await fetchMeta();
 	const emojis = await Emoji.find({ host: null }, {
@@ -233,12 +262,23 @@ router.get('/info', async ctx => {
 		meta: meta
 	});
 });
+*/
 
 const override = (source: string, target: string, depth: number = 0) =>
 	[, ...target.split('/').filter(x => x), ...source.split('/').filter(x => x).splice(depth)].join('/');
 
 router.get('/othello', async ctx => ctx.redirect(override(ctx.URL.pathname, 'games/reversi', 1)));
 router.get('/reversi', async ctx => ctx.redirect(override(ctx.URL.pathname, 'games')));
+
+// Render root index html
+router.get('/', async ctx => {
+	const meta = await fetchMeta();
+	await ctx.render('index', {
+		img: meta.bannerUrl,
+		instanceName: meta.name
+	});
+	ctx.set('Cache-Control', 'public, max-age=300');
+});
 
 // Render base html for all requests
 router.get('*', async ctx => {
@@ -252,4 +292,4 @@ router.get('*', async ctx => {
 // Register router
 app.use(router.routes());
 
-module.exports = app;
+export default app;

@@ -1,9 +1,9 @@
-url: 'http://misskey.local'
+url: 'http://twista.local'
 port: 80
 mongodb:
   host: localhost
   port: 27017
-  db: test-misskey
+  db: test-twista
   user: admin
   pass: ''
 drive:

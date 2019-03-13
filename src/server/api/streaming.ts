@@ -9,7 +9,7 @@ import authenticate from './authenticate';
 import { EventEmitter } from 'events';
 import config from '../../config';
 
-module.exports = (server: http.Server) => {
+export default (server: http.Server) => {
 	// Init websocket server
 	const ws = new websocket.server({
 		httpServer: server

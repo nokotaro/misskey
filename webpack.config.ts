@@ -6,7 +6,6 @@ import * as fs from 'fs';
 import * as webpack from 'webpack';
 import chalk from 'chalk';
 const { VueLoaderPlugin } = require('vue-loader');
-const WebpackOnBuildPlugin = require('on-build-webpack');
 //const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -29,6 +28,15 @@ const postcss = {
 		]
 	},
 };
+
+class WebpackOnBuildPlugin {
+	constructor(readonly callback: (stats: any) => void) {
+	}
+
+	public apply(compiler: any) {
+		compiler.hooks.done.tap('WebpackOnBuildPlugin', this.callback);
+	}
+}
 
 module.exports = {
 	entry: {
@@ -108,7 +116,9 @@ module.exports = {
 	plugins: [
 		//new HardSourceWebpackPlugin(),
 		new ProgressBarPlugin({
-			format: chalk`  {cyan.bold yes we can} {bold [}:bar{bold ]} {green.bold :percent} {gray (:current/:total)} :elapseds`,
+			format: chalk`{cyan.bold Choco is eating a lot} {bold [}:bar{bold ]} {green.bold :percent} {gray (:current/:total)} :elapseds`,
+			complete: '😋',
+			incomplete: '🍚',
 			clear: false
 		}),
 		new webpack.DefinePlugin({

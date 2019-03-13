@@ -97,7 +97,7 @@ export default async (job: bq.Job, done: any): Promise<void> => {
 		return;
 	}
 
-	// アクティビティを送信してきたユーザーがまだMisskeyサーバーに登録されていなかったら登録する
+	// アクティビティを送信してきたユーザーがまだtwistaサーバーに登録されていなかったら登録する
 	if (user === null) {
 		user = await resolvePerson(activity.actor) as IRemoteUser;
 	}

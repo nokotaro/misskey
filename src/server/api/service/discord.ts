@@ -199,7 +199,7 @@ router.get('/dc/cb', async ctx => {
 		}) as ILocalUser;
 
 		if (!user) {
-			ctx.throw(404, `@${username}#${discriminator}と連携しているMisskeyアカウントはありませんでした...`);
+			ctx.throw(404, `@${username}#${discriminator}と連携しているtwistaプロデューサーはありませんでした...`);
 			return;
 		}
 
@@ -293,7 +293,7 @@ router.get('/dc/cb', async ctx => {
 			}
 		});
 
-		ctx.body = `Discord: @${username}#${discriminator} を、Misskey: @${user.username} に接続しました！`;
+		ctx.body = `Discord: @${username}#${discriminator} を、twista: @${user.username} に接続しました！`;
 
 		// Publish i updated event
 		publishMainStream(user._id, 'meUpdated', await pack(user, user, {

@@ -191,7 +191,7 @@ router.get('/gh/cb', async ctx => {
 		}) as ILocalUser;
 
 		if (!user) {
-			ctx.throw(404, `@${login}と連携しているMisskeyアカウントはありませんでした...`);
+			ctx.throw(404, `@${login}と連携しているtwistaプロデューサーはありませんでした...`);
 			return;
 		}
 
@@ -261,7 +261,7 @@ router.get('/gh/cb', async ctx => {
 			}
 		});
 
-		ctx.body = `GitHub: @${login} を、Misskey: @${user.username} に接続しました！`;
+		ctx.body = `GitHub: @${login} を、twista: @${user.username} に接続しました！`;
 
 		// Publish i updated event
 		publishMainStream(user._id, 'meUpdated', await pack(user, user, {

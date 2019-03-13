@@ -24,7 +24,7 @@ const logger = apLogger;
 /**
  * Noteをフェッチします。
  *
- * Misskeyに対象のNoteが登録されていればそれを返します。
+ * twistaに対象のNoteが登録されていればそれを返します。
  */
 export async function fetchNote(value: string | IObject, resolver?: Resolver): Promise<INote> {
 	const uri = typeof value == 'string' ? value : value.id;
@@ -164,8 +164,8 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 /**
  * Noteを解決します。
  *
- * Misskeyに対象のNoteが登録されていればそれを返し、そうでなければ
- * リモートサーバーからフェッチしてMisskeyに登録しそれを返します。
+ * twistaに対象のNoteが登録されていればそれを返し、そうでなければ
+ * リモートサーバーからフェッチしてtwistaに登録しそれを返します。
  */
 export async function resolveNote(value: string | IObject, resolver?: Resolver): Promise<INote> {
 	const uri = typeof value == 'string' ? value : value.id;

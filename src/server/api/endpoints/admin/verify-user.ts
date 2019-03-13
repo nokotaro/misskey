@@ -5,7 +5,7 @@ import User from '../../../../models/user';
 
 export const meta = {
 	desc: {
-		'ja-JP': '指定したユーザーを公式アカウントにします。',
+		'ja-JP': '指定したユーザーを公式プロデューサーにします。',
 		'en-US': 'Mark a user as verified.'
 	},
 

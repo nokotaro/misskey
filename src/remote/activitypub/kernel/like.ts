@@ -9,7 +9,7 @@ export default async (actor: IRemoteUser, activity: ILike) => {
 	const id = typeof activity.object == 'string' ? activity.object : activity.object.id;
 
 	// Transform:
-	// https://misskey.ex/notes/xxxx to
+	// https://twista.ex/notes/xxxx to
 	// xxxx
 	const noteId = new mongo.ObjectID(id.split('/').pop());
 
@@ -20,7 +20,7 @@ export default async (actor: IRemoteUser, activity: ILike) => {
 
 	let reaction = 'like';
 
-	// 他のMisskeyインスタンスからのリアクション
+	// 他のtwistaインスタンスからのリアクション
 	if (activity._misskey_reaction && validateReaction.ok(activity._misskey_reaction)) {
 		reaction = activity._misskey_reaction;
 	}

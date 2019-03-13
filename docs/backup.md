@@ -1,4 +1,4 @@
-How to backup your Misskey
+How to backup your twista
 ==========================
 
 Make sure **mongodb-tools** installed.
