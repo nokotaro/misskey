@@ -14,7 +14,7 @@
 					</div>
 				</div>
 				<div class="right">
-					<x-search/>
+					<x-search v-if="false"/>
 					<x-account v-if="$store.getters.isSignedIn"/>
 					<x-messaging v-if="$store.getters.isSignedIn"/>
 					<x-notifications v-if="$store.getters.isSignedIn"/>
