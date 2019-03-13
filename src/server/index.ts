@@ -117,7 +117,7 @@ export const startServer = () => {
 	const server = createServer();
 
 	// Init stream server
-	apiStreamingServer(server);
+	apiStreamingServer(server as http.Server);
 
 	// Listen
 	server.listen(config.port);
@@ -129,7 +129,7 @@ export default () => new Promise(resolve => {
 	const server = createServer();
 
 	// Init stream server
-	apiStreamingServer(server);
+	apiStreamingServer(server as http.Server);
 
 	// Listen
 	server.listen(config.port, resolve);
