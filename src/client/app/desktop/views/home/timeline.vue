@@ -1,6 +1,6 @@
 <template>
 <div class="pwbzawku">
-	<mk-post-form class="form" v-if="$store.state.settings.showPostFormOnTopOfTl"/>
+	<mk-post-form class="form" :class="{ shadow: $store.state.device.useShadow, round: $store.state.device.roundedCorners }" v-if="$store.state.settings.showPostFormOnTopOfTl"/>
 	<div class="main">
 		<component :is="src == 'list' ? 'mk-user-list-timeline' : 'x-core'" ref="tl" v-bind="options">
 			<header class="zahtxcqi">
@@ -11,8 +11,8 @@
 				<span :data-active="src == 'tag'" @click="src = 'tag'" v-if="tagTl"><fa icon="hashtag"/> {{ tagTl.title }}</span>
 				<span :data-active="src == 'list'" @click="src = 'list'" v-if="list"><fa icon="list"/> {{ list.title }}</span>
 				<div class="buttons">
-					<button :data-active="src == 'mentions'" @click="src = 'mentions'" :title="$t('mentions')"><fa icon="at"/><i class="badge" v-if="$store.state.i.hasUnreadMentions"><fa icon="circle"/></i></button>
-					<button :data-active="src == 'messages'" @click="src = 'messages'" :title="$t('messages')"><fa :icon="['far', 'envelope']"/><i class="badge" v-if="$store.state.i.hasUnreadSpecifiedNotes"><fa icon="circle"/></i></button>
+					<button :data-active="src == 'mentions'" @click="src = 'mentions'" :title="$t('mentions')"><fa icon="at"/><i class="indicator" v-if="$store.state.i.hasUnreadMentions"><fa icon="circle"/></i></button>
+					<button :data-active="src == 'messages'" @click="src = 'messages'" :title="$t('messages')"><fa :icon="['far', 'envelope']"/><i class="indicator" v-if="$store.state.i.hasUnreadSpecifiedNotes"><fa icon="circle"/></i></button>
 					<button @click="chooseTag" :title="$t('hashtag')" ref="tagButton"><fa icon="hashtag"/></button>
 					<button @click="chooseList" :title="$t('list')" ref="listButton"><fa icon="list"/></button>
 				</div>
@@ -193,8 +193,12 @@ export default Vue.extend({
 .pwbzawku
 	> .form
 		margin-bottom 16px
-		box-shadow var(--shadow)
-		border-radius var(--round)
+
+		&.round
+			border-radius 6px
+
+		&.shadow
+			box-shadow 0 3px 8px rgba(0, 0, 0, 0.2)
 
 	.zahtxcqi
 		padding 0 8px
@@ -215,12 +219,13 @@ export default Vue.extend({
 				line-height 42px
 				color var(--faceTextButton)
 
-				> .badge
+				> .indicator
 					position absolute
 					top -4px
 					right 4px
 					font-size 10px
 					color var(--notificationIndicator)
+					animation blink 1s infinite
 
 				&:hover
 					color var(--faceTextButtonHover)

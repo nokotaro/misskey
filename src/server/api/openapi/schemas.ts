@@ -33,7 +33,8 @@ export const schemas = {
 			id: {
 				type: 'string',
 				format: 'id',
-				description: 'The unique identifier for this User.'
+				description: 'The unique identifier for this User.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
 			},
 			username: {
 				type: 'string',
@@ -96,13 +97,69 @@ export const schemas = {
 		required: ['id', 'name', 'username', 'createdAt']
 	},
 
+	UserList: {
+		type: 'object',
+		properties: {
+			id: {
+				type: 'string',
+				format: 'id',
+				description: 'The unique identifier for this UserList.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
+			},
+			createdAt: {
+				type: 'string',
+				format: 'date-time',
+				description: 'The date that the UserList was created.'
+			},
+			title: {
+				type: 'string',
+				description: 'The name of the UserList.'
+			},
+		},
+		required: ['id', 'createdAt', 'title']
+	},
+
+	MessagingMessage: {
+		type: 'object',
+		properties: {
+			id: {
+				type: 'string',
+				format: 'id',
+				description: 'The unique identifier for this MessagingMessage.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
+			},
+			createdAt: {
+				type: 'string',
+				format: 'date-time',
+				description: 'The date that the MessagingMessage was created.'
+			},
+			text: {
+				type: 'string',
+				nullable: true
+			},
+			file: {
+				type: 'DriveFile',
+				nullable: true
+			},
+			recipientId: {
+				type: 'string',
+				format: 'id',
+			},
+			recipient: {
+				$ref: '#/components/schemas/User'
+			},
+		},
+		required: ['id', 'createdAt']
+	},
+
 	Note: {
 		type: 'object',
 		properties: {
 			id: {
 				type: 'string',
 				format: 'id',
-				description: 'The unique identifier for this Note.'
+				description: 'The unique identifier for this Note.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
 			},
 			createdAt: {
 				type: 'string',
@@ -125,10 +182,12 @@ export const schemas = {
 			replyId: {
 				type: 'string',
 				format: 'id',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
 			},
 			renoteId: {
 				type: 'string',
 				format: 'id',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
 			},
 			reply: {
 				$ref: '#/components/schemas/Note'
@@ -146,13 +205,37 @@ export const schemas = {
 		required: ['id', 'userId', 'createdAt']
 	},
 
+	Notification: {
+		type: 'object',
+		properties: {
+			id: {
+				type: 'string',
+				format: 'id',
+				description: 'The unique identifier for this notification.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
+			},
+			createdAt: {
+				type: 'string',
+				format: 'date-time',
+				description: 'The date that the notification was created.'
+			},
+			type: {
+				type: 'string',
+				enum: ['follow', 'receiveFollowRequest', 'mention', 'reply', 'renote', 'quote', 'reaction', 'poll_vote'],
+				description: 'The type of the notification.'
+			},
+		},
+		required: ['id', 'createdAt', 'type']
+	},
+
 	DriveFile: {
 		type: 'object',
 		properties: {
 			id: {
 				type: 'string',
 				format: 'id',
-				description: 'The unique identifier for this Drive file.'
+				description: 'The unique identifier for this Drive file.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
 			},
 			createdAt: {
 				type: 'string',
@@ -185,6 +268,7 @@ export const schemas = {
 				format: 'id',
 				nullable: true,
 				description: 'The parent folder ID of this Drive file.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
 			},
 			isSensitive: {
 				type: 'boolean',
@@ -192,5 +276,171 @@ export const schemas = {
 			},
 		},
 		required: ['id', 'createdAt', 'name', 'type', 'datasize', 'md5']
-	}
+	},
+
+	DriveFolder: {
+		type: 'object',
+		properties: {
+			id: {
+				type: 'string',
+				format: 'id',
+				description: 'The unique identifier for this Drive folder.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
+			},
+			createdAt: {
+				type: 'string',
+				format: 'date-time',
+				description: 'The date that the Drive folder was created.'
+			},
+			name: {
+				type: 'string',
+				description: 'The folder name.',
+			},
+			foldersCount: {
+				type: 'number',
+				description: 'The count of child folders.',
+			},
+			filesCount: {
+				type: 'number',
+				description: 'The count of child files.',
+			},
+			parentId: {
+				type: 'string',
+				format: 'id',
+				nullable: true,
+				description: 'The parent folder ID of this folder.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
+			},
+			parent: {
+				$ref: '#/components/schemas/DriveFolder'
+			},
+		},
+		required: ['id', 'createdAt', 'name']
+	},
+
+	Muting: {
+		type: 'object',
+		properties: {
+			id: {
+				type: 'string',
+				format: 'id',
+				description: 'The unique identifier for this mute.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
+			},
+			createdAt: {
+				type: 'string',
+				format: 'date-time',
+				description: 'The date that the mute was created.'
+			},
+			mutee: {
+				$ref: '#/components/schemas/User',
+				description: 'The mutee.'
+			},
+		},
+		required: ['id', 'createdAt', 'mutee']
+	},
+
+	Blocking: {
+		type: 'object',
+		properties: {
+			id: {
+				type: 'string',
+				format: 'id',
+				description: 'The unique identifier for this block.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
+			},
+			createdAt: {
+				type: 'string',
+				format: 'date-time',
+				description: 'The date that the block was created.'
+			},
+			blockee: {
+				$ref: '#/components/schemas/User',
+				description: 'The blockee.'
+			},
+		},
+		required: ['id', 'createdAt', 'blockee']
+	},
+
+	Reaction: {
+		type: 'object',
+		properties: {
+			id: {
+				type: 'string',
+				format: 'id',
+				description: 'The unique identifier for this reaction.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
+			},
+			createdAt: {
+				type: 'string',
+				format: 'date-time',
+				description: 'The date that the reaction was created.'
+			},
+			user: {
+				$ref: '#/components/schemas/User',
+				description: 'User who performed this reaction.'
+			},
+			type: {
+				type: 'string',
+				enum: [
+					'like',
+					'love',
+					'laugh',
+					'hmm',
+					'surprise',
+					'congrats',
+					'angry',
+					'confused',
+					'rip',
+					'pudding'
+				],
+				description: 'The reaction type.'
+			},
+		},
+		required: ['id', 'createdAt', 'user', 'type']
+	},
+
+	Hashtag: {
+		type: 'object',
+		properties: {
+			tag: {
+				type: 'string',
+				description: 'The hashtag name. No # prefixed.',
+				example: 'misskey',
+			},
+			mentionedUsersCount: {
+				type: 'number',
+				description: 'Number of all users using this hashtag.'
+			},
+			mentionedLocalUsersCount: {
+				type: 'number',
+				description: 'Number of local users using this hashtag.'
+			},
+			mentionedRemoteUsersCount: {
+				type: 'number',
+				description: 'Number of remote users using this hashtag.'
+			},
+			attachedUsersCount: {
+				type: 'number',
+				description: 'Number of all users who attached this hashtag to profile.'
+			},
+			attachedLocalUsersCount: {
+				type: 'number',
+				description: 'Number of local users who attached this hashtag to profile.'
+			},
+			attachedRemoteUsersCount: {
+				type: 'number',
+				description: 'Number of remote users who attached this hashtag to profile.'
+			},
+		},
+		required: [
+			'tag',
+			'mentionedUsersCount',
+			'mentionedLocalUsersCount',
+			'mentionedRemoteUsersCount',
+			'attachedUsersCount',
+			'attachedLocalUsersCount',
+			'attachedRemoteUsersCount',
+		]
+	},
 };

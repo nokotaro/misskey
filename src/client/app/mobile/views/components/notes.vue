@@ -1,5 +1,5 @@
 <template>
-<div class="ivaojijs">
+<div class="ivaojijs" :class="{ shadow: $store.state.device.useShadow, round: $store.state.device.roundedCorners }">
 	<div class="empty" v-if="notes.length == 0 && !fetching && inited">{{ $t('@.no-notes') }}</div>
 
 	<mk-error v-if="!fetching && !inited" @retry="init()"/>
@@ -13,7 +13,7 @@
 	<!-- トランジションを有効にするとなぜかメモリリークする -->
 	<component :is="!$store.state.device.reduceMotion ? 'transition-group' : 'div'" name="mk-notes" class="transition" tag="div">
 		<template v-for="(note, i) in _notes">
-			<mk-note :note="note" :key="note.id" @update:note="onNoteUpdated(i, $event)" :compact="true"/>
+			<mk-note :note="note" :key="note.id" @update:note="onNoteUpdated(i, $event)"/>
 			<p class="date" :key="note.id + '_date'" v-if="i != notes.length - 1 && note._date != _notes[i + 1]._date">
 				<span><fa icon="angle-up"/>{{ note._datetext }}</span>
 				<span><fa icon="angle-down"/>{{ _notes[i + 1]._datetext }}</span>
@@ -191,11 +191,15 @@ export default Vue.extend({
 .ivaojijs
 	overflow hidden
 	background var(--face)
-	border-radius 8px
-	box-shadow 0 4px 16px rgba(#000, 0.1)
 
-	@media (min-width 500px)
-		box-shadow 0 8px 32px rgba(#000, 0.1)
+	&.round
+		border-radius 8px
+
+	&.shadow
+		box-shadow 0 4px 16px rgba(#000, 0.1)
+
+		@media (min-width 500px)
+			box-shadow 0 8px 32px rgba(#000, 0.1)
 
 	> .empty
 		padding 16px
@@ -239,13 +243,7 @@ export default Vue.extend({
 		padding 32px
 		max-width 400px
 		text-align center
-		color #999
-
-		> [data-icon]
-			display block
-			margin-bottom 16px
-			font-size 3em
-			color #ccc
+		color var(--text)
 
 	> footer
 		text-align center
@@ -258,7 +256,7 @@ export default Vue.extend({
 			margin 0
 			padding 16px
 			width 100%
-			color #ccc
+			color var(--text)
 
 			@media (min-width 500px)
 				padding 20px

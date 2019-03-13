@@ -3,14 +3,15 @@
 	class="note"
 	v-show="appearNote.deletedAt == null && !hideThisNote"
 	:tabindex="appearNote.deletedAt == null ? '-1' : null"
-	:class="{ renote: isRenote, smart: $store.state.device.postStyle == 'smart' }"
+	:class="{ renote: isRenote, smart: $store.state.device.postStyle == 'smart', mini: narrow }"
 	v-hotkey="keymap"
 >
+	<x-sub v-for="note in conversation" :key="note.id" :note="note"/>
 	<div class="reply-to" v-if="appearNote.reply && (!$store.getters.isSignedIn || $store.state.settings.showReplyTarget)">
 		<x-sub :note="appearNote.reply"/>
 	</div>
-	<mk-renote class="renote" v-if="isRenote" :note="note" mini/>
-	<article>
+	<mk-renote class="renote" v-if="isRenote" :note="note"/>
+	<article class="article">
 		<mk-avatar class="avatar" :user="appearNote.user" v-if="$store.state.device.postStyle != 'smart'"/>
 		<div class="main">
 			<mk-note-header class="header" :note="appearNote" :mini="true"/>
@@ -30,38 +31,39 @@
 						<mk-media-list :media-list="appearNote.files"/>
 					</div>
 					<mk-poll v-if="appearNote.poll" :note="appearNote" ref="pollViewer"/>
-					<mk-url-preview v-for="url in urls" :url="url" :key="url" :compact="compact"/>
+					<mk-url-preview v-for="url in urls" :url="url" :key="url" :compact="true"/>
 					<a class="location" v-if="appearNote.geo" :href="`https://maps.google.com/maps?q=${appearNote.geo.coordinates[1]},${appearNote.geo.coordinates[0]}`" target="_blank"><fa icon="map-marker-alt"/> {{ $t('location') }}</a>
 					<div class="renote" v-if="appearNote.renote"><mk-note-preview :note="appearNote.renote"/></div>
 				</div>
 				<span class="app" v-if="appearNote.app && $store.state.settings.showVia">via <b>{{ appearNote.app.name }}</b></span>
 			</div>
-			<footer v-if="appearNote.deletedAt == null">
+			<footer v-if="appearNote.deletedAt == null" class="footer">
 				<mk-reactions-viewer :note="appearNote" ref="reactionsViewer"/>
-				<button @click="reply()">
+				<button @click="reply()" class="button">
 					<template v-if="appearNote.reply"><fa icon="reply-all"/></template>
 					<template v-else><fa icon="reply"/></template>
 					<p class="count" v-if="appearNote.repliesCount > 0">{{ appearNote.repliesCount }}</p>
 				</button>
-				<button v-if="['public', 'home'].includes(appearNote.visibility)" @click="renote()" title="Renote">
+				<button v-if="['public', 'home'].includes(appearNote.visibility)" @click="renote()" title="Renote" class="button">
 					<fa icon="retweet"/><p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
 				</button>
-				<button v-else>
+				<button v-else class="button">
 					<fa icon="ban"/>
 				</button>
-				<button v-if="!isMyNote && appearNote.myReaction == null" class="reactionButton" @click="react()" ref="reactButton">
+				<button v-if="!isMyNote && appearNote.myReaction == null" class="button" @click="react()" ref="reactButton">
 					<fa icon="plus"/>
 				</button>
-				<button v-if="!isMyNote && appearNote.myReaction != null" class="reactionButton reacted" @click="undoReact(appearNote)" ref="reactButton">
+				<button v-if="!isMyNote && appearNote.myReaction != null" class="button reacted" @click="undoReact(appearNote)" ref="reactButton">
 					<fa icon="minus"/>
 				</button>
-				<button class="menu" @click="menu()" ref="menuButton">
+				<button class="button" @click="menu()" ref="menuButton">
 					<fa icon="ellipsis-h"/>
 				</button>
 			</footer>
 			<div class="deleted" v-if="appearNote.deletedAt != null">{{ $t('deleted') }}</div>
 		</div>
 	</article>
+	<x-sub v-for="note in replies" :key="note.id" :note="note"/>
 </div>
 </template>
 
@@ -91,10 +93,40 @@ export default Vue.extend({
 			type: Object,
 			required: true
 		},
-		compact: {
+		detail: {
 			type: Boolean,
 			required: false,
 			default: false
+		},
+	},
+
+	inject: {
+		narrow: {
+			default: false
+		}
+	},
+
+	data() {
+		return {
+			conversation: [],
+			replies: []
+		};
+	},
+
+	created() {
+		if (this.detail) {
+			this.$root.api('notes/children', {
+				noteId: this.appearNote.id,
+				limit: 30
+			}).then(replies => {
+				this.replies = replies;
+			});
+
+			this.$root.api('notes/conversation', {
+				noteId: this.appearNote.replyId
+			}).then(conversation => {
+				this.conversation = conversation.reverse();
+			});
 		}
 	}
 });
@@ -103,48 +135,58 @@ export default Vue.extend({
 <style lang="stylus" scoped>
 .note
 	overflow hidden
-	font-size 12px
+	font-size 13px
 	border-bottom solid var(--lineWidth) var(--faceDivider)
-
-	&:focus
-		z-index 1
-
-		&:after
-			content ""
-			pointer-events none
-			position absolute
-			top 2px
-			right 2px
-			bottom 2px
-			left 2px
-			border 2px solid var(--primaryAlpha03)
-			border-radius 4px
 
 	&:last-of-type
 		border-bottom none
 
-	@media (min-width 350px)
-		font-size 14px
+	&:not(.mini)
 
-	@media (min-width 500px)
-		font-size 16px
+		@media (min-width 350px)
+			font-size 14px
+
+		@media (min-width 500px)
+			font-size 16px
+
+		> .article
+			@media (min-width 600px)
+				padding 32px 32px 22px
+
+			> .avatar
+				@media (min-width 350px)
+					width 48px
+					height 48px
+					border-radius 6px
+
+				@media (min-width 500px)
+					margin-right 16px
+					width 58px
+					height 58px
+					border-radius 8px
+
+			> .main
+				> .header
+					@media (min-width 500px)
+						margin-bottom 2px
+
+				> .body
+					@media (min-width 700px)
+						font-size 1.1em
 
 	&.smart
-		> article
+		> .article
 			> .main
 				> header
 					align-items center
 					margin-bottom 4px
 
-	> .renote + article
+	> .renote + .article
 		padding-top 8px
 
-	> article
+	> .article
 		display flex
 		padding 16px 16px 9px
-
-		@media (min-width 600px)
-			padding 32px 32px 22px
 
 		> .avatar
 			flex-shrink 0
@@ -157,29 +199,11 @@ export default Vue.extend({
 			//position sticky
 			//top 62px
 
-			@media (min-width 350px)
-				width 48px
-				height 48px
-				border-radius 6px
-
-			@media (min-width 500px)
-				margin-right 16px
-				width 58px
-				height 58px
-				border-radius 8px
-
 		> .main
 			flex 1
 			min-width 0
 
-			> .header
-				@media (min-width 500px)
-					margin-bottom 2px
-
 			> .body
-				@media (min-width 700px)
-					font-size 1.1em
-
 				> .cw
 					cursor default
 					display block
@@ -199,6 +223,7 @@ export default Vue.extend({
 						padding 0
 						overflow-wrap break-word
 						color var(--noteText)
+						font-size calc(1em + var(--fontSize))
 
 						> .reply
 							margin-right 8px
@@ -244,8 +269,8 @@ export default Vue.extend({
 					font-size 12px
 					color #ccc
 
-			> footer
-				> button
+			> .footer
+				> .button
 					margin 0
 					padding 8px
 					background transparent

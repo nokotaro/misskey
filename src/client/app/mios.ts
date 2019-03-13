@@ -172,7 +172,11 @@ export default class MiOS extends EventEmitter {
 			callback();
 
 			// Init service worker
-			if (this.shouldRegisterSw) this.registerSw();
+			if (this.shouldRegisterSw) {
+				this.getMeta().then(data => {
+					this.registerSw(data.swPublickey);
+				});
+			}
 		};
 
 		// キャッシュがあったとき
@@ -283,7 +287,7 @@ export default class MiOS extends EventEmitter {
 			});
 
 			main.on('widgetUpdated', x => {
-				this.store.commit('settings/setWidget', {
+				this.store.commit('settings/updateWidget', {
 					id: x.id,
 					data: x.data
 				});
@@ -302,7 +306,7 @@ export default class MiOS extends EventEmitter {
 	 * Register service worker
 	 */
 	@autobind
-	private registerSw() {
+	private registerSw(swPublickey) {
 		// Check whether service worker and push manager supported
 		const isSwSupported =
 			('serviceWorker' in navigator) && ('PushManager' in window);
@@ -328,7 +332,7 @@ export default class MiOS extends EventEmitter {
 
 				// A public key your push server will use to send
 				// messages to client apps via a push server.
-				applicationServerKey: urlBase64ToUint8Array(this.meta.data.swPublickey)
+				applicationServerKey: urlBase64ToUint8Array(swPublickey)
 			};
 
 			// Subscribe push notification

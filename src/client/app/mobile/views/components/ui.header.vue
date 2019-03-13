@@ -1,11 +1,11 @@
 <template>
-<div class="header" ref="root">
+<div class="header" ref="root" :class="{ shadow: $store.state.device.useShadow }">
 	<p class="warn" v-if="env != 'production'">{{ $t('@.do-not-use-in-production') }} <a href="/assets/flush.html?force">Flush</a></p>
 	<div class="main" ref="main">
 		<div class="backdrop"></div>
 		<div class="content" ref="mainContainer">
 			<button class="nav" @click="$parent.isDrawerOpening = true"><fa icon="bars"/></button>
-			<i v-if="hasUnreadNotification || hasUnreadMessagingMessage || hasGameInvitation" class="circle"><fa icon="circle"/></i>
+			<i v-if="$parent.indicate" class="circle"><fa icon="circle"/></i>
 			<h1>
 				<slot>{{ $root.instanceName }}</slot>
 			</h1>
@@ -27,48 +27,13 @@ export default Vue.extend({
 
 	data() {
 		return {
-			hasGameInvitation: false,
-			connection: null,
 			env: env
 		};
 	},
 
-	computed: {
-		hasUnreadNotification(): boolean {
-			return this.$store.getters.isSignedIn && this.$store.state.i.hasUnreadNotification;
-		},
-
-		hasUnreadMessagingMessage(): boolean {
-			return this.$store.getters.isSignedIn && this.$store.state.i.hasUnreadMessagingMessage;
-		}
-	},
-
 	mounted() {
 		this.$store.commit('setUiHeaderHeight', 48);
-
-		if (this.$store.getters.isSignedIn) {
-			this.connection = this.$root.stream.useSharedConnection('main');
-
-			this.connection.on('reversiInvited', this.onReversiInvited);
-			this.connection.on('reversiNoInvites', this.onReversiNoInvites);
-		}
 	},
-
-	beforeDestroy() {
-		if (this.$store.getters.isSignedIn) {
-			this.connection.dispose();
-		}
-	},
-
-	methods: {
-		onReversiInvited() {
-			this.hasGameInvitation = true;
-		},
-
-		onReversiNoInvites() {
-			this.hasGameInvitation = false;
-		}
-	}
 });
 </script>
 
@@ -82,7 +47,9 @@ export default Vue.extend({
 	z-index 1024
 	width calc(100% + 16px)
 	padding 0 8px
-	box-shadow 0 0px 8px rgba(0, 0, 0, 0.25)
+
+	&.shadow
+		box-shadow 0 0px 8px rgba(0, 0, 0, 0.25)
 
 	&, *
 		user-select none

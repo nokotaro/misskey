@@ -8,8 +8,8 @@ import autobind from 'autobind-decorator';
 import * as mongo from 'mongodb';
 import db from '../../db/mongodb';
 import { ICollection } from 'monk';
-import Logger from '../../misc/logger';
-import { Schema } from '../../prelude/schema';
+import Logger from '../logger';
+import { Schema } from '../../misc/schema';
 
 const logger = new Logger('chart');
 

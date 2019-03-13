@@ -16,11 +16,11 @@ import App from './app.vue';
 import checkForUpdate from './common/scripts/check-for-update';
 import MiOS from './mios';
 import { version, codename, lang, locale } from './config';
-import { builtinThemes, lightTheme, applyTheme } from './theme';
+import { builtinThemes, applyTheme, darkTheme } from './theme';
 import Dialog from './common/views/components/dialog.vue';
 
 if (localStorage.getItem('theme') == null) {
-	applyTheme(lightTheme);
+	applyTheme(darkTheme);
 }
 
 //#region FontAwesome
@@ -389,7 +389,7 @@ export default (callback: (launch: (router: VueRouter) => [Vue, MiOS], os: MiOS)
 			});
 			//#endregion
 
-			// Reapply current theme
+			/*// Reapply current theme
 			try {
 				const themeName = os.store.state.device.darkmode ? os.store.state.device.darkTheme : os.store.state.device.lightTheme;
 				const themes = os.store.state.device.themes.concat(builtinThemes);
@@ -399,35 +399,7 @@ export default (callback: (launch: (router: VueRouter) => [Vue, MiOS], os: MiOS)
 				}
 			} catch (e) {
 				console.log(`Cannot reapply theme. ${e}`);
-			}
-
-			//#region shadow
-			const shadow = '0 3px 8px rgba(0, 0, 0, 0.2)';
-			const shadowRight = '4px 0 4px rgba(0, 0, 0, 0.1)';
-			const shadowLeft = '-4px 0 4px rgba(0, 0, 0, 0.1)';
-			if (os.store.state.settings.useShadow) {
-				document.documentElement.style.setProperty('--shadow', shadow);
-				document.documentElement.style.setProperty('--shadowRight', shadowRight);
-				document.documentElement.style.setProperty('--shadowLeft', shadowLeft);
-			}
-			os.store.watch(s => {
-				return s.settings.useShadow;
-			}, v => {
-				document.documentElement.style.setProperty('--shadow', v ? shadow : 'none');
-				document.documentElement.style.setProperty('--shadowRight', v ? shadowRight : 'none');
-				document.documentElement.style.setProperty('--shadowLeft', v ? shadowLeft : 'none');
-			});
-			//#endregion
-
-			//#region rounded corners
-			const round = '6px';
-			if (os.store.state.settings.roundedCorners) document.documentElement.style.setProperty('--round', round);
-			os.store.watch(s => {
-				return s.settings.roundedCorners;
-			}, v => {
-				document.documentElement.style.setProperty('--round', v ? round : '0');
-			});
-			//#endregion
+			}*/
 
 			//#region line width
 			document.documentElement.style.setProperty('--lineWidth', `${os.store.state.device.lineWidth}px`);
@@ -435,6 +407,15 @@ export default (callback: (launch: (router: VueRouter) => [Vue, MiOS], os: MiOS)
 				return s.device.lineWidth;
 			}, v => {
 				document.documentElement.style.setProperty('--lineWidth', `${os.store.state.device.lineWidth}px`);
+			});
+			//#endregion
+
+			//#region fontSize
+			document.documentElement.style.setProperty('--fontSize', `${os.store.state.device.fontSize}px`);
+			os.store.watch(s => {
+				return s.device.fontSize;
+			}, v => {
+				document.documentElement.style.setProperty('--fontSize', `${os.store.state.device.fontSize}px`);
 			});
 			//#endregion
 
@@ -493,16 +474,20 @@ export default (callback: (launch: (router: VueRouter) => [Vue, MiOS], os: MiOS)
 			app.$mount('#app');
 
 			//#region 更新チェック
-			const preventUpdate = os.store.state.device.preventUpdate;
-			if (!preventUpdate) {
-				setTimeout(() => {
-					checkForUpdate(app);
-				}, 3000);
-			}
+			setTimeout(() => {
+				checkForUpdate(app);
+			}, 3000);
 			//#endregion
 
 			return [app, os] as [Vue, MiOS];
 		};
+
+		// Deck mode
+		os.store.commit('device/set', {
+			key: 'inDeckMode',
+			value: os.store.getters.isSignedIn && os.store.state.device.deckMode
+				&& (document.location.pathname === '/' || window.performance.navigation.type === 1)
+		});
 
 		callback(launch, os);
 	});

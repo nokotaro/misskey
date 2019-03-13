@@ -1,7 +1,7 @@
 import * as mongo from 'mongodb';
 import * as deepcopy from 'deepcopy';
 import rap from '@prezzemolo/rap';
-import db, { dbLogger } from '../db/mongodb';
+import db from '../db/mongodb';
 import isObjectId from '../misc/is-objectid';
 import { length } from 'stringz';
 import { IUser, pack as packUser } from './user';
@@ -11,6 +11,7 @@ import Reaction from './note-reaction';
 import { packMany as packFileMany, IDriveFile } from './drive-file';
 import Following from './following';
 import Emoji from './emoji';
+import { dbLogger } from '../db/logger';
 
 const Note = db.get<INote>('notes');
 Note.createIndex('uri', { sparse: true, unique: true });
@@ -18,6 +19,7 @@ Note.createIndex('userId');
 Note.createIndex('mentions');
 Note.createIndex('visibleUserIds');
 Note.createIndex('replyId');
+Note.createIndex('renoteId');
 Note.createIndex('tagsLower');
 Note.createIndex('_user.host');
 Note.createIndex('_files._id');
@@ -34,6 +36,7 @@ export type INote = {
 	_id: mongo.ObjectID;
 	createdAt: Date;
 	deletedAt: Date;
+	updatedAt?: Date;
 	fileIds: mongo.ObjectID[];
 	replyId: mongo.ObjectID;
 	renoteId: mongo.ObjectID;
@@ -98,7 +101,9 @@ export type INote = {
 };
 
 export type IPoll = {
-	choices: IChoice[]
+	choices: IChoice[];
+	multiple?: boolean;
+	expiresAt?: Date;
 };
 
 export type IChoice = {
@@ -312,15 +317,31 @@ export const pack = async (
 		// Poll
 		if (meId && _note.poll) {
 			_note.poll = (async poll => {
+				if (poll.multiple) {
+					const votes = await PollVote.find({
+						userId: meId,
+						noteId: id
+					});
+
+					const myChoices = (poll.choices as IChoice[]).filter(x => votes.some(y => x.id == y.choice));
+					for (const myChoice of myChoices) {
+						(myChoice as any).isVoted = true;
+					}
+
+					return poll;
+				} else {
+					poll.multiple = false;
+				}
+
 				const vote = await PollVote
 					.findOne({
 						userId: meId,
 						noteId: id
 					});
 
-				if (vote != null) {
-					const myChoice = poll.choices
-						.filter((c: any) => c.id == vote.choice)[0];
+				if (vote) {
+					const myChoice = (poll.choices as IChoice[])
+						.filter(x => x.id == vote.choice)[0] as any;
 
 					myChoice.isVoted = true;
 				}

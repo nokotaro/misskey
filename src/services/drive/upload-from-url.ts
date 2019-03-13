@@ -42,12 +42,15 @@ export default async (
 		const writable = fs.createWriteStream(path);
 
 		writable.on('finish', () => {
-			logger.succ(`Download succeeded: ${chalk.cyan(url)}`);
+			logger.succ(`Download finished: ${chalk.cyan(url)}`);
 			res();
 		});
 
 		writable.on('error', error => {
-			logger.error(error);
+			logger.error(`Download failed: ${chalk.cyan(url)}: ${error}`, {
+				url: url,
+				e: error
+			});
 			rej(error);
 		});
 
@@ -73,7 +76,10 @@ export default async (
 		});
 
 		req.on('error', error => {
-			logger.error(error);
+			logger.error(`Failed to start download: ${chalk.cyan(url)}: ${error}`, {
+				url: url,
+				e: error
+			});
 			writable.close();
 			rej(error);
 		});
@@ -87,7 +93,10 @@ export default async (
 		logger.succ(`Got: ${driveFile._id}`);
 	} catch (e) {
 		error = e;
-		logger.error(`Failed: ${e}`);
+		logger.error(`Failed to create drive file: ${e}`, {
+			url: url,
+			e: e
+		});
 	}
 
 	// clean-up

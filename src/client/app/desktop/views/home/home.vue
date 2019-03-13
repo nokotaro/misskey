@@ -22,11 +22,12 @@
 						<option value="users">{{ $t('@.widgets.users') }}</option>
 						<option value="polls">{{ $t('@.widgets.polls') }}</option>
 						<option value="post-form">{{ $t('@.widgets.post-form') }}</option>
-						<option value="messaging">{{ $t('@.widgets.messaging') }}</option>
+						<option value="messaging">{{ $t('@.messaging') }}</option>
 						<option value="memo">{{ $t('@.widgets.memo') }}</option>
 						<option value="hashtags">{{ $t('@.widgets.hashtags') }}</option>
 						<option value="posts-monitor">{{ $t('@.widgets.posts-monitor') }}</option>
 						<option value="server">{{ $t('@.widgets.server') }}</option>
+						<option value="queue">{{ $t('@.widgets.queue') }}</option>
 						<option value="nav">{{ $t('@.widgets.nav') }}</option>
 						<option value="tips">{{ $t('@.widgets.tips') }}</option>
 					</select>
@@ -107,6 +108,10 @@ export default Vue.extend({
 					place: 'right'
 				}, {
 					name: 'broadcast',
+					place: 'right',
+					data: {}
+				}, {
+					name: 'hashtags',
 					place: 'right',
 					data: {}
 				}];

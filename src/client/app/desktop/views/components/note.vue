@@ -1,23 +1,21 @@
 <template>
 <div
 	class="note"
-	:class="{ mini }"
+	:class="{ mini: narrow }"
 	v-show="(this.$store.state.settings.remainDeletedNote || appearNote.deletedAt == null) && !hideThisNote"
 	:tabindex="appearNote.deletedAt == null ? '-1' : null"
 	v-hotkey="keymap"
 	:title="title"
 >
-	<div class="conversation" v-if="detail && conversation.length > 0">
-		<x-sub v-for="note in conversation" :key="note.id" :note="note" :mini="mini"/>
-	</div>
+	<x-sub v-for="note in conversation" :key="note.id" :note="note"/>
 	<div class="reply-to" v-if="appearNote.reply && (!$store.getters.isSignedIn || $store.state.settings.showReplyTarget)">
-		<x-sub :note="appearNote.reply" :mini="mini"/>
+		<x-sub :note="appearNote.reply"/>
 	</div>
 	<mk-renote class="renote" v-if="isRenote" :note="note"/>
-	<article>
+	<article class="article">
 		<mk-avatar class="avatar" :user="appearNote.user"/>
 		<div class="main">
-			<mk-note-header class="header" :note="appearNote" :mini="mini"/>
+			<mk-note-header class="header" :note="appearNote"/>
 			<div class="body" v-if="appearNote.deletedAt == null">
 				<p v-if="appearNote.cw != null" class="cw">
 					<mfm v-if="appearNote.cw != ''" class="text" :text="appearNote.cw" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis" />
@@ -35,43 +33,41 @@
 					</div>
 					<mk-poll v-if="appearNote.poll" :note="appearNote" ref="pollViewer"/>
 					<a class="location" v-if="appearNote.geo" :href="`https://maps.google.com/maps?q=${appearNote.geo.coordinates[1]},${appearNote.geo.coordinates[0]}`" target="_blank"><fa icon="map-marker-alt"/> 位置情報</a>
-					<div class="renote" v-if="appearNote.renote"><mk-note-preview :note="appearNote.renote" :mini="mini"/></div>
-					<mk-url-preview v-for="url in urls" :url="url" :key="url" :mini="mini" :compact="compact"/>
+					<div class="renote" v-if="appearNote.renote"><mk-note-preview :note="appearNote.renote"/></div>
+					<mk-url-preview v-for="url in urls" :url="url" :key="url" :compact="compact"/>
 				</div>
 			</div>
-			<footer v-if="appearNote.deletedAt == null">
-				<span class="app" v-if="appearNote.app && mini && $store.state.settings.showVia">via <b>{{ appearNote.app.name }}</b></span>
+			<footer v-if="appearNote.deletedAt == null" class="footer">
+				<span class="app" v-if="appearNote.app && narrow && $store.state.settings.showVia">via <b>{{ appearNote.app.name }}</b></span>
 				<mk-reactions-viewer :note="appearNote" ref="reactionsViewer"/>
-				<button class="replyButton" @click="reply()" :title="$t('reply')">
+				<button class="replyButton button" @click="reply()" :title="$t('reply')">
 					<template v-if="appearNote.reply"><fa icon="reply-all"/></template>
 					<template v-else><fa icon="reply"/></template>
 					<p class="count" v-if="appearNote.repliesCount > 0">{{ appearNote.repliesCount }}</p>
 				</button>
-				<button v-if="['public', 'home'].includes(appearNote.visibility)" class="renoteButton" @click="renote()" :title="$t('renote')">
+				<button v-if="['public', 'home'].includes(appearNote.visibility)" class="renoteButton button" @click="renote()" :title="$t('renote')">
 					<fa icon="retweet"/>
 					<p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
 				</button>
-				<button v-else class="inhibitedButton">
+				<button v-else class="inhibitedButton button">
 					<fa icon="ban"/>
 				</button>
-				<button v-if="!isMyNote && appearNote.myReaction == null" class="reactionButton" @click="react()" ref="reactButton" :title="$t('add-reaction')">
+				<button v-if="!isMyNote && appearNote.myReaction == null" class="reactionButton button" @click="react()" ref="reactButton" :title="$t('add-reaction')">
 					<fa icon="plus"/>
 					<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
 				</button>
-				<button v-if="!isMyNote && appearNote.myReaction != null" class="reactionButton reacted" @click="undoReact(appearNote)" ref="reactButton" :title="$t('undo-reaction')">
+				<button v-if="!isMyNote && appearNote.myReaction != null" class="reactionButton reacted button" @click="undoReact(appearNote)" ref="reactButton" :title="$t('undo-reaction')">
 					<fa icon="minus"/>
 					<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
 				</button>
-				<button @click="menu()" ref="menuButton">
+				<button @click="menu()" ref="menuButton" class="button">
 					<fa icon="ellipsis-h"/>
 				</button>
 			</footer>
 			<div class="deleted" v-if="appearNote.deletedAt != null">{{ $t('deleted') }}</div>
 		</div>
 	</article>
-	<div class="replies" v-if="detail && replies.length > 0">
-		<x-sub v-for="note in replies" :key="note.id" :note="note" :mini="mini"/>
-	</div>
+	<x-sub v-for="note in replies" :key="note.id" :note="note"/>
 </div>
 </template>
 
@@ -110,9 +106,10 @@ export default Vue.extend({
 			required: false,
 			default: false
 		},
-		mini: {
-			type: Boolean,
-			required: false,
+	},
+
+	inject: {
+		narrow: {
 			default: false
 		}
 	},
@@ -126,9 +123,9 @@ export default Vue.extend({
 
 	created() {
 		if (this.detail) {
-			this.$root.api('notes/replies', {
+			this.$root.api('notes/children', {
 				noteId: this.appearNote.id,
-				limit: 8
+				limit: 30
 			}).then(replies => {
 				this.replies = replies;
 			});
@@ -152,7 +149,7 @@ export default Vue.extend({
 	border-bottom solid var(--lineWidth) var(--faceDivider)
 
 	&.mini
-		font-size 14px
+		font-size 13px
 
 		> .renote
 			padding 8px 16px 0 16px
@@ -161,7 +158,7 @@ export default Vue.extend({
 				width 20px
 				height 20px
 
-		> article
+		> .article
 			padding 16px 16px 4px
 
 			> .avatar
@@ -189,7 +186,7 @@ export default Vue.extend({
 	> .renote + article
 		padding-top 8px
 
-	> article
+	> .article
 		display flex
 		padding 28px 32px 18px 32px
 
@@ -237,6 +234,7 @@ export default Vue.extend({
 						padding 0
 						overflow-wrap break-word
 						color var(--noteText)
+						font-size calc(1em + var(--fontSize))
 
 						> .reply
 							margin-right 8px
@@ -273,7 +271,7 @@ export default Vue.extend({
 							border dashed var(--lineWidth) var(--quoteBorder)
 							border-radius 8px
 
-			> footer
+			> .footer
 				> .app
 					display block
 					margin-top 0.5em
@@ -281,7 +279,7 @@ export default Vue.extend({
 					color var(--noteHeaderInfo)
 					font-size 0.8em
 
-				> button
+				> .button
 					margin 0 28px 0 0
 					padding 0 8px
 					line-height 32px

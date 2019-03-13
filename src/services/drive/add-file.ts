@@ -6,8 +6,7 @@ import * as crypto from 'crypto';
 import * as Minio from 'minio';
 import * as uuid from 'uuid';
 import * as sharp from 'sharp';
-import * as fileType from 'file-type';
-import * as isSvg from 'is-svg';
+import fileType from 'file-type';
 
 import DriveFile, { IMetadata, getDriveFileBucket, IDriveFile } from '../../models/drive-file';
 import DriveFolder from '../../models/drive-folder';
@@ -26,6 +25,7 @@ import { GenerateVideoThumbnail } from './generate-video-thumbnail';
 import { driveLogger } from './logger';
 import { IImage, ConvertToJpeg, ConvertToWebp, ConvertToPng } from './image-processor';
 import Instance from '../../models/instance';
+import checkSvg from '../../misc/check-svg';
 
 const logger = driveLogger.createSubLogger('register', 'yellow');
 
@@ -310,8 +310,12 @@ export default async function(
 				readable.destroy();
 				const type = fileType(buffer);
 				if (type) {
-					res([type.mime, type.ext]);
-				} else if (isSvg(buffer)) {
+					if (type.mime == 'application/xml' && checkSvg(path)) {
+						res(['image/svg+xml', 'svg']);
+					} else {
+						res([type.mime, type.ext]);
+					}
+				} else if (checkSvg(path)) {
 					res(['image/svg+xml', 'svg']);
 				} else {
 					// 種類が同定できなかったら application/octet-stream にする
@@ -378,7 +382,7 @@ export default async function(
 				return 0;
 			});
 
-		logger.info(`drive usage is ${usage}`);
+		logger.debug(`drive usage is ${usage}`);
 
 		const instance = await fetchMeta();
 		const driveCapacity = 1024 * 1024 * (isLocalUser(user) ? instance.localDriveCapacityMb : instance.remoteDriveCapacityMb);

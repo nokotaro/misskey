@@ -77,6 +77,12 @@ router.get('/manifest.json', async ctx => {
 	});
 });
 
+router.get('/robots.txt', async ctx => {
+	await send(ctx as any, '/assets/robots.txt', {
+		root: client
+	});
+});
+
 //#endregion
 
 // Docs

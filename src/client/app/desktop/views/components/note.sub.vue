@@ -1,5 +1,5 @@
 <template>
-<div class="tkfdzaxtkdeianobciwadajxzbddorql" :class="{ mini }" :title="title">
+<div class="tkfdzaxtkdeianobciwadajxzbddorql" :class="{ mini: narrow }" :title="title">
 	<mk-avatar class="avatar" :user="note.user"/>
 	<div class="main">
 		<mk-note-header class="header" :note="note"/>
@@ -24,10 +24,11 @@ export default Vue.extend({
 		note: {
 			type: Object,
 			required: true
-		},
-		mini: {
-			type: Boolean,
-			required: false,
+		}
+	},
+
+	inject: {
+		narrow: {
 			default: false
 		}
 	},
@@ -96,6 +97,7 @@ export default Vue.extend({
 					margin 0
 					padding 0
 					color var(--subNoteText)
+					font-size calc(1em + var(--fontSize))
 
 					pre
 						max-height 120px
