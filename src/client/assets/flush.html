@@ -1,16 +1,1 @@
-<!DOCTYPE html>
-
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>twistaのリカバリ</title>
-		<script>
-			const yn = location.search === '?force' || window.confirm('キャッシュをクリアしますか？\n\nDo you want to clear caches?');
-			if (yn) {
-				localStorage.setItem('shouldFlush', 'true');
-			}
-
-			location.href = '/';
-		</script>
-	</head>
-</html>
+<!DOCTYPE html><meta charset="utf-8"><script>location.search!='?force'&&!window.confirm('キャッシュをクリアしますか？\n\nDo you want to clear caches?')||localStorage.setItem('shouldFlush','true');location.href='/'</script>
