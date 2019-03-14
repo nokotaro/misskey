@@ -710,6 +710,7 @@ desktop/views/components/timeline.vue:
   home: "Inicio"
   local: "Local"
   hybrid: "Social"
+  imas: "iM@S"
   global: "Global"
   messages: "Mensajes"
   list: "Listas"
@@ -903,6 +904,7 @@ mobile/views/pages/home.vue:
   home: "Inicio"
   local: "Local"
   hybrid: "Social"
+  imas: "iM@S"
   global: "Global"
   messages: "Mensajes"
 mobile/views/pages/widgets.vue:
@@ -927,6 +929,7 @@ deck:
   home: "Inicio"
   local: "Local"
   hybrid: "Social"
+  imas: "iM@S"
   hashtag: "Etiquetas"
   global: "Global"
   notifications: "Notificaciones"

@@ -1,7 +1,7 @@
 import es from '../../db/elasticsearch';
 import Note, { pack, INote, IChoice } from '../../models/note';
 import User, { isLocalUser, IUser, isRemoteUser, IRemoteUser, ILocalUser } from '../../models/user';
-import { publishMainStream, publishHomeTimelineStream, publishLocalTimelineStream, publishHybridTimelineStream, publishGlobalTimelineStream, publishUserListStream, publishHashtagStream } from '../stream';
+import { publishMainStream, publishHomeTimelineStream, publishLocalTimelineStream, publishHybridTimelineStream, publishImasTimelineStream, publishGlobalTimelineStream, publishUserListStream, publishHashtagStream } from '../stream';
 import Following from '../../models/following';
 import { deliver } from '../../queue';
 import renderNote from '../../remote/activitypub/renderer/note';
@@ -110,6 +110,12 @@ type Option = {
 	uri?: string;
 	app?: IApp;
 };
+
+const imasHosts = [
+	'imastodon.blue',
+	'imastodon.net',
+	'imastodon.org',
+];
 
 export default async (user: IUser, data: Option, silent = false) => new Promise<INote>(async (res, rej) => {
 	const isFirstNote = user.notesCount === 0;
@@ -445,9 +451,10 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 			// Publish event to myself's stream
 			publishHomeTimelineStream(note.userId, noteObj);
 
-			// Publish note to local and hybrid timeline stream
+			// Publish note to local, imas, and hybrid timeline stream
 			if (note.visibility != 'home') {
 				publishLocalTimelineStream(noteObj);
+				publishImasTimelineStream(noteObj);
 			}
 
 			if (note.visibility == 'public') {
@@ -462,6 +469,10 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 	// Publish note to global timeline stream
 	if (note.visibility == 'public' && note.replyId == null) {
 		publishGlobalTimelineStream(noteObj);
+
+		// Publish note to imas timeline stream
+		if (!note._user.host || imasHosts.includes(note._user.host))
+			publishImasTimelineStream(noteObj);
 	}
 
 	if (['public', 'home', 'followers'].includes(note.visibility)) {

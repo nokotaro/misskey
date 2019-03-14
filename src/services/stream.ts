@@ -76,6 +76,10 @@ class Publisher {
 		this.publish(userId ? `hybridTimeline:${userId}` : 'hybridTimeline', null, note);
 	}
 
+	public publishImasTimelineStream = async (note: any): Promise<void> => {
+		this.publish('imasTimeline', null, note);
+	}
+
 	public publishGlobalTimelineStream = (note: any): void => {
 		this.publish('globalTimeline', null, note);
 	}
@@ -108,6 +112,7 @@ export const publishReversiGameStream = publisher.publishReversiGameStream;
 export const publishHomeTimelineStream = publisher.publishHomeTimelineStream;
 export const publishLocalTimelineStream = publisher.publishLocalTimelineStream;
 export const publishHybridTimelineStream = publisher.publishHybridTimelineStream;
+export const publishImasTimelineStream = publisher.publishImasTimelineStream;
 export const publishGlobalTimelineStream = publisher.publishGlobalTimelineStream;
 export const publishHashtagStream = publisher.publishHashtagStream;
 export const publishApLogStream = publisher.publishApLogStream;

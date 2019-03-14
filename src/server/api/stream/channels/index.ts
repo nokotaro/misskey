@@ -2,6 +2,7 @@ import main from './main';
 import homeTimeline from './home-timeline';
 import localTimeline from './local-timeline';
 import hybridTimeline from './hybrid-timeline';
+import imasTimeline from './imas-timeline';
 import globalTimeline from './global-timeline';
 import notesStats from './notes-stats';
 import serverStats from './server-stats';
@@ -21,6 +22,7 @@ export default {
 	homeTimeline,
 	localTimeline,
 	hybridTimeline,
+	imasTimeline,
 	globalTimeline,
 	notesStats,
 	serverStats,

@@ -68,6 +68,7 @@ export default (server: http.Server) => {
 				request.resourceURL.pathname === '/' ? 'homeTimeline' :
 				request.resourceURL.pathname === '/local-timeline' ? 'localTimeline' :
 				request.resourceURL.pathname === '/hybrid-timeline' ? 'hybridTimeline' :
+				request.resourceURL.pathname === '/imas-timeline' ? 'imasTimeline' :
 				request.resourceURL.pathname === '/global-timeline' ? 'globalTimeline' : null);
 
 			if (request.resourceURL.pathname === '/') {

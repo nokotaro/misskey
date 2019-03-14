@@ -52,6 +52,7 @@ export default Vue.extend({
 				case 'home': return this.$root.stream.useSharedConnection('homeTimeline');
 				case 'local': return this.$root.stream.useSharedConnection('localTimeline');
 				case 'hybrid': return this.$root.stream.useSharedConnection('hybridTimeline');
+				case 'imas': return this.$root.stream.useSharedConnection('hybridTimeline');
 				case 'global': return this.$root.stream.useSharedConnection('globalTimeline');
 			}
 		},
@@ -61,6 +62,7 @@ export default Vue.extend({
 				case 'home': return 'notes/timeline';
 				case 'local': return 'notes/local-timeline';
 				case 'hybrid': return 'notes/hybrid-timeline';
+				case 'imas': return 'notes/imas-timeline';
 				case 'global': return 'notes/global-timeline';
 			}
 		},
@@ -107,7 +109,7 @@ export default Vue.extend({
 
 		this.$root.getMeta().then(meta => {
 			this.disabled = !this.$store.state.i.isModerator && !this.$store.state.i.isAdmin && (
-				meta.disableLocalTimeline && ['local', 'hybrid'].includes(this.src) ||
+				meta.disableLocalTimeline && ['local', 'hybrid', 'imas'].includes(this.src) ||
 				meta.disableGlobalTimeline && ['global'].includes(this.src));
 		});
 	},
