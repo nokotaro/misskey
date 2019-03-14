@@ -65,8 +65,8 @@ interface IQuestionChoice {
 	_misskey_votes?: number;
 }
 
-export interface IPerson extends IObject {
-	type: 'Person';
+export interface IPersonOrService extends IObject {
+	type: 'Person' | 'Service';
 	name: string;
 	preferredUsername: string;
 	manuallyApprovesFollowers: boolean;

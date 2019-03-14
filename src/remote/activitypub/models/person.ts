@@ -38,7 +38,7 @@ function validatePerson(x: any, uri: string) {
 		return new Error('invalid person: object is null');
 	}
 
-	if (x.type != 'Person' && x.type != 'Service') {
+	if (!['Person', 'Service'].includes(x.type)) {
 		return new Error(`invalid person: object is not a person or service '${x.type}'`);
 	}
 

@@ -95,7 +95,7 @@ export async function fetchAny(uri: string) {
 	}
 
 	// それでもみつからなければ新規であるため登録
-	if (object.type === 'Person') {
+	if (['Person', 'Service'].includes(object.type)) {
 		const user = await createPerson(object.id);
 		return {
 			type: 'User',
