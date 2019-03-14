@@ -111,7 +111,7 @@ type Option = {
 	app?: IApp;
 };
 
-const imasHosts = [
+export const imasHosts = [
 	'imastodon.blue',
 	'imastodon.net',
 	'imastodon.org',
@@ -454,7 +454,6 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 			// Publish note to local, imas, and hybrid timeline stream
 			if (note.visibility != 'home') {
 				publishLocalTimelineStream(noteObj);
-				publishImasTimelineStream(noteObj);
 			}
 
 			if (note.visibility == 'public') {
