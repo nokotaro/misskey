@@ -113,9 +113,9 @@ export default define(meta, async (ps, user) => {
 		//replyId: null,
 
 		// imas
-		'_user.host': {
-			$or: [null, ...imasHosts]
-		}
+		$or: [{
+			'_user.host': null,
+		}, ...imasHosts.map(x => ({ '_user.host': x }))]
 	} as any;
 
 	if (hideUserIds && hideUserIds.length > 0) {
