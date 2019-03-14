@@ -119,6 +119,24 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	if (data.viaMobile == null) data.viaMobile = false;
 	if (data.localOnly == null) data.localOnly = false;
 
+	//#region Auto Quote
+	const split = data.text && data.text.trim().split(/[\n\r\s]/ig);
+	const uri = split && split[split.length - 1];
+
+	if (uri) {
+		const note = await resolveNote(uri).catch(() => null);
+
+		if (note) {
+			data.renote = note;
+
+			const match = data.text.match(new RegExp(`^(.*?)[\n\r\s]+${uri}[\n\r\s]*$`));
+
+			if (match)
+				data.text = match[1];
+		}
+	}
+	//#endregion
+
 	// サイレンス
 	if (user.isSilenced && data.visibility == 'public') {
 		data.visibility = 'home';
@@ -328,22 +346,6 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 		if (isLocalUser(data.reply._user)) {
 			nm.push(data.reply.userId, 'reply');
 			publishMainStream(data.reply.userId, 'reply', noteObj);
-		}
-	}
-
-	const split = data.text.trim().split(/[\n\r\s]/ig);
-	const uri = split[split.length - 1];
-
-	if (uri) {
-		const note = await resolveNote(uri);
-
-		if (note) {
-			data.renote = note;
-
-			const match = data.text.match(new RegExp(`^(.*?)[\n\r\s]+${uri}[\n\r\s]*$`));
-
-			if (match)
-				data.text = match[1];
 		}
 	}
 
