@@ -38,6 +38,7 @@
 			</div>
 			<mk-poll-editor v-if="poll" ref="poll" @destroyed="poll = false" @updated="onPollUpdate()"/>
 		</div>
+		<input v-show="useBroadcast" ref="broadcast" v-model="broadcast" :placeholder="$t('broadcast')" v-autocomplete="{ model: 'broadcast' }">
 	</div>
 	<mk-uploader ref="uploader" @uploaded="attachMedia" @change="onChangeUploadings"/>
 	<button class="upload" :title="$t('attach-media-from-local')" @click="chooseFile"><fa icon="upload"/></button>
@@ -45,6 +46,7 @@
 	<button class="kao" :title="$t('insert-a-kao')" @click="kao"><fa :icon="['far', 'smile']"/></button>
 	<button class="poll" :title="$t('create-poll')" @click="poll = !poll"><fa icon="chart-pie"/></button>
 	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa :icon="['far', 'eye-slash']"/></button>
+	<button class="broadcast" :title="$t('use-broadcast')" @click="useBroadcast = !useBroadcast"><fa icon="bullhorn"/></button>
 	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()"><fa icon="map-marker-alt"/></button>
 	<button class="visibility" :title="$t('visibility')" @click="setVisibility" ref="visibilityButton">
 		<span v-if="visibility === 'public'"><fa icon="globe"/></span>
@@ -119,6 +121,8 @@ export default Vue.extend({
 			pollExpiration: [],
 			useCw: false,
 			cw: null,
+			useBroadcast: false,
+			broadcast: null,
 			geo: null,
 			visibility: 'public',
 			visibleUsers: [],
@@ -443,7 +447,7 @@ export default Vue.extend({
 			this.posting = true;
 
 			this.$root.api('notes/create', {
-				text: this.text == '' ? undefined : this.text,
+				text: this.text == '' ? undefined : this.text + (this.broadcast ? ` ${this.broadcast}` : ''),
 				fileIds: this.files.length > 0 ? this.files.map(f => f.id) : undefined,
 				replyId: this.reply ? this.reply.id : undefined,
 				renoteId: this.renote ? this.renote.id : undefined,
@@ -725,6 +729,7 @@ export default Vue.extend({
 	> .kao
 	> .poll
 	> .cw
+	> .broadcast
 	> .geo
 	> .visibility
 		display inline-block

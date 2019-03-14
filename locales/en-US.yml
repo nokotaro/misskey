@@ -862,6 +862,7 @@ desktop/views/components/post-form.vue:
   add-visible-user: "+Add a user"
   attach-location-information: "Attach location information"
   hide-contents: "Hide contents"
+  use-broadcast: "Broadcast mode"
   reply-placeholder: "Reply to this post..."
   quote-placeholder: "Quote this Post..."
   submit: "Post"
