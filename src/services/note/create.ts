@@ -34,6 +34,7 @@ import Instance from '../../models/instance';
 import extractMentions from '../../misc/extract-mentions';
 import extractEmojis from '../../misc/extract-emojis';
 import extractHashtags from '../../misc/extract-hashtags';
+import { resolveNote } from '../../remote/activitypub/models/note';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
@@ -327,6 +328,22 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 		if (isLocalUser(data.reply._user)) {
 			nm.push(data.reply.userId, 'reply');
 			publishMainStream(data.reply.userId, 'reply', noteObj);
+		}
+	}
+
+	const split = data.text.trim().split(/[\n\r\s]/ig);
+	const uri = split[split.length - 1];
+
+	if (uri) {
+		const note = await resolveNote(uri);
+
+		if (note) {
+			data.renote = note;
+
+			const match = data.text.match(new RegExp(`^(.*?)[\n\r\s]+${uri}[\n\r\s]*$`));
+
+			if (match)
+				data.text = match[1];
 		}
 	}
 
