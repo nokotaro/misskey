@@ -6,7 +6,7 @@ import config from '../../../config';
 import User, { validateUsername, isValidName, IUser, IRemoteUser, isRemoteUser } from '../../../models/user';
 import Resolver from '../resolver';
 import { resolveImage } from './image';
-import { isCollectionOrOrderedCollection, isCollection, IPerson } from '../type';
+import { isCollectionOrOrderedCollection, isCollection, IPersonOrService } from '../type';
 import { IDriveFile } from '../../../models/drive-file';
 import Meta from '../../../models/meta';
 import { fromHtml } from '../../../mfm/fromHtml';
@@ -120,7 +120,7 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 		throw err;
 	}
 
-	const person: IPerson = object;
+	const person: IPersonOrService = object;
 
 	logger.info(`Creating the Person: ${person.id}`);
 
@@ -305,7 +305,7 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: obje
 		throw err;
 	}
 
-	const person: IPerson = object;
+	const person: IPersonOrService = object;
 
 	logger.info(`Updating the Person: ${person.id}`);
 
