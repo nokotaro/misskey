@@ -17,6 +17,7 @@ import Logger from './services/logger';
 import serverStats from './daemons/server-stats';
 import notesStats from './daemons/notes-stats';
 import queueStats from './daemons/queue-stats';
+import imasStats from './daemons/imas-stats';
 import loadConfig from './config/load';
 import { Config } from './config/types';
 import { lessThan } from './prelude/array';
@@ -52,6 +53,7 @@ function main() {
 			serverStats();
 			notesStats();
 			queueStats();
+			imasStats();
 		}
 	}
 

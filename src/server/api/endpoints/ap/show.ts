@@ -50,7 +50,7 @@ export default define(meta, async (ps) => {
 /***
  * URIからUserかNoteを解決する
  */
-async function fetchAny(uri: string) {
+export async function fetchAny(uri: string) {
 	// URIがこのサーバーを指しているなら、ローカルユーザーIDとしてDBからフェッチ
 	if (uri.startsWith(config.url + '/')) {
 		const id = new mongo.ObjectID(uri.split('/').pop());

@@ -4,6 +4,7 @@
 export type Source = {
 	repository_url?: string;
 	feedback_url?: string;
+	imasHostTokens?: Record<string, string>;
 	url: string;
 	port: number;
 	https?: { [x: string]: string };
