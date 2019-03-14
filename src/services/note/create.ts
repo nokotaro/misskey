@@ -129,7 +129,17 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 		if (note) {
 			data.renote = note;
 
-			const match = data.text.match(new RegExp(`^(.*?)[\n\r\s]+${uri}[\n\r\s]*$`));
+			const sep = '[\\n\\r\\s]';
+			const url = encodeURI(uri)
+				.replace('\\', '\\\\')
+				.replace('$', '\\$')
+				.replace('.', '\\.')
+				.replace('?', '\\?')
+				.replace('+', '\\+')
+				.replace('*', '\\*')
+				.replace('(', '\\(')
+				.replace(')', '\\)');
+			const match = data.text.match(new RegExp(`^(.*?)(${sep}+[QR][ENT])?${sep}+${url}${sep}*$`));
 
 			if (match)
 				data.text = match[1];
