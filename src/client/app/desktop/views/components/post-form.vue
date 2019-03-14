@@ -563,8 +563,11 @@ export default Vue.extend({
 			&::-webkit-input-placeholder
 				color var(--primaryAlpha03)
 
-		> input
+		> input:first-of-type
 			margin-bottom 8px
+
+		> input:last-of-type
+			margin-top 8px
 
 		> .textarea
 			> .emoji

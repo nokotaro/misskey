@@ -982,6 +982,7 @@ desktop/views/components/post-form.vue:
   error: "エラー"
   enter-username: "ユーザー名を入力してください"
   annotations: "内容への注釈 (オプション)"
+  broadcast: "常駐させる内容 (オプション)"
 
 desktop/views/components/post-form-window.vue:
   note: "新規投稿"
@@ -1636,6 +1637,7 @@ mobile/views/components/post-form.vue:
   quote-placeholder: "この投稿を引用... (オプション)"
   reply-placeholder: "この投稿への返信..."
   cw-placeholder: "内容への注釈 (オプション)"
+  broadcast-placeholder: "常駐させる内容 (オプション)"
   location-alert: "お使いの端末は位置情報に対応していません"
   error: "エラー"
   username-prompt: "ユーザー名を入力してください"

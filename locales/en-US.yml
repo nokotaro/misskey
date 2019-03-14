@@ -889,6 +889,7 @@ desktop/views/components/post-form.vue:
   error: "Error"
   enter-username: "Please enter a username..."
   annotations: "Annotations for the post (optional)"
+  broadcast: "Residenting contents (optional)"
 desktop/views/components/post-form-window.vue:
   note: "New Post"
   reply: "Reply"
@@ -1470,6 +1471,7 @@ mobile/views/components/post-form.vue:
   quote-placeholder: "Quote this post... (optional)"
   reply-placeholder: "Reply to this note..."
   cw-placeholder: "Comments for the post (optional)"
+  broadcast-placeholder: "Residenting contents (optional)"
   location-alert: "Your device does not provide location services"
   error: "Error"
   username-prompt: "Enter user name"
