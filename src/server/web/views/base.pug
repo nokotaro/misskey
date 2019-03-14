@@ -11,14 +11,15 @@ html
 		meta(name='application-name' content='twista')
 		meta(name='referrer' content='origin')
 		meta(property='og:site_name' content='twista')
+		link(rel='icon' href= icon || '/favicon.ico')
 		link(rel='manifest' href='/manifest.json')
 
 		title
 			block title
-				| twista
+				= 'twista'
 
 		block desc
-			meta(name='description' content='✨🌎✨ A federated blogging platform ✨🚀✨')
+			meta(name='description' content= desc || '✨🌎✨ A federated blogging platform ✨🚀✨')
 
 		block meta
 
