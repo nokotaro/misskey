@@ -7,7 +7,8 @@
 				<span :data-active="src == 'home'" @click="src = 'home'"><fa icon="home"/> {{ $t('home') }}</span>
 				<span :data-active="src == 'local'" @click="src = 'local'" v-if="enableLocalTimeline"><fa :icon="['far', 'comments']"/> {{ $t('local') }}</span>
 				<span :data-active="src == 'hybrid'" @click="src = 'hybrid'" v-if="enableLocalTimeline"><fa icon="share-alt"/> {{ $t('hybrid') }}</span>
-				<span :data-active="src == 'imas'" @click="src = 'imas'" v-if="enableLocalTimeline"><fa icon="city"/> {{ $t('imas') }}</span>
+				<span :data-active="src == 'imas'" @click="src = 'imas'" v-if="enableLocalTimeline"><fa icon="building"/> {{ $t('imas') }}</span>
+				<span :data-active="src == 'imasHybrid'" @click="src = 'imasHybrid'" v-if="enableLocalTimeline"><fa icon="city"/> {{ $t('imasHybrid') }}</span>
 				<span :data-active="src == 'global'" @click="src = 'global'" v-if="enableGlobalTimeline"><fa icon="globe"/> {{ $t('global') }}</span>
 				<span :data-active="src == 'tag'" @click="src = 'tag'" v-if="tagTl"><fa icon="hashtag"/> {{ tagTl.title }}</span>
 				<span :data-active="src == 'list'" @click="src = 'list'" v-if="list"><fa icon="list"/> {{ list.title }}</span>
@@ -79,7 +80,7 @@ export default Vue.extend({
 			) && this.src === 'global') this.src = 'local';
 			if (!(
 				this.enableLocalTimeline = !meta.disableLocalTimeline || this.$store.state.i.isModerator || this.$store.state.i.isAdmin
-			) && ['local', 'hybrid', 'imas'].includes(this.src)) this.src = 'home';
+			) && ['local', 'hybrid', 'imas', 'imasHybrid'].includes(this.src)) this.src = 'home';
 		});
 
 		if (this.$store.state.device.tl) {

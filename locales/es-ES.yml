@@ -709,8 +709,9 @@ desktop/views/components/settings.tags.vue:
 desktop/views/components/timeline.vue:
   home: "Inicio"
   local: "Local"
-  hybrid: "Social"
+  hybrid: "Home+Local"
   imas: "iM@S"
+  imasHybrid: "Home+iM@S"
   global: "Global"
   messages: "Mensajes"
   list: "Listas"
@@ -903,8 +904,9 @@ mobile/views/pages/user-lists.vue:
 mobile/views/pages/home.vue:
   home: "Inicio"
   local: "Local"
-  hybrid: "Social"
+  hybrid: "Home+Local"
   imas: "iM@S"
+  imasHybrid: "Home+iM@S"
   global: "Global"
   messages: "Mensajes"
 mobile/views/pages/widgets.vue:
@@ -928,8 +930,9 @@ mobile/views/pages/user/home.photos.vue:
 deck:
   home: "Inicio"
   local: "Local"
-  hybrid: "Social"
+  hybrid: "Home+Local"
   imas: "iM@S"
+  imasHybrid: "Home+iM@S"
   hashtag: "Etiquetas"
   global: "Global"
   notifications: "Notificaciones"

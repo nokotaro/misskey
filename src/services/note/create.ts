@@ -1,7 +1,7 @@
 import es from '../../db/elasticsearch';
 import Note, { pack, INote, IChoice } from '../../models/note';
 import User, { isLocalUser, IUser, isRemoteUser, IRemoteUser, ILocalUser } from '../../models/user';
-import { publishMainStream, publishHomeTimelineStream, publishLocalTimelineStream, publishHybridTimelineStream, publishImasTimelineStream, publishGlobalTimelineStream, publishUserListStream, publishHashtagStream } from '../stream';
+import { publishMainStream, publishHomeTimelineStream, publishLocalTimelineStream, publishHybridTimelineStream, publishImasTimelineStream, publishImasHybridTimelineStream, publishGlobalTimelineStream, publishUserListStream, publishHashtagStream } from '../stream';
 import Following from '../../models/following';
 import { deliver } from '../../queue';
 import renderNote from '../../remote/activitypub/renderer/note';
@@ -438,12 +438,14 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 			// Publish event to myself's stream
 			publishHomeTimelineStream(note.userId, detailPackedNote);
 			publishHybridTimelineStream(note.userId, detailPackedNote);
+			publishImasHybridTimelineStream(note.userId, detailPackedNote);
 
 			if (note.visibility == 'specified') {
 				for (const u of visibleUsers) {
 					if (!u._id.equals(user._id)) {
 						publishHomeTimelineStream(u._id, detailPackedNote);
 						publishHybridTimelineStream(u._id, detailPackedNote);
+						publishImasHybridTimelineStream(u._id, detailPackedNote);
 					}
 				}
 			}
@@ -461,6 +463,7 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 			} else {
 				// Publish event to myself's stream
 				publishHybridTimelineStream(note.userId, noteObj);
+				publishImasHybridTimelineStream(note.userId, noteObj);
 			}
 		}
 	}
@@ -470,8 +473,10 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 		publishGlobalTimelineStream(noteObj);
 
 		// Publish note to imas timeline stream
-		if (!note._user.host || imasHosts.includes(note._user.host))
+		if (!note._user.host || imasHosts.includes(note._user.host)) {
 			publishImasTimelineStream(noteObj);
+			publishImasHybridTimelineStream(null, noteObj);
+		}
 	}
 
 	if (['public', 'home', 'followers'].includes(note.visibility)) {

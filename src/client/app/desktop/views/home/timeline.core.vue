@@ -85,6 +85,10 @@ export default Vue.extend({
 			this.endpoint = 'notes/imas-timeline';
 			this.connection = this.$root.stream.useSharedConnection('imasTimeline');
 			this.connection.on('note', prepend);
+		} else if (this.src == 'imasHybrid') {
+			this.endpoint = 'notes/imas-hybrid-timeline';
+			this.connection = this.$root.stream.useSharedConnection('imasHybridTimeline');
+			this.connection.on('note', prepend);
 		} else if (this.src == 'global') {
 			this.endpoint = 'notes/global-timeline';
 			this.connection = this.$root.stream.useSharedConnection('globalTimeline');

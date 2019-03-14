@@ -1500,7 +1500,7 @@ mobile/views/pages/following.vue:
 mobile/views/pages/home.vue:
   home: "首页"
   local: "Local"
-  hybrid: "Social"
+  hybrid: "Home+Local"
   global: "Global"
   mentions: "Mentions"
   messages: "信息"
@@ -1556,7 +1556,7 @@ deck:
   widgets: "小部件"
   home: "首页"
   local: "Local"
-  hybrid: "Social"
+  hybrid: "Home+Local"
   hashtag: "标签"
   global: "Global"
   mentions: "Mentions"

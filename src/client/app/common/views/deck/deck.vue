@@ -163,12 +163,21 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'city',
+					icon: 'building',
 					text: this.$t('@deck.imas'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
 							id: uuid(),
 							type: 'imas'
+						});
+					}
+				}, {
+					icon: 'city',
+					text: this.$t('@deck.imasHybrid'),
+					action: () => {
+						this.$store.commit('device/addDeckColumn', {
+							id: uuid(),
+							type: 'imasHybrid'
 						});
 					}
 				}, {
@@ -321,7 +330,7 @@ export default Vue.extend({
 
 		isTlColumn(id) {
 			const column = this.columns.find(c => c.id === id);
-			return ['home', 'local', 'hybrid', 'imas', 'global', 'list', 'hashtag', 'mentions', 'direct'].includes(column.type);
+			return ['home', 'local', 'hybrid', 'imas', 'imasHybrid', 'global', 'list', 'hashtag', 'mentions', 'direct'].includes(column.type);
 		}
 	}
 });

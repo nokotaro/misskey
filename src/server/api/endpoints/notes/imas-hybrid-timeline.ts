@@ -8,10 +8,11 @@ import fetchMeta from '../../../../misc/fetch-meta';
 import activeUsersChart from '../../../../services/chart/active-users';
 import { getHideUserIds } from '../../common/get-hide-users';
 import { ApiError } from '../../error';
+import { imasHosts } from '../../../../services/note/create';
 
 export const meta = {
 	desc: {
-		'ja-JP': 'ホーム+ローカルタイムラインを取得します。'
+		'ja-JP': 'ホーム+アイマスタイムラインを取得します。'
 	},
 
 	tags: ['notes'],
@@ -183,8 +184,10 @@ export default define(meta, async (ps, user) => {
 				// リプライでない
 				//replyId: null,
 
-				// local
-				'_user.host': null
+				// imas
+				$or: [{
+					'_user.host': null,
+				}, ...imasHosts.map(x => ({ '_user.host': x }))]
 			}],
 
 			// hide
