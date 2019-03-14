@@ -348,7 +348,7 @@ export default Vue.extend({
 		display flex
 		justify-content center
 		margin 0 auto
-		max-width 1240px
+		max-width 1440px
 
 		> *
 			.customize-container
