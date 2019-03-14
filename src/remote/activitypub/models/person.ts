@@ -509,7 +509,7 @@ export async function updateFeatured(userId: mongo.ObjectID) {
 	const featuredNotes = await Promise.all(items
 		.filter(item => item.type === 'Note')
 		.slice(0, 5)
-		.map(item => limit(() => resolveNote(item, resolver)) as Promise<INote>));
+		.map(item => limit(() => resolveNote(item, resolver, true)) as Promise<INote>));
 
 	await User.update({ _id: user._id }, {
 		$set: {
