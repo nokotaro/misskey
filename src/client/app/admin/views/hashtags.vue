@@ -3,7 +3,7 @@
 	<ui-card>
 		<template #title>{{ $t('hided-tags') }}</template>
 		<section>
-			<textarea class="jdnqwkzlnxcfftthoybjxrebyolvoucw" v-model="hidedTags"></textarea>
+			<ui-textarea class="jdnqwkzlnxcfftthoybjxrebyolvoucw" v-model="hidedTags"></ui-textarea>
 			<ui-button @click="save">{{ $t('save') }}</ui-button>
 		</section>
 	</ui-card>
