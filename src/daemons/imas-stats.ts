@@ -3,12 +3,9 @@ import config from '../config';
 import { query } from '../prelude/url';
 import { createNote } from '../remote/activitypub/models/note';
 
-export default function() {
-	const connection: Record<string, {
-		lastConnectedAt: number;
-		interval: number;
-	}> = {};
+const interval = 1024;
 
+export default function() {
 	const connect = (url: string) => {
 		const socket = new WebSocket(url);
 
@@ -31,27 +28,7 @@ export default function() {
 			}
 		});
 
-		socket.on('open', () => {
-			if (!connection[url])
-				connection[url] = {
-					lastConnectedAt: 0,
-					interval: 0
-				};
-
-			connection[url].lastConnectedAt = Date.now();
-		});
-
-		socket.on('close', _ => {
-			if (!connection[url])
-				connection[url] = {
-					lastConnectedAt: 0,
-					interval: 0
-				};
-
-			connection[url].interval = Date.now() - connection[url].lastConnectedAt >> 16 ? 0 : connection[url].interval << 1 || 1;
-
-			setTimeout(connect, connection[url].interval, socket);
-		});
+		socket.on('close', _ => setTimeout(connect, interval, socket));
 	};
 
 	for (const [k, v] of Object.entries(config.imasHostTokens))
