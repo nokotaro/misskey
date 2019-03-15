@@ -2,7 +2,7 @@
 <div class="mk-admin" :class="{ isMobile }">
 	<header v-show="isMobile">
 		<button class="nav" @click="navOpend = true"><fa icon="bars"/></button>
-		<span>twistaMyAdmin</span>
+		<span>President Tsutomu's Office</span>
 	</header>
 	<div class="nav-backdrop"
 		v-if="navOpend && isMobile"
