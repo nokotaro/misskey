@@ -4,12 +4,14 @@ import { query } from '../prelude/url';
 import { createNote } from '../remote/activitypub/models/note';
 
 export default function() {
-	const sockets = config.imasHostTokens ? Object.entries(config.imasHostTokens).map(([k, v]) => new WebSocket(`https://${k}/api/v1/streaming?${query({
-		access_token: v,
-		stream: 'public:local'
-	})}`)) : [];
+	const connection: Record<string, {
+		lastConnectedAt: number;
+		interval: number;
+	}> = {};
 
-	for (const socket of sockets)
+	const connect = (url: string) => {
+		const socket = new WebSocket(url);
+
 		socket.on('message', x => {
 			try {
 				const data: {
@@ -28,4 +30,33 @@ export default function() {
 			} finally {
 			}
 		});
+
+		socket.on('open', () => {
+			if (!connection[url])
+				connection[url] = {
+					lastConnectedAt: 0,
+					interval: 0
+				};
+
+			connection[url].lastConnectedAt = Date.now();
+		});
+
+		socket.on('close', _ => {
+			if (!connection[url])
+				connection[url] = {
+					lastConnectedAt: 0,
+					interval: 0
+				};
+
+			connection[url].interval = Date.now() - connection[url].lastConnectedAt >> 16 ? 0 : connection[url].interval << 1 || 1;
+
+			setTimeout(connect, connection[url].interval, socket);
+		});
+	};
+
+	for (const [k, v] of Object.entries(config.imasHostTokens))
+		connect(`https://${k}/api/v1/streaming?${query({
+			access_token: v,
+			stream: 'public:local'
+		})}`);
 }

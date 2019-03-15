@@ -9,6 +9,7 @@
 		"align": false,
 		"indent": [true, "tabs"],
 		"quotemark": [true, "single"],
+		"no-bitwise": false,
 		"no-var-requires": false,
 		"no-string-throw": false,
 		"trailing-comma": [false],
