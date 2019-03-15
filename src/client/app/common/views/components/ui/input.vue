@@ -345,6 +345,7 @@ root(fill)
 		> input
 			display block
 			width 100%
+			height 32px
 			margin 0
 			padding 0
 			font inherit
