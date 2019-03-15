@@ -6,7 +6,7 @@ import config from '../../../config';
 import User, { validateUsername, isValidName, IUser, IRemoteUser, isRemoteUser } from '../../../models/user';
 import Resolver from '../resolver';
 import { resolveImage } from './image';
-import { isCollectionOrOrderedCollection, isCollection, IPersonOrService } from '../type';
+import { isCollectionOrOrderedCollection, isCollection, IPersonOrService, IObject } from '../type';
 import { IDriveFile } from '../../../models/drive-file';
 import Meta from '../../../models/meta';
 import { fromHtml } from '../../../mfm/fromHtml';
@@ -107,12 +107,12 @@ export async function fetchPerson(uri: string, resolver?: Resolver): Promise<IUs
 /**
  * Personを作成します。
  */
-export async function createPerson(uri: string, resolver?: Resolver): Promise<IUser> {
-	if (typeof uri !== 'string') throw 'uri is not string';
+export async function createPerson(uri: string | IObject, resolver?: Resolver, alreadyFetched = false): Promise<IUser> {
+	if (alreadyFetched || typeof uri !== 'string') throw 'uri is not string';
 
 	if (resolver == null) resolver = new Resolver();
 
-	const object = await resolver.resolve(uri) as any;
+	const object: IObject = alreadyFetched && typeof uri !== 'string' ? uri : await resolver.resolve(uri);
 
 	const err = validatePerson(object, uri);
 
@@ -120,7 +120,7 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 		throw err;
 	}
 
-	const person: IPersonOrService = object;
+	const person = object as IPersonOrService;
 
 	logger.info(`Creating the Person: ${person.id}`);
 

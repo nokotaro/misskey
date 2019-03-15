@@ -163,7 +163,6 @@ init(async (launch, os) => {
 			{ path: '/selectdrive', component: MkSelectDrive },
 			{ path: '/share', component: MkShare },
 			{ path: '/games/reversi/:game?', component: MkReversi },
-			{ path: '/authorize-follow', component: MkFollow },
 			{ path: '/deck', redirect: '/' },
 			{ path: '*', component: MkNotFound }
 		],

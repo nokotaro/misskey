@@ -17,6 +17,7 @@ import * as slow from 'koa-slow';
 
 import activityPub from './activitypub';
 import nodeinfo from './nodeinfo';
+import ostatus from './ostatus';
 import wellKnown from './well-known';
 import config from '../config';
 import networkChart from '../services/chart/network';
@@ -74,6 +75,7 @@ const router = new Router();
 // Routing
 router.use(activityPub.routes());
 router.use(nodeinfo.routes());
+router.use(ostatus.routes());
 router.use(wellKnown.routes());
 
 router.get('/verify-email/:code', async ctx => {

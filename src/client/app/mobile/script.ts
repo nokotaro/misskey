@@ -157,7 +157,6 @@ init((launch, os) => {
 				{ path: 'followers', component: () => import('../common/views/pages/followers.vue').then(m => m.default) },
 			]},
 			{ path: '/notes/:note', component: MkNote },
-			{ path: '/authorize-follow', component: MkFollow },
 			{ path: '*', component: MkNotFound }
 		]
 	});
