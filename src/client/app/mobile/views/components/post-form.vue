@@ -35,7 +35,7 @@
 				<button class="upload" @click="chooseFile"><fa icon="upload"/></button>
 				<button class="drive" @click="chooseFileFromDrive"><fa icon="cloud"/></button>
 				<button class="kao" @click="kao"><fa :icon="['far', 'smile']"/></button>
-				<button class="poll" @click="poll = true"><fa icon="chart-pie"/></button>
+				<button class="poll" @click="poll = true"><fa icon="poll-h"/></button>
 				<button class="poll" @click="useCw = !useCw"><fa :icon="['far', 'eye-slash']"/></button>
 				<button class="geo" @click="geo ? removeGeo() : setGeo()"><fa icon="map-marker-alt"/></button>
 				<button class="visibility" @click="setVisibility" ref="visibilityButton">
