@@ -163,7 +163,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 				.replace('*', '\\*')
 				.replace('(', '\\(')
 				.replace(')', '\\)');
-			const match = data.text.match(new RegExp(`^(.*?)(${sep}+[QR][ENT]:)?${sep}+${url}${sep}*$`));
+			const match = data.text.match(new RegExp(`^(.*?(${sep}+[QR][ENT]:)?${sep}+)?${url}${sep}*$`));
 
 			if (match)
 				data.text = match[1];
