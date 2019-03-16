@@ -108,7 +108,7 @@ export async function fetchPerson(uri: string, resolver?: Resolver): Promise<IUs
  * Personを作成します。
  */
 export async function createPerson(uri: string | IObject, resolver?: Resolver, alreadyFetched = false): Promise<IUser> {
-	if (alreadyFetched || typeof uri !== 'string') throw 'uri is not string';
+	if (!alreadyFetched || typeof uri !== 'string') throw 'uri is not string';
 
 	if (resolver == null) resolver = new Resolver();
 
