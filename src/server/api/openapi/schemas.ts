@@ -201,6 +201,9 @@ export const schemas = {
 			visibility: {
 				type: 'string'
 			},
+			rating: {
+				type: 'string'
+			},
 		},
 		required: ['id', 'userId', 'createdAt']
 	},

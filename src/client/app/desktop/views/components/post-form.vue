@@ -43,22 +43,23 @@
 	<mk-uploader ref="uploader" @uploaded="attachMedia" @change="onChangeUploadings"/>
 	<button class="upload" :title="$t('attach-media-from-local')" @click="chooseFile"><fa icon="upload"/></button>
 	<button class="drive" :title="$t('attach-media-from-drive')" @click="chooseFileFromDrive"><fa icon="cloud"/></button>
-	<button class="kao" :title="$t('insert-a-kao')" @click="kao"><fa icon="child"/></button>
+	<button class="kao" :title="$t('insert-a-kao')" @click="kao"><fa icon="cat"/></button>
 	<button class="poll" :title="$t('create-poll')" @click="poll = !poll"><fa icon="poll-h"/></button>
 	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa icon="eye-slash"/></button>
 	<button class="broadcast" :title="$t('use-broadcast')" @click="useBroadcast = !useBroadcast"><fa icon="bullhorn"/></button>
 	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa icon="map-marker-alt"/></button>
 	<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
-		<span v-if="rating === 'public'"><fa icon="globe"/></span>
-		<span v-if="rating === 'home'"><fa icon="home"/></span>
-		<span v-if="rating === 'followers'"><fa icon="unlock"/></span>
-		<span v-if="rating === 'specified'"><fa icon="envelope"/></span>
+		<span v-if="rating === null"><fa icon="eye"/></span>
+		<span v-if="rating === 'G'"><fa icon="baby"/></span>
+		<span v-if="rating === 'PG12'"><fa icon="child"/></span>
+		<span v-if="rating === 'R15+'"><fa icon="people-carry"/></span>
+		<span v-if="rating === 'R18+'"><fa icon="person-booth"/></span>
 	</button>
 	<button class="visibility" :title="$t('visibility')" @click="setVisibility" ref="visibilityButton">
-		<span v-if="visibility === '0'"><fa icon="sun"/></span>
-		<span v-if="visibility === '12'"><fa icon="cloud"/></span>
-		<span v-if="visibility === '15'"><fa icon="unlock"/></span>
-		<span v-if="visibility === '18'"><fa icon="envelope"/></span>
+		<span v-if="visibility === 'public'"><fa icon="globe"/></span>
+		<span v-if="visibility === 'home'"><fa icon="home"/></span>
+		<span v-if="visibility === 'followers'"><fa icon="unlock"/></span>
+		<span v-if="visibility === 'specified'"><fa icon="envelope"/></span>
 	</button>
 	<p class="text-count" :class="{ over: trimmedLength(text) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(text) }}</p>
 	<ui-button primary :wait="posting" class="submit" :disabled="!canPost" @click="post">
@@ -76,6 +77,7 @@ import insertTextAtCursor from 'insert-text-at-cursor';
 import * as XDraggable from 'vuedraggable';
 import getFace from '../../../common/scripts/get-face';
 import MkVisibilityChooser from '../../../common/views/components/visibility-chooser.vue';
+import MkRatingChooser from '../../../common/views/components/rating-chooser.vue';
 import { parse } from '../../../../../mfm/parse';
 import { host } from '../../../config';
 import { erase, unique } from '../../../../../prelude/array';
@@ -88,7 +90,8 @@ export default Vue.extend({
 
 	components: {
 		XDraggable,
-		MkVisibilityChooser
+		MkVisibilityChooser,
+		MkRatingChooser
 	},
 
 	props: {
@@ -133,6 +136,7 @@ export default Vue.extend({
 			visibility: 'public',
 			visibleUsers: [],
 			localOnly: false,
+			rating: null,
 			autocomplete: null,
 			draghover: false,
 			recentHashtags: JSON.parse(localStorage.getItem('hashtags') || '[]'),
@@ -229,6 +233,8 @@ export default Vue.extend({
 		}
 
 		if (this.reply) {
+			this.rating = this.reply.rating;
+
 			this.$root.api('users/show', { userId: this.reply.userId }).then(user => {
 				this.visibleUsers.push(user);
 			});
@@ -411,6 +417,16 @@ export default Vue.extend({
 			});
 		},
 
+		setRating() {
+			const w = this.$root.new(MkRatingChooser, {
+				source: this.$refs.RatingButton,
+				currentVRating: this.rating
+			});
+			w.$once('chosen', v => {
+				this.applyRating(v);
+			});
+		},
+
 		applyVisibility(v :string) {
 			const m = v.match(/^local-(.+)/);
 			if (m) {
@@ -420,6 +436,10 @@ export default Vue.extend({
 				this.localOnly = false;
 				this.visibility = v;
 			}
+		},
+
+		applyRating(v :string) {
+			this.rating = v;
 		},
 
 		addVisibleUser() {
@@ -462,6 +482,7 @@ export default Vue.extend({
 				visibility: this.visibility,
 				visibleUserIds: this.visibility == 'specified' ? this.visibleUsers.map(u => u.id) : undefined,
 				localOnly: this.localOnly,
+				rating: this.rating,
 				geo: this.geo ? {
 					coordinates: [this.geo.longitude, this.geo.latitude],
 					altitude: this.geo.altitude,

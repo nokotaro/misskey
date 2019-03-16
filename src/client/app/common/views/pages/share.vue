@@ -60,7 +60,7 @@ export default Vue.extend({
 
 	> div
 		margin 0 auto
-		max-width 544px
+		max-width 588px
 
 		&.fluid
 			margin 0 8px

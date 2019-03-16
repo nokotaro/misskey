@@ -53,6 +53,14 @@ export const meta = {
 			}
 		},
 
+		rating: {
+			validator: $.optional.nullable.str.or(['0', '12', '15', '18']),
+			default: null as any,
+			desc: {
+				'ja-JP': '投稿のレーティング'
+			}
+		},
+
 		text: {
 			validator: $.optional.nullable.str.pipe(text =>
 				length(text.trim()) <= maxNoteTextLength && text.trim() != ''
@@ -321,6 +329,7 @@ export default define(meta, async (ps, user, app) => {
 		localOnly: ps.localOnly,
 		visibility: ps.visibility,
 		visibleUsers,
+		rating: ps.rating,
 		apMentions: ps.noExtractMentions ? [] : undefined,
 		apHashtags: ps.noExtractHashtags ? [] : undefined,
 		apEmojis: ps.noExtractEmojis ? [] : undefined,

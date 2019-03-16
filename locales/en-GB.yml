@@ -1,0 +1,14 @@
+---
+meta:
+  lang: "English, United Kingdom"
+common:
+  note-rating:
+    G: "U or PG"
+    PG12: "12"
+    R15+: "15"
+    R18+: "18"
+common/views/components/rating-chooser.vue:
+  G: "U or PG"
+  PG12: "12"
+  R15+: "15"
+  R18+: "18"

@@ -104,6 +104,7 @@ type Option = {
 	cw?: string;
 	visibility?: string;
 	visibleUsers?: IUser[];
+	rating?: string;
 	apMentions?: IUser[];
 	apHashtags?: string[];
 	apEmojis?: string[];
@@ -140,6 +141,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 
 	if (data.createdAt == null) data.createdAt = new Date();
 	if (data.visibility == null) data.visibility = 'public';
+	if (data.rating == null) data.rating = null;
 	if (data.viaMobile == null) data.viaMobile = false;
 	if (data.localOnly == null) data.localOnly = false;
 
@@ -517,6 +519,7 @@ async function insertNote(user: IUser, data: Option, tags: string[], emojis: str
 				? data.visibleUsers.map(u => u._id)
 				: []
 			: [],
+		rating: data.rating,
 
 		// 以下非正規化データ
 		_reply: data.reply ? {

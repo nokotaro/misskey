@@ -71,6 +71,8 @@ export type INote = {
 
 	visibleUserIds: mongo.ObjectID[];
 
+	rating: null | string;
+
 	geo: {
 		coordinates: number[];
 		altitude: number;

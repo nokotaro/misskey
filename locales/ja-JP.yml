@@ -116,6 +116,17 @@ common:
     local-home: "ホーム (ローカルのみ)"
     local-followers: "フォロワー (ローカルのみ)"
 
+  note-rating:
+    unset: "(未設定)"
+    G: "G"
+    G: "全年齢対象"
+    PG12: "PG12"
+    PG12-desc: "12歳未満要指導"
+    R15+: "R15+"
+    R15+-desc: "15歳未満閲覧禁止"
+    R18+: "R18+"
+    R18+-desc: "18歳未満閲覧禁止"
+
   note-placeholders:
     a: "今どうしてる？"
     b: "何かありましたか？"
@@ -659,6 +670,17 @@ common/views/components/visibility-chooser.vue:
   local-home: "ホーム (ローカルのみ)"
   local-followers: "フォロワー (ローカルのみ)"
 
+common/views/components/rating-chooser.vue:
+  unset: "(未設定)"
+  G: "G"
+  G: "全年齢対象"
+  PG12: "PG12"
+  PG12-desc: "12歳未満要指導"
+  R15+: "R15+"
+  R15+-desc: "15歳未満閲覧禁止"
+  R18+: "R18+"
+  R18+-desc: "18歳未満閲覧禁止"
+
 common/views/components/trends.vue:
   count: "{}人が投稿"
   empty: "トレンドなし"
@@ -978,6 +1000,7 @@ desktop/views/components/post-form.vue:
   local-only-message: "この投稿はローカルにのみ公開されます"
   click-to-tagging: "クリックでタグ付け"
   visibility: "公開範囲"
+  rating: "レーティング"
   geolocation-alert: "お使いの端末は位置情報に対応していません"
   error: "エラー"
   enter-username: "ユーザー名を入力してください"
