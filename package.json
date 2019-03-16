@@ -1,7 +1,7 @@
 {
 	"name": "misskey",
 	"author": "syuilo <i@syuilo.com>",
-	"version": "10.95.0-tf.16",
+	"version": "10.95.0-tf.17",
 	"codename": "seabedhike",
 	"repository": {
 		"type": "git",
