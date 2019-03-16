@@ -128,7 +128,8 @@ import { Chrome } from 'vue-color';
 import * as uuid from 'uuid';
 import * as tinycolor from 'tinycolor2';
 import * as JSON5 from 'json5';
-import { faMoon, faSun } from '@fortawesome/free-regular-svg-icons';
+import { faSun } from '@fortawesome/free-solid-svg-icons';
+import { faMoon } from '@fortawesome/free-regular-svg-icons';
 
 // 後方互換性のため
 function convertOldThemedefinition(t) {

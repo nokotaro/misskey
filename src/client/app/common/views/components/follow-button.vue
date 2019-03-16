@@ -6,9 +6,9 @@
 	:inline="inline"
 >
 	<template v-if="!wait">
-		<fa :icon="iconAndText[0]"/> <template v-if="!mini">{{ iconAndText[1] }}</template>
+		 :icon="iconAndText[0]"/> <template v-if="!mini">{{ iconAndText[1] }}</template>
 	</template>
-	<template v-else><fa icon="spinner" pulse fixed-width/></template>
+	<template v-else> icon="spinner" pulse fixed-width/></template>
 </button>
 </template>
 

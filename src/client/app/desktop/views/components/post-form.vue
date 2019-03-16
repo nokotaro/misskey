@@ -45,14 +45,20 @@
 	<button class="drive" :title="$t('attach-media-from-drive')" @click="chooseFileFromDrive"><fa icon="cloud"/></button>
 	<button class="kao" :title="$t('insert-a-kao')" @click="kao"><fa icon="child"/></button>
 	<button class="poll" :title="$t('create-poll')" @click="poll = !poll"><fa icon="poll-h"/></button>
-	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa :icon="['far', 'eye-slash']"/></button>
+	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa icon="eye-slash"/></button>
 	<button class="broadcast" :title="$t('use-broadcast')" @click="useBroadcast = !useBroadcast"><fa icon="bullhorn"/></button>
-	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()"><fa icon="map-marker-alt"/></button>
+	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa icon="map-marker-alt"/></button>
+	<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
+		<span v-if="rating === 'public'"><fa icon="globe"/></span>
+		<span v-if="rating === 'home'"><fa icon="home"/></span>
+		<span v-if="rating === 'followers'"><fa icon="unlock"/></span>
+		<span v-if="rating === 'specified'"><fa icon="envelope"/></span>
+	</button>
 	<button class="visibility" :title="$t('visibility')" @click="setVisibility" ref="visibilityButton">
-		<span v-if="visibility === 'public'"><fa icon="globe"/></span>
-		<span v-if="visibility === 'home'"><fa icon="home"/></span>
-		<span v-if="visibility === 'followers'"><fa icon="unlock"/></span>
-		<span v-if="visibility === 'specified'"><fa icon="envelope"/></span>
+		<span v-if="visibility === '0'"><fa icon="sun"/></span>
+		<span v-if="visibility === '12'"><fa icon="cloud"/></span>
+		<span v-if="visibility === '15'"><fa icon="unlock"/></span>
+		<span v-if="visibility === '18'"><fa icon="envelope"/></span>
 	</button>
 	<p class="text-count" :class="{ over: trimmedLength(text) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(text) }}</p>
 	<ui-button primary :wait="posting" class="submit" :disabled="!canPost" @click="post">

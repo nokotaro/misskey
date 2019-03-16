@@ -64,8 +64,8 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import { lang } from '../../../config';
-import { faNewspaper, faHashtag, faHome, faColumns } from '@fortawesome/free-solid-svg-icons';
-import { faMoon, faSun } from '@fortawesome/free-regular-svg-icons';
+import { faNewspaper, faHashtag, faHome, faColumns, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faMoon } from '@fortawesome/free-regular-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('mobile/views/components/ui.nav.vue'),
