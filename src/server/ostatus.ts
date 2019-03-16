@@ -17,8 +17,8 @@ router.get(authorizeInteractionPath, async ctx => {
 		(x => x && `${config.url}/users/${x._id}`)(await fetchPerson(acct)) ||
 		(x => x && `${config.url}/notes/${x._id}`)(await fetchNote(acct)) ||
 		await (async x =>
-			(x => x && `${config.url}/users/${x._id}`)(await createPersonFromObject(x, resolver)) ||
-			(x => x && `${config.url}/notes/${x._id}`)(await createNote(x, resolver, true))
+			(x => x && `${config.url}/users/${x._id}`)(await createPersonFromObject(x, resolver).catch(() => null)) ||
+			(x => x && `${config.url}/notes/${x._id}`)(await createNote(x, resolver, true).catch(() => null))
 		)(await resolver.resolve(acct));
 
 	if (url)
