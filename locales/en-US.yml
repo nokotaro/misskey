@@ -110,7 +110,7 @@ common:
   note-rating:
     unset: "(unset)"
     G: "G"
-    G: "Safe for all person"
+    G-desc: "Safe for all person"
     PG12: "PG"
     PG12-desc: "Parental guidance needed for children"
     R15+: "PG-13"
@@ -620,7 +620,7 @@ common/views/components/visibility-chooser.vue:
 common/views/components/rating-chooser.vue:
   unset: "(unset)"
   G: "G"
-  G: "Safe for all person"
+  G-desc: "Safe for all person"
   PG12: "PG"
   PG12-desc: "Parental guidance needed for children"
   R15+: "PG-13"

@@ -119,7 +119,7 @@ common:
   note-rating:
     unset: "(未設定)"
     G: "G"
-    G: "全年齢対象"
+    G-desc: "全年齢対象"
     PG12: "PG12"
     PG12-desc: "12歳未満要指導"
     R15+: "R15+"
@@ -673,7 +673,7 @@ common/views/components/visibility-chooser.vue:
 common/views/components/rating-chooser.vue:
   unset: "(未設定)"
   G: "G"
-  G: "全年齢対象"
+  G-desc: "全年齢対象"
   PG12: "PG12"
   PG12-desc: "12歳未満要指導"
   R15+: "R15+"
