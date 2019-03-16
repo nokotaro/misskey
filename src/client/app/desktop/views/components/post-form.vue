@@ -761,6 +761,7 @@ export default Vue.extend({
 	> .cw
 	> .broadcast
 	> .geo
+	> .rating
 	> .visibility
 		display inline-block
 		cursor pointer

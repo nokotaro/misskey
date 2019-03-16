@@ -153,7 +153,7 @@ export default Vue.extend({
 		> div
 			display grid
 			grid-template-columns repeat(8, 1fr)
-			gap ８px
+			gap 8px
 			padding 8px
 
 			> button
