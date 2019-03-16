@@ -420,7 +420,7 @@ export default Vue.extend({
 
 		setRating() {
 			const w = this.$root.new(MkRatingChooser, {
-				source: this.$refs.RatingButton,
+				source: this.$refs.ratingButton,
 				currentVRating: this.rating
 			});
 			w.$once('chosen', v => {
