@@ -45,11 +45,11 @@
 	<button class="drive" :title="$t('attach-media-from-drive')" @click="chooseFileFromDrive"><fa icon="cloud"/></button>
 	<button class="kao" :title="$t('insert-a-kao')" @click="kao"><fa icon="cat"/></button>
 	<button class="poll" :title="$t('create-poll')" @click="poll = !poll"><fa icon="poll-h"/></button>
-	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa icon="eye-slash"/></button>
+	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa :icon="faEyeSlash"/></button>
 	<button class="broadcast" :title="$t('use-broadcast')" @click="useBroadcast = !useBroadcast"><fa icon="bullhorn"/></button>
 	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa icon="map-marker-alt"/></button>
 	<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
-		<span v-if="rating === null"><fa icon="eye"/></span>
+		<span v-if="rating === null"><fa :icon="faEye"/></span>
 		<span v-if="rating === 'G'"><fa icon="baby"/></span>
 		<span v-if="rating === 'PG12'"><fa icon="child"/></span>
 		<span v-if="rating === 'R15+'"><fa icon="people-carry"/></span>
@@ -75,6 +75,7 @@ import Vue from 'vue';
 import i18n from '../../../i18n';
 import insertTextAtCursor from 'insert-text-at-cursor';
 import * as XDraggable from 'vuedraggable';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import getFace from '../../../common/scripts/get-face';
 import MkVisibilityChooser from '../../../common/views/components/visibility-chooser.vue';
 import MkRatingChooser from '../../../common/views/components/rating-chooser.vue';
