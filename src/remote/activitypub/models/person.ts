@@ -107,12 +107,12 @@ export async function fetchPerson(uri: string, resolver?: Resolver): Promise<IUs
 /**
  * Personを作成します。
  */
-export async function createPerson(uri: string | IObject, resolver?: Resolver, alreadyFetched = false): Promise<IUser> {
-	if (!alreadyFetched || typeof uri !== 'string') throw 'uri is not string';
+export async function createPerson(uri: string, resolver?: Resolver): Promise<IUser> {
+	if (typeof uri !== 'string') throw 'uri is not string';
 
-	if (resolver == null) resolver = new Resolver();
+	if (!resolver) resolver = new Resolver();
 
-	const object: IObject = alreadyFetched && typeof uri !== 'string' ? uri : await resolver.resolve(uri);
+	const object = await resolver.resolve(uri);
 
 	const err = validatePerson(object, uri);
 
@@ -120,7 +120,11 @@ export async function createPerson(uri: string | IObject, resolver?: Resolver, a
 		throw err;
 	}
 
-	const person = object as IPersonOrService;
+	return await createPersonFromObject(object as IPersonOrService, resolver);
+}
+
+export async function createPersonFromObject(person: IPersonOrService, resolver?: Resolver) {
+	if (!resolver) resolver = new Resolver();
 
 	logger.info(`Creating the Person: ${person.id}`);
 
@@ -139,13 +143,13 @@ export async function createPerson(uri: string | IObject, resolver?: Resolver, a
 		)
 	]);
 
-	const host = toUnicode(new URL(object.id).hostname.toLowerCase());
+	const host = toUnicode(new URL(person.id).hostname.toLowerCase());
 
 	const { fields, services } = analyzeAttachments(person.attachment);
 
 	const tags = extractHashtags(person.tag).map(tag => tag.toLowerCase());
 
-	const isBot = object.type == 'Service';
+	const isBot = person.type == 'Service';
 
 	// Create user
 	let user: IRemoteUser;
