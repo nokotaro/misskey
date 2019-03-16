@@ -402,7 +402,7 @@ describe('API', () => {
 			expect(res.body.createdNote).have.property('text').eql('にゃんなんにゃんなんにゃん');
 		}));
 
-		it('throw error when invalid syntax', async(async () => {
+		it('ignore syntax when invalid syntax', async(async () => {
 			const me = await signup();
 
 			const post = {
@@ -411,7 +411,10 @@ describe('API', () => {
 
 			const res = await request('/notes/create', post, me);
 
-			expect(res).have.status(400);
+			expect(res).have.status(200);
+			expect(res.body).be.a('object');
+			expect(res.body).have.property('createdNote');
+			expect(res.body.createdNote).have.property('text').eql(post.text);
 		}));
 
 		it('存在しないリプライ先で怒られる', async(async () => {

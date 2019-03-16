@@ -118,6 +118,23 @@ export const imasHosts = [
 	'imastodon.org',
 ];
 
+const nyaizable = (text: string) => {
+	if (typeof text !== 'string')
+		return false;
+
+	const trim = text.trim();
+	const match = trim.match(/<\/?!?nya>/ig) || [];
+	const stack: string[] = [];
+	for (const tag of [...match]
+		.map(x => x.toLocaleLowerCase()))
+			if (tag.includes('/')) {
+				if (stack.pop() !== tag.replace('/', ''))
+					return false;
+			} else
+				stack.push(tag);
+	return !!stack.length;
+};
+
 export default async (user: IUser, data: Option, silent = false) => new Promise<INote>(async (res, rej) => {
 	const isFirstNote = user.notesCount === 0;
 
@@ -198,21 +215,8 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 		data.localOnly = true;
 	}
 
-	if (data.text) {
-		data.text = data.text.trim();
-
-		const match = data.text.match(/<\/?!?nya>/ig) || [];
-		const stack: string[] = [];
-		for (const tag of [...match]
-			.map(x => x.toLocaleLowerCase()))
-				if (tag.includes('/')) {
-					if (stack.pop() !== tag.replace('/', ''))
-						return rej('Invalid nyaize syntax');
-				} else
-					stack.push(tag);
-		if (stack.length)
-			return rej('Invalid nyaize syntax');
-	}
+	const nyaize = nyaizable(data.text);
+	const text = nyaize ? data.text && data.text.replace(/^<\/?!?nya>/ig, '') : data.text;
 
 	let tags = data.apHashtags;
 	let emojis = data.apEmojis;
@@ -343,7 +347,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 
 	createMentionedEvents(mentionedUsers, note, nm);
 
-	const noteActivity = await renderNoteOrRenoteActivity(data, note);
+	const noteActivity = await renderNoteOrRenoteActivity(data, note, text);
 
 	if (isLocalUser(user)) {
 		deliverNoteToMentionedRemoteUsers(mentionedUsers, user, noteActivity);
@@ -368,7 +372,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 
 	// If it is renote
 	if (data.renote) {
-		const type = data.text && data.text.replace(/^<\/?!?nya>/ig, '') ? 'quote' : 'renote';
+		const type = text ? 'quote' : 'renote';
 
 		// Notify
 		if (isLocalUser(data.renote._user)) {
@@ -398,13 +402,13 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	});
 
 	// Register to search database
-	index(note);
+	index(note, text);
 });
 
-async function renderNoteOrRenoteActivity(data: Option, note: INote) {
+async function renderNoteOrRenoteActivity(data: Option, note: INote, text: string) {
 	if (data.localOnly) return null;
 
-	const content = data.renote && (!data.text || !data.text.replace(/^<\/?!?nya>/ig, '')) && !data.poll && (!data.files || !data.files.length)
+	const content = data.renote && !text && !data.poll && (!data.files || !data.files.length)
 		? renderAnnounce(data.renote.uri ? data.renote.uri : `${config.url}/notes/${data.renote._id}`, note)
 		: renderCreate(await renderNote(note, false), note);
 
@@ -559,12 +563,8 @@ async function insertNote(user: IUser, data: Option, tags: string[], emojis: str
 	}
 }
 
-function index(note: INote) {
-	if (!note.text || !config.elasticsearch) return;
-
-	const text = note.text.replace(/^<\/?!?nya>/ig, '');
-
-	if (!text) return;
+function index(note: INote, text: string) {
+	if (!text || !config.elasticsearch) return;
 
 	es.index({
 		index: 'misskey',
