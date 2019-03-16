@@ -10,7 +10,7 @@ export const authorizeInteractionPath = '/authorize_interaction';
 
 router.get(/\/authorize([-_]follow|-interaction)/, ctx => ctx.redirect(authorizeInteractionPath));
 router.get(authorizeInteractionPath, async ctx => {
-	const acct: string = ctx.params.acct;
+	const acct: string = ctx.query.acct;
 	const resolver = new Resolver();
 
 	const url =
