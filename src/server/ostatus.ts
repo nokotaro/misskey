@@ -1,6 +1,6 @@
 import * as Router from 'koa-router';
 import { fetchNote, createNote } from '../remote/activitypub/models/note';
-import { fetchPerson, createPerson } from '../remote/activitypub/models/person';
+import { fetchPerson, createPersonFromObject } from '../remote/activitypub/models/person';
 import Resolver from '../remote/activitypub/resolver';
 import config from '../config';
 
@@ -17,7 +17,7 @@ router.get(authorizeInteractionPath, async ctx => {
 		(x => x && `${config.url}/users/${x._id}`)(await fetchPerson(acct)) ||
 		(x => x && `${config.url}/notes/${x._id}`)(await fetchNote(acct)) ||
 		await (async x =>
-			(x => x && `${config.url}/users/${x._id}`)(await createPerson(x, resolver, true)) ||
+			(x => x && `${config.url}/users/${x._id}`)(await createPersonFromObject(x, resolver)) ||
 			(x => x && `${config.url}/notes/${x._id}`)(await createNote(x, resolver, true))
 		)(await resolver.resolve(acct));
 

@@ -120,11 +120,13 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 		throw err;
 	}
 
-	return await createPersonFromObject(object as IPersonOrService, resolver);
+	return await createPersonFromObject(object, resolver);
 }
 
-export async function createPersonFromObject(person: IPersonOrService, resolver?: Resolver) {
+export async function createPersonFromObject(object: IObject, resolver?: Resolver) {
 	if (!resolver) resolver = new Resolver();
+
+	const person = object as IPersonOrService;
 
 	logger.info(`Creating the Person: ${person.id}`);
 
