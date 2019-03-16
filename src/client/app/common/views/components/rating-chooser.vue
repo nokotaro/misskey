@@ -8,28 +8,28 @@
 				<span>{{ $t('unset') }}</span>
 			</div>
 		</div>
-		<div @click="choose('G')" :class="{ active: v == 'G' }">
+		<div @click="choose('0')" :class="{ active: v == '0' }">
 			<div><fa icon="baby" fixed-width/></div>
 			<div>
 				<span>{{ $t('G') }}</span>
 				<span>{{ $t('G-desc') }}</span>
 			</div>
 		</div>
-		<div @click="choose('PG12')" :class="{ active: v == 'PG12' }">
+		<div @click="choose('12')" :class="{ active: v == '12' }">
 			<div><fa icon="child" fixed-width/></div>
 			<div>
 				<span>{{ $t('PG12') }}</span>
 				<span>{{ $t('PG12-desc') }}</span>
 			</div>
 		</div>
-		<div @click="choose('R15+')" :class="{ active: v == 'R15+' }">
+		<div @click="choose('15')" :class="{ active: v == '15' }">
 			<div><fa icon="people-carry" fixed-width/></div>
 			<div>
 				<span>{{ $t('R15+') }}</span>
 				<span>{{ $t('R15+-desc') }}</span>
 			</div>
 		</div>
-		<div @click="choose('R18+')" :class="{ active: v == 'R18+' }">
+		<div @click="choose('18')" :class="{ active: v == '18' }">
 			<div><fa icon="person-booth" fixed-width/></div>
 			<div>
 				<span>{{ $t('R18+') }}</span>
