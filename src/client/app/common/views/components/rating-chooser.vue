@@ -58,7 +58,7 @@ export default Vue.extend({
 	},
 	data() {
 		return {
-			v: this.$store.state.settings.rememberNoteRating ? (this.$store.state.device.rating || this.$store.state.settings.defaultNoteRating) : (this.currentRating || this.$store.state.settings.defaultNoteRating)
+			v: this.currentRating
 		}
 	},
 	mounted() {
@@ -108,9 +108,6 @@ export default Vue.extend({
 	},
 	methods: {
 		choose(rating) {
-			if (this.$store.state.settings.rememberNoteRating) {
-				this.$store.commit('device/setRating', rating);
-			}
 			this.$emit('chosen', rating);
 			this.destroyDom();
 		},

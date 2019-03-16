@@ -50,10 +50,10 @@
 	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa icon="map-marker-alt"/></button>
 	<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
 		<span v-if="rating === null"><fa :icon="['far', 'eye']"/></span>
-		<span v-if="rating === 'G'"><fa icon="baby"/></span>
-		<span v-if="rating === 'PG12'"><fa icon="child"/></span>
-		<span v-if="rating === 'R15+'"><fa icon="people-carry"/></span>
-		<span v-if="rating === 'R18+'"><fa icon="person-booth"/></span>
+		<span v-if="rating === '0'"><fa icon="baby"/></span>
+		<span v-if="rating === '12'"><fa icon="child"/></span>
+		<span v-if="rating === '15'"><fa icon="people-carry"/></span>
+		<span v-if="rating === '18'"><fa icon="person-booth"/></span>
 	</button>
 	<button class="visibility" :title="$t('visibility')" @click="setVisibility" ref="visibilityButton">
 		<span v-if="visibility === 'public'"><fa icon="globe"/></span>
