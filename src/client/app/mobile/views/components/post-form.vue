@@ -36,10 +36,10 @@
 				<button class="drive" @click="chooseFileFromDrive"><fa icon="cloud"/></button>
 				<button class="kao" @click="kao"><fa icon="cat"/></button>
 				<button class="poll" @click="poll = true"><fa icon="poll-h"/></button>
-				<button class="poll" @click="useCw = !useCw"><fa icon="eye-slash"/></button>
+				<button class="poll" @click="useCw = !useCw"><fa :icon="['far', 'eye-slash']"/></button>
 				<button class="geo" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa icon="map-marker-alt"/></button>
 				<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
-					<span v-if="rating === null"><fa icon="eye"/></span>
+					<span v-if="rating === null"><fa :icon="['far', 'eye']"/></span>
 					<span v-if="rating === 'G'"><fa icon="baby"/></span>
 					<span v-if="rating === 'PG12'"><fa icon="child"/></span>
 					<span v-if="rating === 'R15+'"><fa icon="people-carry"/></span>
