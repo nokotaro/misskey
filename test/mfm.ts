@@ -775,7 +775,10 @@ describe('MFM', () => {
 				assert.deepStrictEqual(tokens, [
 					tree('bubble', [
 						text('台詞')
-					], { speaker: '話者' })
+					], {
+						speaker: '話者',
+						raw: '話者「台詞」'
+					})
 				]);
 			});
 		});
