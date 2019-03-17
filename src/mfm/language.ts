@@ -43,9 +43,10 @@ export const mfmLanguage = P.createLanguage({
 		const text = input.substr(i);
 		const match = text.match(/^(\[([^\[\]\n]+?)\])(\n|$)/) || text.match(/^(【([^【】\n]+?)】)(\n|$)/);
 		if (!match) return P.makeFailure(i, 'not a title');
+		const raw = match[0].trim();
 		const q = match[2].trim();
 		const contents = r.inline.atLeast(1).tryParse(q);
-		return P.makeSuccess(i + match[0].length, createTree('title', contents, {}));
+		return P.makeSuccess(i + match[0].length, createTree('title', contents, { raw }));
 	})),
 	quote: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
@@ -60,9 +61,10 @@ export const mfmLanguage = P.createLanguage({
 		const text = input.substr(i);
 		const match = text.match(/^([^「」]+)「(.+?)」(?:\n|$)/) || text.match(/^([^：]+)：(.+?)(?:\n|$)/) || text.match(/^((?::\w+:)+[^:]*(?::\w+:)*|(?::\w+:)*[^:]+(?::\w+:)*|(?::\w+:)*[^:]*(?::\w+:)+): (.+?)(?:\n|$)/);
 		if (!match) return P.makeFailure(i, 'not a bubble');
+		const raw = match[0].trim();
 		const speaker = r.inline.atLeast(1).tryParse(match[1].trim());
 		const contents = r.inline.atLeast(1).tryParse(match[2].trim());
-		return P.makeSuccess(i + match[0].length, createTree('bubble', contents, { speaker }));
+		return P.makeSuccess(i + match[0].length, createTree('bubble', contents, { speaker, raw }));
 	})),
 	search: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
