@@ -1,8 +1,8 @@
 <template>
 <img v-if="customEmoji" class="fvgwvorwhxigeolkkrcderjzcawqrscl custom" :class="{ normal: normal }" :src="url" :alt="alt" :title="alt"/>
-<img v-else-if="char && !useOsDefaultEmojis" class="fvgwvorwhxigeolkkrcderjzcawqrscl" :src="url" :alt="alt" :title="alt"/>
-<span v-else-if="char && useOsDefaultEmojis">{{ char }}</span>
-<span v-else>:{{ name }}:</span>
+<span v-else-if="!char" class="unknown">:{{ name }}:</span>
+<span v-else-if="useOsDefaultEmojis">{{ char }}</span>
+<img v-else class="fvgwvorwhxigeolkkrcderjzcawqrscl" :src="url" :alt="alt" :title="alt"/>
 </template>
 
 <script lang="ts">

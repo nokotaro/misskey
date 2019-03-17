@@ -26,6 +26,7 @@ export const mfmLanguage = P.createLanguage({
 	block: r => P.alt(
 		r.title,
 		r.quote,
+		r.bubble,
 		r.search,
 		r.blockCode,
 		r.mathBlock,
@@ -54,6 +55,14 @@ export const mfmLanguage = P.createLanguage({
 		if (qInner == '') return P.makeFailure(i, 'not a quote');
 		const contents = r.root.tryParse(qInner);
 		return P.makeSuccess(i + quote.join('\n').length + 1, createTree('quote', contents, {}));
+	})),
+	bubble: r => r.startOfLine.then(P((input, i) => {
+		const text = input.substr(i);
+		const match = text.match(/^([^「」]+)「(.+?)」(?:\n|$)/) || text.match(/^([^：]+)：(.+?)(?:\n|$)/) || text.match(/^((?::\w+:)+[^:]*(?::\w+:)*|(?::\w+:)*[^:]+(?::\w+:)*|(?::\w+:)*[^:]*(?::\w+:)+): (.+?)(?:\n|$)/);
+		if (!match) return P.makeFailure(i, 'not a bubble');
+		const speaker = r.inline.atLeast(1).tryParse(match[1].trim());
+		const contents = r.inline.atLeast(1).tryParse(match[2].trim());
+		return P.makeSuccess(i + match[0].length, createTree('bubble', contents, { speaker }));
 	})),
 	search: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
