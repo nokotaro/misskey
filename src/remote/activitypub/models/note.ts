@@ -104,7 +104,7 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 
 	const rating = guard(note._misskey_rating, ['0', '12', '15', '18']);
 
-	const qa = guard(note._misskey_qa, ['question', 'answer', 'bestAnswer']);
+	const qa = guard(note._misskey_qa, ['question', 'resolvedQuestion', 'answer', 'bestAnswer']);
 
 	const apMentions = await extractMentionedUsers(actor, note.to, note.cc, resolver);
 

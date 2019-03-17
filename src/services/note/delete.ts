@@ -30,7 +30,7 @@ export default async function(user: IUser, note: INote, quiet = false) {
 		userId: user._id
 	}, {
 		$set: {
-			deletedAt: deletedAt,
+			deletedAt,
 			text: null,
 			tags: [],
 			fileIds: [],
