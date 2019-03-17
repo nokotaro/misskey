@@ -281,7 +281,6 @@ export default Vue.extend({
 					margin 0
 					padding 0
 					overflow-wrap break-word
-					font-size 1.5em
 					color var(--noteText)
 
 				> .renote
