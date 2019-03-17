@@ -104,7 +104,7 @@ export default Vue.component('misskey-flavored-markdown', {
 				case 'small': {
 					return [createElement('small', {
 						attrs: {
-							style: 'font-size:calc(.75em+var(--fontSize)*.75);opacity:0.7'
+							style: 'font-size:calc(.75em + var(--fontSize) * .75);opacity:0.7'
 						},
 					}, genEl(token.children))];
 				}
