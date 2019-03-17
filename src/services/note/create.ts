@@ -100,6 +100,7 @@ type Option = {
 	geo?: any;
 	poll?: any;
 	viaMobile?: boolean;
+	qa?: string;
 	localOnly?: boolean;
 	cw?: string;
 	visibility?: string;
@@ -142,6 +143,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	if (data.createdAt == null) data.createdAt = new Date();
 	if (data.visibility == null) data.visibility = 'public';
 	if (data.rating == null) data.rating = null;
+	if (data.qa == null) data.qa = null;
 	if (data.viaMobile == null) data.viaMobile = false;
 	if (data.localOnly == null) data.localOnly = false;
 
@@ -262,6 +264,15 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 			}
 		}
 	}
+
+	const answerable = data.reply && data.reply.qa === 'question';
+
+	const bestAnswerable = answerable && data.reply.userId === user._id;
+
+	data.qa =
+		['bestAnswer'].includes(data.qa) && bestAnswerable ? 'bestAnswer' :
+		['bestAnswer', 'answer'].includes(data.qa) && answerable ? 'answer' :
+		['question'].includes(data.qa) ? 'question' : null;
 
 	const note = await insertNote(user, data, tags, emojis, mentionedUsers);
 

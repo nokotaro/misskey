@@ -198,6 +198,9 @@ export const schemas = {
 			viaMobile: {
 				type: 'boolean'
 			},
+			qa: {
+				type: 'string'
+			},
 			visibility: {
 				type: 'string'
 			},

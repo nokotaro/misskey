@@ -97,8 +97,14 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 			visibility = 'specified';
 			visibleUsers = await Promise.all(note.to.map(uri => resolvePerson(uri, null, resolver)));
 		}
-}
+	}
 	//#endergion
+
+	const guard = (head: string, base: string[]) => base.includes(head) ? head : null;
+
+	const rating = guard(note._misskey_rating, ['0', '12', '15', '18']);
+
+	const qa = guard(note._misskey_qa, ['question', 'answer', 'bestAnswer']);
 
 	const apMentions = await extractMentionedUsers(actor, note.to, note.cc, resolver);
 
@@ -207,6 +213,8 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 		geo: undefined,
 		visibility,
 		visibleUsers,
+		rating,
+		qa,
 		apMentions,
 		apHashtags,
 		apEmojis,

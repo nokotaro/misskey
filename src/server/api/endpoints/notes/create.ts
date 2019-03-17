@@ -61,6 +61,14 @@ export const meta = {
 			}
 		},
 
+		qa: {
+			validator: $.optional.nullable.str.or(['question', 'answer', 'bestAnswer']),
+			default: null as any,
+			desc: {
+				'ja-JP': '質問あるいは回答'
+			}
+		},
+
 		text: {
 			validator: $.optional.nullable.str.pipe(text =>
 				length(text.trim()) <= maxNoteTextLength && text.trim() != ''
@@ -311,6 +319,17 @@ export default define(meta, async (ps, user, app) => {
 		ps.visibility = 'specified';
 	}
 
+	//#region qa
+	const answerable = reply && reply.qa === 'question';
+
+	const bestAnswerable = answerable && reply.userId === user._id;
+
+	const qa =
+		['bestAnswer'].includes(ps.qa) && bestAnswerable ? 'bestAnswer' :
+		['bestAnswer', 'answer'].includes(ps.qa) && answerable ? 'answer' :
+		['question'].includes(ps.qa) ? 'question' : null;
+	//#endregion
+
 	// 投稿を作成
 	const note = await create(user, {
 		createdAt: new Date(),
@@ -330,6 +349,7 @@ export default define(meta, async (ps, user, app) => {
 		visibility: ps.visibility,
 		visibleUsers,
 		rating: ps.rating,
+		qa,
 		apMentions: ps.noExtractMentions ? [] : undefined,
 		apHashtags: ps.noExtractHashtags ? [] : undefined,
 		apEmojis: ps.noExtractEmojis ? [] : undefined,

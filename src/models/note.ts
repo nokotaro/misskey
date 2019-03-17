@@ -73,6 +73,8 @@ export type INote = {
 
 	rating: null | string;
 
+	qa: 'question' | 'answer' | 'bestAnswer' | null;
+
 	geo: {
 		coordinates: number[];
 		altitude: number;
