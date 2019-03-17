@@ -59,7 +59,36 @@ export const mfmLanguage = P.createLanguage({
 	})),
 	bubble: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
-		const match = text.match(/^([^「」]+)「(.+?)」(?:\n|$)/) || text.match(/^([^：]+)：(.+?)(?:\n|$)/) || text.match(/^((?::\w+:)+[^:]*(?::\w+:)*|(?::\w+:)*[^:]+(?::\w+:)*|(?::\w+:)*[^:]*(?::\w+:)+): (.+?)(?:\n|$)/);
+		const match = [
+			['\'', '\''],
+			['"', '"'],
+			['‘', '’'],
+			['“', '”'],
+			['‚', '‘'],
+			['„', '“'],
+			['‚', '’'],
+			['„', '”'],
+			['‹', '›'],
+			['«', '»'],
+			['›', '‹'],
+			['»', '«'],
+			['｢', '｣'],
+			['「', '」'],
+			['『', '』'],
+			['“', '”'],
+			['‘', '’'],
+			['《', '》'],
+			['〈', '〉'],
+			['〝', '〟'],
+			['〝', '〞'],
+			['“', '„']
+		].map(([s, e]) => [
+			[new RegExp(`^((?::\\w+:)+[^:]*(?::\\w+:)*|(?::\\w+:)*[^:]+(?::\\w+:)*|(?::\\w+:)*[^:]*(?::\\w+:)+): ${s}(.*?)${e}(?:\\n|$)`)],
+			...['：', '―', '—'].map(x => [
+				new RegExp(`^([^${s}${e}]+)${s}(.*?)${e}(?:\\n|$)`),
+				new RegExp(`^([^${x}]+)${x}${s}(.*?)${e}(?:\\n|$)`)
+			])
+		]).reduce((a, c) => [...a, ...c], []).reduce((a, c) => [...a, ...c], []).reduce<RegExpMatchArray>((a, c) => a || text.match(c), null);
 		if (!match) return P.makeFailure(i, 'not a bubble');
 		const raw = match[0].trim();
 		const speaker = r.inline.atLeast(1).tryParse(match[1].trim());
