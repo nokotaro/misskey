@@ -145,7 +145,7 @@ export default Vue.component('misskey-flavored-markdown', {
 						`animation:spin 1.5s linear infinite;animation-direction:${direction}`;
 					return (createElement as any)('span', {
 						attrs: {
-							style: ['display:inline-block' + style].filter(x => x).join(';')
+							style: ['display:inline-block', style].filter(x => x).join(';')
 						},
 					}, genEl(token.children));
 				}
