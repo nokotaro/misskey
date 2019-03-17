@@ -58,11 +58,6 @@ async function getOAuth2() {
 }
 
 router.get('/connect/discord', async ctx => {
-	if (!compareOrigin(ctx)) {
-		ctx.throw(400, 'invalid origin');
-		return;
-	}
-
 	const userToken = getUserToken(ctx);
 	if (!userToken) {
 		ctx.throw(400, 'signin required');

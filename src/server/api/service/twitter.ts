@@ -56,11 +56,6 @@ async function getTwAuth() {
 }
 
 router.get('/connect/twitter', async ctx => {
-	if (!compareOrigin(ctx)) {
-		ctx.throw(400, 'invalid origin');
-		return;
-	}
-
 	const userToken = getUserToken(ctx);
 	if (userToken == null) {
 		ctx.throw(400, 'signin required');
