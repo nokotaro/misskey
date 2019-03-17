@@ -83,12 +83,14 @@ export const mfmLanguage = P.createLanguage({
 			['〝', '〞'],
 			['“', '„']
 		].map(([s, e]) => [
-			[new RegExp(`^((?::\\w+:)+[^:]*(?::\\w+:)*|(?::\\w+:)*[^:]+(?::\\w+:)*|(?::\\w+:)*[^:]*(?::\\w+:)+): ${s}(.*?)${e}(?:\\n|$)`)],
+			[new RegExp(`^((?::\\w+:)+[^:]*(?::\\w+:)*|(?::\\w+:)*[^:]+(?::\\w+:)*|(?::\\w+:)*[^:]*(?::\\w+:)+): ${s}(.+?)${e}(?:\\n|$)`)],
 			...['：', '―', '—'].map(x => [
-				new RegExp(`^([^${s}${e}]+)${s}(.*?)${e}(?:\\n|$)`),
-				new RegExp(`^([^${x}]+)${x}${s}(.*?)${e}(?:\\n|$)`)
+				new RegExp(`^([^${s}${e}]+)${s}(.+?)${e}(?:\\n|$)`),
+				new RegExp(`^([^${x}]+)${x}${s}(.+?)${e}(?:\\n|$)`)
 			])
-		]).reduce((a, c) => [...a, ...c], []).reduce((a, c) => [...a, ...c], []).reduce<RegExpMatchArray>((a, c) => a || text.match(c), null);
+		]).reduce((a, c) => [...a, ...c], [])
+			.reduce((a, c) => [...a, ...c], [])
+			.reduce<RegExpMatchArray>((a, c) => a || text.match(c), null);
 		if (!match) return P.makeFailure(i, 'not a bubble');
 		const raw = match[0].trim();
 		const speaker = r.inline.atLeast(1).tryParse(match[1].trim());
