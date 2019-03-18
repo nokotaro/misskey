@@ -33,7 +33,7 @@ export default Vue.extend({
 	props: {
 		note: {
 			type: Object,
-			required: true
+			required: false
 		},
 
 		source: {
@@ -143,14 +143,22 @@ export default Vue.extend({
 
 	methods: {
 		react(reaction) {
-			this.$root.api('notes/reactions/create', {
-				noteId: this.note.id,
-				reaction: reaction
-			}).then(() => {
+			this.$emit('reacted', reaction);
+
+			if (this.note) {
+				this.$root.api('notes/reactions/create', {
+					noteId: this.note.id,
+					reaction
+				}).then(() => {
+					if (this.cb) this.cb();
+					this.$emit('closed');
+					this.destroyDom();
+				});
+			} else {
 				if (this.cb) this.cb();
 				this.$emit('closed');
 				this.destroyDom();
-			});
+			}
 		},
 
 		reactText() {
