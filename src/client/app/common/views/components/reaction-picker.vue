@@ -172,6 +172,17 @@ export default Vue.extend({
 			this.reactText();
 		},
 
+		reactText() {
+			if (!this.text) return;
+			this.react(this.text);
+		},
+
+		tryReactText() {
+			if (!this.text) return;
+			if (!this.text.match(emojiRegex)) return;
+			this.reactText();
+		},
+
 		onMouseover(e) {
 			this.title = e.target.title;
 		},
@@ -286,7 +297,7 @@ export default Vue.extend({
 			border-bottom solid var(--lineWidth) var(--faceDivider)
 
 		> .buttons
-			padding 4px
+			padding 4px 4px 8px
 			width 216px
 			text-align center
 
@@ -324,7 +335,7 @@ export default Vue.extend({
 
 		> .text
 			width 216px
-			padding 4px 8px 8px 8px
+			padding 0 8px 8px
 
 			> input
 				width 100%
