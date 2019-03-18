@@ -1,5 +1,5 @@
-const { default: DriveFile } = require('../../built/models/drive-file');
-const { default: config } = require('../../built/config');
+const { default: DriveFile } = require('../built/models/drive-file');
+const { default: config } = require('../built/config');
 
 const getExt = file => {
 	const [x] = (file.filename.match(/\.([a-zA-Z0-9_-]+)$/) || []);
