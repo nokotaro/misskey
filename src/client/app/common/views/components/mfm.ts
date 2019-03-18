@@ -10,6 +10,7 @@ import MkCode from './code.vue';
 import MkGoogle from './google.vue';
 import { host } from '../../../config';
 import { preorderF, countNodesF } from '../../../../../prelude/tree';
+import * as config from '../../../config';
 
 function sumTextsLength(ts: MfmForest): number {
 	const textNodes = preorderF(ts).filter(n => n.type === 'text');
@@ -278,7 +279,8 @@ export default Vue.component('misskey-flavored-markdown', {
 						key: Math.random(),
 						attrs: {
 							emoji: token.node.props.emoji,
-							name: token.node.props.name
+							name: token.node.props.name,
+							config
 						},
 						props: {
 							customEmojis: this.customEmojis || customEmojis,

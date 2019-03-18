@@ -30,6 +30,7 @@ import { sum } from '../prelude/array';
 import User from '../models/user';
 import Logger from '../services/logger';
 import { program } from '../argv';
+import Emoji from '../models/emoji';
 
 export const serverLogger = new Logger('server', 'gray', false);
 
@@ -77,6 +78,20 @@ router.use(activityPub.routes());
 router.use(nodeinfo.routes());
 router.use(ostatus.routes());
 router.use(wellKnown.routes());
+
+router.get('/assets/emojis/:name', async ctx => {
+	const name = ctx.params.name || '';
+	const emoji =
+		await Emoji.findOne({ name }) ||
+		await Emoji.findOne({
+			aliases: { $in: [name] }
+		});
+
+	if (emoji)
+		ctx.redirect(emoji.url);
+	else
+		ctx.status = 404;
+});
 
 router.get('/verify-email/:code', async ctx => {
 	const user = await User.findOne({ emailVerifyCode: ctx.params.code });
