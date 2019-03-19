@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as mongodb from 'mongodb';
 import * as crypto from 'crypto';
 import * as Minio from 'minio';
+import { storage } from 'pkgcloud';
 import * as uuid from 'uuid';
 import * as sharp from 'sharp';
 import fileType from 'file-type';
@@ -27,8 +28,6 @@ import { IImage, ConvertToJpeg, ConvertToWebp, ConvertToPng } from './image-proc
 import Instance from '../../models/instance';
 import checkSvg from '../../misc/check-svg';
 import { contentDisposition } from '../../misc/content-disposition';
-
-const SwiftClient = require('openstack-swift-client'); // ToDo: typings
 
 const logger = driveLogger.createSubLogger('register', 'yellow');
 
@@ -279,21 +278,33 @@ async function uploadMinio(key: string, stream: fs.ReadStream | Buffer, type: st
 	await minio.putObject(config.drive.bucket, key, stream, null, metadata);
 }
 
-async function uploadSwift(key: string, stream: fs.ReadStream, type: string) {
-		const auth = new SwiftClient.SwiftAuthenticator(config.drive.config.authUrl, config.drive.config.username, config.drive.config.password);
-		const swift = new SwiftClient(auth);
+function uploadSwift(key: string, stream: fs.ReadStream, type: string) {
+	return new Promise<void>(async (s, j) => {
+		try {
+			const swift = storage.createClient(config.drive.config);
 
-		logger.debug('swift client created');
+			logger.debug('swift client created');
 
-		const container = swift.create(config.drive.container || 'twista', true);
+			const container = config.drive.container || 'twista';
 
-		logger.debug('swift container ready');
+			if (await new Promise<storage.Container>(x => swift.getContainer(container, (err, container) => x(err ? null : container))))
+				await new Promise<storage.Container>(x => swift.createContainer(container, (err, container) => x(err ? null : container)));
 
-		await container.create(key, stream, {}, {
-			'Content-Type': type
-		});
+			logger.debug('swift container ready');
 
-		logger.debug('swift file uploaded');
+			stream.pipe(swift.upload({
+				container,
+				remote: key,
+				...({
+					contentType: type
+				})
+			})).on('finish', s);
+
+			logger.debug('swift file uploading');
+		} catch (e) {
+			j(e);
+		}
+	});
 }
 
 /**
