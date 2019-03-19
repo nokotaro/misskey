@@ -1,5 +1,4 @@
 import * as Minio from 'minio';
-import { storage } from 'pkgcloud';
 import DriveFile, { DriveFileChunk, IDriveFile } from '../../models/drive-file';
 import DriveFileThumbnail, { DriveFileThumbnailChunk } from '../../models/drive-file-thumbnail';
 import config from '../../config';
@@ -9,6 +8,8 @@ import instanceChart from '../../services/chart/instance';
 import DriveFileWebpublic, { DriveFileWebpublicChunk } from '../../models/drive-file-webpublic';
 import Instance from '../../models/instance';
 import { isRemoteUser } from '../../models/user';
+
+const SwiftClient = require('openstack-swift-client'); // ToDo: typings
 
 export default async function(file: IDriveFile, isExpired = false) {
 	if (file.metadata.storage == 'minio') {
@@ -33,14 +34,15 @@ export default async function(file: IDriveFile, isExpired = false) {
 	}
 
 	if (file.metadata.storage == 'swift') {
-		const swift = storage.createClient(config.drive.config);
+		const auth = new SwiftClient.SwiftAuthenticator(config.drive.config.authUrl, config.drive.config.username, config.drive.config.password);
+		const swift = new SwiftClient(auth);
 
-		const remove = (x: string) => new Promise<boolean>(s => x ? swift.removeFile(config.drive.container, x, e => s(!e)) : s(false));
+		const container = swift.create(config.drive.container || 'twista', true);
 
 		await Promise.all([
-			remove(file.metadata.storageProps.key),
-			remove(file.metadata.storageProps.webpublicKey),
-			remove(file.metadata.storageProps.thumbnailKey)
+			container.delete(file.metadata.storageProps.key),
+			container.delete(file.metadata.storageProps.webpublicKey),
+			container.delete(file.metadata.storageProps.thumbnailKey)
 		]);
 	}
 
