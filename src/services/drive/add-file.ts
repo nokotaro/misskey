@@ -147,7 +147,7 @@ async function save(path: string, name: string, type: string, hash: string, size
 			webpublicUrl = `${config.drive.baseUrl}/${config.drive.container}/${webpublicKey}`;
 
 			logger.info(`uploading webpublic: ${webpublicKey}`);
-			uploads.push(uploadSwift(webpublicKey, alts.webpublic.data, alts.webpublic.type));
+			uploads.push(uploadSwift(webpublicKey, fs.createReadStream(alts.webpublic.data), alts.webpublic.type));
 		}
 
 		if (alts.thumbnail) {
@@ -155,7 +155,7 @@ async function save(path: string, name: string, type: string, hash: string, size
 			thumbnailUrl = `${config.drive.baseUrl}/${config.drive.container}/${thumbnailKey}`;
 
 			logger.info(`uploading thumbnail: ${thumbnailKey}`);
-			uploads.push(uploadSwift(thumbnailKey, alts.thumbnail.data, alts.thumbnail.type));
+			uploads.push(uploadSwift(thumbnailKey, fs.createReadStream(alts.thumbnail.data), alts.thumbnail.type));
 		}
 
 		await Promise.all(uploads);
@@ -278,18 +278,19 @@ async function uploadMinio(key: string, stream: fs.ReadStream | Buffer, type: st
 	await minio.putObject(config.drive.bucket, key, stream, null, metadata);
 }
 
-function uploadSwift(key: string, stream: fs.ReadStream | Buffer, type: string) {
+function uploadSwift(key: string, stream: fs.ReadStream, type: string) {
 	return new Promise<void>(async (s, j) => {
 		try {
 			const swift = storage.createClient(config.drive.config);
+
+			logger.debug('swift client created');
 
 			const container = config.drive.container || 'twista';
 
 			if (await new Promise<storage.Container>(x => swift.getContainer(container, (err, container) => x(err ? null : container))))
 				await new Promise<storage.Container>(x => swift.createContainer(container, (err, container) => x(err ? null : container)));
 
-			if (Buffer.isBuffer(stream))
-				stream = fs.createReadStream(stream);
+			logger.debug('swift container ready');
 
 			stream.pipe(swift.upload({
 				container,
@@ -298,6 +299,8 @@ function uploadSwift(key: string, stream: fs.ReadStream | Buffer, type: string) 
 					contentType: type
 				})
 			})).on('finish', s);
+
+			logger.debug('swift file uploading');
 		} catch (e) {
 			j(e);
 		}
