@@ -943,12 +943,6 @@ desktop/views/input-dialog.vue:
   cancel: "キャンセル"
   ok: "決定"
 
-desktop/views/components/messaging-room-window.vue:
-  title: "メッセージ:"
-
-desktop/views/components/messaging-window.vue:
-  title: "メッセージ"
-
 desktop/views/components/note-detail.vue:
   private: "この投稿は非公開です"
   deleted: "この投稿は削除されました"
@@ -1123,7 +1117,7 @@ desktop/views/components/timeline.vue:
   imasHybrid: "ホーム+アイマス"
   global: "グローバル"
   mentions: "あなた宛て"
-  messages: "メッセージ"
+  messages: "ダイレクト投稿"
   list: "リスト"
   hashtag: "ハッシュタグ"
   add-tag-timeline: "ハッシュタグを追加"
@@ -1558,9 +1552,6 @@ desktop/views/pages/user/user.timeline.vue:
   with-media: "メディア"
   my-posts: "私の投稿"
 
-desktop/views/widgets/messaging.vue:
-  title: "メッセージ"
-
 desktop/views/widgets/notifications.vue:
   title: "通知"
 
@@ -1711,7 +1702,7 @@ mobile/views/pages/home.vue:
   imasHybrid: "ホーム+アイマス"
   global: "グローバル"
   mentions: "あなた宛て"
-  messages: "メッセージ"
+  messages: "ダイレクト投稿"
 
 mobile/views/pages/tag.vue:
   no-posts-found: "ハッシュタグ「{q}」が付けられた投稿は見つかりませんでした。"
