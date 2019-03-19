@@ -1,5 +1,6 @@
 import { Buffer } from 'buffer';
 import * as fs from 'fs';
+import * as stream from 'stream';
 
 import * as mongodb from 'mongodb';
 import * as crypto from 'crypto';
@@ -147,7 +148,7 @@ async function save(path: string, name: string, type: string, hash: string, size
 			webpublicUrl = `${config.drive.baseUrl}/${config.drive.container}/${webpublicKey}`;
 
 			logger.info(`uploading webpublic: ${webpublicKey}`);
-			uploads.push(uploadSwift(webpublicKey, fs.createReadStream(alts.webpublic.data), alts.webpublic.type));
+			uploads.push(uploadSwift(webpublicKey, alts.webpublic.data, alts.webpublic.type));
 		}
 
 		if (alts.thumbnail) {
@@ -155,7 +156,7 @@ async function save(path: string, name: string, type: string, hash: string, size
 			thumbnailUrl = `${config.drive.baseUrl}/${config.drive.container}/${thumbnailKey}`;
 
 			logger.info(`uploading thumbnail: ${thumbnailKey}`);
-			uploads.push(uploadSwift(thumbnailKey, fs.createReadStream(alts.thumbnail.data), alts.thumbnail.type));
+			uploads.push(uploadSwift(thumbnailKey, alts.thumbnail.data, alts.thumbnail.type));
 		}
 
 		await Promise.all(uploads);
@@ -278,7 +279,7 @@ async function uploadMinio(key: string, stream: fs.ReadStream | Buffer, type: st
 	await minio.putObject(config.drive.bucket, key, stream, null, metadata);
 }
 
-function uploadSwift(key: string, stream: fs.ReadStream, type: string) {
+function uploadSwift(key: string, streamOrBuffer: fs.ReadStream | Buffer, type: string) {
 	return new Promise<void>(async (s, j) => {
 		try {
 			const swift = storage.createClient(config.drive.config);
@@ -292,7 +293,13 @@ function uploadSwift(key: string, stream: fs.ReadStream, type: string) {
 
 			logger.debug('swift container ready');
 
-			stream.pipe(swift.upload({
+			const piped: stream.Readable = Buffer.isBuffer(streamOrBuffer) ? (x => {
+				const y = new stream.PassThrough();
+				y.end(x);
+				return y;
+			})(streamOrBuffer) : streamOrBuffer;
+
+			piped.pipe(swift.upload({
 				container,
 				remote: key,
 				...({
