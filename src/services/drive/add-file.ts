@@ -129,7 +129,7 @@ async function save(path: string, name: string, type: string, hash: string, size
 		}
 
 		const key = `${uuid.v4()}${ext}`;
-		const url = `${config.drive.baseUrl}/${config.drive.container}/${key}`;
+		const url = `${config.driveUrl}/swift/${config.drive.container}/${key}`;
 
 		let webpublicKey = null as string;
 		let webpublicUrl = null as string;
@@ -145,7 +145,7 @@ async function save(path: string, name: string, type: string, hash: string, size
 
 		if (alts.webpublic) {
 			webpublicKey = `${uuid.v4()}.${alts.webpublic.ext}`;
-			webpublicUrl = `${config.drive.baseUrl}/${config.drive.container}/${webpublicKey}`;
+			webpublicUrl = `${config.driveUrl}/swift/${config.drive.container}/${webpublicKey}`;
 
 			logger.info(`uploading webpublic: ${webpublicKey}`);
 			uploads.push(uploadSwift(webpublicKey, alts.webpublic.data, alts.webpublic.type));
@@ -153,7 +153,7 @@ async function save(path: string, name: string, type: string, hash: string, size
 
 		if (alts.thumbnail) {
 			thumbnailKey = `${uuid.v4()}.${alts.thumbnail.ext}`;
-			thumbnailUrl = `${config.drive.baseUrl}/${config.drive.container}/${thumbnailKey}`;
+			thumbnailUrl = `${config.driveUrl}/swift/${config.drive.container}/${thumbnailKey}`;
 
 			logger.info(`uploading thumbnail: ${thumbnailKey}`);
 			uploads.push(uploadSwift(thumbnailKey, alts.thumbnail.data, alts.thumbnail.type));
@@ -279,7 +279,7 @@ async function uploadMinio(key: string, stream: fs.ReadStream | Buffer, type: st
 	await minio.putObject(config.drive.bucket, key, stream, null, metadata);
 }
 
-function uploadSwift(key: string, streamOrBuffer: fs.ReadStream | Buffer, type: string) {
+function uploadSwift(key: string, streamOrBuffer: fs.ReadStream | Buffer, type: string, filename?: string) {
 	return new Promise<void>(async (s, j) => {
 		try {
 			const swift = storage.createClient(config.drive.config);
@@ -303,7 +303,12 @@ function uploadSwift(key: string, streamOrBuffer: fs.ReadStream | Buffer, type: 
 				container,
 				remote: key,
 				...({
-					contentType: type
+					contentType: type,
+					headers: {
+						...(filename ? {
+							'Content-Disposition': contentDisposition('inline', filename)
+						} : {})
+					}
 				})
 			})).on('finish', s);
 
