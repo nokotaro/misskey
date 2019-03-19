@@ -127,8 +127,8 @@ async function save(path: string, name: string, type: string, hash: string, size
 			if (type === 'image/webp') ext = '.webp';
 		}
 
-		const key = `${config.drive.prefix}/${uuid.v4()}${ext}`;
-		const url = `${config.drive.baseUrl}/${key}`;
+		const key = `${uuid.v4()}${ext}`;
+		const url = `${config.drive.baseUrl}/${config.drive.container}/${key}`;
 
 		let webpublicKey = null as string;
 		let webpublicUrl = null as string;
@@ -143,16 +143,16 @@ async function save(path: string, name: string, type: string, hash: string, size
 		];
 
 		if (alts.webpublic) {
-			webpublicKey = `${config.drive.prefix}/${uuid.v4()}.${alts.webpublic.ext}`;
-			webpublicUrl = `${config.drive.baseUrl}/${webpublicKey}`;
+			webpublicKey = `${uuid.v4()}.${alts.webpublic.ext}`;
+			webpublicUrl = `${config.drive.baseUrl}/${config.drive.container}/${webpublicKey}`;
 
 			logger.info(`uploading webpublic: ${webpublicKey}`);
 			uploads.push(uploadSwift(webpublicKey, alts.webpublic.data, alts.webpublic.type));
 		}
 
 		if (alts.thumbnail) {
-			thumbnailKey = `${config.drive.prefix}/${uuid.v4()}.${alts.thumbnail.ext}`;
-			thumbnailUrl = `${config.drive.baseUrl}/${thumbnailKey}`;
+			thumbnailKey = `${uuid.v4()}.${alts.thumbnail.ext}`;
+			thumbnailUrl = `${config.drive.baseUrl}/${config.drive.container}/${thumbnailKey}`;
 
 			logger.info(`uploading thumbnail: ${thumbnailKey}`);
 			uploads.push(uploadSwift(thumbnailKey, alts.thumbnail.data, alts.thumbnail.type));
