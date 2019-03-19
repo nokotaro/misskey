@@ -35,8 +35,8 @@ export default Vue.extend({
 		style(): any {
 			if (!this.$store.getters.isSignedIn || this.$store.state.i.wallpaperUrl == null) return {};
 			return {
-				backgroundColor: this.$store.state.i.wallpaperColor && this.$store.state.i.wallpaperColor.length == 3 ? `rgb(${ this.$store.state.i.wallpaperColor.join(',') })` : null,
-				backgroundImage: `url(${ this.$store.state.i.wallpaperUrl })`
+				backgroundColor: this.$store.state.i.wallpaperColor && this.$store.state.i.wallpaperColor.length == 3 ? `rgb(${this.$store.state.i.wallpaperColor.join(',')})` : null,
+				backgroundImage: `url(${this.$store.state.i.wallpaperUrl})`
 			};
 		},
 

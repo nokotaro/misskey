@@ -114,8 +114,8 @@ export default Vue.extend({
 		style(): any {
 			if (this.user.bannerUrl == null) return {};
 			return {
-				backgroundColor: this.user.bannerColor && this.user.bannerColor.length == 3 ? `rgb(${ this.user.bannerColor.join(',') })` : null,
-				backgroundImage: `url(${ this.user.bannerUrl })`
+				backgroundColor: this.user.bannerColor && this.user.bannerColor.length == 3 ? `rgb(${this.user.bannerColor.join(',')})` : null,
+				backgroundImage: `url(${this.user.bannerUrl})`
 			};
 		}
 	},

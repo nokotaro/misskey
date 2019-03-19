@@ -21,7 +21,7 @@
 		<img src="/assets/label-red.svg"/>
 		<p>{{ $t('nsfw') }}</p>
 	</div>
-	<div class="thumbnail" ref="thumbnail" :style="`background-color: ${ background }`">
+	<div class="thumbnail" ref="thumbnail" :style="`background-color: ${background}`">
 		<img :src="file.thumbnailUrl" alt="" @load="onThumbnailLoaded"/>
 	</div>
 	<p class="name">

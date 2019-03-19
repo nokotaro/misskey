@@ -76,7 +76,7 @@ export default define({
 			if (this.images.length == 0) return;
 
 			const index = Math.floor(Math.random() * this.images.length);
-			const img = `url(${ this.images[index].url })`;
+			const img = `url(${this.images[index].url})`;
 
 			(this.$refs.slideB as any).style.backgroundImage = img;
 

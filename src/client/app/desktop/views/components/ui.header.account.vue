@@ -8,7 +8,7 @@
 		<div class="menu" v-if="isOpen">
 			<ul>
 				<li>
-					<router-link :to="`/@${ $store.state.i.username }`">
+					<router-link :to="`/@${$store.state.i.username}`">
 						<i><fa icon="user" fixed-width/></i>
 						<span>{{ $t('profile') }}</span>
 						<i><fa icon="angle-right"/></i>

@@ -5,7 +5,7 @@
 		<template #func><button @click="toggle" :title="$t('toggle')"><fa icon="sort"/></button></template>
 
 		<div class="qpdmibaztplkylerhdbllwcokyrfxeyj" :class="{ dual: props.view == 0 }">
-			<svg :viewBox="`0 0 ${ viewBoxX } ${ viewBoxY }`" v-show="props.view != 2">
+			<svg :viewBox="`0 0 ${viewBoxX} ${viewBoxY}`" v-show="props.view != 2">
 				<defs>
 					<linearGradient :id="localGradientId" x1="0" x2="0" y1="1" y2="0">
 						<stop offset="0%" stop-color="hsl(200, 80%, 70%)"></stop>
@@ -31,10 +31,10 @@
 				<rect
 					x="-2" y="-2"
 					:width="viewBoxX + 4" :height="viewBoxY + 4"
-					:style="`stroke: none; fill: url(#${ localGradientId }); mask: url(#${ localMaskId })`"/>
+					:style="`stroke: none; fill: url(#${localGradientId}); mask: url(#${localMaskId})`"/>
 				<text x="1" y="5">Local</text>
 			</svg>
-			<svg :viewBox="`0 0 ${ viewBoxX } ${ viewBoxY }`" v-show="props.view != 1">
+			<svg :viewBox="`0 0 ${viewBoxX} ${viewBoxY}`" v-show="props.view != 1">
 				<defs>
 					<linearGradient :id="fediGradientId" x1="0" x2="0" y1="1" y2="0">
 						<stop offset="0%" stop-color="hsl(200, 80%, 70%)"></stop>
@@ -60,7 +60,7 @@
 				<rect
 					x="-2" y="-2"
 					:width="viewBoxX + 4" :height="viewBoxY + 4"
-					:style="`stroke: none; fill: url(#${ fediGradientId }); mask: url(#${ fediMaskId })`"/>
+					:style="`stroke: none; fill: url(#${fediGradientId}); mask: url(#${fediMaskId})`"/>
 				<text x="1" y="5">Fedi</text>
 			</svg>
 		</div>
@@ -150,8 +150,8 @@ export default define({
 			this.fediPolylinePoints = fediPolylinePoints.map(xy => `${xy[0]},${xy[1]}`).join(' ');
 			this.localPolylinePoints = localPolylinePoints.map(xy => `${xy[0]},${xy[1]}`).join(' ');
 
-			this.fediPolygonPoints = `${this.viewBoxX - (stats.length - 1)},${ this.viewBoxY } ${ this.fediPolylinePoints } ${ this.viewBoxX },${ this.viewBoxY }`;
-			this.localPolygonPoints = `${this.viewBoxX - (stats.length - 1)},${ this.viewBoxY } ${ this.localPolylinePoints } ${ this.viewBoxX },${ this.viewBoxY }`;
+			this.fediPolygonPoints = `${this.viewBoxX - (stats.length - 1)},${this.viewBoxY} ${this.fediPolylinePoints} ${this.viewBoxX},${this.viewBoxY}`;
+			this.localPolygonPoints = `${this.viewBoxX - (stats.length - 1)},${this.viewBoxY} ${this.localPolylinePoints} ${this.viewBoxX},${this.viewBoxY}`;
 
 			this.fediHeadX = fediPolylinePoints[fediPolylinePoints.length - 1][0];
 			this.fediHeadY = fediPolylinePoints[fediPolylinePoints.length - 1][1];

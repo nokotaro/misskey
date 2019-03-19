@@ -43,7 +43,7 @@
 				<a @click="followRequests"><fa :icon="['far', 'envelope']"/><i v-if="$store.state.i.pendingReceivedFollowRequestsCount">{{ $store.state.i.pendingReceivedFollowRequestsCount }}</i></a>
 			</div>
 			<div class="account">
-				<router-link :to="`/@${ $store.state.i.username }`">
+				<router-link :to="`/@${$store.state.i.username}`">
 					<mk-avatar class="avatar" :user="$store.state.i"/>
 				</router-link>
 			</div>
@@ -150,7 +150,7 @@ export default Vue.extend({
 		list() {
 			const w = this.$root.new(MkUserListsWindow);
 			w.$once('choosen', list => {
-				this.$router.push(`i/lists/${ list.id }`);
+				this.$router.push(`i/lists/${list.id}`);
 			});
 		},
 

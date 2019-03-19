@@ -1,5 +1,5 @@
 <template>
-<a class="vupkuhvjnjyqaqhsiogfbywvjxynrgsm" @click.prevent="onClick" :href="`/i/drive/file/${ file.id }`" :data-is-selected="isSelected">
+<a class="vupkuhvjnjyqaqhsiogfbywvjxynrgsm" @click.prevent="onClick" :href="`/i/drive/file/${file.id}`" :data-is-selected="isSelected">
 	<div class="container">
 		<div class="thumbnail" :style="thumbnail"></div>
 		<div class="body">

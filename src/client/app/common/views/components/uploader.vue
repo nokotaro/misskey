@@ -2,7 +2,7 @@
 <div class="mk-uploader">
 	<ol v-if="uploads.length > 0">
 		<li v-for="ctx in uploads" :key="ctx.id">
-			<div class="img" :style="{ backgroundImage: `url(${ ctx.img })` }"></div>
+			<div class="img" :style="{ backgroundImage: `url(${ctx.img})` }"></div>
 			<p class="name"><fa icon="spinner" pulse/>{{ ctx.name }}</p>
 			<p class="status">
 				<span class="initing" v-if="ctx.progress == undefined">{{ $t('waiting') }}<mk-ellipsis/></span>

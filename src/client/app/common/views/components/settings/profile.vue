@@ -171,8 +171,8 @@ export default Vue.extend({
 		bannerStyle(): any {
 			if (this.$store.state.i.bannerUrl == null) return {};
 			return {
-				backgroundColor: this.$store.state.i.bannerColor && this.$store.state.i.bannerColor.length == 3 ? `rgb(${ this.$store.state.i.bannerColor.join(',') })` : null,
-				backgroundImage: `url(${ this.$store.state.i.bannerUrl })`
+				backgroundColor: this.$store.state.i.bannerColor && this.$store.state.i.bannerColor.length == 3 ? `rgb(${this.$store.state.i.bannerColor.join(',')})` : null,
+				backgroundImage: `url(${this.$store.state.i.bannerUrl})`
 			};
 		},
 	},

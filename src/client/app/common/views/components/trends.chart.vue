@@ -1,5 +1,5 @@
 <template>
-<svg :viewBox="`0 0 ${ viewBoxX } ${ viewBoxY }`" style="overflow:visible">
+<svg :viewBox="`0 0 ${viewBoxX} ${viewBoxY}`" style="overflow:visible">
 	<defs>
 		<linearGradient :id="gradientId" x1="0" x2="0" y1="1" y2="0">
 			<stop offset="0%" stop-color="hsl(200, 80%, 70%)"></stop>
@@ -25,7 +25,7 @@
 	<rect
 		x="-10" y="-10"
 		:width="viewBoxX + 20" :height="viewBoxY + 20"
-		:style="`stroke: none; fill: url(#${ gradientId }); mask: url(#${ maskId })`"/>
+		:style="`stroke: none; fill: url(#${gradientId}); mask: url(#${maskId})`"/>
 </svg>
 </template>
 
@@ -79,7 +79,7 @@ export default Vue.extend({
 
 			this.polylinePoints = polylinePoints.map(xy => `${xy[0]},${xy[1]}`).join(' ');
 
-			this.polygonPoints = `0,${ this.viewBoxY } ${ this.polylinePoints } ${ this.viewBoxX },${ this.viewBoxY }`;
+			this.polygonPoints = `0,${this.viewBoxY} ${this.polylinePoints} ${this.viewBoxX},${this.viewBoxY}`;
 
 			this.headX = polylinePoints[polylinePoints.length - 1][0];
 			this.headY = polylinePoints[polylinePoints.length - 1][1];
