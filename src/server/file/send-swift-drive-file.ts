@@ -23,10 +23,18 @@ export default async function(ctx: Koa.BaseContext) {
 	ctx.set('Content-Type', file.contentType);
 	ctx.set('Content-Disposition', contentDisposition('inline', `${file.filename}"`));
 
-	const swift = storage.createClient(config.drive.config);
+	try {
+		const swift = storage.createClient(config.drive.config);
 
-	ctx.body = swift.download({
-		container: ctx.params.container,
-		remote: ctx.params.id
-	});
+		ctx.body = swift.download({
+			container: ctx.params.container,
+			remote: ctx.params.id
+		});
+	} catch (e) {
+		if (e && 399 < e.statusCode && e.statusCode < 500) {
+			ctx.status = 404;
+			return;
+		}
+		throw e;
+	}
 }
