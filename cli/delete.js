@@ -11,7 +11,7 @@ async function main() {
 	}
 
 	for (const file of localFiles) {
-		deleteFile(file);
+		await deleteFile(file);
 	}
 
 	process.exit(0);
