@@ -288,8 +288,10 @@ function uploadSwift(key: string, streamOrBuffer: fs.ReadStream | Buffer, type: 
 
 			const container = config.drive.container || 'twista';
 
-			if (await new Promise<storage.Container>(x => swift.getContainer(container, (err, container) => x(err ? null : container))))
-				await new Promise<storage.Container>(x => swift.createContainer(container, (err, container) => x(err ? null : container)));
+			if (
+				await new Promise<storage.Container>(x => swift.getContainer(container, (err, container) => x(err ? null : container))) ||
+				await new Promise<storage.Container>(x => swift.createContainer(container, (err, container) => x(err ? null : container))))
+				logger.error('failed to create container');
 
 			logger.debug('swift container ready');
 
