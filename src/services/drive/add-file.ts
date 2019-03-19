@@ -310,7 +310,8 @@ function uploadSwift(key: string, streamOrBuffer: fs.ReadStream | Buffer, type: 
 						} : {})
 					}
 				})
-			})).on('finish', s);
+			}).on('success', s)
+				.on('error', j));
 
 			logger.debug('swift file uploading');
 		} catch (e) {
