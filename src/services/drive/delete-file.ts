@@ -1,4 +1,5 @@
 import * as Minio from 'minio';
+import { storage } from 'pkgcloud';
 import DriveFile, { DriveFileChunk, IDriveFile } from '../../models/drive-file';
 import DriveFileThumbnail, { DriveFileThumbnailChunk } from '../../models/drive-file-thumbnail';
 import config from '../../config';
@@ -31,6 +32,18 @@ export default async function(file: IDriveFile, isExpired = false) {
 		}
 	}
 
+	if (file.metadata.storage == 'swift') {
+		const swift = storage.createClient(config.drive.config);
+
+		const remove = (x: string) => new Promise<boolean>(s => x ? swift.removeFile(config.drive.container, x, e => s(!e)) : s(false));
+
+		await Promise.all([
+			remove(file.metadata.storageProps.key),
+			remove(file.metadata.storageProps.webpublicKey),
+			remove(file.metadata.storageProps.thumbnailKey)
+		]);
+	}
+
 	// チャンクをすべて削除
 	await DriveFileChunk.remove({
 		files_id: file._id
@@ -39,7 +52,7 @@ export default async function(file: IDriveFile, isExpired = false) {
 	const set = {
 		metadata: {
 			deletedAt: new Date(),
-			isExpired: isExpired
+			isExpired
 		}
 	} as any;
 

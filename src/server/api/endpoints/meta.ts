@@ -138,7 +138,7 @@ export default define(meta, async (ps, me) => {
 			globalTimeLine: !instance.disableGlobalTimeline,
 			elasticsearch: config.elasticsearch ? true : false,
 			recaptcha: instance.enableRecaptcha,
-			objectStorage: config.drive && config.drive.storage === 'minio',
+			objectStorage: config.drive && ['minio', 'swift'].includes(config.drive.storage),
 			twitter: instance.enableTwitterIntegration,
 			github: instance.enableGithubIntegration,
 			discord: instance.enableDiscordIntegration,
