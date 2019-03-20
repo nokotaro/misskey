@@ -15,7 +15,7 @@
 	</ui-container>
 	<ui-container :body-togglable="true">
 		<template #header><fa icon="chart-bar"/>{{ $t('activity') }}</template>
-		<div style="padding:8px;">
+		<div style="padding:8px">
 			<x-activity :user="user"/>
 		</div>
 	</ui-container>

@@ -93,7 +93,7 @@ export default Vue.component('misskey-flavored-markdown', {
 					const isMany = bigCount > 3;
 					return (createElement as any)('strong', {
 						attrs: {
-							style: `display:inline-block;font-size:${ isMany ? '100%' : '150%' }`
+							style: `display:inline-block;font-size:${isMany ? '100%' : '150%'}`
 						},
 						directives: [this.$store.state.settings.disableAnimatedMfm || isLong || isMany ? {} : {
 							name: 'animate-css',

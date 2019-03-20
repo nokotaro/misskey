@@ -25,7 +25,7 @@
 	<rect
 		x="-10" y="-10"
 		:width="viewBoxX + 20" :height="viewBoxY + 20"
-		:style="`stroke: none; fill: url(#${gradientId}); mask: url(#${maskId})`"/>
+		:style="`fill:url(#${gradientId});mask:url(#${maskId});stroke:none`"/>
 </svg>
 </template>
 

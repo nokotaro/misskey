@@ -7,7 +7,7 @@
 		<div :class="$style.stream" v-if="!fetching && images.length > 0">
 			<div v-for="(image, i) in images" :key="i"
 				:class="$style.img"
-				:style="`background-image: url(${thumbnail(image)})`"
+				:style="`background-image:url(${thumbnail(image)})`"
 				draggable="true"
 				@dragstart="onDragstart(image, $event)"
 			></div>

@@ -1,7 +1,7 @@
 <template>
 <div class="mk-user-preview">
 	<template v-if="u != null">
-		<div class="banner" :style="u.bannerUrl ? `background-image: url(${u.bannerUrl})` : ''"></div>
+		<div class="banner" :style="u.bannerUrl ? `background-image:url(${u.bannerUrl})` : ''"></div>
 		<mk-avatar class="avatar" :user="u" :disable-preview="true"/>
 		<div class="title">
 			<router-link class="name" :to="u | userPage"><mk-user-name :user="u"/></router-link>

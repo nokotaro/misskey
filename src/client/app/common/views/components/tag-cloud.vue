@@ -8,7 +8,7 @@
 				:color="color"
 				:spacing="1">
 			<template slot-scope="{word, text, weight}">
-				<div style="cursor: pointer;" :title="weight">
+				<div style="cursor:pointer" :title="weight">
 					{{ text }}
 				</div>
 			</template>

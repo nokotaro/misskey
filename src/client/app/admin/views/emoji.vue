@@ -30,7 +30,7 @@
 		<template #title><fa :icon="faGrin"/> {{ $t('emojis.title') }}</template>
 		<section v-for="emoji in emojis" class="oryfrbft">
 			<div>
-				<img :src="emoji.url" :alt="emoji.name" style="width: 64px;"/>
+				<img :src="emoji.url" :alt="emoji.name" style="width:64px"/>
 			</div>
 			<div>
 				<ui-horizon-group>

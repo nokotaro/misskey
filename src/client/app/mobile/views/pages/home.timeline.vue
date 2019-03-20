@@ -1,6 +1,6 @@
 <template>
 <div>
-	<ui-container v-if="src == 'home' && alone" :show-header="false" style="margin-bottom:8px;">
+	<ui-container v-if="src == 'home' && alone" :show-header="false" style="margin-bottom:8px">
 		<div class="zrzngnxs">
 			<p>{{ $t('@.empty-timeline-info.follow-users-to-make-your-timeline') }}</p>
 			<router-link to="/explore">{{ $t('@.empty-timeline-info.explore') }}</router-link>

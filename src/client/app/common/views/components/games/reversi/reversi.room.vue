@@ -18,7 +18,7 @@
 
 			<div>
 				<div class="random" v-if="game.settings.map == null"><fa icon="dice"/></div>
-				<div class="board" v-else :style="{ 'grid-template-rows': `repeat(${ game.settings.map.length }, 1fr)`, 'grid-template-columns': `repeat(${ game.settings.map[0].length }, 1fr)` }">
+				<div class="board" v-else :style="{ 'grid-template-rows': `repeat(${ game.settings.map.length },1fr)`, 'grid-template-columns': `repeat(${ game.settings.map[0].length },1fr)` }">
 					<div v-for="(x, i) in game.settings.map.join('')"
 							:data-none="x == ' '"
 							@click="onPixelClick(i, x)">

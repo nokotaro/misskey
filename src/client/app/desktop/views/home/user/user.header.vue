@@ -23,7 +23,7 @@
 		<div class="description">
 			<mfm v-if="user.description" :text="user.description" :is-note="false" :author="user" :i="$store.state.i" :custom-emojis="user.emojis"/>
 			<p v-else class="empty">{{ $t('no-description') }}</p>
-			<x-integrations :user="user" style="margin-top:16px;"/>
+			<x-integrations :user="user" style="margin-top:16px"/>
 		</div>
 		<div class="fields" v-if="user.fields">
 			<dl class="field" v-for="(field, i) in user.fields" :key="i">

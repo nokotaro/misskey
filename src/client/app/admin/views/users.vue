@@ -25,7 +25,7 @@
 						<ui-button @click="unsuspendUser" :disabled="unsuspending">{{ $t('unsuspend') }}</ui-button>
 					</ui-horizon-group>
 					<ui-button v-if="user.host != null" @click="updateRemoteUser"><fa :icon="faSync"/> {{ $t('update-remote-user') }}</ui-button>
-					<ui-textarea v-if="user" :value="user | json5" readonly tall style="margin-top:16px;"></ui-textarea>
+					<ui-textarea v-if="user" :value="user | json5" readonly tall style="margin-top:16px"></ui-textarea>
 				</div>
 			</div>
 		</section>

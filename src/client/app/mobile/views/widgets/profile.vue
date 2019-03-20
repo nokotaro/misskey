@@ -2,7 +2,7 @@
 <div class="mkw-profile">
 	<ui-container>
 		<div :class="$style.banner"
-			:style="$store.state.i.bannerUrl ? `background-image: url(${$store.state.i.bannerUrl})` : ''"
+			:style="$store.state.i.bannerUrl ? `background-image:url(${$store.state.i.bannerUrl})` : ''"
 		></div>
 		<img :class="$style.avatar"
 			:src="$store.state.i.avatarUrl"

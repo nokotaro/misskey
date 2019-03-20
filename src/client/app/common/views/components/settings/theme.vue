@@ -63,15 +63,15 @@
 				</ui-textarea>
 			</div>
 			<div>
-				<div style="padding-bottom:8px;">{{ $t('primary-color') }}:</div>
+				<div style="padding-bottom:8px">{{ $t('primary-color') }}:</div>
 				<color-picker v-model="myThemePrimary"/>
 			</div>
 			<div>
-				<div style="padding-bottom:8px;">{{ $t('secondary-color') }}:</div>
+				<div style="padding-bottom:8px">{{ $t('secondary-color') }}:</div>
 				<color-picker v-model="myThemeSecondary"/>
 			</div>
 			<div>
-				<div style="padding-bottom:8px;">{{ $t('text-color') }}:</div>
+				<div style="padding-bottom:8px">{{ $t('text-color') }}:</div>
 				<color-picker v-model="myThemeText"/>
 			</div>
 			<ui-button @click="preview()"><fa icon="eye"/> {{ $t('preview-created-theme') }}</ui-button>
@@ -81,7 +81,7 @@
 		<details>
 			<summary><fa icon="download"/> {{ $t('install-a-theme') }}</summary>
 			<ui-button @click="import_()"><fa icon="file-import"/> {{ $t('import') }}</ui-button>
-			<input ref="file" type="file" accept=".misskeytheme" style="display:none;" @change="onUpdateImportFile"/>
+			<input ref="file" type="file" accept=".misskeytheme" style="display:none" @change="onUpdateImportFile"/>
 			<p>{{ $t('import-by-code') }}:</p>
 			<ui-textarea v-model="installThemeCode">
 				<span>{{ $t('theme-code') }}</span>

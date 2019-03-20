@@ -12,7 +12,7 @@
 			</ui-horizon-group>
 			<ui-button @click="findAndDel()"><fa :icon="faTrashAlt"/> {{ $t('delete') }}</ui-button>
 			<ui-button @click="show()"><fa :icon="faSearch"/> {{ $t('lookup') }}</ui-button>
-			<ui-textarea v-if="file" :value="file | json5" readonly tall style="margin-top:16px;"></ui-textarea>
+			<ui-textarea v-if="file" :value="file | json5" readonly tall style="margin-top:16px"></ui-textarea>
 		</section>
 	</ui-card>
 
@@ -47,7 +47,7 @@
 							</header>
 							<div>
 								<div>
-									<span style="margin-right:16px;">{{ file.type }}</span>
+									<span style="margin-right:16px">{{ file.type }}</span>
 									<span>{{ file.datasize | bytes }}</span>
 								</div>
 								<div><mk-time :time="file.createdAt" mode="detail"/></div>

@@ -8,7 +8,7 @@
 		<p class="initializing" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('loading') }}<mk-ellipsis/></p>
 		<div class="stream" v-if="!fetching && images.length > 0">
 			<router-link v-for="image in images" class="img"
-				:style="`background-image: url(${image.thumbnailUrl})`"
+				:style="`background-image:url(${image.thumbnailUrl})`"
 				:key="`${image.id}:${image._note.id}`"
 				:to="image._note | notePage"
 				:title="`${image.name}\n${(new Date(image.createdAt)).toLocaleString()}`"

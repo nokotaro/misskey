@@ -12,7 +12,7 @@
 		<template #header><fa :icon="['far', 'images']"/> {{ $t('images') }}</template>
 		<div class="sainvnaq">
 			<router-link v-for="image in images"
-				:style="`background-image: url(${image.thumbnailUrl})`"
+				:style="`background-image:url(${image.thumbnailUrl})`"
 				:key="`${image.id}:${image._note.id}`"
 				:to="image._note | notePage"
 				:title="`${image.name}\n${(new Date(image.createdAt)).toLocaleString()}`"

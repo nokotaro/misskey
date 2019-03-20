@@ -26,7 +26,7 @@
 		<rect
 			x="-2" y="-2"
 			:width="viewBoxX + 4" :height="viewBoxY + 4"
-			:style="`stroke: none; fill: url(#${cpuGradientId}); mask: url(#${cpuMaskId})`"/>
+			:style="`fill:url(#${cpuGradientId});mask:url(#${cpuMaskId});stroke:none`"/>
 		<text x="1" y="5">CPU <tspan>{{ cpuP }}%</tspan></text>
 	</svg>
 	<svg :viewBox="`0 0 ${viewBoxX} ${viewBoxY}`">
@@ -55,7 +55,7 @@
 		<rect
 			x="-2" y="-2"
 			:width="viewBoxX + 4" :height="viewBoxY + 4"
-			:style="`stroke: none; fill: url(#${memGradientId}); mask: url(#${memMaskId})`"/>
+			:style="`fill:url(#${memGradientId});mask:url(#${memMaskId});stroke:none`"/>
 		<text x="1" y="5">MEM <tspan>{{ memP }}%</tspan></text>
 	</svg>
 </div>

@@ -31,7 +31,7 @@
 				<rect
 					x="-2" y="-2"
 					:width="viewBoxX + 4" :height="viewBoxY + 4"
-					:style="`stroke: none; fill: url(#${localGradientId}); mask: url(#${localMaskId})`"/>
+					:style="`fill:url(#${localGradientId});mask:url(#${localMaskId});stroke:none`"/>
 				<text x="1" y="5">Local</text>
 			</svg>
 			<svg :viewBox="`0 0 ${viewBoxX} ${viewBoxY}`" v-show="props.view != 1">
@@ -60,7 +60,7 @@
 				<rect
 					x="-2" y="-2"
 					:width="viewBoxX + 4" :height="viewBoxY + 4"
-					:style="`stroke: none; fill: url(#${fediGradientId}); mask: url(#${fediMaskId})`"/>
+					:style="`fill:url(#${fediGradientId});mask:url(#${fediMaskId});stroke:none`"/>
 				<text x="1" y="5">Fedi</text>
 			</svg>
 		</div>
