@@ -177,8 +177,8 @@ export default Vue.extend({
 
 		canPost(): boolean {
 			return !this.posting &&
-				(this.text.length ||this.files.length || this.poll || this.renote) &&
-				(length(this.concatenated.trim()) : 1) < this.maxNoteTextLength) &&
+				(this.text.length || this.files.length || this.poll || this.renote) &&
+				length(this.concatenated.trim()) < this.maxNoteTextLength &&
 				(!this.poll || this.pollChoices.length >= 2);
 		}
 	},
