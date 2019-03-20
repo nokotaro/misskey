@@ -13,9 +13,6 @@ DriveFile.createIndex('metadata.uri');
 DriveFile.createIndex('metadata.userId');
 DriveFile.createIndex('metadata.folderId');
 DriveFile.createIndex('metadata._user.host');
-DriveFile.dropIndex('metadata.url', { sparse: true, unique: true });
-DriveFile.dropIndex('metadata.webpublicUrl', { sparse: true, unique: true });
-DriveFile.dropIndex('metadata.thumbnailUrl', { sparse: true, unique: true });
 export default DriveFile;
 
 export const DriveFileChunk = monkDb.get('driveFiles.chunks');
