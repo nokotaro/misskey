@@ -1,13 +1,15 @@
 import Emoji from '../models/emoji';
 
-async function main(name: string, url: string, alias?: string): Promise<any> {
+async function main(name: string, url: string, alias?: string, contentType?: string): Promise<any> {
 	const aliases = alias != null ? [ alias ] : [];
+	contentType = contentType || 'image/png';
 
 	await Emoji.insert({
 		host: null,
 		name,
 		url,
 		aliases,
+		contentType,
 		updatedAt: new Date()
 	});
 }

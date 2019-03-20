@@ -24,6 +24,11 @@ export const meta = {
 		aliases: {
 			validator: $.optional.arr($.str.min(1)),
 			default: [] as string[]
+		},
+
+		contentType: {
+			validator: $.optional.nullable.str,
+			default: 'image/png'
 		}
 	}
 };
@@ -34,6 +39,7 @@ export default define(meta, async (ps) => {
 		name: ps.name,
 		host: null,
 		aliases: ps.aliases,
+		contentType: ps.contentType,
 		url: ps.url
 	});
 

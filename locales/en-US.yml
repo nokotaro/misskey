@@ -1270,6 +1270,8 @@ admin/views/emoji.vue:
     name-desc: "You can use the characters a~z 0~9 _"
     aliases: "Aliases"
     aliases-desc: "You can add more than one, separated by spaces."
+    contentType: "Content-Type"
+    contentType-desc: "The default value is 'image/png'."
     url: "Image URL"
     add: "Add"
     info: "We recommend PNG images under 50KB."

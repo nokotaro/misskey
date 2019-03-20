@@ -977,6 +977,8 @@ admin/views/users.vue:
 admin/views/emoji.vue:
   add-emoji:
     add: "増やす"
+    contentType: "Content-Type"
+    contentType-desc: "デフォルトは image/png や。"
   emojis:
     remove: "削除"
 admin/views/announcements.vue:

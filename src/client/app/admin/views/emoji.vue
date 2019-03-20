@@ -12,6 +12,10 @@
 					<span>{{ $t('add-emoji.aliases') }}</span>
 					<template #desc>{{ $t('add-emoji.aliases-desc') }}</template>
 				</ui-input>
+				<ui-input v-model="contentType">
+					<span>{{ $t('add-emoji.contentType') }}</span>
+					<template #desc>{{ $t('add-emoji.contentType-desc') }}</template>
+				</ui-input>
 			</ui-horizon-group>
 			<ui-input v-model="url">
 				<template #icon><fa icon="link"/></template>
@@ -35,6 +39,9 @@
 					</ui-input>
 					<ui-input v-model="emoji.aliases">
 						<span>{{ $t('add-emoji.aliases') }}</span>
+					</ui-input>
+					<ui-input v-model="emoji.contentType">
+						<span>{{ $t('add-emoji.contentType') }}</span>
 					</ui-input>
 				</ui-horizon-group>
 				<ui-input v-model="emoji.url">
@@ -63,6 +70,7 @@ export default Vue.extend({
 			name: '',
 			url: '',
 			aliases: '',
+			contentType: 'image/png',
 			emojis: [],
 			faGrin
 		};
@@ -77,7 +85,8 @@ export default Vue.extend({
 			this.$root.api('admin/emoji/add', {
 				name: this.name,
 				url: this.url,
-				aliases: this.aliases.split(' ').filter(x => x.length > 0)
+				aliases: this.aliases.split(' ').filter(x => x.length > 0),
+				contentType: this.contentType
 			}).then(() => {
 				this.$root.dialog({
 					type: 'success',
@@ -107,7 +116,8 @@ export default Vue.extend({
 				id: emoji.id,
 				name: emoji.name,
 				url: emoji.url,
-				aliases: emoji.aliases.split(' ').filter(x => x.length > 0)
+				aliases: emoji.aliases.split(' ').filter(x => x.length > 0),
+				contentType: emoji.contentType
 			}).then(() => {
 				this.$root.dialog({
 					type: 'success',

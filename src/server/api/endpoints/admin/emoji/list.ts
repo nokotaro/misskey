@@ -29,6 +29,7 @@ export default define(meta, async (ps) => {
 		id: e._id,
 		name: e.name,
 		aliases: e.aliases,
+		contentType: e.contentType || 'image/png',
 		host: e.host,
 		url: e.url
 	}));

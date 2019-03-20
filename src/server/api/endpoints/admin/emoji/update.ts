@@ -28,6 +28,11 @@ export const meta = {
 
 		aliases: {
 			validator: $.arr($.str)
+		},
+
+		contentType: {
+			validator: $.optional.nullable.str,
+			default: null as string
 		}
 	}
 };
@@ -44,6 +49,7 @@ export default define(meta, async (ps) => {
 			updatedAt: new Date(),
 			name: ps.name,
 			aliases: ps.aliases,
+			contentType: ps.contentType || emoji.contentType || 'image/png',
 			url: ps.url
 		}
 	});

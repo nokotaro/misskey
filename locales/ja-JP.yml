@@ -1398,6 +1398,8 @@ admin/views/emoji.vue:
     name-desc: "a~z 0~9 _ の文字が使えます。"
     aliases: "エイリアス"
     aliases-desc: "スペースで区切って複数設定できます。"
+    contentType: "Content-Type"
+    contentType-desc: "デフォルトは image/png です。"
     url: "絵文字画像URL"
     add: "追加"
     info: "50KB以下のPNG画像をおすすめします。"
