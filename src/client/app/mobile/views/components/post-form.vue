@@ -36,7 +36,8 @@
 				<button class="drive" @click="chooseFileFromDrive"><fa icon="cloud"/></button>
 				<button class="kao" @click="kao"><fa icon="cat"/></button>
 				<button class="poll" @click="poll = true"><fa icon="poll-h"/></button>
-				<button class="poll" @click="useCw = !useCw"><fa :icon="['far', 'eye-slash']"/></button>
+				<button class="cw" @click="useCw = !useCw"><fa :icon="['far', 'eye-slash']"/></button>
+				<button class="broadcast" @click="useBroadcast = !useBroadcast"><fa icon="bullhorn"/></button>
 				<button class="geo" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa icon="map-marker-alt"/></button>
 				<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
 					<span v-if="rating === null"><fa :icon="['far', 'eye']"/></span>
@@ -115,6 +116,8 @@ export default Vue.extend({
 			poll: false,
 			pollChoices: [],
 			pollMultiple: false,
+			useBroadcast: false,
+			broadcast: '',
 			geo: null,
 			visibility: 'public',
 			visibleUsers: [],
@@ -168,10 +171,14 @@ export default Vue.extend({
 					: this.$t('submit');
 		},
 
+		concatenated(): string {
+			return [this.text, ...(this.useBroadcast && this.broadcast && this.broadcast.length ? [this.broadcast] : [])].join(' ');
+		},
+
 		canPost(): boolean {
 			return !this.posting &&
-				(1 <= this.text.length || 1 <= this.files.length || this.poll || this.renote) &&
-				(this.text.trim().length <= this.maxNoteTextLength) &&
+				(this.text.length ||this.files.length || this.poll || this.renote) &&
+				(length(this.concatenated.trim()) : 1) < this.maxNoteTextLength) &&
 				(!this.poll || this.pollChoices.length >= 2);
 		}
 	},
@@ -368,20 +375,20 @@ export default Vue.extend({
 			this.posting = true;
 			const viaMobile = this.$store.state.settings.disableViaMobile !== true;
 			this.$root.api('notes/create', {
-				text: this.text == '' ? undefined : this.text,
-				fileIds: this.files.length > 0 ? this.files.map(f => f.id) : undefined,
+				text: this.concatenated.length ? this.concatenated : undefined,
+				fileIds: this.files.length ? this.files.map(f => f.id) : undefined,
 				replyId: this.reply ? this.reply.id : undefined,
 				renoteId: this.renote ? this.renote.id : undefined,
 				poll: this.poll ? (this.$refs.poll as any).get() : undefined,
 				cw: this.useCw ? this.cw || '' : undefined,
-				geo: this.geo ? {
+				geo: /*this.geo ? {
 					coordinates: [this.geo.longitude, this.geo.latitude],
 					altitude: this.geo.altitude,
 					accuracy: this.geo.accuracy,
 					altitudeAccuracy: this.geo.altitudeAccuracy,
 					heading: isNaN(this.geo.heading) ? null : this.geo.heading,
 					speed: this.geo.speed,
-				} : null,
+				} : */null,
 				visibility: this.visibility,
 				visibleUserIds: this.visibility == 'specified' ? this.visibleUsers.map(u => u.id) : undefined,
 				localOnly: this.localOnly,

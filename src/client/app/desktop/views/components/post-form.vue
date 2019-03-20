@@ -12,14 +12,14 @@
 			</span>
 			<a @click="addVisibleUser">{{ $t('add-visible-user') }}</a>
 		</div>
-		<div class="hashtags" v-if="recentHashtags.length > 0 && $store.state.settings.suggestRecentHashtags">
+		<div class="hashtags" v-if="recentHashtags.length && $store.state.settings.suggestRecentHashtags">
 			<b>{{ $t('recent-tags') }}:</b>
 			<a v-for="tag in recentHashtags.slice(0, 5)" @click="addTag(tag)" :title="$t('click-to-tagging')">#{{ tag }}</a>
 		</div>
 		<div class="local-only" v-if="localOnly == true">{{ $t('local-only-message') }}</div>
 		<input v-show="useCw" ref="cw" v-model="cw" :placeholder="$t('annotations')" v-autocomplete="{ model: 'cw' }">
 		<div class="textarea">
-			<textarea :class="{ with: (files.length != 0 || poll) }"
+			<textarea :class="{ with: (files.length || poll) }"
 				ref="text" v-model="text" :disabled="posting"
 				@keydown="onKeydown" @paste="onPaste" :placeholder="placeholder"
 				v-autocomplete="{ model: 'text' }"
@@ -27,7 +27,7 @@
 			<button class="emoji" @click="emoji" ref="emoji">
 				<fa :icon="['far', 'laugh']"/>
 			</button>
-			<div class="files" :class="{ with: poll }" v-show="files.length != 0">
+			<div class="files" :class="{ with: poll }" v-show="files.lengt">
 				<x-draggable :list="files" :options="{ animation: 150 }">
 					<div v-for="file in files" :key="file.id">
 						<div class="img" :style="{ backgroundImage: `url(${file.thumbnailUrl})` }" :title="file.name"></div>
@@ -61,7 +61,7 @@
 		<span v-if="visibility === 'followers'"><fa icon="unlock"/></span>
 		<span v-if="visibility === 'specified'"><fa icon="envelope"/></span>
 	</button>
-	<p class="text-count" :class="{ over: trimmedLength(text) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(text) }}</p>
+	<p class="text-count" :class="{ over: trimmedLength(concatenated) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(concatenated) }}</p>
 	<ui-button primary :wait="posting" class="submit" :disabled="!canPost" @click="post">
 		{{ posting ? $t('posting') : submitText }}<mk-ellipsis v-if="posting"/>
 	</ui-button>
@@ -131,7 +131,7 @@ export default Vue.extend({
 			useCw: false,
 			cw: null,
 			useBroadcast: false,
-			broadcast: null,
+			broadcast: '',
 			geo: null,
 			visibility: 'public',
 			visibleUsers: [],
@@ -185,10 +185,14 @@ export default Vue.extend({
 					: this.$t('submit');
 		},
 
+		concatenated(): string {
+			return [this.text, ...(this.useBroadcast && this.broadcast && this.broadcast.length ? [this.broadcast] : [])].join(' ');
+		},
+
 		canPost(): boolean {
 			return !this.posting &&
-				(1 <= this.text.length || 1 <= this.files.length || this.poll || this.renote) &&
-				(length(this.text.trim()) <= this.maxNoteTextLength) &&
+				(this.text.length || this.files.length || this.poll || this.renote) &&
+				(length(this.concatenated.trim()) : 1) < this.maxNoteTextLength) &&
 				(!this.poll || this.pollChoices.length >= 2);
 		}
 	},
@@ -252,6 +256,7 @@ export default Vue.extend({
 				const draft = JSON.parse(localStorage.getItem('drafts') || '{}')[this.draftId];
 				if (draft) {
 					this.text = draft.data.text;
+					this.broadcast = draft.data.broadcast;
 					this.files = draft.data.files;
 					if (draft.data.poll) {
 						this.poll = true;
@@ -473,8 +478,8 @@ export default Vue.extend({
 			this.posting = true;
 
 			this.$root.api('notes/create', {
-				text: this.text == '' ? undefined : this.text + (this.broadcast ? ` ${this.broadcast}` : ''),
-				fileIds: this.files.length > 0 ? this.files.map(f => f.id) : undefined,
+				text: this.concatenated.length ? this.concatenated : undefined,
+				fileIds: this.files.length ? this.files.map(f => f.id) : undefined,
 				replyId: this.reply ? this.reply.id : undefined,
 				renoteId: this.renote ? this.renote.id : undefined,
 				poll: this.poll ? (this.$refs.poll as any).get() : undefined,
@@ -483,14 +488,14 @@ export default Vue.extend({
 				visibleUserIds: this.visibility == 'specified' ? this.visibleUsers.map(u => u.id) : undefined,
 				localOnly: this.localOnly,
 				rating: this.rating,
-				geo: this.geo ? {
+				geo: /*this.geo ? {
 					coordinates: [this.geo.longitude, this.geo.latitude],
 					altitude: this.geo.altitude,
 					accuracy: this.geo.accuracy,
 					altitudeAccuracy: this.geo.altitudeAccuracy,
 					heading: isNaN(this.geo.heading) ? null : this.geo.heading,
 					speed: this.geo.speed,
-				} : null
+				} : */null
 			}).then(data => {
 				this.clear();
 				this.deleteDraft();
@@ -526,6 +531,7 @@ export default Vue.extend({
 				updatedAt: new Date(),
 				data: {
 					text: this.text,
+					broadcast: this.broadcast,
 					files: this.files,
 					poll: this.poll && this.$refs.poll ? (this.$refs.poll as any).get() : undefined
 				}
