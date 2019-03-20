@@ -362,9 +362,10 @@ html.setAttribute('lang', lang);
 
 // iOSでプライベートモードだとlocalStorageが使えないので既存のメソッドを上書きする
 try {
-	localStorage.setItem('kyoppie', 'yuppie');
+	localStorage.setItem('kyoppie', '大石泉すき');
+	localStorage.removeItem('kyoppie');
 } catch (e) {
-	Storage.prototype.setItem = () => { }; // noop
+	Storage.prototype.setItem = () => {}; // noop
 }
 
 // クライアントを更新すべきならする
