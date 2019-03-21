@@ -21,6 +21,16 @@ export default Vue.extend({
 		y: {
 			type: Number,
 			required: true
+		},
+		z: {
+			type: Number,
+			required: false,
+			default: 3000
+		},
+		w: {
+			type: String,
+			required: false,
+			default: 'fixed'
 		}
 	},
 
@@ -42,6 +52,8 @@ export default Vue.extend({
 
 			this.$el.style.left = x + 'px';
 			this.$el.style.top = y + 'px';
+			this.$el.style.zIndex = this.z;
+			this.$el.style.position = this.w;
 
 			for (const el of Array.from(document.querySelectorAll('body *'))) {
 				el.addEventListener('mousedown', this.onMousedown);
@@ -75,10 +87,6 @@ export default Vue.extend({
 
 <style lang="stylus" scoped>
 .gcafiosrssbtbnbzqupfmglvzgiaipyv
-	position fixed
-	top 0
-	left 0
-	z-index 3000
 	box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.3)
 
 </style>
