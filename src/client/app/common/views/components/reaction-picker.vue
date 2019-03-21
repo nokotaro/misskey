@@ -285,7 +285,7 @@ export default Vue.extend({
 
 		> .buttons
 			display grid
-			grid repeat(2, 1fr) / repeat(5, 1fr)
+			grid repeat(2, 1fr) \/ repeat(5, 1fr)
 			padding 4px 4px 8px
 			text-align center
 
