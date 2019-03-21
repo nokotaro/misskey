@@ -15,7 +15,7 @@
 			<button @click="react('rip')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="9" :title="$t('@.reactions.rip')" v-particle><mk-reaction-icon reaction="rip"/></button>
 			<button @click="react('pudding')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="10" :title="$t('@.reactions.pudding')" v-particle><mk-reaction-icon reaction="pudding"/></button>
 		</div>
-		<ui-button v-if="enableEmojiReaction" @click="pickEmoji">{{ $t('react-emoji') }}</ui-button>
+		<ui-button v-if="enableEmojiReaction" @click="pickEmoji" ref="pickButton">{{ $t('react-emoji') }}</ui-button>
 	</div>
 </div>
 </template>
@@ -159,7 +159,7 @@ export default Vue.extend({
 		},
 
 		pickEmoji() {
-			const rect = this.$refs.popover.getBoundingClientRect();
+			const rect = this.$refs.pickButton.getBoundingClientRect();
 			const vm = this.$root.new(EmojiPicker, {
 				x: rect.left,
 				y: rect.top,
