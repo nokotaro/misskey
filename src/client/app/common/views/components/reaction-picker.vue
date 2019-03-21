@@ -163,8 +163,8 @@ export default Vue.extend({
 		pickEmoji() {
 			const rect = this.$refs.pickButton.getBoundingClientRect();
 			const vm = this.$root.new(EmojiPicker, {
-				x: rect.left,
-				y: rect.top,
+				x: rect.left + window.pageXOffset + this.source.offsetWidth / 2,
+				y: rect.top + window.pageYOffset + this.source.offsetHeight,
 				z: 10002,
 				w: 'absolute'
 			});
@@ -253,11 +253,12 @@ export default Vue.extend({
 			> div
 				width 280px
 
-				> button
-					width 50px
-					height 50px
-					font-size 28px
-					border-radius 4px
+				&.buttons
+					> button
+						width 50px
+						height 50px
+						font-size 28px
+						border-radius 4px
 
 		&:not(.isMobile)
 			$arrow-size = 16px
