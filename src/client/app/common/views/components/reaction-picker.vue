@@ -281,10 +281,12 @@ export default Vue.extend({
 			font-size 14px
 			color var(--popupFg)
 			border-bottom solid var(--lineWidth) var(--faceDivider)
+			text-align center
 
 		> .buttons
+			display grid
+			grid repeat(2, 1fr) / repeat(5, 1fr)
 			padding 4px 4px 8px
-			width 216px
 			text-align center
 
 			&.showFocus
@@ -304,8 +306,8 @@ export default Vue.extend({
 
 			> button
 				padding 0
-				width 40px
-				height 40px
+				min-width calc(5em / 3)
+				min-height calc(5em / 3)
 				font-size 24px
 				border-radius 2px
 
@@ -318,30 +320,4 @@ export default Vue.extend({
 				&:active
 					background var(--primary)
 					box-shadow inset 0 0.15em 0.3em rgba(27, 31, 35, 0.15)
-
-		> .text
-			width 216px
-			padding 0 8px 8px
-
-			> input
-				width 100%
-				padding 10px
-				margin 0
-				text-align center
-				font-size 16px
-				color var(--desktopPostFormTextareaFg)
-				background var(--desktopPostFormTextareaBg)
-				outline none
-				border solid 1px var(--primaryAlpha01)
-				border-radius 4px
-				transition border-color .2s ease
-
-				&:hover
-					border-color var(--primaryAlpha02)
-					transition border-color .1s ease
-
-				&:focus
-					border-color var(--primaryAlpha05)
-					transition border-color 0s ease
-
 </style>
