@@ -27,7 +27,7 @@
 			<button class="emoji" @click="emoji" ref="emoji">
 				<fa :icon="['far', 'laugh']"/>
 			</button>
-			<div class="files" :class="{ with: poll }" v-show="files.lengt">
+			<div class="files" :class="{ with: poll }" v-show="files.length">
 				<x-draggable :list="files" :options="{ animation: 150 }">
 					<div v-for="file in files" :key="file.id">
 						<div class="img" :style="{ backgroundImage: `url(${file.thumbnailUrl})` }" :title="file.name"></div>
