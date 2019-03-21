@@ -21,7 +21,7 @@ export default async function(ctx: Koa.BaseContext) {
 	}
 
 	ctx.set('Content-Type', file.contentType);
-	ctx.set('Content-Disposition', contentDisposition('inline', `${file.filename}"`));
+	ctx.set('Content-Disposition', contentDisposition('inline', file.filename));
 
 	try {
 		const swift = storage.createClient(config.drive.config);
