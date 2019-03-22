@@ -161,13 +161,9 @@ export default Vue.extend({
 		},
 
 		pickEmoji() {
-			const rect = this.$refs.pickButton.getBoundingClientRect();
-			const vm = this.$root.new(EmojiPicker, {
-				x: rect.left + window.pageXOffset + this.source.offsetWidth / 2,
-				y: rect.top + window.pageYOffset + this.source.offsetHeight,
-				z: 10002,
-				w: 'absolute'
-			});
+			const { left, top } = (this.$refs.popover as HTMLElement).style;
+			const [x, y, z] = [...([left, top].map(x => parseInt(x.match(/(\d+)/)[1]))), 10002];
+			const vm = this.$root.new(EmojiPicker, { x, y, z });
 			vm.$once('chosen', this.react);
 		},
 

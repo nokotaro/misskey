@@ -30,28 +30,14 @@ export default Vue.extend({
 		w: {
 			type: String,
 			required: false,
-			default: 'fixed'
+			default: 'absolute'
 		}
 	},
 
 	mounted() {
 		this.$nextTick(() => {
-			const width = this.$el.offsetWidth;
-			const height = this.$el.offsetHeight;
-
-			let x = this.x;
-			let y = this.y;
-
-			if (x + width - window.pageXOffset > window.innerWidth) {
-				x = window.innerWidth - width + window.pageXOffset;
-			}
-
-			if (y + height - window.pageYOffset > window.innerHeight) {
-				y = window.innerHeight - height + window.pageYOffset;
-			}
-
-			this.$el.style.left = x + 'px';
-			this.$el.style.top = y + 'px';
+			this.$el.style.left = `${this.x}px`;
+			this.$el.style.top = `${this.y}px`;
 			this.$el.style.zIndex = this.z;
 			this.$el.style.position = this.w;
 
