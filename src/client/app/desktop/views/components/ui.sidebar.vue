@@ -220,7 +220,7 @@ export default Vue.extend({
 
 	position fixed
 	top 0
-	z-index 1000
+	z-index 100000
 	width $width
 	height 100%
 
