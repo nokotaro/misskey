@@ -7,8 +7,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-// スクリプトサイズがデカい
-//import { lib } from 'emojilib';
+import { lib } from 'emojilib';
 import { getStaticImageUrl } from '../../../common/scripts/get-static-image-url';
 import { twemojiBase } from '../../../../../misc/twemoji-base';
 
@@ -68,10 +67,10 @@ export default Vue.extend({
 					? getStaticImageUrl(customEmoji.url)
 					: customEmoji.url;
 			} else {
-				//const emoji = lib[this.name];
-				//if (emoji) {
-				//	this.char = emoji.char;
-				//}
+				const emoji = lib[this.name];
+				if (emoji) {
+					this.char = emoji.char;
+				}
 			}
 		} else {
 			this.char = this.emoji;

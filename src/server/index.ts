@@ -31,6 +31,8 @@ import User from '../models/user';
 import Logger from '../services/logger';
 import { program } from '../argv';
 import Emoji from '../models/emoji';
+import { lib, ordered } from 'emojilib';
+import { twemojiBase } from '../misc/twemoji-base';
 
 export const serverLogger = new Logger('server', 'gray', false);
 
@@ -89,7 +91,10 @@ router.get('/assets/emojis/:name', async ctx => {
 
 	if (emoji)
 		ctx.redirect(emoji.url);
-	else
+	else if (ordered.includes(name)) {
+		const runed = [...lib[name].char].map(x => x.codePointAt(0).toString(16));
+		ctx.redirect(`${twemojiBase}/2/svg/${((runed.includes('200d') ? runed.filter(x => x !== 'fe0f') : runed).filter(x => x && x.length)).join('-')}.svg`);
+	} else
 		ctx.status = 404;
 });
 
