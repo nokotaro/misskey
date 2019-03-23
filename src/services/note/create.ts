@@ -449,6 +449,10 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 			deliver(user, noteActivity, renote._user.inbox);
 		}
 
+		if (note.visibility === 'public') {
+			deliverNoteToImasHosts(user, noteObj);
+		}
+
 		if (['followers', 'specified'].includes(note.visibility)) {
 			const detailPackedNote = await pack(note, user, {
 				detail: true
@@ -693,6 +697,12 @@ async function publishToFollowers(note: INote, user: IUser, noteActivity: any) {
 function deliverNoteToMentionedRemoteUsers(mentionedUsers: IUser[], user: ILocalUser, noteActivity: any) {
 	for (const u of mentionedUsers.filter(u => isRemoteUser(u))) {
 		deliver(user, noteActivity, (u as IRemoteUser).inbox);
+	}
+}
+
+function deliverNoteToImasHosts(user: ILocalUser, noteActivity: any) {
+	for (const x of imasHosts.map(x => `https://${x}/inbox`)) {
+		deliver(user, noteActivity, x);
 	}
 }
 

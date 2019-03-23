@@ -9,6 +9,7 @@ import renderUpdate from '../../../remote/activitypub/renderer/update';
 import { renderActivity } from '../../../remote/activitypub/renderer';
 import { deliver } from '../../../queue';
 import renderNote from '../../../remote/activitypub/renderer/note';
+import { imasHosts } from '../create';
 
 const logger = new Logger('pollsUpdate');
 
@@ -38,7 +39,7 @@ export async function deliverQuestionUpdate(noteId: mongo.ObjectID) {
 		followeeId: user._id
 	});
 
-	const queue: string[] = [];
+	const queue = imasHosts.map(x => `https://${x}/inbox`);
 
 	// フォロワーがリモートユーザーかつ投稿者がローカルユーザーならUpdateを配信
 	if (isLocalUser(user)) {
