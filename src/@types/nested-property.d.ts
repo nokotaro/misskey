@@ -1,5 +1,3 @@
-type Obj = { [key: string]: any };
-
 declare module 'nested-property' {
 	interface IHasNestedPropertyOptions {
 		own?: boolean;
@@ -11,11 +9,11 @@ declare module 'nested-property' {
 
 	export function set<T>(object: T, property: string, value: any): T;
 
-	export function get(object: Obj, property: string): any;
+	export function get(object: Record<string, any>, property: string): any;
 
-	export function has(object: Obj, property: string, options?: IHasNestedPropertyOptions): boolean;
+	export function has(object: Record<string, any>, property: string, options?: IHasNestedPropertyOptions): boolean;
 
-	export function hasOwn(object: Obj, property: string, options?: IHasNestedPropertyOptions): boolean;
+	export function hasOwn(object: Record<string, any>, property: string, options?: IHasNestedPropertyOptions): boolean;
 
-	export function isIn(object: Obj, property: string, objectInPath: Obj, options?: IIsInNestedPropertyOptions): boolean;
+	export function isIn(object: Record<string, any>, property: string, objectInPath: Record<string, any>, options?: IIsInNestedPropertyOptions): boolean;
 }
