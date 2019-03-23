@@ -93,7 +93,7 @@ router.get('/assets/emojis/:name', async ctx => {
 		ctx.redirect(emoji.url);
 	else if (ordered.includes(name)) {
 		const runed = [...lib[name].char].map(x => x.codePointAt(0).toString(16));
-		ctx.redirect(`${twemojiBase}/2/svg/${((runed.includes('200d') ? runed.filter(x => x !== 'fe0f') : runed).filter(x => x && x.length)).join('-')}.svg`);
+		ctx.redirect(`${twemojiBase}/2/svg/${((runed.includes('200d') ? runed : runed.filter(x => x !== 'fe0f')).filter(x => x && x.length)).join('-')}.svg`);
 	} else
 		ctx.status = 404;
 });
