@@ -179,7 +179,6 @@
 		<x-mute-and-block/>
 	</template>
 
-	<!--
 	<template v-if="page == null || page == 'apps'">
 		<ui-card>
 			<template #title><fa icon="puzzle-piece"/> {{ $t('@._settings.apps') }}</template>
@@ -188,7 +187,6 @@
 			</section>
 		</ui-card>
 	</template>
-	-->
 
 	<template v-if="page == null || page == 'security'">
 		<ui-card>

@@ -1,7 +1,7 @@
 <template>
 <div class="root">
-	<ui-info v-if="!fetching && apps.length == 0">{{ $t('no-apps') }}</ui-info>
-	<div class="apps" v-if="apps.length != 0">
+	<ui-info v-if="!fetching && !apps.length">{{ $t('no-apps') }}</ui-info>
+	<div class="apps" v-if="apps.length">
 		<div v-for="app in apps">
 			<p><b>{{ app.name }}</b></p>
 			<p>{{ app.description }}</p>
