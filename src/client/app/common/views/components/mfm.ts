@@ -280,6 +280,7 @@ export default Vue.component('misskey-flavored-markdown', {
 						attrs: {
 							emoji: token.node.props.emoji,
 							name: token.node.props.name,
+							animate: this.$store.state.device.disableShowingAnimatedImages,
 							config
 						},
 						props: {
