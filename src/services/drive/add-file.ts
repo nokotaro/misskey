@@ -8,7 +8,6 @@ import * as Minio from 'minio';
 import { storage } from 'pkgcloud';
 import * as uuid from 'uuid';
 import * as sharp from 'sharp';
-import fileType from 'file-type';
 
 import DriveFile, { IMetadata, getDriveFileBucket, IDriveFile } from '../../models/drive-file';
 import DriveFolder from '../../models/drive-folder';
@@ -27,8 +26,8 @@ import { GenerateVideoThumbnail } from './generate-video-thumbnail';
 import { driveLogger } from './logger';
 import { IImage, ConvertToJpeg, ConvertToWebp, ConvertToPng } from './image-processor';
 import Instance from '../../models/instance';
-import checkSvg from '../../misc/check-svg';
 import { contentDisposition } from '../../misc/content-disposition';
+import { detectMine } from '../../misc/detect-mine';
 
 const logger = driveLogger.createSubLogger('register', 'yellow');
 
@@ -418,33 +417,6 @@ export default async function(
 			});
 	});
 
-	// Detect content type
-	const detectMime = new Promise<[string, string]>((res, rej) => {
-		const readable = fs.createReadStream(path);
-		readable
-			.on('error', rej)
-			.once('data', (buffer: Buffer) => {
-				readable.destroy();
-				const type = fileType(buffer);
-				if (type) {
-					if (type.mime == 'application/xml' && checkSvg(path)) {
-						res(['image/svg+xml', 'svg']);
-					} else {
-						res([type.mime, type.ext]);
-					}
-				} else if (checkSvg(path)) {
-					res(['image/svg+xml', 'svg']);
-				} else {
-					// 種類が同定できなかったら application/octet-stream にする
-					res(['application/octet-stream', null]);
-				}
-			})
-			.on('end', () => {
-				// maybe 0 bytes
-				res(['application/octet-stream', null]);
-			});
-	});
-
 	// Get file size
 	const getFileSize = new Promise<number>((res, rej) => {
 		fs.stat(path, (err, stats) => {
@@ -453,7 +425,7 @@ export default async function(
 		});
 	});
 
-	const [hash, [mime, ext], size] = await Promise.all([calcHash, detectMime, getFileSize]);
+	const [hash, [mime, ext], size] = await Promise.all([calcHash, detectMine(path), getFileSize]);
 
 	logger.info(`hash: ${hash}, mime: ${mime}, ext: ${ext}, size: ${size}`);
 
