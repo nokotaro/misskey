@@ -41,7 +41,7 @@ export default Vue.extend({
 		animate: {
 			type: Boolean,
 			required: false,
-			default: true
+			default: false
 		}
 	},
 

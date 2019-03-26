@@ -28,6 +28,7 @@ const defaultSettings = {
 	disableViaMobile: false,
 	memo: null,
 	iLikeSushi: false,
+	disableAnimatedMfm: false,
 	rememberNoteVisibility: false,
 	defaultNoteVisibility: 'public',
 	webSearchEngine: 'https://www.google.com/?#q={{query}}',
