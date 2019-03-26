@@ -263,7 +263,7 @@ export const pack = async (
 				fields: { _id: false }
 			});
 		} else {
-			_note.emojis = unique(concat([_note.emojis, Object.keys(_note.reactionCounts)]));
+			_note.emojis = unique(concat([_note.emojis, Object.keys(_note.reactionCounts).map(x => x.replace(/:/g, ''))]));
 
 			_note.emojis = Emoji.find({
 				name: { $in: _note.emojis },
