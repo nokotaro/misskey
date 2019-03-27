@@ -5,6 +5,7 @@
 import * as fs from 'fs';
 import * as webpack from 'webpack';
 import chalk from 'chalk';
+import locales from './locales';
 const { VueLoaderPlugin } = require('vue-loader');
 //const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
@@ -23,7 +24,6 @@ const isProduction = process.env.NODE_ENV == 'production';
 
 const constants = require('./src/const.json');
 
-const locales = require('./locales');
 const meta = require('./package.json');
 const codename = meta.codename;
 
