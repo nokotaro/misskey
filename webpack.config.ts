@@ -6,10 +6,12 @@ import * as fs from 'fs';
 import * as webpack from 'webpack';
 import chalk from 'chalk';
 import locales from './locales';
-const { VueLoaderPlugin } = require('vue-loader');
-//const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
-const ProgressBarPlugin = require('progress-bar-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+import { copyright } from './src/const.json';
+import { version, codename } from './package.json';
+import { VueLoaderPlugin } from 'vue-loader';
+// import HardSourceWebpackPlugin from 'hard-source-webpack-plugin';
+const ProgressBarPlugin = require('progress-bar-webpack-plugin'); // import * as ProgressBarPlugin from 'progress-bar-webpack-plugin';
+const TerserPlugin = require('terser-webpack-plugin'); // import * as TerserPlugin from 'terser-webpack-plugin';
 
 class WebpackOnBuildPlugin {
 	constructor(readonly callback: (stats: any) => void) {
@@ -21,11 +23,6 @@ class WebpackOnBuildPlugin {
 }
 
 const isProduction = process.env.NODE_ENV == 'production';
-
-const constants = require('./src/const.json');
-
-const meta = require('./package.json');
-const codename = meta.codename;
 
 const postcss = {
 	loader: 'postcss-loader',
@@ -119,11 +116,12 @@ module.exports = {
 			format: chalk`{cyan.bold Choco is eating a lot} {bold [}:bar{bold ]} {green.bold :percent} {gray (:current/:total)} :elapseds`,
 			complete: '😋',
 			incomplete: '🍚',
+			width: 100,
 			clear: false
 		}),
 		new webpack.DefinePlugin({
-			_COPYRIGHT_: JSON.stringify(constants.copyright),
-			_VERSION_: JSON.stringify(meta.version),
+			_COPYRIGHT_: JSON.stringify(copyright),
+			_VERSION_: JSON.stringify(version),
 			_CODENAME_: JSON.stringify(codename),
 			_LANGS_: JSON.stringify(Object.entries(locales).map(([k, v]: [string, any]) => [k, v && v.meta && v.meta.lang])),
 			_ENV_: JSON.stringify(process.env.NODE_ENV)
@@ -131,8 +129,8 @@ module.exports = {
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development')
 		}),
-		new WebpackOnBuildPlugin((stats: any) => {
-			fs.writeFileSync('./built/client/meta.json', JSON.stringify({ version: meta.version }), 'utf-8');
+		new WebpackOnBuildPlugin(_ => {
+			fs.writeFileSync('./built/client/meta.json', JSON.stringify({ version }), 'utf-8');
 
 			fs.mkdirSync('./built/client/assets/locales', { recursive: true });
 
@@ -144,7 +142,7 @@ module.exports = {
 	],
 	output: {
 		path: __dirname + '/built/client/assets',
-		filename: `[name].${meta.version}.js`,
+		filename: `[name].${version}.js`,
 		publicPath: `/assets/`
 	},
 	resolve: {
@@ -162,6 +160,9 @@ module.exports = {
 		minimizer: [new TerserPlugin()]
 	},
 	cache: true,
-	devtool: false, //'source-map',
-	mode: isProduction ? 'production' : 'development'
+	devtool: false, // 'source-map',
+	mode: isProduction ? 'production' : 'development',
+	performance: {
+		hints: false
+	}
 };
