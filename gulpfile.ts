@@ -3,7 +3,7 @@
  */
 
 import * as gulp from 'gulp';
-import * as gutil from 'gulp-util';
+import * as through2 from 'through2';
 import * as ts from 'gulp-typescript';
 import * as sourcemaps from 'gulp-sourcemaps';
 import tslint from 'gulp-tslint';
@@ -100,7 +100,7 @@ gulp.task('build:client:script', () => {
 		.pipe(replace('LANGS', JSON.stringify(Object.keys(locales))))
 		.pipe(isProduction ? uglify({
 			toplevel: true
-		} as any) : gutil.noop())
+		} as any) : through2())
 		.pipe(gulp.dest('./built/client/assets/'));
 });
 
@@ -108,7 +108,7 @@ gulp.task('build:client:styles', () =>
 	gulp.src('./src/client/app/init.css')
 		.pipe(isProduction
 			? (cssnano as any)()
-			: gutil.noop())
+			: through2())
 		.pipe(gulp.dest('./built/client/assets/'))
 );
 
@@ -118,7 +118,7 @@ gulp.task('copy:client', () =>
 			'./src/client/assets/**/*',
 			'./src/client/app/*/assets/**/*'
 		])
-			.pipe(isProduction ? (imagemin as any)() : gutil.noop())
+			.pipe(isProduction ? (imagemin as any)() : through2())
 			.pipe(rename(path => {
 				path.dirname = path.dirname.replace('assets', '.');
 			}))
