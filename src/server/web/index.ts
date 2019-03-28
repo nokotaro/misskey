@@ -10,7 +10,6 @@ import * as favicon from 'koa-favicon';
 import * as views from 'koa-views';
 import { ObjectID } from 'mongodb';
 
-import docs from './docs';
 import packFeed from './feed';
 import urlPreview from './url-preview';
 import User from '../../models/user';
@@ -84,14 +83,6 @@ router.get('/robots.txt', async ctx => {
 });
 
 //#endregion
-
-// Docs
-router.use('/docs', docs.routes());
-router.get('/api-doc', async ctx => {
-	await send(ctx as any, '/assets/redoc.html', {
-		root: client
-	});
-});
 
 // URL preview endpoint
 router.get('/url', urlPreview);

@@ -1,0 +1,88 @@
+{
+  "name": "pkgcloud",
+  "description": "An infrastructure-as-a-service agnostic cloud library for node.js",
+  "version": "1.7.0",
+  "author": "Charlie Robbins <charlie.robbins@gmail.com>",
+  "contributors": [
+    {
+      "name": "Nuno Job",
+      "email": "nuno@nodejitsu.com"
+    },
+    {
+      "name": "Maciej Malecki",
+      "email": "me@mmalecki.com"
+    },
+    {
+      "name": "Daniel Aristizabal",
+      "email": "daniel@nodejitsu.com"
+    },
+    {
+      "name": "Ken Perkins",
+      "email": "ken.perkins@rackspace.com"
+    },
+    {
+      "name": "Ross Kukulinski",
+      "email": "ross@kukulinski.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/pkgcloud/pkgcloud.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "cloud",
+    "cloud computing",
+    "api",
+    "rackspace",
+    "joyent",
+    "aws",
+    "amazon",
+    "azure",
+    "google",
+    "iaas",
+    "servers",
+    "compute",
+    "storage",
+    "databases",
+    "client",
+    "mongolab",
+    "iriscouch",
+    "mongohq",
+    "openstack",
+    "redistogo",
+    "hpcloud",
+    "hp",
+    "helion"
+  ],
+  "dependencies": {
+    "async": "^2.6.2",
+    "errs": "^0.3.2",
+    "eventemitter2": "^5.0.1",
+    "filed": "^0.1.0",
+    "lodash": "^4.17.11",
+    "mime": "^2.4.0",
+    "path": "^0.12.7",
+    "qs": "^6.7.0",
+    "request": "^2.88.0",
+    "through2": "^3.0.1",
+    "util": "^0.11.1"
+  },
+  "devDependencies": {},
+  "main": "./lib/pkgcloud",
+  "scripts": {
+    "test": "make test",
+    "cov": "make cov",
+    "travis": "make travis",
+    "lint": "make lint"
+  },
+  "config": {
+    "blanket": {
+      "pattern": "/lib/",
+      "data-cover-never": "node_modules"
+    }
+  },
+  "engines": {
+    "node": ">=0.10.x"
+  }
+}

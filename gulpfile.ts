@@ -3,13 +3,13 @@
  */
 
 import * as gulp from 'gulp';
-import * as through2 from 'through2';
 import * as ts from 'gulp-typescript';
 import * as sourcemaps from 'gulp-sourcemaps';
 import tslint from 'gulp-tslint';
-const cssnano = require('gulp-cssnano'); // import * as cssnano from 'gulp-cssnano';
-const stylus = require('gulp-stylus'); // import * as stylus from 'gulp-stylus';
+const postcss = require('gulp-postcss'); // import * as postcss from 'gulp-postcss';
 import * as uglifyComposer from 'gulp-uglify/composer';
+import * as cssnano from 'cssnano';
+import * as through2 from 'through2';
 import * as rimraf from 'rimraf';
 import chalk from 'chalk';
 import * as imagemin from 'gulp-imagemin';
@@ -107,7 +107,9 @@ gulp.task('build:client:script', () => {
 gulp.task('build:client:styles', () =>
 	gulp.src('./src/client/app/init.css')
 		.pipe(isProduction
-			? (cssnano as any)()
+			? postcss([
+				cssnano()
+			])
 			: through2())
 		.pipe(gulp.dest('./built/client/assets/'))
 );
@@ -125,13 +127,6 @@ gulp.task('copy:client', () =>
 			.pipe(gulp.dest('./built/client/assets/'))
 );
 
-gulp.task('doc', () =>
-	gulp.src('./src/docs/**/*.styl')
-		.pipe(stylus())
-		.pipe((cssnano as any)())
-		.pipe(gulp.dest('./built/docs/assets/'))
-);
-
 gulp.task('build:client', gulp.parallel(
 	'build:client:script',
 	'build:client:styles',
@@ -141,8 +136,7 @@ gulp.task('build:client', gulp.parallel(
 gulp.task('build', gulp.parallel(
 	'build:ts',
 	'build:copy',
-	'build:client',
-	'doc'
+	'build:client'
 ));
 
 gulp.task('default', gulp.task('build'));
