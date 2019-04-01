@@ -6100,24 +6100,21 @@ json-stringify-safe@~5.0.1:
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
   integrity sha1-Epai1Y/UXxmg9s4B1lcB4sc1tus=
 
-json5-loader@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/json5-loader/-/json5-loader-1.0.1.tgz#c169f46655dde445cf3906b5eb6eb59615ced1cc"
-  integrity sha1-wWn0ZlXd5EXPOQa16261lhXO0cw=
+json5-loader@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/json5-loader/-/json5-loader-2.0.0.tgz#c14bece91b4b13498ec3c30352a49c20c256fbde"
+  integrity sha512-3b5E/zosR9ZlOHVvIkp6DtC6O+OLFBiYc2NtscmVoO8cnghHC1QbzZJBrrNocNuuxWkMP17Txqfaef4MDVGXCw==
   dependencies:
-    json5 "^0.5.0"
+    json5 "^2.1.0"
+    loader-utils "^1.2.3"
+    schema-utils "^1.0.0"
 
-json5@2.1.0:
+json5@2.1.0, json5@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.1.0.tgz#e7a0c62c48285c628d20a10b85c89bb807c32850"
   integrity sha512-8Mh9h6xViijj36g7Dxi+Y4S6hNGV96vcJZr/SrlHh1LR/pEn/8j/+qIBbs44YKl69Lrfctp4QD+AdWLTMqEZAQ==
   dependencies:
     minimist "^1.2.0"
-
-json5@^0.5.0:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
-  integrity sha1-Hq3nrMASA0rYTiOWdn6tn6VJWCE=
 
 json5@^1.0.1:
   version "1.0.1"
