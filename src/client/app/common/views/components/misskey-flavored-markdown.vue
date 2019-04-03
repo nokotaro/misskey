@@ -19,7 +19,9 @@ export default Vue.extend({
 		display block
 		margin-bottom 4px
 		padding 4px
-		font-size 90%
+		font-family a-otf-midashi-go-mb31-pr6n, sans-serif
+		font-size 1.5em
+		font-weight 600
 		text-align center
 		background var(--mfmTitleBg)
 		border-radius 4px
