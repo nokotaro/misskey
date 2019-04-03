@@ -115,6 +115,7 @@ export const mfmLanguage = P.createLanguage({
 		r.italic,
 		r.serif,
 		r.strike,
+		r.opentype,
 		r.motion,
 		r.spin,
 		r.jump,
@@ -165,6 +166,16 @@ export const mfmLanguage = P.createLanguage({
 		const xml = P.regexp(/<s>([\s\S]+?)<\/s>/, 1);
 		const tilde = P.regexp(/~~(.+?)~~/, 1);
 		return P.alt(xml, tilde).map(x => createTree('strike', r.inline.atLeast(1).tryParse(x), {}));
+	},
+	opentype: r => {
+		return P((input, i) => {
+			const text = input.substr(i);
+			const match = text.match(/^<(opentype|ot?)(\s(?:liga|[csphn]alt|dlig|smcp|c2sc|swsh|[lopt]num|frac|ordn|ss(?:0[1-9]|1\d|20)|[pfhtq]wid|[phv]kna|jp(?:78|83|90|04)|trad|ruby|nlck|ital|vkrn|vert|v[ph]al|kern|ccmp|locl|su[pb]s)(?:-(?:\d+|on|off))?)+>(.+?)<\/\1>/i);
+			if (!match) return P.makeFailure(i, 'not an opentype');
+			return P.makeSuccess(i + match[0].length, {
+				content: match[3], attr: match[2] ? match[2].split(' ').filter(x => x.length).join(' ') : null
+			});
+		}).map(x => createTree('opentype', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
 	},
 	motion: r => {
 		const xml = P.regexp(/<(m(?:otion)?)>(.+?)<\/\1>/, 2);

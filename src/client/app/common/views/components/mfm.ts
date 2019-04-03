@@ -142,6 +142,18 @@ export default Vue.component('misskey-flavored-markdown', {
 					}, genEl(token.children));
 				}
 
+				case 'opentype': {
+					const settings = `font-feature-settings:${(token.node.props.attr as string).split(' ').map(x => {
+						const [tag, value] = x.split('-');
+						return `"${tag}"${value || ''}`;
+					}).join()}`;
+					return (createElement as any)('span', {
+						attrs: {
+							style: `-webkit-${settings};-moz-${settings};${settings}`
+						},
+					}, genEl(token.children));
+				}
+
 				case 'spin': {
 					motionCount++;
 					const isLong = sumTextsLength(token.children) > 10 || countNodesF(token.children) > 5;
