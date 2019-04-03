@@ -230,6 +230,7 @@ export default Vue.extend({
 				margin 0
 				line-height 24px
 				color var(--noteHeaderName)
+				font-family fot-rodin-pron, sans-serif
 				font-size 18px
 				font-weight 600
 				text-align left

@@ -83,6 +83,7 @@ export default Vue.extend({
 		border-radius 6px
 		color var(--secondary)
 		display inline-block
+		font-family fot-rodin-pron, sans-serif
 		font-size 14px
 		font-weight 600
 		left 12px

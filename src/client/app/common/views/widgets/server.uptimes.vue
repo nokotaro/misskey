@@ -43,5 +43,6 @@ export default Vue.extend({
 		color var(--text)
 
 		&:first-child
+			font-family fot-rodin-pron, sans-serif
 			font-weight 600
 </style>

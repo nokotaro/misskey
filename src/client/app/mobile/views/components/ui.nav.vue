@@ -325,6 +325,7 @@ export default Vue.extend({
 					font-size 12px
 
 					> .title
+						font-family fot-rodin-pron, sans-serif
 						font-weight 600
 
 			.about

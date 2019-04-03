@@ -49,6 +49,7 @@ export default Vue.extend({
 	> .schema
 		opacity 0.5
 	> .hostname
+		font-family fot-rodin-pron, sans-serif
 		font-weight 600
 	> .pathname
 		opacity 0.8

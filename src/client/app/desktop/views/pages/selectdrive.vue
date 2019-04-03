@@ -155,6 +155,7 @@ export default Vue.extend({
 			border solid 1px var(--primaryLighten15)
 
 			&:not(:disabled)
+				font-family fot-rodin-pron, sans-serif
 				font-weight 600
 
 			&:hover:not(:disabled)

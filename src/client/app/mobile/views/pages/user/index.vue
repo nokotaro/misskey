@@ -169,6 +169,7 @@ export default Vue.extend({
 			font-size 14px
 
 			> a
+				font-family fot-rodin-pron, sans-serif
 				font-weight 600
 
 			@media (max-width 500px)
@@ -232,6 +233,7 @@ export default Vue.extend({
 				> .username
 					display inline-block
 					line-height 20px
+					font-family fot-rodin-pron, sans-serif
 					font-size 16px
 					font-weight 600
 					color var(--mobileUserPageAcct)
@@ -267,6 +269,7 @@ export default Vue.extend({
 						overflow hidden
 						white-space nowrap
 						text-overflow ellipsis
+						font-family fot-rodin-pron, sans-serif
 						font-weight 600
 						color var(--mobileUserPageStatusHighlight)
 
@@ -342,6 +345,7 @@ export default Vue.extend({
 					font-size 14px
 
 				&[data-active]
+					font-family fot-rodin-pron, sans-serif
 					font-weight 600
 					color var(--primary)
 					border-color var(--primary)

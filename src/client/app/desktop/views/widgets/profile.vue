@@ -116,6 +116,7 @@ export default define({
 		display block
 		margin 10px 0 0 84px
 		line-height 16px
+		font-family fot-rodin-pron, sans-serif
 		font-weight 600
 		color var(--text)
 

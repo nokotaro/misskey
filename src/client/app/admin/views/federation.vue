@@ -494,6 +494,7 @@ export default Vue.extend({
 
 		> *
 			color var(--text)
+			font-family fot-rodin-pron, sans-serif
 			font-weight 600
 
 	> div

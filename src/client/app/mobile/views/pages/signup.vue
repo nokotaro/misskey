@@ -22,6 +22,7 @@ export default Vue.extend({
 	h1
 		margin 0
 		padding 8px 0 0 0
+		font-family fot-rodin-pron, sans-serif
 		font-size 1.5em
 		font-weight 600
 		color var(--text)

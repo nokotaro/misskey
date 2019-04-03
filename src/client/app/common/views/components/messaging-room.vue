@@ -352,6 +352,7 @@ export default Vue.extend({
 				display inline-block
 				margin 0
 				padding 0 16px
+				//font-family fot-rodin-pron, sans-serif
 				//font-weight 600
 				line-height 32px
 				color var(--messagingRoomDateDividerText)

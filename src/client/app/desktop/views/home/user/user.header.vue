@@ -191,6 +191,7 @@ export default Vue.extend({
 				display block
 				margin 0
 				line-height 32px
+				font-family fot-rodin-pron, sans-serif
 				font-weight 600
 				font-size 1.8em
 				text-shadow 0 0 8px #000
@@ -203,6 +204,7 @@ export default Vue.extend({
 					opacity 0.8
 
 					&.username
+						font-family fot-rodin-pron, sans-serif
 						font-weight 600
 
 	> .avatar
@@ -247,6 +249,7 @@ export default Vue.extend({
 					overflow hidden
 					white-space nowrap
 					text-overflow ellipsis
+					font-family fot-rodin-pron, sans-serif
 					font-weight 600
 					text-align center
 
@@ -293,6 +296,7 @@ export default Vue.extend({
 
 				> b
 					margin-right 4px
+					font-family fot-rodin-pron, sans-serif
 					font-size 1rem
 					font-weight 600
 					color var(--primary)

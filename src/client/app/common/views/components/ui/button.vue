@@ -168,6 +168,7 @@ export default Vue.extend({
 		min-width 100px
 
 	&.primary
+		font-family fot-rodin-pron, sans-serif
 		font-weight 600
 
 	&.wait

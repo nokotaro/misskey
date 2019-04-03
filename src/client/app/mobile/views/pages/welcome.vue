@@ -171,6 +171,7 @@ export default Vue.extend({
 			text-align center
 			padding 6px 12px
 			line-height 32px
+			font-family fot-rodin-pron, sans-serif
 			font-weight 600
 			color #333
 			background rgba(#000, 0.035)
@@ -190,6 +191,7 @@ export default Vue.extend({
 				margin 8px
 
 			> .signup
+				font-family fot-rodin-pron, sans-serif
 				font-weight 600
 
 		> .signin
@@ -244,6 +246,7 @@ export default Vue.extend({
 				font-size 12px
 
 				> .title
+					font-family fot-rodin-pron, sans-serif
 					font-weight 600
 
 		> .about-misskey

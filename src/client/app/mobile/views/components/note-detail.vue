@@ -248,6 +248,7 @@ export default Vue.extend({
 					display inline-block
 					margin .4em 0
 					color var(--noteHeaderName)
+					font-family fot-rodin-pron, sans-serif
 					font-size 16px
 					font-weight 600
 					text-align left

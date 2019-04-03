@@ -77,6 +77,7 @@ export default Vue.extend({
 		white-space nowrap
 
 		> .name
+			font-family fot-rodin-pron, sans-serif
 			font-weight 600
 
 	> .info

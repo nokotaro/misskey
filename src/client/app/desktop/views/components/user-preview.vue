@@ -123,6 +123,7 @@ export default Vue.extend({
 		> .name
 			display inline-block
 			margin 0
+			font-family fot-rodin-pron, sans-serif
 			font-weight 600
 			line-height 16px
 			color var(--text)
