@@ -198,24 +198,20 @@ export default Vue.extend({
 				color var(--calendarWeek)
 
 				&[data-is-saturday]
-					color var(--calendarSaturdayOrSunday)
-					color var(--calendarSaturday)
+					color var(--calendarSaturday, var(--calendarSaturdayOrSunday))
 
 				&[data-is-sunday]
-					color var(--calendarSaturdayOrSunday)
-					color var(--calendarSunday)
+					color var(--calendarSunday, var(--calendarSaturdayOrSunday))
 
 				&[data-today]
 					box-shadow 0 0 0 var(--lineWidth) var(--calendarWeek) inset
 					border-radius 6px
 
 					&[data-is-saturday]
-						box-shadow 0 0 0 var(--lineWidth) var(--calendarSaturdayOrSunday) inset
-						box-shadow 0 0 0 var(--lineWidth) var(--calendarSaturday) inset
+						box-shadow 0 0 0 var(--lineWidth) var(--calendarSaturday, var(--calendarSaturdayOrSunday)) inset
 
 					&[data-is-sunday]
-						box-shadow 0 0 0 var(--lineWidth) var(--calendarSaturdayOrSunday) inset
-						box-shadow 0 0 0 var(--lineWidth) var(--calendarSunday) inset
+						box-shadow 0 0 0 var(--lineWidth) var(--calendarSunday, var(--calendarSaturdayOrSunday)) inset
 
 			&.day
 				cursor pointer
