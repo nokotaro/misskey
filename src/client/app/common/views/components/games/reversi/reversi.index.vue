@@ -179,7 +179,7 @@ export default Vue.extend({
 		> h2
 			margin 0
 			padding 16px 0 8px 0
-			font-family fot-rodin-pron, sans-serif
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 			font-size 16px
 			font-weight 600
 

@@ -68,7 +68,7 @@ export default Vue.extend({
 			background var(--remoteInfoBg)
 
 		> a
-			font-family fot-rodin-pron, sans-serif
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 			font-weight 600
 
 </style>

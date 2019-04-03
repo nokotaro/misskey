@@ -134,7 +134,7 @@ export default Vue.extend({
 			background var(--remoteInfoBg)
 
 		> a
-			font-family fot-rodin-pron, sans-serif
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 			font-weight 600
 
 	> header
@@ -170,7 +170,7 @@ export default Vue.extend({
 			> .name
 				display block
 				margin-top 8px
-				font-family fot-rodin-pron, sans-serif
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 				font-weight 600
 				text-shadow 0 0 8px #000
 				color #fff
@@ -230,7 +230,7 @@ export default Vue.extend({
 					overflow hidden
 					white-space nowrap
 					text-overflow ellipsis
-					font-family fot-rodin-pron, sans-serif
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 					font-weight 600
 
 				> .value

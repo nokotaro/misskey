@@ -64,7 +64,7 @@ export default Vue.extend({
 		padding 0
 		overflow hidden
 		color var(--noteHeaderName)
-		font-family fot-rodin-pron, sans-serif
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 		font-size 1em
 		font-weight 600
 		text-decoration none

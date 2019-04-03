@@ -135,7 +135,7 @@ export default Vue.extend({
 						margin 0 .5em 0 0
 						padding 0
 						overflow hidden
-						font-family fot-rodin-pron, sans-serif
+						font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 						font-weight 600
 						text-overflow ellipsis
 						color var(--noteHeaderName)

@@ -55,7 +55,7 @@ export default Vue.extend({
 			color var(--chartCaption)
 
 			&:first-child
-				font-family fot-rodin-pron, sans-serif
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 				font-weight 600
 
 				> [data-icon]

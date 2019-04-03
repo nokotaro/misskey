@@ -198,7 +198,7 @@ export default Vue.extend({
 			margin 0 12px 0 16px
 			max-width 16em
 			line-height 48px
-			font-family fot-rodin-pron, sans-serif
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 			font-weight 600
 			text-decoration none
 

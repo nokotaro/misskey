@@ -622,7 +622,7 @@ export default Vue.extend({
 					text-decoration underline
 
 				&.current
-					font-family fot-rodin-pron, sans-serif
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 					font-weight 600
 					cursor default
 

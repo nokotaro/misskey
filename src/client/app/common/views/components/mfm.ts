@@ -82,6 +82,7 @@ export default Vue.component('misskey-flavored-markdown', {
 				case 'serif': {
 					return (createElement as any)('span', {
 						attrs: {
+							class: 'serif',
 							style: 'font-family:vdl-v7mincho,serif'
 						},
 					}, genEl(token.children));

@@ -82,7 +82,7 @@ export default Vue.extend({
 				margin 0
 				padding 0 16px
 				line-height 42px
-				font-family fot-rodin-pron, sans-serif
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 				font-size 0.9em
 				font-weight 600
 				color var(--faceHeaderText)

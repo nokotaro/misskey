@@ -153,7 +153,7 @@ export default Vue.extend({
 		margin-right 16px
 
 		&.local
-			font-family fot-rodin-pron, sans-serif
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 			font-weight 600
 
 .kpdsmpnk
@@ -178,7 +178,7 @@ export default Vue.extend({
 
 		> .title
 			display block
-			font-family fot-rodin-pron, sans-serif
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 			font-size 20px
 			font-weight 600
 			color inherit
