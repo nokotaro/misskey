@@ -74,7 +74,7 @@ export default Vue.extend({
 		days(): number {
 			const days = eachMonthDays[this.month - 1];
 
-			return days + (this.month == 2 && !((y => y & (y % 25 ? 3 : 15))(this.year)));
+			return days + ((this.month == 2 && !((y => y & (y % 25 ? 3 : 15))(this.year))) as any as number);
 		}
 	},
 	methods: {
