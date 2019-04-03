@@ -88,7 +88,7 @@ export default Vue.extend({
 
 			tr
 				th
-					font-weight normal
+					font-weight 300
 					text-align left
 
 		tbody

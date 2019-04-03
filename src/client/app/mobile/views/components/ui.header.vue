@@ -91,7 +91,7 @@ export default Vue.extend({
 				max-width calc(100% - 112px)
 				text-align center
 				font-size 1.1em
-				font-weight normal
+				font-weight 300
 				line-height $height
 				white-space nowrap
 				overflow hidden

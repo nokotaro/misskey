@@ -325,7 +325,7 @@ export default Vue.extend({
 					font-size 12px
 
 					> .title
-						font-weight bold
+						font-weight 600
 
 			.about
 				margin 0 0 8px 0

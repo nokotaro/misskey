@@ -169,7 +169,7 @@ export default Vue.extend({
 
 				[data-icon]
 					font-size 1em
-					font-weight normal
+					font-weight 300
 					font-style normal
 					display inline-block
 					margin-right 3px

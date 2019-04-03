@@ -116,7 +116,7 @@ export default define({
 		display block
 		margin 10px 0 0 84px
 		line-height 16px
-		font-weight bold
+		font-weight 600
 		color var(--text)
 
 	> .username

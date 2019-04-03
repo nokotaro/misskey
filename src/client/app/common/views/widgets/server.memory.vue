@@ -63,7 +63,7 @@ export default Vue.extend({
 			color var(--chartCaption)
 
 			&:first-child
-				font-weight bold
+				font-weight 600
 
 				> [data-icon]
 					margin-right 4px

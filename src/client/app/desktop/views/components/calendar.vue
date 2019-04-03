@@ -150,7 +150,7 @@ export default Vue.extend({
 		text-align center
 		line-height 42px
 		font-size 0.9em
-		font-weight bold
+		font-weight 600
 		color var(--faceHeaderText)
 		background var(--faceHeader)
 		box-shadow 0 var(--lineWidth) rgba(#000, 0.07)
@@ -239,7 +239,7 @@ export default Vue.extend({
 					opacity 0.5
 
 				&[data-selected]
-					font-weight bold
+					font-weight 600
 
 					> div
 						background var(--faceClearButtonHover)

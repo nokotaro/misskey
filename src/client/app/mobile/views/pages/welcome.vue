@@ -171,7 +171,7 @@ export default Vue.extend({
 			text-align center
 			padding 6px 12px
 			line-height 32px
-			font-weight bold
+			font-weight 600
 			color #333
 			background rgba(#000, 0.035)
 			border-radius 6px
@@ -190,7 +190,7 @@ export default Vue.extend({
 				margin 8px
 
 			> .signup
-				font-weight bold
+				font-weight 600
 
 		> .signin
 			margin 16px 0
@@ -244,7 +244,7 @@ export default Vue.extend({
 				font-size 12px
 
 				> .title
-					font-weight bold
+					font-weight 600
 
 		> .about-misskey
 			margin 16px 0

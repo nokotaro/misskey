@@ -84,7 +84,7 @@ export default Vue.extend({
 		color var(--secondary)
 		display inline-block
 		font-size 14px
-		font-weight bold
+		font-weight 600
 		left 12px
 		opacity .5
 		padding 0 6px

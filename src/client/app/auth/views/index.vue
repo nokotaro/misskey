@@ -112,7 +112,7 @@ export default Vue.extend({
 				margin 0 0 8px 0
 				padding 0
 				font-size 20px
-				font-weight normal
+				font-weight 300
 
 			> p
 				margin 0
@@ -131,7 +131,7 @@ export default Vue.extend({
 				margin 0 0 22px 0
 				padding 0
 				font-size 20px
-				font-weight normal
+				font-weight 300
 				color #555
 
 		@media (max-width 600px)

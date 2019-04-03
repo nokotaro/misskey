@@ -83,7 +83,7 @@ export default Vue.extend({
 				padding 0 16px
 				line-height 42px
 				font-size 0.9em
-				font-weight bold
+				font-weight 600
 				color var(--faceHeaderText)
 				box-shadow 0 var(--lineWidth) rgba(#000, 0.07)
 

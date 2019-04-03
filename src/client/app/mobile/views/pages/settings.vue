@@ -56,7 +56,7 @@ main
 		text-align center
 		color var(--mobileSignedInAsFg)
 		background var(--mobileSignedInAsBg)
-		font-weight bold
+		font-weight 600
 
 		&.round
 			border-radius 6px

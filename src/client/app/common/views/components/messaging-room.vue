@@ -352,7 +352,7 @@ export default Vue.extend({
 				display inline-block
 				margin 0
 				padding 0 16px
-				//font-weight bold
+				//font-weight 600
 				line-height 32px
 				color var(--messagingRoomDateDividerText)
 				background var(--messagingRoomBg)

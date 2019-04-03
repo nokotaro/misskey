@@ -575,7 +575,7 @@ export default Vue.extend({
 					text-align center
 					font-size 1em
 					line-height $header-height
-					font-weight normal
+					font-weight 300
 					color var(--desktopWindowTitle)
 
 				> div:last-child

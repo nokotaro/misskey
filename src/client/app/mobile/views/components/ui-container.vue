@@ -81,7 +81,7 @@ export default Vue.extend({
 				margin 0
 				padding 8px 10px
 				font-size 15px
-				font-weight normal
+				font-weight 300
 				color var(--faceHeaderText)
 				background var(--faceHeader)
 

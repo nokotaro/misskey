@@ -163,7 +163,7 @@ export default Vue.extend({
 			padding 24px
 			font-size 20px
 			text-align center
-			font-weight normal
+			font-weight 300
 
 		> .cancel
 			margin 0 auto

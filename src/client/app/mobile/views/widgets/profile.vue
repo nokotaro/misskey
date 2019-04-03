@@ -59,7 +59,7 @@ export default define({
 	margin 0
 	line-height 100px
 	color #fff
-	font-weight bold
+	font-weight 600
 	text-shadow 0 0 8px rgba(#000, 0.5)
 
 </style>

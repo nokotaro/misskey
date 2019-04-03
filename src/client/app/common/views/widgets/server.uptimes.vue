@@ -43,5 +43,5 @@ export default Vue.extend({
 		color var(--text)
 
 		&:first-child
-			font-weight bold
+			font-weight 600
 </style>

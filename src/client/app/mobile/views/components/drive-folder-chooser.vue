@@ -59,7 +59,7 @@ export default Vue.extend({
 				text-align center
 				line-height 42px
 				font-size 1em
-				font-weight normal
+				font-weight 300
 
 			> .close
 				position absolute

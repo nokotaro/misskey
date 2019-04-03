@@ -153,7 +153,7 @@ export default Vue.extend({
 		margin-right 16px
 
 		&.local
-			font-weight bold
+			font-weight 600
 
 .kpdsmpnk
 	min-height 100px
@@ -178,7 +178,7 @@ export default Vue.extend({
 		> .title
 			display block
 			font-size 20px
-			font-weight bold
+			font-weight 600
 			color inherit
 
 		> span

@@ -231,7 +231,7 @@ export default Vue.extend({
 				line-height 24px
 				color var(--noteHeaderName)
 				font-size 18px
-				font-weight 700
+				font-weight 600
 				text-align left
 				text-decoration none
 

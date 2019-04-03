@@ -622,7 +622,7 @@ export default Vue.extend({
 					text-decoration underline
 
 				&.current
-					font-weight bold
+					font-weight 600
 					cursor default
 
 					&:hover

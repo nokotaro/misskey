@@ -522,7 +522,7 @@ export default Vue.extend({
 			color inherit
 
 			&:last-child
-				font-weight bold
+				font-weight 600
 
 			> [data-icon]
 				margin-right 4px

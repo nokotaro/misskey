@@ -68,7 +68,7 @@ export default Vue.extend({
 		min-width 100px
 		line-height 38px
 		font-size 14px
-		font-weight 700
+		font-weight 600
 
 		&:hover
 			background var(--primaryLighten10)

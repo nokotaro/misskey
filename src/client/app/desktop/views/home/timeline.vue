@@ -224,7 +224,7 @@ export default Vue.extend({
 				&[data-active]
 					color var(--primary)
 					cursor default
-					font-weight bold
+					font-weight 600
 
 					&:before
 						content ""

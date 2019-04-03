@@ -169,7 +169,7 @@ export default Vue.extend({
 			font-size 14px
 
 			> a
-				font-weight bold
+				font-weight 600
 
 			@media (max-width 500px)
 				padding 12px
@@ -233,7 +233,7 @@ export default Vue.extend({
 					display inline-block
 					line-height 20px
 					font-size 16px
-					font-weight bold
+					font-weight 600
 					color var(--mobileUserPageAcct)
 
 				> .followed
@@ -267,7 +267,7 @@ export default Vue.extend({
 						overflow hidden
 						white-space nowrap
 						text-overflow ellipsis
-						font-weight bold
+						font-weight 600
 						color var(--mobileUserPageStatusHighlight)
 
 					> .value
@@ -342,7 +342,7 @@ export default Vue.extend({
 					font-size 14px
 
 				&[data-active]
-					font-weight bold
+					font-weight 600
 					color var(--primary)
 					border-color var(--primary)
 

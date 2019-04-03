@@ -494,7 +494,7 @@ export default Vue.extend({
 
 		> *
 			color var(--text)
-			font-weight bold
+			font-weight 600
 
 	> div
 		display flex

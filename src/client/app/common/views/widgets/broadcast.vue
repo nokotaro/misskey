@@ -130,7 +130,7 @@ export default define({
 	> h1
 		margin 0
 		font-size 0.95em
-		font-weight normal
+		font-weight 300
 		color var(--announcementsTitle)
 
 	> p

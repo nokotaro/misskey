@@ -249,7 +249,7 @@ export default Vue.extend({
 					margin .4em 0
 					color var(--noteHeaderName)
 					font-size 16px
-					font-weight bold
+					font-weight 600
 					text-align left
 					text-decoration none
 

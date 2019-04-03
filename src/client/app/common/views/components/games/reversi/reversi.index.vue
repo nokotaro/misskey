@@ -142,7 +142,7 @@ export default Vue.extend({
 		padding 24px
 		font-size 24px
 		text-align center
-		font-weight normal
+		font-weight 300
 		color #fff
 		background linear-gradient(to bottom, var(--reversiBannerGradientStart), var(--reversiBannerGradientEnd))
 
@@ -180,7 +180,7 @@ export default Vue.extend({
 			margin 0
 			padding 16px 0 8px 0
 			font-size 16px
-			font-weight bold
+			font-weight 600
 
 	.invitation
 		margin 8px 0

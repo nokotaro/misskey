@@ -236,7 +236,7 @@ export default Vue.extend({
 
 		> header
 			margin 0 0 8px 0
-			font-weight bold
+			font-weight 600
 			font-size 20px
 
 			& + .body

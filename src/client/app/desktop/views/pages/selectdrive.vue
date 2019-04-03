@@ -155,7 +155,7 @@ export default Vue.extend({
 			border solid 1px var(--primaryLighten15)
 
 			&:not(:disabled)
-				font-weight bold
+				font-weight 600
 
 			&:hover:not(:disabled)
 				background linear-gradient(to bottom, var(--primaryLighten8) 0%, var(--primaryDarken8) 100%)

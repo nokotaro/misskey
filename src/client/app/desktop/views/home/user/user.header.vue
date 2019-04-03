@@ -191,7 +191,7 @@ export default Vue.extend({
 				display block
 				margin 0
 				line-height 32px
-				font-weight bold
+				font-weight 600
 				font-size 1.8em
 				text-shadow 0 0 8px #000
 
@@ -203,7 +203,7 @@ export default Vue.extend({
 					opacity 0.8
 
 					&.username
-						font-weight bold
+						font-weight 600
 
 	> .avatar
 		display block
@@ -247,7 +247,7 @@ export default Vue.extend({
 					overflow hidden
 					white-space nowrap
 					text-overflow ellipsis
-					font-weight bold
+					font-weight 600
 					text-align center
 
 				> .value
@@ -294,7 +294,7 @@ export default Vue.extend({
 				> b
 					margin-right 4px
 					font-size 1rem
-					font-weight bold
+					font-weight 600
 					color var(--primary)
 
 </style>

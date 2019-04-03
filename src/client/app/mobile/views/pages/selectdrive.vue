@@ -75,7 +75,7 @@ export default Vue.extend({
 			text-align center
 			line-height 42px
 			font-size 1em
-			font-weight normal
+			font-weight 300
 
 			> .count
 				margin-left 4px

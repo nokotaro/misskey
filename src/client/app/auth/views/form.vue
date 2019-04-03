@@ -74,7 +74,7 @@ export default Vue.extend({
 			margin 0
 			padding 32px 32px 20px 32px
 			font-size 24px
-			font-weight normal
+			font-weight 300
 			color #777
 
 			i

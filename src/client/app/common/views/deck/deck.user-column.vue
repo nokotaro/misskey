@@ -134,7 +134,7 @@ export default Vue.extend({
 			background var(--remoteInfoBg)
 
 		> a
-			font-weight bold
+			font-weight 600
 
 	> header
 		overflow hidden
@@ -169,7 +169,7 @@ export default Vue.extend({
 			> .name
 				display block
 				margin-top 8px
-				font-weight bold
+				font-weight 600
 				text-shadow 0 0 8px #000
 				color #fff
 
@@ -228,7 +228,7 @@ export default Vue.extend({
 					overflow hidden
 					white-space nowrap
 					text-overflow ellipsis
-					font-weight bold
+					font-weight 600
 
 				> .value
 					padding 4px

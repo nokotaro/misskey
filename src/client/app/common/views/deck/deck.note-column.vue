@@ -68,6 +68,6 @@ export default Vue.extend({
 			background var(--remoteInfoBg)
 
 		> a
-			font-weight bold
+			font-weight 600
 
 </style>

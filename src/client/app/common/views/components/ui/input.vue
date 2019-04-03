@@ -349,7 +349,7 @@ root(fill)
 			margin 0
 			padding 0
 			font inherit
-			font-weight fill ? bold : normal
+			font-weight fill ? 600 : 300
 			font-size 16px
 			line-height 32px
 			color var(--inputText)

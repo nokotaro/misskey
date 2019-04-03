@@ -287,7 +287,7 @@ export default Vue.extend({
 		margin 0
 		padding 10px 14px
 		font-size 1em
-		font-weight normal
+		font-weight 300
 		text-decoration none
 		color #aaa
 		transition color 0.1s ease

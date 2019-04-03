@@ -44,12 +44,12 @@ export default Vue.extend({
 	> [data-icon]
 		padding-left 2px
 		font-size .9em
-		font-weight 400
+		font-weight 300
 		font-style normal
 	> .schema
 		opacity 0.5
 	> .hostname
-		font-weight bold
+		font-weight 600
 	> .pathname
 		opacity 0.8
 	> .query

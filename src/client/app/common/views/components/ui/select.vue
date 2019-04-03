@@ -152,7 +152,7 @@ root(fill)
 			width 100%
 			padding 0
 			font inherit
-			font-weight fill ? bold : normal
+			font-weight fill ? 600 : 300
 			font-size 16px
 			height 32px
 			color var(--inputText)

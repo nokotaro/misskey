@@ -77,7 +77,7 @@ export default Vue.extend({
 		white-space nowrap
 
 		> .name
-			font-weight bold
+			font-weight 600
 
 	> .info
 		margin-left auto

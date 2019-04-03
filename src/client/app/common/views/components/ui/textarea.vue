@@ -136,7 +136,7 @@ root(fill)
 			min-height 100px
 			padding 0
 			font inherit
-			font-weight fill ? bold : normal
+			font-weight fill ? 600 : 300
 			font-size 16px
 			color var(--inputText)
 			background transparent

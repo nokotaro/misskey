@@ -302,12 +302,12 @@ export default Vue.extend({
 
 					.name
 						margin 0 8px 0 0
-						/*font-weight bold*/
-						font-weight normal
+						/*font-weight 600*/
+						font-weight 300
 						color rgba(#000, 0.8)
 
 					.username
-						font-weight normal
+						font-weight 300
 						color rgba(#000, 0.3)
 
 	> .history
@@ -370,7 +370,7 @@ export default Vue.extend({
 						text-overflow ellipsis
 						font-size 1em
 						color var(--noteHeaderName)
-						font-weight bold
+						font-weight 600
 						transition all 0.1s ease
 
 					> .username
@@ -414,7 +414,7 @@ export default Vue.extend({
 		padding 2em 1em
 		text-align center
 		color #999
-		font-weight 500
+		font-weight 600
 
 	> .fetching
 		margin 0

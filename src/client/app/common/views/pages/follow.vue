@@ -128,7 +128,7 @@ export default Vue.extend({
 	> .signed-in-as
 		margin-bottom 16px
 		font-size 14px
-		font-weight bold
+		font-weight 600
 
 	> main
 		margin-bottom 16px
@@ -158,7 +158,7 @@ export default Vue.extend({
 
 			> .name
 				font-size 20px
-				font-weight bold
+				font-weight 600
 
 			> .username
 				display block
@@ -176,7 +176,7 @@ export default Vue.extend({
 		width 100%
 		min-width 150px
 		font-size 14px
-		font-weight bold
+		font-weight 600
 		color var(--primary)
 		background transparent
 		outline none

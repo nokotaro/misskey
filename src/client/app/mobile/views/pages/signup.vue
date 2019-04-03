@@ -23,7 +23,7 @@ export default Vue.extend({
 		margin 0
 		padding 8px 0 0 0
 		font-size 1.5em
-		font-weight bold
+		font-weight 600
 		color var(--text)
 
 </style>

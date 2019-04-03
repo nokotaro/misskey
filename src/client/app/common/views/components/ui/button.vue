@@ -112,7 +112,7 @@ export default Vue.extend({
 	margin 0
 	padding 8px 10px
 	text-align center
-	font-weight normal
+	font-weight 300
 	font-size 16px
 	line-height 24px
 	border none
@@ -168,7 +168,7 @@ export default Vue.extend({
 		min-width 100px
 
 	&.primary
-		font-weight bold
+		font-weight 600
 
 	&.wait
 		background linear-gradient(

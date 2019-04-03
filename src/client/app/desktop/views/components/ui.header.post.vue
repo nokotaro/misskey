@@ -31,7 +31,7 @@ export default Vue.extend({
 		padding 0 10px
 		height 100%
 		font-size 1.2em
-		font-weight normal
+		font-weight 300
 		text-decoration none
 		color var(--primaryForeground)
 		background var(--primary) !important

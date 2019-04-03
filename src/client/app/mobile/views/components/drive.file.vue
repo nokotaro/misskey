@@ -99,7 +99,7 @@ export default Vue.extend({
 				margin 0
 				padding 0
 				font-size 0.9em
-				font-weight bold
+				font-weight 600
 				color var(--text)
 				word-break break-word
 

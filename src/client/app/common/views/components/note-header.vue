@@ -65,7 +65,7 @@ export default Vue.extend({
 		overflow hidden
 		color var(--noteHeaderName)
 		font-size 1em
-		font-weight bold
+		font-weight 600
 		text-decoration none
 		text-overflow ellipsis
 

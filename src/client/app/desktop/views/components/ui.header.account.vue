@@ -198,7 +198,7 @@ export default Vue.extend({
 			margin 0 12px 0 16px
 			max-width 16em
 			line-height 48px
-			font-weight bold
+			font-weight 600
 			font-family Meiryo, sans-serif
 			text-decoration none
 

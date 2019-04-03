@@ -209,7 +209,7 @@ export default Vue.extend({
 
 				> span:first-child
 					display block
-					font-weight bold
+					font-weight 600
 
 				> span:last-child:not(:first-child)
 					opacity 0.6

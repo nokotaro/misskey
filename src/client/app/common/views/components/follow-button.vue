@@ -132,7 +132,7 @@ export default Vue.extend({
 	min-width 100px
 	line-height 36px
 	font-size 14px
-	font-weight bold
+	font-weight 600
 	color var(--primary)
 	background transparent
 	outline none
