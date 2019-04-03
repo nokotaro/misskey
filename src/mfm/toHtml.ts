@@ -42,6 +42,12 @@ export function toHtml(tokens: MfmForest, mentionedRemoteUsers: INote['mentioned
 			return el;
 		},
 
+		serif(token) {
+			const el = doc.createElement('span');
+			appendChildren(token.children, el);
+			return el;
+		},
+
 		italic(token) {
 			const el = doc.createElement('i');
 			appendChildren(token.children, el);

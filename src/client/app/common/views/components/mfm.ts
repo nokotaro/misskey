@@ -79,6 +79,14 @@ export default Vue.component('misskey-flavored-markdown', {
 					return [createElement('del', genEl(token.children))];
 				}
 
+				case 'serif': {
+					return (createElement as any)('span', {
+						attrs: {
+							style: 'font-family:vdl-v7mincho,serif'
+						},
+					}, genEl(token.children));
+				}
+
 				case 'italic': {
 					return (createElement as any)('i', {
 						attrs: {

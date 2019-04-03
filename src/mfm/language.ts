@@ -113,6 +113,7 @@ export const mfmLanguage = P.createLanguage({
 		r.bold,
 		r.small,
 		r.italic,
+		r.serif,
 		r.strike,
 		r.motion,
 		r.spin,
@@ -155,10 +156,15 @@ export const mfmLanguage = P.createLanguage({
 
 		return P.alt(xml, underscore).map(x => createTree('italic', r.inline.atLeast(1).tryParse(x), {}));
 	},
+	serif: r => {
+		const xml = P.regexp(/<m>([\s\S]+?)<\/m>/, 1);
+		const backslash = P.regexp(/\\([\s\S]+?)\\/, 1);
+		return P.alt(xml, backslash).map(x => createTree('serif', r.inline.atLeast(1).tryParse(x), {}));
+	},
 	strike: r => {
 		const xml = P.regexp(/<s>([\s\S]+?)<\/s>/, 1);
 		const tilde = P.regexp(/~~(.+?)~~/, 1);
-		return P.alt(xml, tilde).map(x => createTree('strike', r.inline.atLeast(1).tryParse(x), {}))
+		return P.alt(xml, tilde).map(x => createTree('strike', r.inline.atLeast(1).tryParse(x), {}));
 	},
 	motion: r => {
 		const xml = P.regexp(/<(m(?:otion)?)>(.+?)<\/\1>/, 2);
