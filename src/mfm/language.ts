@@ -170,7 +170,7 @@ export const mfmLanguage = P.createLanguage({
 	opentype: r => {
 		return P((input, i) => {
 			const text = input.substr(i);
-			const match = text.match(/^<(opentype|ot?)(\s(?:liga|[csphn]alt|dlig|smcp|c2sc|swsh|[lopt]num|frac|ordn|ss(?:0[1-9]|1\d|20)|[pfhtq]wid|[phv]kna|jp(?:78|83|90|04)|trad|ruby|nlck|ital|vkrn|vert|v[ph]al|kern|ccmp|locl|su[pb]s)(?:-(?:\d+|on|off))?)+>(.+?)<\/\1>/i);
+			const match = text.match(/^<(opentype|ot?)((?:\s(?:liga|[csphn]alt|dlig|smcp|c2sc|swsh|[lopt]num|frac|ordn|ss(?:0[1-9]|1\d|20)|[pfhtq]wid|[phv]kna|jp(?:78|83|90|04)|trad|ruby|nlck|ital|vkrn|vert|v[ph]al|kern|ccmp|locl|su[pb]s)(?:-(?:\d+|on|off))?)+)>(.+?)<\/\1>/i);
 			if (!match) return P.makeFailure(i, 'not an opentype');
 			return P.makeSuccess(i + match[0].length, {
 				content: match[3], attr: match[2] ? match[2].split(' ').filter(x => x.length).join(' ') : null
