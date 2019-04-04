@@ -44,7 +44,7 @@ export default async (username: string, _host: string, option?: any, resync?: bo
 		const self = await resolveSelf(acctLower);
 
 		if ((user as IRemoteUser).uri !== self.href) {
-			// if uri mismatch, Fix (user@host <=> AP's Person id(IRemoteUser.uri)) mapping.
+			// if uri mismatch, Fix (user@host <=> AP's actor id(IRemoteUser.uri)) mapping.
 			logger.info(`uri missmatch: ${acctLower}`);
 			logger.info(`recovery missmatch uri for (username=${username}, host=${host}) from ${(user as IRemoteUser).uri} to ${self.href}`);
 

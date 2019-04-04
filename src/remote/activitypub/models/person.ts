@@ -6,7 +6,7 @@ import config from '../../../config';
 import User, { validateUsername, isValidName, IUser, IRemoteUser, isRemoteUser } from '../../../models/user';
 import Resolver from '../resolver';
 import { resolveImage } from './image';
-import { isCollectionOrOrderedCollection, isCollection, IPersonOrService, IObject } from '../type';
+import { isCollectionOrOrderedCollection, isCollection, IActor, IObject, validActor } from '../type';
 import { IDriveFile } from '../../../models/drive-file';
 import Meta from '../../../models/meta';
 import { fromHtml } from '../../../mfm/fromHtml';
@@ -27,7 +27,7 @@ import { updateHashtag } from '../../../services/update-hashtag';
 const logger = apLogger;
 
 /**
- * Validate Person object
+ * Validate actor object
  * @param x Fetched person object
  * @param uri Fetch target URI
  */
@@ -38,8 +38,8 @@ function validatePerson(x: any, uri: string) {
 		return new Error('invalid person: object is null');
 	}
 
-	if (!['Person', 'Service'].includes(x.type)) {
-		return new Error(`invalid person: object is not a person or service '${x.type}'`);
+	if (!validActor.includes(x.type)) {
+		return new Error(`invalid actor: '${x.type}' is not a valid actor`);
 	}
 
 	if (typeof x.preferredUsername !== 'string') {
@@ -124,9 +124,9 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 
 	if (!resolver) resolver = new Resolver();
 
-	const person = object as IPersonOrService;
+	const person = object as IActor;
 
-	logger.info(`Creating the Person: ${person.id}`);
+	logger.info(`Creating the actor: ${person.id}`);
 
 	const [followersCount = 0, followingCount = 0, notesCount = 0] = await Promise.all([
 		resolver.resolve(person.followers).then(
@@ -279,9 +279,9 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 /**
  * Personの情報を更新します。
  * twistaに対象のPersonが登録されていなければ無視します。
- * @param uri URI of Person
+ * @param uri URI of IActor
  * @param resolver Resolver
- * @param hint Hint of Person object (この値が正当なPersonの場合、Remote resolveをせずに更新に利用します)
+ * @param hint Hint of IActor object (この値が正当なPersonの場合、Remote resolveをせずに更新に利用します)
  */
 export async function updatePerson(uri: string, resolver?: Resolver, hint?: object): Promise<void> {
 	if (typeof uri !== 'string') throw 'uri is not string';
@@ -316,9 +316,9 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: obje
 		throw err;
 	}
 
-	const person: IPersonOrService = object;
+	const person: IActor = object;
 
-	logger.info(`Updating the Person: ${person.id}`);
+	logger.info(`Updating the IActor: ${person.id}`);
 
 	const [followersCount = 0, followingCount = 0, notesCount = 0] = await Promise.all([
 		resolver.resolve(person.followers).then(

@@ -69,8 +69,18 @@ interface IQuestionChoice {
 	_misskey_votes?: number;
 }
 
-export interface IPersonOrService extends IObject {
-	type: 'Person' | 'Service';
+const actorMap = {
+	'Application': true,
+	'Group': true,
+	'Organization': true,
+	'Person': true,
+	'Service': true
+};
+
+export const validActor = Object.keys(actorMap);
+
+export interface IActor extends IObject {
+	type: keyof typeof actorMap;
 	name: string;
 	preferredUsername: string;
 	manuallyApprovesFollowers: boolean;
