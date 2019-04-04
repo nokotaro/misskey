@@ -14,5 +14,5 @@ node cli/mark-admin (ユーザーID または ユーザー名)
 node cli/mark-admin 57d01a501fdf2d07be417afe
 
 # ユーザー名
-node cli/mark-admin @syuilo
+node cli/mark-admin @amai
 ```

@@ -14,5 +14,5 @@ e.g.
 node cli/mark-admin 57d01a501fdf2d07be417afe
 
 # By username
-node cli/suspend @syuilo
+node cli/suspend @961
 ```

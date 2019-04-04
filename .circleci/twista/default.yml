@@ -4,7 +4,7 @@ mongodb:
   host: localhost
   port: 27017
   db: twista
-  user: syuilo
+  user: acid-chicken
   pass: ''
 drive:
   storage: 'db'

@@ -5,7 +5,7 @@
 	"codename": "seabedhike",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/syuilo/misskey.git"
+		"url": "https://github.com/346design/twista.283.cloud.git"
 	},
 	"main": "./index.js",
 	"private": true,
