@@ -86,7 +86,7 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 
 	const [author] = Array.isArray(actorOrActors) ?
 		actorOrActors.filter(x => x.uri !== actor.uri) :
-		[];
+		[undefined];
 
 	if (!actor) {
 		return null;
