@@ -23,12 +23,6 @@ export default Vue.extend({
 			repositoryUrl: 'https://github.com/346design/twista.283.cloud',
 			feedbackUrl: 'https://github.com/346design/twista.283.cloud/issues/new'
 		}
-	},
-	created() {
-		this.$root.getMeta().then(meta => {
-			if (meta.maintainer.repository_url) this.repositoryUrl = meta.maintainer.repository_url;
-			if (meta.maintainer.feedback_url) this.feedbackUrl = meta.maintainer.feedback_url;
-		});
 	}
 });
 </script>
