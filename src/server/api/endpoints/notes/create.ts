@@ -190,6 +190,13 @@ export const meta = {
 				'ja-JP': 'アンケート'
 			},
 			ref: 'poll'
+		},
+
+		as: {
+			validator: $.optional.nullable.str.or(['information']),
+			desc: {
+				'ja-JP': '投稿モード'
+			}
 		}
 	},
 
@@ -243,6 +250,12 @@ export const meta = {
 };
 
 export default define(meta, async (ps, user, app) => {
+	const accounts: Record<string, string> = await fetchMeta() as any;
+
+	const sender = ps.as && (user.isAdmin || user.isModerator) ?
+		await User.findOne({ usernameLower: accounts[`${ps.as}Account`].toLowerCase() }) :
+		user;
+
 	let visibleUsers: IUser[] = [];
 	if (ps.visibleUserIds) {
 		visibleUsers = await Promise.all(ps.visibleUserIds.map(id => User.findOne({
@@ -322,7 +335,7 @@ export default define(meta, async (ps, user, app) => {
 	//#region qa
 	const answerable = reply && reply.qa === 'question';
 
-	const bestAnswerable = answerable && reply.userId === user._id;
+	const bestAnswerable = answerable && (user.isAdmin || user.isModerator || reply.userId === user._id);
 
 	const qa =
 		['bestAnswer'].includes(ps.qa) && bestAnswerable ? 'bestAnswer' :
@@ -331,7 +344,8 @@ export default define(meta, async (ps, user, app) => {
 	//#endregion
 
 	// 投稿を作成
-	const note = await create(user, {
+	const note = await create(sender, {
+		author: sender._id.equals(user._id) ? undefined : user,
 		createdAt: new Date(),
 		files: files,
 		poll: ps.poll ? {
@@ -357,6 +371,6 @@ export default define(meta, async (ps, user, app) => {
 	});
 
 	return {
-		createdNote: await pack(note, user)
+		createdNote: await pack(note, sender)
 	};
 });

@@ -50,6 +50,12 @@
 			<ui-info warn>{{ $t('proxy-account-warn') }}</ui-info>
 		</section>
 		<section>
+			<header><fa :icon="faBullhorn"/> {{ $t('information-account-config') }}</header>
+			<ui-info>{{ $t('information-account-info') }}</ui-info>
+			<ui-input v-model="informationAccount"><template #prefix>@</template>{{ $t('information-account-username') }}<template #desc>{{ $t('information-account-username-desc') }}</template></ui-input>
+			<ui-info warn>{{ $t('information-account-warn') }}</ui-info>
+		</section>
+		<section>
 			<header><fa :icon="farEnvelope"/> {{ $t('email-config') }}</header>
 			<ui-switch v-model="enableEmail">{{ $t('enable-email') }}<template #desc>{{ $t('email-config-info') }}</template></ui-switch>
 			<ui-input v-model="email" type="email" :disabled="!enableEmail">{{ $t('email') }}</ui-input>
@@ -142,7 +148,7 @@ import Vue from 'vue';
 import i18n from '../../i18n';
 import { url, host } from '../../config';
 import { toUnicode } from 'punycode';
-import { faHeadset, faShieldAlt, faGhost, faUserPlus, faBolt } from '@fortawesome/free-solid-svg-icons';
+import { faHeadset, faShieldAlt, faGhost, faBullhorn, faUserPlus, faBolt } from '@fortawesome/free-solid-svg-icons';
 import { faEnvelope as farEnvelope } from '@fortawesome/free-regular-svg-icons';
 
 export default Vue.extend({
@@ -183,6 +189,7 @@ export default Vue.extend({
 			discordClientId: null,
 			discordClientSecret: null,
 			proxyAccount: null,
+			informationAccount: null,
 			inviteCode: null,
 			enableExternalUserRecommendation: false,
 			externalUserRecommendationEngine: null,
@@ -199,7 +206,7 @@ export default Vue.extend({
 			enableServiceWorker: false,
 			swPublicKey: null,
 			swPrivateKey: null,
-			faHeadset, faShieldAlt, faGhost, faUserPlus, farEnvelope, faBolt
+			faHeadset, faShieldAlt, faGhost, faBullhorn, faUserPlus, farEnvelope, faBolt
 		};
 	},
 
@@ -227,6 +234,7 @@ export default Vue.extend({
 			this.recaptchaSiteKey = meta.recaptchaSiteKey;
 			this.recaptchaSecretKey = meta.recaptchaSecretKey;
 			this.proxyAccount = meta.proxyAccount;
+			this.informationAccount = meta.informationAccount;
 			this.enableTwitterIntegration = meta.enableTwitterIntegration;
 			this.twitterConsumerKey = meta.twitterConsumerKey;
 			this.twitterConsumerSecret = meta.twitterConsumerSecret;
@@ -290,6 +298,7 @@ export default Vue.extend({
 				recaptchaSiteKey: this.recaptchaSiteKey,
 				recaptchaSecretKey: this.recaptchaSecretKey,
 				proxyAccount: this.proxyAccount,
+				informationAccount: this.informationAccount,
 				enableTwitterIntegration: this.enableTwitterIntegration,
 				twitterConsumerKey: this.twitterConsumerKey,
 				twitterConsumerSecret: this.twitterConsumerSecret,

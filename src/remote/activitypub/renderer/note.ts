@@ -161,7 +161,7 @@ export default async function renderNote(note: INote, dive = true): Promise<any>
 	return {
 		id: `${config.url}/notes/${note._id}`,
 		type: 'Note',
-		attributedTo,
+		attributedTo: note.authorId ? [attributedTo, `${config.url}/users/${note.authorId}`] : attributedTo,
 		summary,
 		content,
 		_misskey_content: text,

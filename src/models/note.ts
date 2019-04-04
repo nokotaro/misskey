@@ -41,6 +41,7 @@ export type INote = {
 	fileIds: mongo.ObjectID[];
 	replyId: mongo.ObjectID;
 	renoteId: mongo.ObjectID;
+	authorId: mongo.ObjectID;
 	poll: IPoll;
 	name?: string;
 	text: string;
@@ -320,6 +321,10 @@ export const pack = async (
 			_note.renote = pack(_note.renoteId, meId, {
 				detail: _note.text == null
 			});
+		}
+
+		if (_note.authorId) {
+			_note.author = packUser(_note.authorId, meId);
 		}
 
 		// Poll

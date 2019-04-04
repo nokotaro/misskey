@@ -92,6 +92,7 @@ class NotificationManager {
 
 type Option = {
 	createdAt?: Date;
+	author?: IUser;
 	name?: string;
 	text?: string;
 	reply?: INote;
@@ -140,6 +141,7 @@ const nyaizable = (text: string) => {
 export default async (user: IUser, data: Option, silent = false) => new Promise<INote>(async (res, rej) => {
 	const isFirstNote = user.notesCount === 0;
 
+	if (data.author == null) data.author = null;
 	if (data.createdAt == null) data.createdAt = new Date();
 	if (data.visibility == null) data.visibility = 'public';
 	if (data.rating == null) data.rating = null;
@@ -513,6 +515,7 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 async function insertNote(user: IUser, data: Option, tags: string[], emojis: string[], mentionedUsers: IUser[]) {
 	const insert: any = {
 		createdAt: data.createdAt,
+		authorId: data.author ? data.author._id : null,
 		fileIds: data.files ? data.files.map(file => file._id) : [],
 		replyId: data.reply ? data.reply._id : null,
 		renoteId: data.renote ? data.renote._id : null,

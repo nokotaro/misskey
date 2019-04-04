@@ -8,7 +8,7 @@ export interface IObject {
 	published?: string;
 	cc?: string[];
 	to?: string[];
-	attributedTo: string;
+	attributedTo: string | string[];
 	attachment?: any[];
 	inReplyTo?: any;
 	replies?: ICollection;

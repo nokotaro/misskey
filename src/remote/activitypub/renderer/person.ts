@@ -9,13 +9,15 @@ import { getEmojis } from './note';
 import renderEmoji from './emoji';
 import { IIdentifier } from '../models/identifier';
 import renderHashtag from './hashtag';
+import fetchMeta from '../../../misc/fetch-meta';
 
 export default async (user: ILocalUser) => {
 	const id = `${config.url}/users/${user._id}`;
 
-	const [avatar, banner] = await Promise.all([
+	const [avatar, banner, meta] = await Promise.all([
 		DriveFile.findOne({ _id: user.avatarId }),
-		DriveFile.findOne({ _id: user.bannerId })
+		DriveFile.findOne({ _id: user.bannerId }),
+		fetchMeta()
 	]);
 
 	const attachment: {
@@ -76,7 +78,11 @@ export default async (user: ILocalUser) => {
 	];
 
 	return {
-		type: user.isBot ? 'Service' : 'Person',
+		type:
+			[meta.informationAccount]
+				.map(x => x.toLowerCase())
+				.includes(user.usernameLower) ? 'Organization' :
+			user.isBot ? 'Service' : 'Person',
 		id,
 		inbox: `${id}/inbox`,
 		outbox: `${id}/outbox`,

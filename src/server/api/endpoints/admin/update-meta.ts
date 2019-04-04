@@ -162,6 +162,13 @@ export const meta = {
 			}
 		},
 
+		informationAccount: {
+			validator: $.optional.nullable.str,
+			desc: {
+				'ja-JP': 'インフォメーションプロデューサーのユーザー名'
+			}
+		},
+
 		maintainerName: {
 			validator: $.optional.str,
 			desc: {

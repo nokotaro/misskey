@@ -205,6 +205,7 @@ export type IMeta = {
 	cacheRemoteFiles?: boolean;
 
 	proxyAccount?: string;
+	informationAccount?: string;
 
 	enableRecaptcha?: boolean;
 	recaptchaSiteKey?: string;

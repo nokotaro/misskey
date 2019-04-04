@@ -75,7 +75,22 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 	logger.info(`Creating the Note: ${note.id}`);
 
 	// 投稿者をフェッチ
-	const actor = await resolvePerson(note.attributedTo, null, resolver) as IRemoteUser;
+	const actorOrActors = Array.isArray(note.attributedTo) ?
+		await Promise.all(note.attributedTo.map(x => resolvePerson(x, null, resolver).catch(() => null) as Promise<IRemoteUser>))
+			.then(x => x.filter(x => x)) :
+		await resolvePerson(note.attributedTo, null, resolver) as IRemoteUser;
+
+	const [actor] = Array.isArray(actorOrActors) ?
+		actorOrActors.filter(x => x.host === new URL(note.url).host) :
+		[actorOrActors];
+
+	const [author] = Array.isArray(actorOrActors) ?
+		actorOrActors.filter(x => x.uri !== actor.uri) :
+		[];
+
+	if (!actor) {
+		return null;
+	}
 
 	// 投稿者が凍結されていたらスキップ
 	if (actor.isSuspended) {
@@ -197,11 +212,16 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 
 	// ユーザーの情報が古かったらついでに更新しておく
 	if (actor.lastFetchedAt == null || Date.now() - actor.lastFetchedAt.getTime() > 1000 * 60 * 60 * 24) {
-		updatePerson(note.attributedTo);
+		if (Array.isArray(note.attributedTo))
+			for (const attributedTo of note.attributedTo)
+				updatePerson(attributedTo);
+		else
+			updatePerson(note.attributedTo);
 	}
 
 	return await post(actor, {
 		createdAt: new Date(note.published),
+		author,
 		files,
 		reply,
 		renote: quote,

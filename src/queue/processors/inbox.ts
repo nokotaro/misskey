@@ -164,6 +164,11 @@ function ValidateActivity(activity: any, host: string) {
 		if (typeof activity.object.attributedTo === 'string') {
 			const uriHost = toUnicode(new URL(activity.object.attributedTo).hostname.toLowerCase());
 			if (host !== uriHost) throw new Error('activity.object.attributedTo has different host');
+		} else if (Array.isArray(activity.object.attributedTo)) {
+			const hosts = (activity.object.attributedTo as any[])
+				.filter(x => typeof x === 'string')
+				.map(x => toUnicode(new URL(x).hostname.toLowerCase()));
+			if (hosts.length && !hosts.includes(host)) throw new Error('activity.object.attributedTo doesn\'t have same host');
 		}
 	}
 }

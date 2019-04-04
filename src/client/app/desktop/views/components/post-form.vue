@@ -39,6 +39,10 @@
 			<mk-poll-editor v-if="poll" ref="poll" @destroyed="poll = false" @updated="onPollUpdate()"/>
 		</div>
 		<input v-show="useBroadcast" ref="broadcast" v-model="broadcast" :placeholder="$t('broadcast')" v-autocomplete="{ model: 'broadcast' }">
+		<ui-select v-model="postAs" v-if="usePostAs">
+			<template #label>{{ $t('post-as') }}</template>
+			<option value="information">{{ $t('information') }}</option>
+		</ui-select>
 	</div>
 	<mk-uploader ref="uploader" @uploaded="attachMedia" @change="onChangeUploadings"/>
 	<button class="upload" :title="$t('attach-media-from-local')" @click="chooseFile"><fa icon="upload"/></button>
@@ -47,6 +51,7 @@
 	<button class="poll" :title="$t('create-poll')" @click="poll = !poll"><fa icon="poll-h"/></button>
 	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa :icon="['far', 'eye-slash']"/></button>
 	<button class="broadcast" :title="$t('use-broadcast')" @click="useBroadcast = !useBroadcast"><fa icon="bullhorn"/></button>
+	<button class="post-as" :title="$t('post-as')" @click="usePostAs = !usePostAs" v-if="$store.getters.isSignedIn && ($store.state.i.isAdmin || $store.state.i.isModerator)"><fa icon="user-ninja"/></button>
 	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa icon="map-marker-alt"/></button>
 	<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
 		<span v-if="rating === null"><fa :icon="['far', 'eye']"/></span>
@@ -132,6 +137,8 @@ export default Vue.extend({
 			cw: null,
 			useBroadcast: false,
 			broadcast: '',
+			usePostAs: false,
+			postAs: null,
 			geo: null,
 			visibility: 'public',
 			visibleUsers: [],
@@ -484,6 +491,7 @@ export default Vue.extend({
 				renoteId: this.renote ? this.renote.id : undefined,
 				poll: this.poll ? (this.$refs.poll as any).get() : undefined,
 				cw: this.useCw ? this.cw || '' : undefined,
+				as: this.usePostAs && this.postAs ? this.postAs : undefined,
 				visibility: this.visibility,
 				visibleUserIds: this.visibility == 'specified' ? this.visibleUsers.map(u => u.id) : undefined,
 				localOnly: this.localOnly,
@@ -601,6 +609,9 @@ export default Vue.extend({
 
 		> input:last-of-type
 			margin-top 8px
+
+		> .ui-select
+			margin 24px 8px 0
 
 		> .textarea
 			> .emoji
@@ -766,6 +777,7 @@ export default Vue.extend({
 	> .poll
 	> .cw
 	> .broadcast
+	> .post-as
 	> .geo
 	> .rating
 	> .visibility

@@ -22,6 +22,10 @@
 			<input v-show="useCw" ref="cw" v-model="cw" :placeholder="$t('cw-placeholder')" v-autocomplete="{ model: 'cw' }">
 			<textarea v-model="text" ref="text" :disabled="posting" :placeholder="placeholder" v-autocomplete="{ model: 'text' }"></textarea>
 			<input v-show="useBroadcast" ref="broadcast" v-model="broadcast" :placeholder="$t('broadcast-placeholder')" v-autocomplete="{ model: 'broadcast' }">
+			<ui-select v-model="postAs" v-if="usePostAs">
+				<template #label>{{ $t('post-as') }}</template>
+				<option value="information">{{ $t('information') }}</option>
+			</ui-select>
 			<div class="attaches" v-show="files.length != 0">
 				<x-draggable class="files" :list="files" :options="{ animation: 150 }">
 					<div class="file" v-for="file in files" :key="file.id">
@@ -38,6 +42,7 @@
 				<button class="poll" @click="poll = true"><fa icon="poll-h"/></button>
 				<button class="cw" @click="useCw = !useCw"><fa :icon="['far', 'eye-slash']"/></button>
 				<button class="broadcast" @click="useBroadcast = !useBroadcast"><fa icon="bullhorn"/></button>
+				<button class="post-as" @click="usePostAs = !usePostAs" v-if="$store.getters.isSignedIn && ($store.state.i.isAdmin || $store.state.i.isModerator)"><fa icon="user-ninja"/></button>
 				<button class="geo" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa icon="map-marker-alt"/></button>
 				<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
 					<span v-if="rating === null"><fa :icon="['far', 'eye']"/></span>
@@ -125,6 +130,8 @@ export default Vue.extend({
 			rating: null,
 			useCw: false,
 			cw: null,
+			usePostAs: false,
+			postAs: null,
 			recentHashtags: JSON.parse(localStorage.getItem('hashtags') || '[]'),
 			maxNoteTextLength: 1000
 		};
@@ -381,6 +388,7 @@ export default Vue.extend({
 				renoteId: this.renote ? this.renote.id : undefined,
 				poll: this.poll ? (this.$refs.poll as any).get() : undefined,
 				cw: this.useCw ? this.cw || '' : undefined,
+				as: this.usePostAs && this.postAs ? this.postAs : undefined,
 				geo: /*this.geo ? {
 					coordinates: [this.geo.longitude, this.geo.latitude],
 					altitude: this.geo.altitude,
@@ -514,6 +522,9 @@ export default Vue.extend({
 				max-width 100%
 				min-width 100%
 				min-height 80px
+
+			> .ui-select
+				margin 24px 8px 0
 
 			> .attaches
 
