@@ -158,6 +158,7 @@ export default define(meta, async (ps, me) => {
 		response.hidedTags = instance.hidedTags;
 		response.recaptchaSecretKey = instance.recaptchaSecretKey;
 		response.proxyAccount = instance.proxyAccount;
+		response.informationAccount = instance.informationAccount;
 		response.twitterConsumerKey = instance.twitterConsumerKey;
 		response.twitterConsumerSecret = instance.twitterConsumerSecret;
 		response.githubClientId = instance.githubClientId;
