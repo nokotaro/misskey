@@ -253,7 +253,7 @@ export default define(meta, async (ps, user, app) => {
 	const accounts: Record<string, string> = await fetchMeta() as any;
 
 	const sender = ps.as && (user.isAdmin || user.isModerator) ?
-		await User.findOne({ usernameLower: accounts[`${ps.as}Account`].toLowerCase() }) :
+		await User.findOne({ usernameLower: accounts[`${ps.as}Account`].toLowerCase(), host: null }) :
 		user;
 
 	let visibleUsers: IUser[] = [];
