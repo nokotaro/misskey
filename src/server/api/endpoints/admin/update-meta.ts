@@ -436,6 +436,10 @@ export default define(meta, async (ps) => {
 		set.proxyAccount = ps.proxyAccount;
 	}
 
+	if (ps.informationAccount !== undefined) {
+		set.informationAccount = ps.informationAccount;
+	}
+
 	if (ps.maintainerName !== undefined) {
 		set['maintainer.name'] = ps.maintainerName;
 	}
