@@ -13,6 +13,7 @@ import FollowRequest from './follow-request';
 import fetchMeta from '../misc/fetch-meta';
 import Emoji from './emoji';
 import { dbLogger } from '../db/logger';
+import { validActor } from '../remote/activitypub/type';
 
 const User = db.get<IUser>('users');
 
@@ -164,6 +165,11 @@ export interface IRemoteUser extends IUserBase {
 	lastFetchedAt: Date;
 	isAdmin: false;
 	isModerator: false;
+	isApplication?: boolean;
+	isGroup?: boolean;
+	isOrganization?: boolean;
+	isPerson?: boolean;
+	isService?: boolean;
 }
 
 export type IUser = ILocalUser | IRemoteUser;
@@ -280,6 +286,7 @@ export const pack = (
 		avatarUrl: true,
 		emojis: true,
 		avatarAngle: true,
+		...(validActor.reduce<Record<string, boolean>>((a, c) => (a[`is${c}`] = true, a), {})),
 		isCat: true,
 		isBot: true,
 		isAdmin: true,

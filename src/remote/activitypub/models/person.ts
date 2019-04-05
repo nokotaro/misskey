@@ -149,7 +149,7 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 
 	const tags = extractHashtags(person.tag).map(tag => tag.toLowerCase());
 
-	const isBot = person.type == 'Service';
+	const is = validActor.reduce<Record<string, boolean>>((a, c) => (a[`is${c}`] = person.type == c, a), {});
 
 	// Create user
 	let user: IRemoteUser;
@@ -181,7 +181,8 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 			fields,
 			...services,
 			tags,
-			isBot,
+			...is,
+			isBot: is.isService,
 			isCat: (person as any).isCat === true,
 			avatarAngle: (person as any).avatarAngle
 		}) as IRemoteUser;
