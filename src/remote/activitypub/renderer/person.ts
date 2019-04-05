@@ -101,6 +101,7 @@ export default async (user: ILocalUser) => {
 		manuallyApprovesFollowers: user.isLocked,
 		publicKey: renderKey(user),
 		isCat: user.isCat,
+		isKaho: user.isKaho,
 		attachment: attachment.length ? attachment : undefined,
 		avatarAngle: user.avatarAngle
 	};

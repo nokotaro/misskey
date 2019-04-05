@@ -731,6 +731,7 @@ common/views/components/profile-editor.vue:
   avatar: "アイコン"
   banner: "バナー"
   avatar-angle: "アイコンの角度"
+  is-kaho: "このプロデューサーはｺﾐﾔｶﾎです"
   is-cat: "このプロデューサーはCatです"
   is-bot: "このプロデューサーはBotです"
   is-locked: "フォローを承認制にする"
@@ -1673,11 +1674,13 @@ mobile/views/components/note-preview.vue:
   admin: "admin"
   bot: "bot"
   cat: "cat"
+  kaho: "ｺﾐﾔｶﾎ"
 
 mobile/views/components/note-sub.vue:
   admin: "admin"
   bot: "bot"
   cat: "cat"
+  kaho: "ｺﾐﾔｶﾎ"
 
 mobile/views/components/notifications.vue:
   empty: "ありません！"

@@ -7,6 +7,7 @@
 	<span class="is-admin" v-if="note.user.isAdmin">admin</span>
 	<span class="is-bot" v-if="note.user.isBot">bot</span>
 	<span class="is-cat" v-if="note.user.isCat">cat</span>
+	<span class="is-kaho" v-if="note.user.isKaho">ｺﾐﾔｶﾎ</span>
 	<span class="username"><mk-acct :user="note.user"/></span>
 	<span class="is-verified" v-if="note.user.isVerified" :title="$t('@.verified-user')"><fa icon="star"/></span>
 	<div class="info">
@@ -76,6 +77,7 @@ export default Vue.extend({
 	> .is-admin
 	> .is-bot
 	> .is-cat
+	> .is-kaho
 		flex-shrink 0
 		align-self center
 		margin 0 .5em 0 0

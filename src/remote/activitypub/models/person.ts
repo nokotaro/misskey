@@ -184,6 +184,7 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 			...is,
 			isBot: is.isService,
 			isCat: (person as any).isCat === true,
+			isKaho: (person as any).isKaho === true,
 			avatarAngle: (person as any).avatarAngle
 		}) as IRemoteUser;
 	} catch (e) {
@@ -376,6 +377,7 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: obje
 		tags,
 		isBot: object.type == 'Service',
 		isCat: (person as any).isCat === true,
+		isKaho: (person as any).isKaho === true,
 		isLocked: person.manuallyApprovesFollowers,
 		createdAt: Date.parse(person.published) || null,
 		publicKey: {

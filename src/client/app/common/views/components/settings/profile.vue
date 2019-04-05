@@ -64,6 +64,7 @@
 		<header><fa :icon="faCogs"/> {{ $t('advanced') }}</header>
 
 		<div>
+			<ui-switch v-model="isKaho" @change="save(false)">{{ $t('is-kaho') }}</ui-switch>
 			<ui-switch v-model="isCat" @change="save(false)">{{ $t('is-cat') }}</ui-switch>
 			<ui-switch v-model="isBot" @change="save(false)">{{ $t('is-bot') }}</ui-switch>
 			<ui-switch v-model="alwaysMarkNsfw">{{ $t('@._settings.always-mark-nsfw') }}</ui-switch>
@@ -149,6 +150,7 @@ export default Vue.extend({
 			avatarId: null,
 			bannerId: null,
 			avatarAngle: null,
+			isKaho: false,
 			isCat: false,
 			isBot: false,
 			isLocked: false,
@@ -191,6 +193,7 @@ export default Vue.extend({
 		this.avatarId = this.$store.state.i.avatarId;
 		this.bannerId = this.$store.state.i.bannerId;
 		this.avatarAngle = this.$store.state.i.avatarAngle;
+		this.isKaho = this.$store.state.i.isKaho;
 		this.isCat = this.$store.state.i.isCat;
 		this.isBot = this.$store.state.i.isBot;
 		this.isLocked = this.$store.state.i.isLocked;
@@ -255,6 +258,7 @@ export default Vue.extend({
 				avatarId: this.avatarId || undefined,
 				bannerId: this.bannerId || undefined,
 				avatarAngle: this.avatarAngle || undefined,
+				isKaho: !!this.isKaho,
 				isCat: !!this.isCat,
 				isBot: !!this.isBot,
 				isLocked: !!this.isLocked,

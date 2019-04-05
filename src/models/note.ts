@@ -523,7 +523,7 @@ export const pack = async (
 		//#endregion
 
 		const raw: string = _note.text;
-		const stack = [false];
+		const stack = [!!_note.user.isKaho];
 		if (raw) {
 			_note.text = '';
 

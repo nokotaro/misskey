@@ -649,6 +649,7 @@ common/views/components/profile-editor.vue:
   birthday: "Birthday"
   avatar: "Icon"
   banner: "Banner"
+  is-kaho: "This producer is Kaho"
   is-cat: "This producer is a Cat"
   is-bot: "This producer is a Bot"
   is-locked: "Follower requests require approval"
@@ -1491,10 +1492,12 @@ mobile/views/components/note-preview.vue:
   admin: "admin"
   bot: "bot"
   cat: "cat"
+  kaho: "kaho"
 mobile/views/components/note-sub.vue:
   admin: "admin"
   bot: "bot"
   cat: "cat"
+  kaho: "kaho"
 mobile/views/components/notifications.vue:
   empty: "No notifications"
 mobile/views/components/post-form.vue:

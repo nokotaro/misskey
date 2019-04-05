@@ -134,6 +134,7 @@ export interface ILocalUser extends IUserBase {
 		name: string;
 		value: string;
 	}[];
+	isKaho: boolean;
 	isCat: boolean;
 	isAdmin?: boolean;
 	isModerator?: boolean;
@@ -287,6 +288,7 @@ export const pack = (
 		emojis: true,
 		avatarAngle: true,
 		...(validActor.reduce<Record<string, boolean>>((a, c) => (a[`is${c}`] = true, a), {})),
+		isKaho: true,
 		isCat: true,
 		isBot: true,
 		isAdmin: true,
