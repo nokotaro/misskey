@@ -159,7 +159,7 @@ export const mfmLanguage = P.createLanguage({
 	},
 	serif: r => {
 		const xml = P.regexp(/<m>([\s\S]+?)<\/m>/, 1);
-		const backslash = P.regexp(/\\([\s\S]+?)\\/, 1);
+		const backslash = P.regexp(/\\([^([][\s\S]*?)\\(?![\)\]])/, 1);
 		return P.alt(xml, backslash).map(x => createTree('serif', r.inline.atLeast(1).tryParse(x), {}));
 	},
 	strike: r => {
