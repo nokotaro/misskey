@@ -138,6 +138,23 @@ const nyaizable = (text: string) => {
 	return !!stack.length;
 };
 
+const kahoizable = (text: string) => {
+	if (typeof text !== 'string')
+		return false;
+
+	const trim = text.trim();
+	const match = trim.match(/<\/?!?kaho>/ig) || [];
+	const stack: string[] = [];
+	for (const tag of [...match]
+		.map(x => x.toLocaleLowerCase()))
+			if (tag.includes('/')) {
+				if (stack.pop() !== tag.replace('/', ''))
+					return false;
+			} else
+				stack.push(tag);
+	return !!stack.length;
+};
+
 export default async (user: IUser, data: Option, silent = false) => new Promise<INote>(async (res, rej) => {
 	const isFirstNote = user.notesCount === 0;
 
@@ -222,7 +239,9 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	}
 
 	const nyaize = nyaizable(data.text);
-	const text = nyaize ? data.text && data.text.replace(/^<\/?!?nya>/ig, '') : data.text;
+	const kahoize = kahoizable(data.text);
+	const kahosafe = kahoize ? data.text && data.text.replace(/^<\/?!?kaho>/ig, '') : data.text;
+	const text = nyaize ? kahosafe && kahosafe.replace(/^<\/?!?nya>/ig, '') : kahosafe;
 
 	let tags = data.apHashtags;
 	let emojis = data.apEmojis;
@@ -230,11 +249,11 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 
 	// Parse MFM if needed
 	if (!tags || !emojis || !mentionedUsers) {
-		const text = data.text && data.text.replace(/^<\/?!?nya>/ig, '');
+		const text = data.text && data.text.replace(/^<\/?!?(nya|kaho)>/ig, '');
 		const tokens = text ? parse(text) : [];
 		const cwTokens = data.cw ? parse(data.cw) : [];
 		const choiceTokens = data.poll && data.poll.choices
-			? concat((data.poll.choices as IChoice[]).map(choice => parse(choice.text && choice.text.replace(/^<\/?!?nya>/ig, ''))))
+			? concat((data.poll.choices as IChoice[]).map(choice => parse(choice.text && choice.text.replace(/^<\/?!?(nya|kaho)>/ig, ''))))
 			: [];
 
 		const combinedTokens = tokens.concat(cwTokens).concat(choiceTokens);

@@ -419,7 +419,7 @@ export const pack = async (
 					stack.push(tag);
 		return !stack.length;
 	})()) {
-		const nyamap: { [x: string]: string } = {
+		const nyamap: Record<string, string> = {
 		//#region nyaize: ja-JP
 			'な': 'にゃ',
 			'ナ': 'ニャ',
@@ -456,6 +456,95 @@ export const pack = async (
 				}
 
 				_note.text += stack[0] && nyamap[head] || head;
+			}
+		}
+	}
+
+	if ((() => { // Recheck syntax
+		const match = _note.text && _note.text.match(/<\/?!?kaho>/ig) || [];
+		const stack: string[] = [];
+		for (const tag of [...match]
+			.map(x => x.toLocaleLowerCase()))
+				if (tag.includes('/')) {
+					if (stack.pop() !== tag.replace('/', ''))
+						return false;
+				} else
+					stack.push(tag);
+		return !stack.length;
+	})()) {
+		const kahomap: Record<string, string> = {
+			'う': 'ゔ',
+			'ゝ': 'ゞ',
+			'ゟ': 'ゟ゛',
+			'ウ': 'ヴ',
+			'ヽ': 'ヾ',
+			'ヿ': 'ヿ゛'
+		};
+		//#region kahoize: ja-JP
+		//#region kahoize: ja-JP: hiragana
+		for (let i = 0x3041; i < 0x3097; i++) {
+			const c = String.fromCodePoint(i);
+			if (kahomap[c])
+				continue;
+			else if (0x304a < i && i < 0x3063)
+				kahomap[c] = String.fromCodePoint(i + 1 & ~1);
+			else if (0x3063 < i && i < 0x306a)
+				kahomap[c] = String.fromCodePoint(i | 1);
+			else if (0x306e < i && i < 0x307e)
+				kahomap[c] = String.fromCodePoint(~~(i / 3) * 3 + 1);
+			else
+				kahomap[c] = `${c}゛`;
+		}
+		//#endregion
+		//#region kahoize: ja-JP: katakana
+		for (let i = 0x30a1; i < 0x30fb; i++) {
+			const c = String.fromCodePoint(i);
+			if (kahomap[c])
+				continue;
+			else if (0x30ee < i && i < 0x30f3)
+				kahomap[c] = String.fromCodePoint(i + 4);
+			else if (0x30f6 < i && i < 0x30fb)
+				kahomap[c] = c;
+			else
+				kahomap[c] = `${c}゛`;
+		}
+		//#endregion
+		//#region kahoize: ja-JP: halfwidth
+		for (let i = 0xff66; i < 0xf9e; i++) {
+			const c = String.fromCodePoint(i);
+			if (kahomap[c])
+				continue;
+			else if (i === 0xff70)
+				kahomap[c] = c;
+			else
+				kahomap[c] = `${c}ﾞ`;
+		}
+		//#endregion
+		//#endregion
+
+		const raw: string = _note.text;
+		const stack = [false];
+		if (raw) {
+			_note.text = '';
+
+			for (let i = 0; i < raw.length; i++) {
+				const head = raw[i];
+
+				if (head === '<') {
+					const [, tag, state] = raw.slice(i).match(/^<((\/?!?)kaho>)/i) || [, , , ];
+
+					if (typeof state === 'string') {
+						if (state[0] === '/')
+							stack.shift();
+						else
+							stack.unshift(!state);
+
+						i += tag.length;
+						continue;
+					}
+				}
+
+				_note.text += stack[0] && `<opentype palt>${kahomap[head]}</opentype>` || head;
 			}
 		}
 	}
