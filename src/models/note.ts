@@ -501,6 +501,12 @@ export const pack = async (
 			const c = String.fromCodePoint(i);
 			if (kahomap[c])
 				continue;
+			else if (0x30aa < i && i < 0x30c3)
+				kahomap[c] = String.fromCodePoint(i + 1 & ~1);
+			else if (0x30c3 < i && i < 0x30ca)
+				kahomap[c] = String.fromCodePoint(i | 1);
+			else if (0x30ce < i && i < 0x30de)
+				kahomap[c] = String.fromCodePoint(~~(i / 3) * 3 + 1);
 			else if (0x30ee < i && i < 0x30f3)
 				kahomap[c] = String.fromCodePoint(i + 4);
 			else if (0x30f6 < i && i < 0x30fb)
@@ -510,7 +516,7 @@ export const pack = async (
 		}
 		//#endregion
 		//#region kahoize: ja-JP: halfwidth
-		for (let i = 0xff66; i < 0xf9e; i++) {
+		for (let i = 0xff66; i < 0xff9e; i++) {
 			const c = String.fromCodePoint(i);
 			if (kahomap[c])
 				continue;
