@@ -19,7 +19,7 @@
 				<router-link class="name" :to="user | userPage()">
 					<mk-user-name :user="user" :key="user.id"/>
 				</router-link>
-				<span class="acct">@{{ user | acct }} <fa v-if="user.isLocked == true" class="locked" icon="lock" fixed-width/></span>
+				<span class="acct">@{{ user | acct }} <fa v-if="user.isLocked == true" class="locked" :icon="['fal', 'lock']" fixed-width/></span>
 				<span class="followed" v-if="user.isFollowed">{{ $t('follows-you') }}</span>
 			</div>
 		</header>

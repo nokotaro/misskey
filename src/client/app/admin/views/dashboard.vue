@@ -37,7 +37,7 @@
 			</div>
 			<div>
 				<span><fa :icon="['fal', 'home']"/> {{ $t('this-instance') }}</span>
-				<span @click="setChartSrc('notes')"><fa :icon="['far', 'chart-bar']"/></span>
+				<span @click="setChartSrc('notes')"><fa :icon="['fal', 'chart-bar']"/></span>
 			</div>
 		</div>
 		<div>

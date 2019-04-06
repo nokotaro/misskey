@@ -78,7 +78,7 @@ export default Vue.extend({
 			}, {
 				type: 'item',
 				text: this.file.isSensitive ? this.$t('contextmenu.unmark-as-sensitive') : this.$t('contextmenu.mark-as-sensitive'),
-				icon: this.file.isSensitive ? ['far', 'eye'] : ['far', 'eye-slash'],
+				icon: this.file.isSensitive ? ['fal', 'eye'] : ['fal', 'eye-slash'],
 				action: this.toggleSensitive
 			}, null, {
 				type: 'item',

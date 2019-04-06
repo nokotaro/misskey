@@ -28,7 +28,7 @@ export default Vue.extend({
 			text: this.$t('push-to-list'),
 			action: this.pushList
 		}, null, {
-			icon: this.user.isMuted ? ['fas', 'eye'] : ['far', 'eye-slash'],
+			icon: this.user.isMuted ? ['fal', 'eye'] : ['fal', 'eye-slash'],
 			text: this.user.isMuted ? this.$t('unmute') : this.$t('mute'),
 			action: this.toggleMute
 		}, {

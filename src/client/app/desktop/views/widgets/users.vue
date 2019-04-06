@@ -4,8 +4,8 @@
 		<template #header><fa :icon="['fal', 'users']"/>{{ $t('title') }}</template>
 		<template #func>
 			<button :title="$t('title')" @click="refresh">
-				<fa v-if="!fetching && more" icon="arrow-right"/>
-				<fa v-if="!fetching && !more" icon="sync"/>
+				<fa v-if="!fetching && more" :icon="['fal', 'arrow-right']"/>
+				<fa v-if="!fetching && !more" :icon="['fal', 'sync']"/>
 			</button>
 		</template>
 

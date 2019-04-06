@@ -4,7 +4,7 @@
 	@drop.prevent.stop="onDrop"
 >
 	<div class="body">
-		<p class="init" v-if="init"><fa icon="spinner .spin"/>{{ $t('@.loading') }}</p>
+		<p class="init" v-if="init"><fa :icon="['fal', 'spinner .spin']"/>{{ $t('@.loading') }}</p>
 		<p class="empty" v-if="!init && messages.length == 0"><fa :icon="['fal', 'info-circle']"/>{{ $t('empty') }}</p>
 		<p class="no-history" v-if="!init && messages.length > 0 && !existMoreMessages"><fa :icon="['fal', 'flag']"/>{{ $t('no-history') }}</p>
 		<button class="more" :class="{ fetching: fetchingMoreMessages }" v-if="existMoreMessages" @click="fetchMoreMessages" :disabled="fetchingMoreMessages">

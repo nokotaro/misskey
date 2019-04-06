@@ -14,7 +14,7 @@
 	<div class="file" @click="file = null" v-if="file">{{ file.name }}</div>
 	<mk-uploader ref="uploader" @uploaded="onUploaded"/>
 	<button class="send" @click="send" :disabled="!canSend || sending" :title="$t('send')">
-		<template v-if="!sending"><fa :icon="['fal', 'paper-plane']"/></template><template v-if="sending"><fa icon="spinner .spin"/></template>
+		<template v-if="!sending"><fa :icon="['fal', 'paper-plane']"/></template><template v-if="sending"><fa :icon="['fal', 'spinner .spin']"/></template>
 	</button>
 	<button class="attach-from-local" @click="chooseFile" :title="$t('attach-from-local')">
 		<fa :icon="['fal', 'upload']"/>
