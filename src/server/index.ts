@@ -82,29 +82,39 @@ router.use(ostatus.routes());
 router.use(wellKnown.routes());
 
 router.get('/assets/emojis/:query', async ctx => {
-	const query: string = ctx.params.name;
+	const query: string = ctx.params.query;
 
-	if (query.startsWith('@'))
-		return (ctx.status = 404, undefined);
+	if (query.startsWith('@')) {
+		const [, username, host = null] = query.split('@');
+		const user = await User.findOne({
+			usernameLower: username.toLowerCase(),
+			host
+		});
 
-	const [name, host] = query.split('@');
-	const emoji = await Emoji.findOne({
-		host,
-		$or: [
-			{ name },
-			{
-				aliases: { $in: [name] }
-			}
-		]
-	});
+		if (user)
+			ctx.reload(user.avatarUrl);
+		else
+			ctx.status = 404;
+	} else {
+		const [name, host = null] = query.split('@');
+		const emoji = await Emoji.findOne({
+			host,
+			$or: [
+				{ name },
+				{
+					aliases: { $in: [name] }
+				}
+			]
+		});
 
-	if (emoji)
-		ctx.redirect(emoji.url);
-	else if (ordered.includes(name)) {
-		const runed = [...lib[name].char].map(x => x.codePointAt(0).toString(16));
-		ctx.redirect(`${twemojiBase}/2/svg/${((runed.includes('200d') ? runed : runed.filter(x => x !== 'fe0f')).filter(x => x && x.length)).join('-')}.svg`);
-	} else
-		ctx.status = 404;
+		if (emoji)
+			ctx.redirect(emoji.url);
+		else if (ordered.includes(name)) {
+			const runed = [...lib[name].char].map(x => x.codePointAt(0).toString(16));
+			ctx.redirect(`${twemojiBase}/2/svg/${((runed.includes('200d') ? runed : runed.filter(x => x !== 'fe0f')).filter(x => x && x.length)).join('-')}.svg`);
+		} else
+			ctx.status = 404;
+	}
 });
 
 router.get('/verify-email/:code', async ctx => {
