@@ -4,7 +4,7 @@
 		<template #title>Cost Calculator</template>
 		<section>
 			<header>
-				<fa :icon="['fal', 'user-ninja']"/>
+				<fa :icon="['fal', 'user-ninja']" fixed-width/>
 				<span>Produce</span>
 			</header>
 			<div class="slot">
@@ -26,7 +26,7 @@
 		</section>
 		<section>
 			<header>
-				<fa :icon="['fal', 'user-friends']"/>
+				<fa :icon="['fal', 'user-friends']" fixed-width/>
 				<span>Support</span>
 			</header>
 			<div class="slot">
@@ -100,7 +100,7 @@
 		</section>
 		<section>
 			<header>
-				<fa :icon="['fal', 'user-plus']"/>
+				<fa :icon="['fal', 'user-plus']" fixed-width/>
 				<span>Guest</span>
 			</header>
 			<div class="slot">
@@ -112,19 +112,21 @@
 					<option value="6">R/N</option>
 				</ui-select>
 				<ui-select v-model="guestIdolGrade" placeholder="Grade">
-					<option value="4"><fa :icon="['fas', 'star']"/><fa :icon="['fas', 'star']"/><fa :icon="['fas', 'star']"/><fa :icon="['fas', 'star']"/></option>
-					<option value="3"><fa :icon="['fas', 'star']"/><fa :icon="['fas', 'star']"/><fa :icon="['fas', 'star']"/><fa :icon="['fal', 'star']"/></option>
-					<option value="2"><fa :icon="['fas', 'star']"/><fa :icon="['fas', 'star']"/><fa :icon="['fal', 'star']"/><fa :icon="['fal', 'star']"/></option>
-					<option value="1"><fa :icon="['fas', 'star']"/><fa :icon="['fal', 'star']"/><fa :icon="['fal', 'star']"/><fa :icon="['fal', 'star']"/></option>
-					<option value="0"><fa :icon="['fal', 'star']"/><fa :icon="['fal', 'star']"/><fa :icon="['fal', 'star']"/><fa :icon="['fal', 'star']"/></option>
+					<option value="4">★★★★</option>
+					<option value="3">★★★☆</option>
+					<option value="2">★★☆☆</option>
+					<option value="1">★☆☆☆</option>
+					<option value="0">☆☆☆☆</option>
 				</ui-select>
 				<ui-input v-model="guestIdolLv" type="number">Lv</ui-input>
 			</div>
 		</section>
 		<section>
-			<header>Cost</header>
+			<header>
+				<fa :icon="['fal', 'abacus']" fixed-width/>
+				<span>Cost</span>
+			</header>
 			<div class="slot">
-				<ui-input :value="cost" readonly></ui-input>
 				<ui-input :value="cost" readonly></ui-input>
 			</div>
 		</section>
@@ -181,9 +183,9 @@ main
 	.slot
 		display flex
 		gap 8px
+		margin -32px 0
 
 		> *
 			flex 1 1 auto
-			margin -32px 0
 
 </style>
