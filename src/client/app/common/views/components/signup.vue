@@ -167,4 +167,8 @@ export default Vue.extend({
 <style lang="stylus" scoped>
 .mk-signup
 	min-width 302px
+
+	.g-recaptcha
+		display flex
+		justify-content center
 </style>
