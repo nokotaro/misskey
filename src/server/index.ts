@@ -81,13 +81,22 @@ router.use(nodeinfo.routes());
 router.use(ostatus.routes());
 router.use(wellKnown.routes());
 
-router.get('/assets/emojis/:name', async ctx => {
-	const name = ctx.params.name || '';
-	const emoji =
-		await Emoji.findOne({ name }) ||
-		await Emoji.findOne({
-			aliases: { $in: [name] }
-		});
+router.get('/assets/emojis/:query', async ctx => {
+	const query: string = ctx.params.name;
+
+	if (query.startsWith('@'))
+		return (ctx.status = 404, undefined);
+
+	const [name, host] = query.split('@');
+	const emoji = await Emoji.findOne({
+		host,
+		$or: [
+			{ name },
+			{
+				aliases: { $in: [name] }
+			}
+		]
+	});
 
 	if (emoji)
 		ctx.redirect(emoji.url);
