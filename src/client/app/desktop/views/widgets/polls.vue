@@ -1,7 +1,7 @@
 <template>
 <div class="mkw-polls">
 	<ui-container :show-header="!props.compact">
-		<template #header><fa icon="poll-h"/>{{ $t('title') }}</template>
+		<template #header><fa :icon="['fal', 'poll-h']"/>{{ $t('title') }}</template>
 		<template #func>
 			<button :title="$t('title')" @click="fetch">
 				<fa v-if="!fetching && more" icon="arrow-right"/>
@@ -12,11 +12,11 @@
 		<div class="mkw-polls--body">
 			<div class="poll" v-if="!fetching && poll != null">
 				<p v-if="poll.text"><router-link :to="poll | notePage">{{ poll.text }}</router-link></p>
-				<p v-if="!poll.text"><router-link :to="poll | notePage"><fa icon="link"/></router-link></p>
+				<p v-if="!poll.text"><router-link :to="poll | notePage"><fa :icon="['fal', 'link']"/></router-link></p>
 				<mk-poll :note="poll"/>
 			</div>
 			<p class="empty" v-if="!fetching && poll == null">{{ $t('nothing') }}</p>
-			<p class="fetching" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+			<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
 		</div>
 	</ui-container>
 </div>

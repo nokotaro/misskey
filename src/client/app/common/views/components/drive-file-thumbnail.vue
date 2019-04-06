@@ -46,7 +46,7 @@ import {
 	faFilePdf,
 	faFileArchive,
 	faFilm
-	} from '@fortawesome/free-solid-svg-icons';
+	} from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	props: {

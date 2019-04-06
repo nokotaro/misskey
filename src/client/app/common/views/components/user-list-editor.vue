@@ -39,8 +39,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
-import { faList, faICursor, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { faList, faICursor, faUsers } from '@fortawesome/pro-light-svg-icons';
+import { faTrashAlt } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/user-list-editor.vue'),

@@ -73,8 +73,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../i18n';
-import { faCloud, faTerminal, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { faTrashAlt, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { faCloud, faTerminal, faSearch, faTrashAlt, faEye, faEyeSlash } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('admin/views/drive.vue'),

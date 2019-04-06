@@ -21,7 +21,7 @@
 			</div>
 		</div>
 		<button class="more" :class="{ fetching: fetchingMoreUsers }" v-if="cursor != null" @click="fetchMoreUsers()" :disabled="fetchingMoreUsers">
-			<template v-if="fetchingMoreUsers"><fa icon="spinner" pulse fixed-width/></template>{{ fetchingMoreUsers ? $t('@.loading') : $t('@.load-more') }}
+			<template v-if="fetchingMoreUsers"><fa :icon="['fal', 'spinner']" pulse fixed-width/></template>{{ fetchingMoreUsers ? $t('@.loading') : $t('@.load-more') }}
 		</button>
 	</div>
 </ui-container>

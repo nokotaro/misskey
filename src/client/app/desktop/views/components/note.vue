@@ -24,7 +24,7 @@
 				<div class="content" v-show="appearNote.cw == null || showContent">
 					<div class="text">
 						<span v-if="appearNote.isHidden" style="opacity:.5">{{ $t('private') }}</span>
-						<a class="reply" v-if="appearNote.reply"><fa icon="reply"/></a>
+						<a class="reply" v-if="appearNote.reply"><fa :icon="['fal', 'reply']"/></a>
 						<mfm v-if="appearNote.text" :text="appearNote.text" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis"/>
 						<a class="rp" v-if="appearNote.renote">RN:</a>
 					</div>
@@ -32,7 +32,7 @@
 						<mk-media-list :media-list="appearNote.files"/>
 					</div>
 					<mk-poll v-if="appearNote.poll" :note="appearNote" ref="pollViewer"/>
-					<a class="location" v-if="appearNote.geo" :href="`https://maps.google.com/maps?q=${appearNote.geo.coordinates[1]},${appearNote.geo.coordinates[0]}`" target="_blank"><fa icon="map-marker-alt"/> 位置情報</a>
+					<a class="location" v-if="appearNote.geo" :href="`https://maps.google.com/maps?q=${appearNote.geo.coordinates[1]},${appearNote.geo.coordinates[0]}`" target="_blank"><fa :icon="['fal', 'map-marker-alt']"/> 位置情報</a>
 					<div class="renote" v-if="appearNote.renote"><mk-note-preview :note="appearNote.renote"/></div>
 					<mk-url-preview v-for="url in urls" :url="url" :key="url" :compact="compact"/>
 				</div>
@@ -41,31 +41,31 @@
 				<span class="app" v-if="appearNote.app && narrow && $store.state.settings.showVia">via <b>{{ appearNote.app.name }}</b></span>
 				<mk-reactions-viewer :note="appearNote" ref="reactionsViewer"/>
 				<button class="replyButton button" @click="reply()" :title="$t('reply')">
-					<template v-if="appearNote.reply"><fa icon="reply-all"/></template>
-					<template v-else><fa icon="reply"/></template>
+					<template v-if="appearNote.reply"><fa :icon="['fal', 'reply-all']"/></template>
+					<template v-else><fa :icon="['fal', 'reply']"/></template>
 					<p class="count" v-if="appearNote.repliesCount > 0">{{ appearNote.repliesCount }}</p>
 				</button>
 				<button v-if="['public', 'home'].includes(appearNote.visibility)" class="renoteButton button" @click="renote()" :title="$t('renote')">
-					<fa icon="retweet"/>
+					<fa :icon="['fal', 'retweet']"/>
 					<p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
 				</button>
 				<button v-else class="inhibitedButton button">
-					<fa icon="ban"/>
+					<fa :icon="['fal', 'ban']"/>
 				</button>
 				<button v-if="isMyNote" class="inhibitedButton button">
-					<fa icon="ban"/>
+					<fa :icon="['fal', 'ban']"/>
 					<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
 				</button>
 				<button v-else-if="appearNote.myReaction" class="reactionButton reacted button" @click="undoReact(appearNote)" ref="reactButton" :title="$t('undo-reaction')">
-					<fa icon="minus"/>
+					<fa :icon="['fal', 'minus']"/>
 					<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
 				</button>
 				<button v-else class="reactionButton button" @click="react()" ref="reactButton" :title="$t('add-reaction')">
-					<fa icon="plus"/>
+					<fa :icon="['fal', 'plus']"/>
 					<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
 				</button>
 				<button @click="menu()" ref="menuButton" class="button">
-					<fa icon="ellipsis-h"/>
+					<fa :icon="['fal', 'ellipsis-h']"/>
 				</button>
 			</footer>
 			<div class="deleted" v-if="appearNote.deletedAt != null">{{ $t('deleted') }}</div>

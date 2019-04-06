@@ -56,8 +56,8 @@
 	</div>
 	<div class="toggle" v-if="withPasswordToggle">
 		<a @click='togglePassword'>
-			<span v-if="type == 'password'"><fa :icon="['fa', 'eye']"/> {{ $t('@.show-password') }}</span>
-			<span v-if="type != 'password'"><fa :icon="['far', 'eye-slash']"/> {{ $t('@.hide-password') }}</span>
+			<span v-if="type == 'password'"><fa :icon="['fal', 'eye']"/> {{ $t('@.show-password') }}</span>
+			<span v-if="type != 'password'"><fa :icon="['fal', 'eye-slash']"/> {{ $t('@.hide-password') }}</span>
 		</a>
 	</div>
 	<div class="desc"><slot name="desc"></slot></div>

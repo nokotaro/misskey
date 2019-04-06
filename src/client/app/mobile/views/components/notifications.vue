@@ -11,14 +11,14 @@
 		<template v-for="(notification, i) in _notifications">
 			<mk-notification :notification="notification" :key="notification.id"/>
 			<p class="date" :key="notification.id + '_date'" v-if="i != notifications.length - 1 && notification._date != _notifications[i + 1]._date">
-				<span><fa icon="angle-up"/>{{ notification._datetext }}</span>
-				<span><fa icon="angle-down"/>{{ _notifications[i + 1]._datetext }}</span>
+				<span><fa :icon="['fal', 'angle-up']"/>{{ notification._datetext }}</span>
+				<span><fa :icon="['fal', 'angle-down']"/>{{ _notifications[i + 1]._datetext }}</span>
 			</p>
 		</template>
 	</component>
 
 	<button class="more" v-if="moreNotifications" @click="fetchMoreNotifications" :disabled="fetchingMoreNotifications">
-		<template v-if="fetchingMoreNotifications"><fa icon="spinner" pulse fixed-width/></template>
+		<template v-if="fetchingMoreNotifications"><fa :icon="['fal', 'spinner']" pulse fixed-width/></template>
 		{{ fetchingMoreNotifications ? $t('@.loading') : $t('@.load-more') }}
 	</button>
 

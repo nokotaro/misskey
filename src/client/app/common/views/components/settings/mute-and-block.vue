@@ -1,6 +1,6 @@
 <template>
 <ui-card>
-	<template #title><fa icon="ban"/> {{ $t('mute-and-block') }}</template>
+	<template #title><fa :icon="['fal', 'ban']"/> {{ $t('mute-and-block') }}</template>
 
 	<section>
 		<header>{{ $t('mute') }}</header>

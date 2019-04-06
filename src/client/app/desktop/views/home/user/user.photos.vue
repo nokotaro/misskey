@@ -2,10 +2,10 @@
 <ui-container :body-togglable="true"
 	:expanded="$store.state.device.expandUsersPhotos"
 	@toggle="expanded => $store.commit('device/set', { key: 'expandUsersPhotos', value: expanded })">
-	<template #header><fa icon="camera"/> {{ $t('title') }}</template>
+	<template #header><fa :icon="['fal', 'camera']"/> {{ $t('title') }}</template>
 
 	<div class="dzsuvbsrrrwobdxifudxuefculdfiaxd">
-		<p class="initializing" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('loading') }}<mk-ellipsis/></p>
+		<p class="initializing" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('loading') }}<mk-ellipsis/></p>
 		<div class="stream" v-if="!fetching && images.length > 0">
 			<router-link v-for="image in images" class="img"
 				:style="`background-image:url(${image.thumbnailUrl})`"

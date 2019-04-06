@@ -3,8 +3,8 @@
 	<div class="banner" :style="{ backgroundImage: banner ? `url(${banner})` : null }"></div>
 
 	<button @click="dark">
-		<template v-if="$store.state.device.darkmode"><fa icon="moon"/></template>
-		<template v-else><fa :icon="['far', 'moon']"/></template>
+		<template v-if="$store.state.device.darkmode"><fa :icon="['fal', 'moon']"/></template>
+		<template v-else><fa :icon="['fal', 'moon']"/></template>
 	</button>
 
 	<mk-forkit class="forkit"/>
@@ -19,8 +19,8 @@
 					<div class="info">
 						<span><b>{{ host }}</b> - <span v-html="$t('powered-by-misskey')"></span></span>
 						<span class="stats" v-if="stats">
-							<span><fa icon="user"/> {{ stats.originalUsersCount | number }}</span>
-							<span><fa icon="pencil-alt"/> {{ stats.originalNotesCount | number }}</span>
+							<span><fa :icon="['fal', 'user']"/> {{ stats.originalUsersCount | number }}</span>
+							<span><fa :icon="['fal', 'pencil-alt']"/> {{ stats.originalNotesCount | number }}</span>
 						</span>
 					</div>
 
@@ -40,7 +40,7 @@
 			</div>
 
 			<div class="announcements block">
-				<header><fa icon="broadcast-tower"/> {{ $t('announcements') }}</header>
+				<header><fa :icon="['fal', 'broadcast-tower']"/> {{ $t('announcements') }}</header>
 				<div v-if="announcements && announcements.length > 0">
 					<div v-for="announcement in announcements">
 						<h1 v-html="announcement.title"></h1>
@@ -50,7 +50,7 @@
 			</div>
 
 			<div class="photos block">
-				<header><fa :icon="['far', 'images']"/> {{ $t('photos') }}</header>
+				<header><fa :icon="['fal', 'images']"/> {{ $t('photos') }}</header>
 				<div>
 					<div v-for="photo in photos" :style="`background-image:url(${photo.thumbnailUrl})`"></div>
 				</div>
@@ -76,14 +76,14 @@
 				</div>
 
 				<div class="tl block">
-					<header><fa :icon="['far', 'comment-alt']"/> {{ $t('timeline') }}</header>
+					<header><fa :icon="['fal', 'comment-alt']"/> {{ $t('timeline') }}</header>
 					<div>
 						<mk-welcome-timeline class="tl" :max="20"/>
 					</div>
 				</div>
 
 				<div class="info block">
-					<header><fa icon="info-circle"/> {{ $t('info') }}</header>
+					<header><fa :icon="['fal', 'info-circle']"/> {{ $t('info') }}</header>
 					<div>
 						<div v-if="meta" class="body">
 							<p>Version: <b>{{ meta.version }}</b></p>

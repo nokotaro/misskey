@@ -148,8 +148,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../i18n';
-import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { faGlobe, faTerminal, faSearch, faMinusCircle, faServer, faCrosshairs, faEnvelopeOpenText, faUsers, faCaretDown, faCaretUp, faTrafficLight, faInbox } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane } from '@fortawesome/pro-light-svg-icons';
+import { faGlobe, faTerminal, faSearch, faMinusCircle, faServer, faCrosshairs, faEnvelopeOpenText, faUsers, faCaretDown, faCaretUp, faTrafficLight, faInbox } from '@fortawesome/pro-light-svg-icons';
 import ApexCharts from 'apexcharts';
 import * as tinycolor from 'tinycolor2';
 

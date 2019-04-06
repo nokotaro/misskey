@@ -1,9 +1,9 @@
 <template>
 <div class="mkw-photo-stream" :class="$style.root" :data-melt="props.design == 2">
 	<ui-container :show-header="props.design == 0" :naked="props.design == 2">
-		<template #header><fa icon="camera"/>{{ $t('title') }}</template>
+		<template #header><fa :icon="['fal', 'camera']"/>{{ $t('title') }}</template>
 
-		<p :class="$style.fetching" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+		<p :class="$style.fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
 		<div :class="$style.stream" v-if="!fetching && images.length > 0">
 			<div v-for="(image, i) in images" :key="i"
 				:class="$style.img"

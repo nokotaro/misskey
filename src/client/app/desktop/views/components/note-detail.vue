@@ -7,8 +7,8 @@
 		@click="fetchConversation"
 		:disabled="conversationFetching"
 	>
-		<template v-if="!conversationFetching"><fa icon="ellipsis-v"/></template>
-		<template v-if="conversationFetching"><fa icon="spinner" pulse/></template>
+		<template v-if="!conversationFetching"><fa :icon="['fal', 'ellipsis-v']"/></template>
+		<template v-if="conversationFetching"><fa :icon="['fal', 'spinner']" pulse/></template>
 	</button>
 	<div class="conversation">
 		<x-sub v-for="note in conversation" :key="note.id" :note="note"/>
@@ -34,7 +34,7 @@
 						<fa v-if="appearNote.visibility == 'followers'" icon="unlock"/>
 						<fa v-if="appearNote.visibility == 'specified'" icon="envelope"/>
 					</span>
-					<span class="localOnly" v-if="appearNote.localOnly == true"><fa icon="heart"/></span>
+					<span class="localOnly" v-if="appearNote.localOnly == true"><fa :icon="['fal', 'heart']"/></span>
 				</div>
 			</div>
 		</header>
@@ -54,7 +54,7 @@
 				</div>
 				<mk-poll v-if="appearNote.poll" :note="appearNote"/>
 				<mk-url-preview v-for="url in urls" :url="url" :key="url" :detail="true"/>
-				<a class="location" v-if="appearNote.geo" :href="`https://maps.google.com/maps?q=${appearNote.geo.coordinates[1]},${appearNote.geo.coordinates[0]}`" target="_blank"><fa icon="map-marker-alt"/> {{ $t('location') }}</a>
+				<a class="location" v-if="appearNote.geo" :href="`https://maps.google.com/maps?q=${appearNote.geo.coordinates[1]},${appearNote.geo.coordinates[0]}`" target="_blank"><fa :icon="['fal', 'map-marker-alt']"/> {{ $t('location') }}</a>
 				<div class="map" v-if="appearNote.geo" ref="map"></div>
 				<div class="renote" v-if="appearNote.renote">
 					<mk-note-preview :note="appearNote.renote"/>
@@ -65,30 +65,30 @@
 			<span class="app" v-if="note.app && $store.state.settings.showVia">via <b>{{ note.app.name }}</b></span>
 			<mk-reactions-viewer :note="appearNote"/>
 			<button class="replyButton" @click="reply()" :title="$t('reply')">
-				<template v-if="appearNote.reply"><fa icon="reply-all"/></template>
-				<template v-else><fa icon="reply"/></template>
+				<template v-if="appearNote.reply"><fa :icon="['fal', 'reply-all']"/></template>
+				<template v-else><fa :icon="['fal', 'reply']"/></template>
 				<p class="count" v-if="appearNote.repliesCount > 0">{{ appearNote.repliesCount }}</p>
 			</button>
 			<button v-if="['public', 'home'].includes(appearNote.visibility)" class="renoteButton" @click="renote()" :title="$t('renote')">
-				<fa icon="retweet"/><p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
+				<fa :icon="['fal', 'retweet']"/><p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
 			</button>
 			<button v-else class="inhibitedButton">
-				<fa icon="ban"/>
+				<fa :icon="['fal', 'ban']"/>
 			</button>
 			<button v-if="isMyNote" class="inhibitedButton button">
-				<fa icon="ban"/>
+				<fa :icon="['fal', 'ban']"/>
 				<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
 			</button>
 			<button v-else-if="appearNote.myReaction" class="reactionButton reacted button" @click="undoReact(appearNote)" ref="reactButton" :title="$t('undo-reaction')">
-				<fa icon="minus"/>
+				<fa :icon="['fal', 'minus']"/>
 				<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
 			</button>
 			<button v-else class="reactionButton button" @click="react()" ref="reactButton" :title="$t('add-reaction')">
-				<fa icon="plus"/>
+				<fa :icon="['fal', 'plus']"/>
 				<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
 			</button>
 			<button @click="menu()" ref="menuButton">
-				<fa icon="ellipsis-h"/>
+				<fa :icon="['fal', 'ellipsis-h']"/>
 			</button>
 		</footer>
 	</article>

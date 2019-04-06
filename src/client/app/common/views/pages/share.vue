@@ -4,7 +4,7 @@
 	<div :class="{ fluid }">
 		<mk-signin v-if="!$store.getters.isSignedIn"/>
 		<mk-post-form v-else-if="!posted" :initial-text="template" :instant="true" @posted="posted = true"/>
-		<p v-else class="posted"><fa icon="check"/></p>
+		<p v-else class="posted"><fa :icon="['fal', 'check']"/></p>
 	</div>
 	<ui-button class="close" v-if="posted" @click="close">{{ $t('@.close') }}</ui-button>
 </div>

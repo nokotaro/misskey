@@ -2,14 +2,14 @@
 <div class="zyknedwtlthezamcjlolyusmipqmjgxz">
 	<div>
 		<header>
-			<span><fa icon="microchip"/> CPU <span>{{ cpuP }}%</span></span>
+			<span><fa :icon="['fal', 'microchip']"/> CPU <span>{{ cpuP }}%</span></span>
 			<span v-if="meta">{{ meta.cpu.model }}</span>
 		</header>
 		<div ref="cpu"></div>
 	</div>
 	<div>
 		<header>
-			<span><fa icon="memory"/> MEM <span>{{ memP }}%</span></span>
+			<span><fa :icon="['fal', 'memory']"/> MEM <span>{{ memP }}%</span></span>
 			<span v-if="meta"></span>
 		</header>
 		<div ref="mem"></div>

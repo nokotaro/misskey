@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import define from '../../define-widget';
-import { faTasks } from '@fortawesome/free-solid-svg-icons';
+import { faTasks } from '@fortawesome/pro-light-svg-icons';
 import ApexCharts from 'apexcharts';
 
 export default define({

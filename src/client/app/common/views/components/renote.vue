@@ -1,21 +1,21 @@
 <template>
 <div class="puqkfets" :class="{ mini: narrow }">
 	<mk-avatar class="avatar" :user="note.user"/>
-	<fa icon="retweet"/>
+	<fa :icon="['fal', 'retweet']"/>
 	<i18n path="@.renoted-by" tag="span">
 		<router-link class="name" :to="note.user | userPage" v-user-preview="note.userId" place="user">
 			<mk-user-name :user="note.user"/>
 		</router-link>
 	</i18n>
 	<div class="info">
-		<span class="mobile" v-if="note.viaMobile"><fa icon="mobile-alt"/></span>
+		<span class="mobile" v-if="note.viaMobile"><fa :icon="['fal', 'mobile-alt']"/></span>
 		<mk-time :time="note.createdAt"/>
 		<span class="visibility" v-if="note.visibility != 'public'">
 			<fa v-if="note.visibility == 'home'" icon="home"/>
 			<fa v-if="note.visibility == 'followers'" icon="unlock"/>
 			<fa v-if="note.visibility == 'specified'" icon="envelope"/>
 		</span>
-		<span class="localOnly" v-if="note.localOnly == true"><fa icon="heart"/></span>
+		<span class="localOnly" v-if="note.localOnly == true"><fa :icon="['fal', 'heart']"/></span>
 	</div>
 </div>
 </template>

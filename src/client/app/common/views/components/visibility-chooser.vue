@@ -3,47 +3,47 @@
 	<div class="backdrop" ref="backdrop" @click="close"></div>
 	<div class="popover" :class="{ isMobile: $root.isMobile }" ref="popover">
 		<div @click="choose('public')" :class="{ active: v == 'public' }">
-			<div><fa icon="globe"/></div>
+			<div><fa :icon="['fal', 'globe']"/></div>
 			<div>
 				<span>{{ $t('public') }}</span>
 			</div>
 		</div>
 		<div @click="choose('home')" :class="{ active: v == 'home' }">
-			<div><fa icon="home"/></div>
+			<div><fa :icon="['fal', 'home']"/></div>
 			<div>
 				<span>{{ $t('home') }}</span>
 				<span>{{ $t('home-desc') }}</span>
 			</div>
 		</div>
 		<div @click="choose('followers')" :class="{ active: v == 'followers' }">
-			<div><fa icon="unlock"/></div>
+			<div><fa :icon="['fal', 'unlock']"/></div>
 			<div>
 				<span>{{ $t('followers') }}</span>
 				<span>{{ $t('followers-desc') }}</span>
 			</div>
 		</div>
 		<div @click="choose('specified')" :class="{ active: v == 'specified' }">
-			<div><fa icon="envelope"/></div>
+			<div><fa :icon="['fal', 'envelope']"/></div>
 			<div>
 				<span>{{ $t('specified') }}</span>
 				<span>{{ $t('specified-desc') }}</span>
 			</div>
 		</div>
 		<div @click="choose('local-public')" :class="{ active: v == 'local-public' }">
-			<div><fa icon="globe"/></div>
+			<div><fa :icon="['fal', 'globe']"/></div>
 			<div>
 				<span>{{ $t('local-public') }}</span>
 				<span>{{ $t('local-public-desc') }}</span>
 			</div>
 		</div>
 		<div @click="choose('local-home')" :class="{ active: v == 'local-home' }">
-			<div><fa icon="home"/></div>
+			<div><fa :icon="['fal', 'home']"/></div>
 			<div>
 				<span>{{ $t('local-home') }}</span>
 			</div>
 		</div>
 		<div @click="choose('local-followers')" :class="{ active: v == 'local-followers' }">
-			<div><fa icon="unlock"/></div>
+			<div><fa :icon="['fal', 'unlock']"/></div>
 			<div>
 				<span>{{ $t('local-followers') }}</span>
 			</div>

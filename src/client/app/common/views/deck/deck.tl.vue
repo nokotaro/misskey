@@ -12,7 +12,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import XNotes from './deck.notes.vue';
-import { faMinusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faMinusCircle } from '@fortawesome/pro-light-svg-icons';
 import i18n from '../../../i18n';
 
 const fetchLimit = 10;

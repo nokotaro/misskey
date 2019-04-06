@@ -1,7 +1,7 @@
 <template>
 <div>
 	<ui-card>
-		<template #title><fa icon="plus"/> {{ $t('add-moderator.title') }}</template>
+		<template #title><fa :icon="['fal', 'plus']"/> {{ $t('add-moderator.title') }}</template>
 		<section class="fit-top">
 			<ui-input v-model="username" type="text">
 				<template #prefix>@</template>

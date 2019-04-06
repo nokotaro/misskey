@@ -8,8 +8,8 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import copyToClipboard from '../../../common/scripts/copy-to-clipboard';
-import { faExclamationCircle, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
-import { faSnowflake } from '@fortawesome/free-regular-svg-icons';
+import { faExclamationCircle, faMicrophoneSlash } from '@fortawesome/pro-light-svg-icons';
+import { faSnowflake } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/user-menu.vue'),

@@ -1,7 +1,7 @@
 <template>
 <div class="uofhebxjdgksfmltszlxurtjnjjsvioh" v-if="video.isSensitive && hide && !$store.state.device.alwaysShowNsfw" @click="hide = false">
 	<div>
-		<b><fa icon="exclamation-triangle"/> {{ $t('sensitive') }}</b>
+		<b><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('sensitive') }}</b>
 		<span>{{ $t('click-to-show') }}</span>
 	</div>
 </div>
@@ -12,7 +12,7 @@
 		@click.prevent="onClick"
 		:title="video.name"
 	>
-		<fa :icon="['far', 'play-circle']"/>
+		<fa :icon="['fal', 'play-circle']"/>
 	</a>
 </div>
 </template>

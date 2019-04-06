@@ -5,20 +5,20 @@
 		<component :is="src == 'list' ? 'mk-user-list-timeline' : 'x-core'" ref="tl" v-bind="options">
 			<header class="zahtxcqi">
 				<div class="timelines">
-					<span :data-active="src == 'home'" @click="src = 'home'"><fa icon="home"/> {{ $t('home') }}</span>
-					<span :data-active="src == 'local'" @click="src = 'local'" v-if="enableLocalTimeline"><fa :icon="['far', 'comments']"/> {{ $t('local') }}</span>
-					<span :data-active="src == 'hybrid'" @click="src = 'hybrid'" v-if="enableLocalTimeline"><fa icon="share-alt"/> {{ $t('hybrid') }}</span>
-					<span :data-active="src == 'imas'" @click="src = 'imas'" v-if="enableLocalTimeline"><fa icon="building"/> {{ $t('imas') }}</span>
-					<span :data-active="src == 'imasHybrid'" @click="src = 'imasHybrid'" v-if="enableLocalTimeline"><fa icon="city"/> {{ $t('imasHybrid') }}</span>
-					<span :data-active="src == 'global'" @click="src = 'global'" v-if="enableGlobalTimeline"><fa icon="globe"/> {{ $t('global') }}</span>
-					<span :data-active="src == 'tag'" @click="src = 'tag'" v-if="tagTl"><fa icon="hashtag"/> {{ tagTl.title }}</span>
-					<span :data-active="src == 'list'" @click="src = 'list'" v-if="list"><fa icon="list"/> {{ list.title }}</span>
+					<span :data-active="src == 'home'" @click="src = 'home'"><fa :icon="['fal', 'home']"/> {{ $t('home') }}</span>
+					<span :data-active="src == 'local'" @click="src = 'local'" v-if="enableLocalTimeline"><fa :icon="['fal', 'comments']"/> {{ $t('local') }}</span>
+					<span :data-active="src == 'hybrid'" @click="src = 'hybrid'" v-if="enableLocalTimeline"><fa :icon="['fal', 'share-alt']"/> {{ $t('hybrid') }}</span>
+					<span :data-active="src == 'imas'" @click="src = 'imas'" v-if="enableLocalTimeline"><fa :icon="['fal', 'building']"/> {{ $t('imas') }}</span>
+					<span :data-active="src == 'imasHybrid'" @click="src = 'imasHybrid'" v-if="enableLocalTimeline"><fa :icon="['fal', 'city']"/> {{ $t('imasHybrid') }}</span>
+					<span :data-active="src == 'global'" @click="src = 'global'" v-if="enableGlobalTimeline"><fa :icon="['fal', 'globe']"/> {{ $t('global') }}</span>
+					<span :data-active="src == 'tag'" @click="src = 'tag'" v-if="tagTl"><fa :icon="['fal', 'hashtag']"/> {{ tagTl.title }}</span>
+					<span :data-active="src == 'list'" @click="src = 'list'" v-if="list"><fa :icon="['fal', 'list']"/> {{ list.title }}</span>
 				</div>
 				<div class="buttons">
-					<button :data-active="src == 'mentions'" @click="src = 'mentions'" :title="$t('mentions')"><fa icon="at"/><i class="indicator" v-if="$store.state.i.hasUnreadMentions"><fa icon="circle"/></i></button>
-					<button :data-active="src == 'messages'" @click="src = 'messages'" :title="$t('messages')"><fa :icon="['far', 'envelope']"/><i class="indicator" v-if="$store.state.i.hasUnreadSpecifiedNotes"><fa icon="circle"/></i></button>
-					<button @click="chooseTag" :title="$t('hashtag')" ref="tagButton"><fa icon="hashtag"/></button>
-					<button @click="chooseList" :title="$t('list')" ref="listButton"><fa icon="list"/></button>
+					<button :data-active="src == 'mentions'" @click="src = 'mentions'" :title="$t('mentions')"><fa :icon="['fal', 'at']"/><i class="indicator" v-if="$store.state.i.hasUnreadMentions"><fa :icon="['fal', 'circle']"/></i></button>
+					<button :data-active="src == 'messages'" @click="src = 'messages'" :title="$t('messages')"><fa :icon="['fal', 'envelope']"/><i class="indicator" v-if="$store.state.i.hasUnreadSpecifiedNotes"><fa :icon="['fal', 'circle']"/></i></button>
+					<button @click="chooseTag" :title="$t('hashtag')" ref="tagButton"><fa :icon="['fal', 'hashtag']"/></button>
+					<button @click="chooseList" :title="$t('list')" ref="listButton"><fa :icon="['fal', 'list']"/></button>
 				</div>
 			</header>
 		</component>

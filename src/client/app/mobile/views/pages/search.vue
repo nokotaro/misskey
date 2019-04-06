@@ -1,6 +1,6 @@
 <template>
 <mk-ui>
-	<template #header><fa icon="search"/> {{ q }}</template>
+	<template #header><fa :icon="['fal', 'search']"/> {{ q }}</template>
 
 	<main>
 		<mk-notes ref="timeline" :make-promise="makePromise" @inited="inited"/>

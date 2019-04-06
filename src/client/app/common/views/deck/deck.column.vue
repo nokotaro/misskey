@@ -11,13 +11,13 @@
 			@dragend="onDragend"
 			@contextmenu.prevent.stop="onContextmenu">
 		<button class="toggleActive" @click="toggleActive" v-if="isStacked">
-			<template v-if="active"><fa icon="angle-up"/></template>
-			<template v-else><fa icon="angle-down"/></template>
+			<template v-if="active"><fa :icon="['fal', 'angle-up']"/></template>
+			<template v-else><fa :icon="['fal', 'angle-down']"/></template>
 		</button>
 		<span><slot name="header"></slot></span>
 		<span class="count" v-if="count > 0">({{ count }})</span>
-		<button v-if="!isTemporaryColumn" class="menu" ref="menu" @click.stop="showMenu"><fa icon="caret-down"/></button>
-		<button v-else class="close" @click.stop="close"><fa icon="times"/></button>
+		<button v-if="!isTemporaryColumn" class="menu" ref="menu" @click.stop="showMenu"><fa :icon="['fal', 'caret-down']"/></button>
+		<button v-else class="close" @click.stop="close"><fa :icon="['fal', 'times']"/></button>
 	</header>
 	<div ref="body" v-show="active">
 		<slot></slot>
@@ -30,8 +30,8 @@ import Vue from 'vue';
 import i18n from '../../../i18n';
 import Menu from '../../../common/views/components/menu.vue';
 import { countIf } from '../../../../../prelude/array';
-import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
-import { faWindowMaximize } from '@fortawesome/free-regular-svg-icons';
+import { faArrowUp, faArrowDown } from '@fortawesome/pro-light-svg-icons';
+import { faWindowMaximize } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('deck'),

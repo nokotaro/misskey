@@ -1,8 +1,8 @@
 <template>
 <div class="mkw-messaging">
 	<ui-container :show-header="props.design == 0">
-		<template #header><fa icon="comments"/>{{ $t('@.messaging') }}</template>
-		<template #func><button @click="add"><fa icon="plus"/></button></template>
+		<template #header><fa :icon="['fal', 'comments']"/>{{ $t('@.messaging') }}</template>
+		<template #func><button @click="add"><fa :icon="['fal', 'plus']"/></button></template>
 
 		<x-messaging ref="index" compact @navigate="navigate"/>
 	</ui-container>

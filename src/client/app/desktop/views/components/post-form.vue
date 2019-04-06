@@ -25,7 +25,7 @@
 				v-autocomplete="{ model: 'text' }"
 			></textarea>
 			<button class="emoji" @click="emoji" ref="emoji">
-				<fa :icon="['far', 'laugh']"/>
+				<fa :icon="['fal', 'laugh']"/>
 			</button>
 			<div class="files" :class="{ with: poll }" v-show="files.length">
 				<x-draggable :list="files" :options="{ animation: 150 }">
@@ -45,26 +45,26 @@
 		</ui-select>
 	</div>
 	<mk-uploader ref="uploader" @uploaded="attachMedia" @change="onChangeUploadings"/>
-	<button class="upload" :title="$t('attach-media-from-local')" @click="chooseFile"><fa icon="upload"/></button>
-	<button class="drive" :title="$t('attach-media-from-drive')" @click="chooseFileFromDrive"><fa icon="cloud"/></button>
-	<button class="kao" :title="$t('insert-a-kao')" @click="kao"><fa icon="cat"/></button>
-	<button class="poll" :title="$t('create-poll')" @click="poll = !poll"><fa icon="poll-h"/></button>
-	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa :icon="['far', 'eye-slash']"/></button>
-	<button class="broadcast" :title="$t('use-broadcast')" @click="useBroadcast = !useBroadcast"><fa icon="bullhorn"/></button>
-	<button class="post-as" :title="$t('post-as')" @click="usePostAs = !usePostAs" v-if="$store.getters.isSignedIn && ($store.state.i.isAdmin || $store.state.i.isModerator)"><fa icon="user-ninja"/></button>
-	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa icon="map-marker-alt"/></button>
+	<button class="upload" :title="$t('attach-media-from-local')" @click="chooseFile"><fa :icon="['fal', 'upload']"/></button>
+	<button class="drive" :title="$t('attach-media-from-drive')" @click="chooseFileFromDrive"><fa :icon="['fal', 'cloud']"/></button>
+	<button class="kao" :title="$t('insert-a-kao')" @click="kao"><fa :icon="['fal', 'cat']"/></button>
+	<button class="poll" :title="$t('create-poll')" @click="poll = !poll"><fa :icon="['fal', 'poll-h']"/></button>
+	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa :icon="['fal', 'eye-slash']"/></button>
+	<button class="broadcast" :title="$t('use-broadcast')" @click="useBroadcast = !useBroadcast"><fa :icon="['fal', 'bullhorn']"/></button>
+	<button class="post-as" :title="$t('post-as')" @click="usePostAs = !usePostAs" v-if="$store.getters.isSignedIn && ($store.state.i.isAdmin || $store.state.i.isModerator)"><fa :icon="['fal', 'user-ninja']"/></button>
+	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa :icon="['fal', 'map-marker-alt']"/></button>
 	<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
-		<span v-if="rating === null"><fa :icon="['far', 'eye']"/></span>
-		<span v-if="rating === '0'"><fa icon="baby"/></span>
-		<span v-if="rating === '12'"><fa icon="child"/></span>
-		<span v-if="rating === '15'"><fa icon="people-carry"/></span>
-		<span v-if="rating === '18'"><fa icon="person-booth"/></span>
+		<span v-if="rating === null"><fa :icon="['fal', 'eye']"/></span>
+		<span v-if="rating === '0'"><fa :icon="['fal', 'baby']"/></span>
+		<span v-if="rating === '12'"><fa :icon="['fal', 'child']"/></span>
+		<span v-if="rating === '15'"><fa :icon="['fal', 'people-carry']"/></span>
+		<span v-if="rating === '18'"><fa :icon="['fal', 'person-booth']"/></span>
 	</button>
 	<button class="visibility" :title="$t('visibility')" @click="setVisibility" ref="visibilityButton">
-		<span v-if="visibility === 'public'"><fa icon="globe"/></span>
-		<span v-if="visibility === 'home'"><fa icon="home"/></span>
-		<span v-if="visibility === 'followers'"><fa icon="unlock"/></span>
-		<span v-if="visibility === 'specified'"><fa icon="envelope"/></span>
+		<span v-if="visibility === 'public'"><fa :icon="['fal', 'globe']"/></span>
+		<span v-if="visibility === 'home'"><fa :icon="['fal', 'home']"/></span>
+		<span v-if="visibility === 'followers'"><fa :icon="['fal', 'unlock']"/></span>
+		<span v-if="visibility === 'specified'"><fa :icon="['fal', 'envelope']"/></span>
 	</button>
 	<p class="text-count" :class="{ over: trimmedLength(concatenated) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(concatenated) }}</p>
 	<ui-button primary :wait="posting" class="submit" :disabled="!canPost" @click="post">

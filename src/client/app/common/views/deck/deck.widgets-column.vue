@@ -1,6 +1,6 @@
 <template>
 <x-column :menu="menu" :naked="true" :narrow="true" :name="name" :column="column" :is-stacked="isStacked" class="wtdtxvecapixsepjtcupubtsmometobz">
-	<template #header><fa icon="calculator"/>{{ name }}</template>
+	<template #header><fa :icon="['fal', 'calculator']"/>{{ name }}</template>
 
 	<div class="gqpwvtwtprsbmnssnbicggtwqhmylhnq">
 		<template v-if="edit">
@@ -37,7 +37,7 @@
 				@sort="onWidgetSort"
 			>
 				<div v-for="widget in column.widgets" class="customize-container" :key="widget.id" @contextmenu.stop.prevent="widgetFunc(widget.id)">
-					<button class="remove" @click="removeWidget(widget)"><fa icon="times"/></button>
+					<button class="remove" @click="removeWidget(widget)"><fa :icon="['fal', 'times']"/></button>
 					<component :is="`mkw-${widget.name}`" :widget="widget" :ref="widget.id" :is-customize-mode="true" platform="deck" :column="column"/>
 				</div>
 			</x-draggable>

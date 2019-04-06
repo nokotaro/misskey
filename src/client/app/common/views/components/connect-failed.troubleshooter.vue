@@ -1,35 +1,35 @@
 <template>
 <div class="troubleshooter">
 	<div class="body">
-		<h1><fa icon="wrench"/>{{ $t('title') }}</h1>
+		<h1><fa :icon="['fal', 'wrench']"/>{{ $t('title') }}</h1>
 		<div>
 			<p :data-wip="network == null">
 				<template v-if="network != null">
-					<template v-if="network"><fa icon="check"/></template>
-					<template v-if="!network"><fa icon="times"/></template>
+					<template v-if="network"><fa :icon="['fal', 'check']"/></template>
+					<template v-if="!network"><fa :icon="['fal', 'times']"/></template>
 				</template>
 				{{ network == null ? this.$t('checking-network') : this.$t('network') }}<mk-ellipsis v-if="network == null"/>
 			</p>
 			<p v-if="network == true" :data-wip="internet == null">
 				<template v-if="internet != null">
-					<template v-if="internet"><fa icon="check"/></template>
-					<template v-if="!internet"><fa icon="times"/></template>
+					<template v-if="internet"><fa :icon="['fal', 'check']"/></template>
+					<template v-if="!internet"><fa :icon="['fal', 'times']"/></template>
 				</template>
 				{{ internet == null ? this.$t('checking-internet') : this.$t('internet') }}<mk-ellipsis v-if="internet == null"/>
 			</p>
 			<p v-if="internet == true" :data-wip="server == null">
 				<template v-if="server != null">
-					<template v-if="server"><fa icon="check"/></template>
-					<template v-if="!server"><fa icon="times"/></template>
+					<template v-if="server"><fa :icon="['fal', 'check']"/></template>
+					<template v-if="!server"><fa :icon="['fal', 'times']"/></template>
 				</template>
 				{{ server == null ? this.$t('checking-server') : this.$t('server') }}<mk-ellipsis v-if="server == null"/>
 			</p>
 		</div>
 		<p v-if="!end">{{ $t('finding') }}<mk-ellipsis/></p>
-		<p v-if="network === false"><b><fa icon="exclamation-triangle"/>{{ $t('no-network') }}</b><br>{{ $t('no-network-desc') }}</p>
-		<p v-if="internet === false"><b><fa icon="exclamation-triangle"/>{{ $t('no-internet') }}</b><br>{{ $t('no-internet-desc') }}</p>
-		<p v-if="server === false"><b><fa icon="exclamation-triangle"/>{{ $t('no-server') }}</b><br>{{ $t('no-server-desc') }}</p>
-		<p v-if="server === true" class="success"><b><fa icon="info-circle"/>{{ $t('success') }}</b><br>{{ $t('success-desc') }}</p>
+		<p v-if="network === false"><b><fa :icon="['fal', 'exclamation-triangle']"/>{{ $t('no-network') }}</b><br>{{ $t('no-network-desc') }}</p>
+		<p v-if="internet === false"><b><fa :icon="['fal', 'exclamation-triangle']"/>{{ $t('no-internet') }}</b><br>{{ $t('no-internet-desc') }}</p>
+		<p v-if="server === false"><b><fa :icon="['fal', 'exclamation-triangle']"/>{{ $t('no-server') }}</b><br>{{ $t('no-server-desc') }}</p>
+		<p v-if="server === true" class="success"><b><fa :icon="['fal', 'info-circle']"/>{{ $t('success') }}</b><br>{{ $t('success-desc') }}</p>
 	</div>
 	<footer>
 		<a href="/assets/flush.html">{{ $t('flush') }}</a> | <a href="/assets/version.html">{{ $t('set-version') }}</a>

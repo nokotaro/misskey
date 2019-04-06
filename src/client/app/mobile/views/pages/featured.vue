@@ -16,7 +16,7 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import Progress from '../../../common/scripts/loading';
-import { faNewspaper } from '@fortawesome/free-solid-svg-icons';
+import { faNewspaper } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n(''),

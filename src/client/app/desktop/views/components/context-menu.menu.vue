@@ -9,7 +9,7 @@
 				<a :href="item.href" :target="item.target" @click="click(item)" :download="item.download"><i v-if="item.icon" :class="$style.icon"><fa :icon="item.icon"/></i>{{ item.text }}</a>
 			</template>
 			<template v-else-if="item.type == 'nest'">
-				<p><i v-if="item.icon" :class="$style.icon"><fa :icon="item.icon"/></i>{{ item.text }}...<span class="caret"><fa icon="caret-right"/></span></p>
+				<p><i v-if="item.icon" :class="$style.icon"><fa :icon="item.icon"/></i>{{ item.text }}...<span class="caret"><fa :icon="['fal', 'caret-right']"/></span></p>
 				<me-nu :menu="item.menu" @x="click"/>
 			</template>
 		</template>

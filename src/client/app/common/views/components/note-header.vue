@@ -9,10 +9,10 @@
 	<span class="is-cat" v-if="note.user.isCat">cat</span>
 	<span class="is-kaho" v-if="note.user.isKaho">ｺﾐﾔｶﾎ</span>
 	<span class="username"><mk-acct :user="note.user"/></span>
-	<span class="is-verified" v-if="note.user.isVerified" :title="$t('@.verified-user')"><fa icon="star"/></span>
+	<span class="is-verified" v-if="note.user.isVerified" :title="$t('@.verified-user')"><fa :icon="faBadgeCheck"/></span>
 	<div class="info">
 		<span class="app" v-if="note.app && !mini && $store.state.settings.showVia">via <b>{{ note.app.name }}</b></span>
-		<span class="mobile" v-if="note.viaMobile"><fa icon="mobile-alt"/></span>
+		<span class="mobile" v-if="note.viaMobile"><fa :icon="['fal', 'mobile-alt']"/></span>
 		<router-link class="created-at" :to="note | notePage">
 			<mk-time :time="note.createdAt"/>
 		</router-link>
@@ -21,7 +21,7 @@
 			<fa v-if="note.visibility == 'followers'" icon="unlock"/>
 			<fa v-if="note.visibility == 'specified'" icon="envelope"/>
 		</span>
-		<span class="localOnly" v-if="note.localOnly == true"><fa icon="heart"/></span>
+		<span class="localOnly" v-if="note.localOnly == true"><fa :icon="['fal', 'heart']"/></span>
 	</div>
 </header>
 </template>
@@ -29,9 +29,15 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
+import { faBadgeCheck } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n(),
+	data() {
+		return {
+			faBadgeCheck
+		};
+	}
 	props: {
 		note: {
 			type: Object,

@@ -1,6 +1,6 @@
 <template>
 <div class="xqnhankfuuilcwvhgsopeqncafzsquya">
-	<button class="go-index" v-if="selfNav" @click="goIndex"><fa icon="arrow-left"/></button>
+	<button class="go-index" v-if="selfNav" @click="goIndex"><fa :icon="['fal', 'arrow-left']"/></button>
 	<header><b><router-link :to="blackUser | userPage"><mk-user-name :user="blackUser"/></router-link></b>({{ $t('@.reversi.black') }}) vs <b><router-link :to="whiteUser | userPage"><mk-user-name :user="whiteUser"/></router-link></b>({{ $t('@.reversi.white') }})</header>
 
 	<div style="line-height:28px;overflow:hidden">
@@ -41,7 +41,7 @@
 					</template>
 					<template v-else>
 						<fa v-if="stone === true" :icon="fasCircle"/>
-						<fa v-if="stone === false" :icon="farCircle"/>
+						<fa v-if="stone === false" :icon="faCircle"/>
 					</template>
 				</div>
 			</div>
@@ -84,9 +84,8 @@ import i18n from '../../../../../i18n';
 import * as CRC32 from 'crc-32';
 import Reversi, { Color } from '../../../../../../../games/reversi/core';
 import { url } from '../../../../../config';
-import { faAngleDoubleLeft, faAngleLeft, faAngleRight, faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDoubleLeft, faAngleLeft, faAngleRight, faAngleDoubleRight, faCircle } from '@fortawesome/pro-light-svg-icons';
 import { faCircle as fasCircle } from '@fortawesome/free-solid-svg-icons';
-import { faCircle as farCircle } from '@fortawesome/free-regular-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/games/reversi/reversi.game.vue'),
@@ -112,7 +111,7 @@ export default Vue.extend({
 			logs: [],
 			logPos: 0,
 			pollingClock: null,
-			faAngleDoubleLeft, faAngleLeft, faAngleRight, faAngleDoubleRight, fasCircle, farCircle
+			faAngleDoubleLeft, faAngleLeft, faAngleRight, faAngleDoubleRight, fasCircle, faCircle
 		};
 	},
 

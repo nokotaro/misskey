@@ -1,7 +1,7 @@
 <template>
 <mk-ui>
-	<template #header><fa icon="list"/>{{ $t('title') }}</template>
-	<template #func><button @click="fn"><fa icon="plus"/></button></template>
+	<template #header><fa :icon="['fal', 'list']"/>{{ $t('title') }}</template>
+	<template #func><button @click="fn"><fa :icon="['fal', 'plus']"/></button></template>
 
 	<main>
 		<ul>

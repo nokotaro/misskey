@@ -136,38 +136,27 @@ import {
 	faRobot,
 	faHourglassHalf,
 	faGavel,
-	faDraftingCompass
-} from '@fortawesome/free-solid-svg-icons';
+	faDraftingCompass,
+	faBell,
+	faTrashAlt,
+	faWindowRestore,
+	faLaugh,
+	faSmile,
+	faEyeSlash,
+	faSave,
+	faImages,
+	faCommentAlt,
+	faClock,
+	faCalendarAlt,
+	faHdd,
+	faPlayCircle,
+	faLightbulb
+} from '@fortawesome/pro-light-svg-icons';
 
 import {
-	faBell as farBell,
-	faEnvelope as farEnvelope,
-	faComments as farComments,
-	faTrashAlt as farTrashAlt,
-	faWindowRestore as farWindowRestore,
-	faFolder as farFolder,
-	faLaugh as farLaugh,
-	faSmile as farSmile,
-	faEye as farEye,
-	faEyeSlash as farEyeSlash,
-	faFolderOpen as farFolderOpen,
-	faSave as farSave,
-	faImages as farImages,
-	faChartBar as farChartBar,
-	faCommentAlt as farCommentAlt,
-	faClock as farClock,
-	faCalendarAlt as farCalendarAlt,
-	faHdd as farHdd,
-	faMoon as farMoon,
-	faPlayCircle as farPlayCircle,
-	faLightbulb as farLightbulb,
-	faStickyNote as farStickyNote,
-} from '@fortawesome/free-regular-svg-icons';
-
-import {
-	faTwitter as fabTwitter,
-	faGithub as fabGithub,
-	faDiscord as fabDiscord
+	faTwitter,
+	faGithub,
+	faDiscord
 } from '@fortawesome/free-brands-svg-icons';
 import i18n from './i18n';
 
@@ -282,32 +271,25 @@ library.add(
 	faGavel,
 	faDraftingCompass,
 
-	farBell,
-	farEnvelope,
-	farComments,
-	farTrashAlt,
-	farWindowRestore,
-	farFolder,
-	farLaugh,
-	farSmile,
-	farEye,
-	farEyeSlash,
-	farFolderOpen,
-	farSave,
-	farImages,
-	farChartBar,
-	farCommentAlt,
-	farClock,
-	farCalendarAlt,
-	farHdd,
-	farMoon,
-	farPlayCircle,
-	farLightbulb,
-	farStickyNote,
+	faBell,
+	faEnvelope,
+	faTrashAlt,
+	faWindowRestore,
+	faLaugh,
+	faSmile,
+	faEyeSlash,
+	faSave,
+	faImages,
+	faCommentAlt,
+	faClock,
+	faCalendarAlt,
+	faHdd,
+	faPlayCircle,
+	faLightbulb,
 
-	fabTwitter,
-	fabGithub,
-	fabDiscord
+	faTwitter,
+	faGithub,
+	faDiscord
 );
 //#endregion
 

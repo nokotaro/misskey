@@ -1,10 +1,10 @@
 <template>
 <div class="mk-activity">
 	<ui-container :show-header="design == 0" :naked="design == 2">
-		<template #header><fa icon="chart-bar"/>{{ $t('title') }}</template>
-		<template #func><button :title="$t('toggle')" @click="toggle"><fa icon="sort"/></button></template>
+		<template #header><fa :icon="['fal', 'chart-bar']"/>{{ $t('title') }}</template>
+		<template #func><button :title="$t('toggle')" @click="toggle"><fa :icon="['fal', 'sort']"/></button></template>
 
-		<p :class="$style.fetching" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+		<p :class="$style.fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
 		<template v-else>
 			<x-calendar v-show="view == 0" :data="[].concat(activity)"/>
 			<x-chart v-show="view == 1" :data="[].concat(activity)"/>

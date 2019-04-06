@@ -10,7 +10,7 @@
 			<x-column-core v-else :ref="ids[0]" :key="ids[0]" :column="columns.find(c => c.id == ids[0])" @parentFocus="moveFocus(ids[0], $event)"/>
 		</template>
 		<router-view></router-view>
-		<button ref="add" @click="add" :title="$t('@deck.add-column')"><fa icon="plus"/></button>
+		<button ref="add" @click="add" :title="$t('@deck.add-column')"><fa :icon="['fal', 'plus']"/></button>
 	</div>
 </mk-ui>
 </template>

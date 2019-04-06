@@ -4,8 +4,8 @@
 	<div class="main" ref="main">
 		<div class="backdrop"></div>
 		<div class="content" ref="mainContainer">
-			<button class="nav" @click="$parent.isDrawerOpening = true"><fa icon="bars"/></button>
-			<i v-if="$parent.indicate" class="circle"><fa icon="circle"/></i>
+			<button class="nav" @click="$parent.isDrawerOpening = true"><fa :icon="['fal', 'bars']"/></button>
+			<i v-if="$parent.indicate" class="circle"><fa :icon="['fal', 'circle']"/></i>
 			<h1>
 				<slot>{{ $root.instanceName }}</slot>
 			</h1>

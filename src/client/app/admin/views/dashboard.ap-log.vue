@@ -5,13 +5,16 @@
 			<tr>
 				<th><fa :icon="faExchangeAlt"/> In/Out</th>
 				<th><fa :icon="faBolt"/> Activity</th>
-				<th><fa icon="server"/> Host</th>
-				<th><fa icon="user"/> Actor</th>
+				<th><fa :icon="['fal', 'server']"/> Host</th>
+				<th><fa :icon="['fal', 'user']"/> Actor</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr v-for="log in logs" :key="log.id">
-				<td :class="log.direction">{{ log.direction == 'in' ? '<' : '>' }} {{ log.direction }}</td>
+				<td :class="log.direction">
+					<fa :icon="['fal', log.direction === 'in' ? 'angle-left' : 'angle-right']"/>
+					{{ log.direction }}
+				</td>
 				<td>{{ log.activity }}</td>
 				<td>{{ log.host }}</td>
 				<td>@{{ log.actor }}</td>
@@ -23,14 +26,12 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { faBolt, faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
 
 export default Vue.extend({
 	data() {
 		return {
 			logs: [],
-			connection: null,
-			faBolt, faExchangeAlt
+			connection: null
 		};
 	},
 

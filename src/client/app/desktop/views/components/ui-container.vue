@@ -4,8 +4,8 @@
 		<div class="title"><slot name="header"></slot></div>
 		<slot name="func"></slot>
 		<button v-if="bodyTogglable" @click="toggleContent(!showBody)">
-			<template v-if="showBody"><fa icon="angle-up"/></template>
-			<template v-else><fa icon="angle-down"/></template>
+			<template v-if="showBody"><fa :icon="['fal', 'angle-up']"/></template>
+			<template v-else><fa :icon="['fal', 'angle-down']"/></template>
 		</button>
 	</header>
 	<div v-show="showBody">

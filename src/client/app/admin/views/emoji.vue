@@ -1,7 +1,7 @@
 <template>
 <div>
 	<ui-card>
-		<template #title><fa icon="plus"/> {{ $t('add-emoji.title') }}</template>
+		<template #title><fa :icon="['fal', 'plus']"/> {{ $t('add-emoji.title') }}</template>
 		<section class="fit-top">
 			<ui-horizon-group inputs>
 				<ui-input v-model="name">
@@ -18,7 +18,7 @@
 				</ui-input>
 			</ui-horizon-group>
 			<ui-input v-model="url">
-				<template #icon><fa icon="link"/></template>
+				<template #icon><fa :icon="['fal', 'link']"/></template>
 				<span>{{ $t('add-emoji.url') }}</span>
 			</ui-input>
 			<ui-info>{{ $t('add-emoji.info') }}</ui-info>
@@ -45,12 +45,12 @@
 					</ui-input>
 				</ui-horizon-group>
 				<ui-input v-model="emoji.url">
-					<template #icon><fa icon="link"/></template>
+					<template #icon><fa :icon="['fal', 'link']"/></template>
 					<span>{{ $t('add-emoji.url') }}</span>
 				</ui-input>
 				<ui-horizon-group class="fit-bottom">
-					<ui-button @click="updateEmoji(emoji)"><fa :icon="['far', 'save']"/> {{ $t('emojis.update') }}</ui-button>
-					<ui-button @click="removeEmoji(emoji)"><fa :icon="['far', 'trash-alt']"/> {{ $t('emojis.remove') }}</ui-button>
+					<ui-button @click="updateEmoji(emoji)"><fa :icon="['fal', 'save']"/> {{ $t('emojis.update') }}</ui-button>
+					<ui-button @click="removeEmoji(emoji)"><fa :icon="['fal', 'trash-alt']"/> {{ $t('emojis.remove') }}</ui-button>
 				</ui-horizon-group>
 			</div>
 		</section>
@@ -61,7 +61,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../i18n';
-import { faGrin } from '@fortawesome/free-regular-svg-icons';
+import { faGrin } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('admin/views/emoji.vue'),

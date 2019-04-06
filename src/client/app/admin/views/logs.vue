@@ -34,7 +34,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../i18n';
-import { faStream } from '@fortawesome/free-solid-svg-icons';
+import { faStream } from '@fortawesome/pro-light-svg-icons';
 import VueJsonPretty from 'vue-json-pretty';
 
 export default Vue.extend({

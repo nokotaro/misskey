@@ -147,6 +147,8 @@ root(fill)
 			transform scale(1)
 
 		> select
+			-moz-appearance none
+			appearance none
 			display block
 			flex 1
 			width 100%
@@ -224,6 +226,15 @@ root(fill)
 	&.inline
 		display inline-block
 		margin 0
+
+	&:not(.disabled)::before
+		border-color var(--faceText) transparent
+		border-style solid 
+		border-width 4px 4px 0
+		content ''
+		position absolute
+		right 4px
+		top 14px
 
 	&.disabled
 		opacity 0.7

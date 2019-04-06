@@ -1,13 +1,13 @@
 <template>
 <x-column>
 	<template #header>
-		<fa :icon="['far', 'comment-alt']"/><mk-user-name :user="note.user" v-if="note"/>
+		<fa :icon="['fal', 'comment-alt']"/><mk-user-name :user="note.user" v-if="note"/>
 	</template>
 
 	<div class="rvtscbadixhhbsczoorqoaygovdeecsx" v-if="note">
 		<div class="is-remote" v-if="note.user.host != null">
 			<details>
-				<summary><fa icon="exclamation-triangle"/> {{ $t('@.is-remote-post') }}</summary>
+				<summary><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.is-remote-post') }}</summary>
 				<a :href="note.url || note.uri" target="_blank">{{ $t('@.view-on-remote') }}</a>
 			</details>
 		</div>

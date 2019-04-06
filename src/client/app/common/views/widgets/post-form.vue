@@ -1,7 +1,7 @@
 <template>
 <div>
 	<ui-container :show-header="props.design == 0">
-		<template #header><fa icon="pencil-alt"/>{{ $t('title') }}</template>
+		<template #header><fa :icon="['fal', 'pencil-alt']"/>{{ $t('title') }}</template>
 
 		<div class="lhcuptdmcdkfwmipgazeawoiuxpzaclc-body"
 			@dragover.stop="onDragover"
@@ -18,7 +18,7 @@
 					v-autocomplete="{ model: 'text' }"
 				></textarea>
 				<button class="emoji" @click="emoji" ref="emoji" v-if="!$root.isMobile">
-					<fa :icon="['far', 'laugh']"/>
+					<fa :icon="['fal', 'laugh']"/>
 				</button>
 			</div>
 			<div class="files" v-show="files.length != 0">
@@ -32,8 +32,8 @@
 			<input ref="file" type="file" multiple="multiple" tabindex="-1" @change="onChangeFile"/>
 			<mk-uploader ref="uploader" @uploaded="attachMedia"/>
 			<footer>
-				<button @click="chooseFile"><fa icon="upload"/></button>
-				<button @click="chooseFileFromDrive"><fa icon="cloud"/></button>
+				<button @click="chooseFile"><fa :icon="['fal', 'upload']"/></button>
+				<button @click="chooseFileFromDrive"><fa :icon="['fal', 'cloud']"/></button>
 				<button @click="post" :disabled="posting" class="post">{{ $t('note') }}</button>
 			</footer>
 		</div>

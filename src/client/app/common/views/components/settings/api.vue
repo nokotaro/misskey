@@ -1,6 +1,6 @@
 <template>
 <ui-card>
-	<template #title><fa icon="key"/> API</template>
+	<template #title><fa :icon="['fal', 'key']"/> API</template>
 
 	<section class="fit-top">
 		<ui-input :value="$store.state.i.token" readonly>
@@ -9,11 +9,11 @@
 		<p>{{ $t('intro') }}</p>
 		<ui-info warn>{{ $t('caution') }}</ui-info>
 		<p>{{ $t('regeneration-of-token') }}</p>
-		<ui-button @click="regenerateToken"><fa icon="sync-alt"/> {{ $t('regenerate-token') }}</ui-button>
+		<ui-button @click="regenerateToken"><fa :icon="['fal', 'sync-alt']"/> {{ $t('regenerate-token') }}</ui-button>
 	</section>
 
 	<section>
-		<header><fa icon="terminal"/> {{ $t('console.title') }}</header>
+		<header><fa :icon="['fal', 'terminal']"/> {{ $t('console.title') }}</header>
 		<ui-input v-model="endpoint">
 			<span>{{ $t('console.endpoint') }}</span>
 		</ui-input>
@@ -23,7 +23,7 @@
 		</ui-textarea>
 		<ui-button @click="send" :disabled="sending">
 			<template v-if="sending">{{ $t('console.sending') }}</template>
-			<template v-else><fa icon="paper-plane"/> {{ $t('console.send') }}</template>
+			<template v-else><fa :icon="['fal', 'paper-plane']"/> {{ $t('console.send') }}</template>
 		</ui-button>
 		<ui-textarea v-if="res" v-model="res" readonly tall>
 			<span>{{ $t('console.response') }}</span>

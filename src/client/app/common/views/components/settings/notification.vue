@@ -1,6 +1,6 @@
 <template>
 <ui-card>
-	<template #title><fa :icon="['far', 'bell']"/> {{ $t('title') }}</template>
+	<template #title><fa :icon="['fal', 'bell']"/> {{ $t('title') }}</template>
 	<section>
 		<ui-switch v-model="$store.state.i.settings.autoWatch" @change="onChangeAutoWatch">
 			{{ $t('auto-watch') }}<template #desc>{{ $t('auto-watch-desc') }}</template>

@@ -2,7 +2,7 @@
 <div class="nav">
 	<ul>
 		<li class="timeline" :class="{ active: $route.name == 'index' }" @click="goToTop">
-			<router-link to="/"><fa icon="home"/><p>{{ $t('@.timeline') }}</p></router-link>
+			<router-link to="/"><fa :icon="['fal', 'home']"/><p>{{ $t('@.timeline') }}</p></router-link>
 		</li>
 		<li class="featured" :class="{ active: $route.name == 'featured' }">
 			<router-link to="/featured"><fa :icon="faNewspaper"/><p>{{ $t('@.featured-notes') }}</p></router-link>
@@ -12,9 +12,9 @@
 		</li>
 		<li class="game">
 			<a @click="game">
-				<fa icon="gamepad"/>
+				<fa :icon="['fal', 'gamepad']"/>
 				<p>{{ $t('game') }}</p>
-				<template v-if="hasGameInvitations"><fa icon="circle"/></template>
+				<template v-if="hasGameInvitations"><fa :icon="['fal', 'circle']"/></template>
 			</a>
 		</li>
 	</ul>
@@ -25,7 +25,7 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import MkGameWindow from './game-window.vue';
-import { faNewspaper, faHashtag } from '@fortawesome/free-solid-svg-icons';
+import { faNewspaper, faHashtag } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('desktop/views/components/ui.header.nav.vue'),

@@ -9,12 +9,12 @@
 			</p>
 			<div>
 				<span class="username"><mk-acct :user="user" :detail="true" /></span>
-				<span v-if="user.isBot" :title="$t('is-bot')"><fa icon="robot"/></span>
+				<span v-if="user.isBot" :title="$t('is-bot')"><fa :icon="['fal', 'robot']"/></span>
 			</div>
 		</div>
 		<span class="followed" v-if="$store.getters.isSignedIn && $store.state.i.id != user.id && user.isFollowed">{{ $t('follows-you') }}</span>
 		<div class="actions" v-if="$store.getters.isSignedIn">
-			<button @click="menu" class="menu" ref="menu"><fa icon="ellipsis-h"/></button>
+			<button @click="menu" class="menu" ref="menu"><fa :icon="['fal', 'ellipsis-h']"/></button>
 			<mk-follow-button v-if="$store.state.i.id != user.id" :user="user" :inline="true" :transparent="false" class="follow"/>
 		</div>
 	</div>
@@ -36,8 +36,8 @@
 			</dl>
 		</div>
 		<div class="info">
-			<span class="location" v-if="user.host === null && user.profile.location"><fa icon="map-marker"/> {{ user.profile.location }}</span>
-			<span class="birthday" v-if="user.host === null && user.profile.birthday"><fa icon="birthday-cake"/> {{ user.profile.birthday.replace('-', $t('year')).replace('-', $t('month')) + $t('day') }} ({{ $t('years-old', { age }) }})</span>
+			<span class="location" v-if="user.host === null && user.profile.location"><fa :icon="['fal', 'map-marker']"/> {{ user.profile.location }}</span>
+			<span class="birthday" v-if="user.host === null && user.profile.birthday"><fa :icon="['fal', 'birthday-cake']"/> {{ user.profile.birthday.replace('-', $t('year')).replace('-', $t('month')) + $t('day') }} ({{ $t('years-old', { age }) }})</span>
 		</div>
 		<div class="status">
 			<router-link :to="user | userPage()" class="notes-count"><b>{{ user.notesCount | number }}</b>{{ $t('posts') }}</router-link>

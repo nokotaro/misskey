@@ -2,7 +2,7 @@
 <div class="mk-messaging" :data-compact="compact">
 	<div class="search" v-if="!compact" :style="{ top: headerTop + 'px' }">
 		<div class="form">
-			<label for="search-input"><i><fa icon="search"/></i></label>
+			<label for="search-input"><i><fa :icon="['fal', 'search']"/></i></label>
 			<input v-model="q" type="search" @input="search" @keydown="onSearchKeydown" :placeholder="$t('search-user')"/>
 		</div>
 		<div class="result">
@@ -45,7 +45,7 @@
 		</template>
 	</div>
 	<p class="no-history" v-if="!fetching && messages.length == 0">{{ $t('no-history') }}</p>
-	<p class="fetching" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+	<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
 </div>
 </template>
 

@@ -19,8 +19,8 @@
 		<template v-for="(note, i) in _notes">
 			<mk-note :note="note" :key="note.id" @update:note="onNoteUpdated(i, $event)" :compact="true" ref="note"/>
 			<p class="date" :key="note.id + '_date'" v-if="i != notes.length - 1 && note._date != _notes[i + 1]._date">
-				<span><fa icon="angle-up"/>{{ note._datetext }}</span>
-				<span><fa icon="angle-down"/>{{ _notes[i + 1]._datetext }}</span>
+				<span><fa :icon="['fal', 'angle-up']"/>{{ note._datetext }}</span>
+				<span><fa :icon="['fal', 'angle-down']"/>{{ _notes[i + 1]._datetext }}</span>
 			</p>
 		</template>
 	</component>
@@ -28,7 +28,7 @@
 	<footer v-if="cursor != null">
 		<button @click="more" :disabled="moreFetching" :style="{ cursor: moreFetching ? 'wait' : 'pointer' }">
 			<template v-if="!moreFetching">{{ $t('@.load-more') }}</template>
-			<template v-if="moreFetching"><fa icon="spinner" pulse fixed-width/></template>
+			<template v-if="moreFetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/></template>
 		</button>
 	</footer>
 </div>

@@ -22,13 +22,13 @@
 			@click="onClick"
 			:disabled="followWait">
 		<template v-if="!followWait">
-			<template v-if="user.hasPendingFollowRequestFromYou && user.isLocked"><fa icon="hourglass-half"/> {{ $t('request-pending') }}</template>
-			<template v-else-if="user.hasPendingFollowRequestFromYou && !user.isLocked"><fa icon="spinner"/> {{ $t('follow-processing') }}</template>
-			<template v-else-if="user.isFollowing"><fa icon="minus"/> {{ $t('following') }}</template>
-			<template v-else-if="!user.isFollowing && user.isLocked"><fa icon="plus"/> {{ $t('follow-request') }}</template>
-			<template v-else-if="!user.isFollowing && !user.isLocked"><fa icon="plus"/> {{ $t('follow') }}</template>
+			<template v-if="user.hasPendingFollowRequestFromYou && user.isLocked"><fa :icon="['fal', 'hourglass-half']"/> {{ $t('request-pending') }}</template>
+			<template v-else-if="user.hasPendingFollowRequestFromYou && !user.isLocked"><fa :icon="['fal', 'spinner']"/> {{ $t('follow-processing') }}</template>
+			<template v-else-if="user.isFollowing"><fa :icon="['fal', 'minus']"/> {{ $t('following') }}</template>
+			<template v-else-if="!user.isFollowing && user.isLocked"><fa :icon="['fal', 'plus']"/> {{ $t('follow-request') }}</template>
+			<template v-else-if="!user.isFollowing && !user.isLocked"><fa :icon="['fal', 'plus']"/> {{ $t('follow') }}</template>
 		</template>
-		<template v-else><fa icon="spinner" pulse fixed-width/></template>
+		<template v-else><fa :icon="['fal', 'spinner']" pulse fixed-width/></template>
 	</button>
 </div>
 </template>

@@ -1,19 +1,19 @@
 <template>
 <x-column>
 	<template #header>
-		<fa icon="user"/><mk-user-name :user="user" v-if="user" :key="user.id"/>
+		<fa :icon="['fal', 'user']"/><mk-user-name :user="user" v-if="user" :key="user.id"/>
 	</template>
 
 	<div class="zubukjlciycdsyynicqrnlsmdwmymzqu" v-if="user">
 		<div class="is-remote" v-if="user.host != null">
 			<details>
-				<summary><fa icon="exclamation-triangle"/> {{ $t('@.is-remote-user') }}</summary>
+				<summary><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.is-remote-user') }}</summary>
 				<a :href="user.url || user.uri" target="_blank">{{ $t('@.view-on-remote') }}</a>
 			</details>
 		</div>
 		<header :style="bannerStyle">
 			<div>
-				<button class="menu" @click="menu" ref="menu"><fa icon="ellipsis-h"/></button>
+				<button class="menu" @click="menu" ref="menu"><fa :icon="['fal', 'ellipsis-h']"/></button>
 				<mk-follow-button v-if="$store.getters.isSignedIn && user.id != $store.state.i.id" :user="user" class="follow" mini/>
 				<mk-avatar class="avatar" :user="user" :disable-preview="true" :key="user.id"/>
 				<router-link class="name" :to="user | userPage()">

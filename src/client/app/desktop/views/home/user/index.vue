@@ -1,10 +1,10 @@
 <template>
 <div class="omechnps" v-if="!fetching">
 	<div class="is-suspended" v-if="user.isSuspended" :class="{ shadow: $store.state.device.useShadow, round: $store.state.device.roundedCorners }">
-		<fa icon="exclamation-triangle"/> {{ $t('@.user-suspended') }}
+		<fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.user-suspended') }}
 	</div>
 	<div class="is-remote" v-if="user.host != null" :class="{ shadow: $store.state.device.useShadow, round: $store.state.device.roundedCorners }">
-		<fa icon="exclamation-triangle"/> {{ $t('@.is-remote-user') }}<a :href="user.url || user.uri" target="_blank">{{ $t('@.view-on-remote') }}</a>
+		<fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.is-remote-user') }}<a :href="user.url || user.uri" target="_blank">{{ $t('@.view-on-remote') }}</a>
 	</div>
 	<div class="main">
 		<x-header class="header" :user="user"/>

@@ -17,13 +17,13 @@
 			</header>
 
 			<div>
-				<div class="random" v-if="game.settings.map == null"><fa icon="dice"/></div>
+				<div class="random" v-if="game.settings.map == null"><fa :icon="['fal', 'dice']"/></div>
 				<div class="board" v-else :style="{ 'grid-template-rows': `repeat(${ game.settings.map.length },1fr)`, 'grid-template-columns': `repeat(${ game.settings.map[0].length },1fr)` }">
 					<div v-for="(x, i) in game.settings.map.join('')"
 							:data-none="x == ' '"
 							@click="onPixelClick(i, x)">
 						<fa v-if="x == 'b'" :icon="fasCircle"/>
-						<fa v-if="x == 'w'" :icon="farCircle"/>
+						<fa v-if="x == 'w'" :icon="faCircle"/>
 					</div>
 				</div>
 			</div>
@@ -117,8 +117,8 @@
 import Vue from 'vue';
 import i18n from '../../../../../i18n';
 import * as maps from '../../../../../../../games/reversi/maps';
+import { faCircle } from '@fortawesome/pro-light-svg-icons';
 import { faCircle as fasCircle } from '@fortawesome/free-solid-svg-icons';
-import { faCircle as farCircle } from '@fortawesome/free-regular-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/games/reversi/reversi.room.vue'),
@@ -132,7 +132,8 @@ export default Vue.extend({
 			maps: maps,
 			form: null,
 			messages: [],
-			fasCircle, farCircle
+			fasCircle,
+			faCircle
 		};
 	},
 

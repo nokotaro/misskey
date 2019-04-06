@@ -3,34 +3,34 @@
 	<div class="backdrop" ref="backdrop" @click="close"></div>
 	<div class="popover" :class="{ isMobile: $root.isMobile }" ref="popover">
 		<div @click="choose(null)" :class="{ active: r == null }">
-			<div><fa icon="eye" fixed-width/></div>
+			<div><fa :icon="['fal', 'eye']" fixed-width/></div>
 			<div>
 				<span>{{ $t('unset') }}</span>
 			</div>
 		</div>
 		<div @click="choose('0')" :class="{ active: r == '0' }">
-			<div><fa icon="baby" fixed-width/></div>
+			<div><fa :icon="['fal', 'baby']" fixed-width/></div>
 			<div>
 				<span>{{ $t('G') }}</span>
 				<span>{{ $t('G-desc') }}</span>
 			</div>
 		</div>
 		<div @click="choose('12')" :class="{ active: r == '12' }">
-			<div><fa icon="child" fixed-width/></div>
+			<div><fa :icon="['fal', 'child']" fixed-width/></div>
 			<div>
 				<span>{{ $t('PG12') }}</span>
 				<span>{{ $t('PG12-desc') }}</span>
 			</div>
 		</div>
 		<div @click="choose('15')" :class="{ active: r == '15' }">
-			<div><fa icon="people-carry" fixed-width/></div>
+			<div><fa :icon="['fal', 'people-carry']" fixed-width/></div>
 			<div>
 				<span>{{ $t('R15+') }}</span>
 				<span>{{ $t('R15+-desc') }}</span>
 			</div>
 		</div>
 		<div @click="choose('18')" :class="{ active: r == '18' }">
-			<div><fa icon="person-booth" fixed-width/></div>
+			<div><fa :icon="['fal', 'person-booth']" fixed-width/></div>
 			<div>
 				<span>{{ $t('R18+') }}</span>
 				<span>{{ $t('R18+-desc') }}</span>

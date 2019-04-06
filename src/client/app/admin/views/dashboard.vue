@@ -16,27 +16,27 @@
 	<div v-if="stats" class="stats">
 		<div>
 			<div>
-				<div><fa icon="user"/></div>
+				<div><fa :icon="['fal', 'user']"/></div>
 				<div>
 					<span>{{ $t('accounts') }}</span>
 					<b>{{ stats.originalUsersCount | number }}</b>
 				</div>
 			</div>
 			<div>
-				<span><fa icon="home"/> {{ $t('this-instance') }}</span>
-				<span @click="setChartSrc('users')"><fa :icon="['far', 'chart-bar']"/></span>
+				<span><fa :icon="['fal', 'home']"/> {{ $t('this-instance') }}</span>
+				<span @click="setChartSrc('users')"><fa :icon="['fal', 'chart-bar']"/></span>
 			</div>
 		</div>
 		<div>
 			<div>
-				<div><fa icon="pencil-alt"/></div>
+				<div><fa :icon="['fal', 'pencil-alt']"/></div>
 				<div>
 					<span>{{ $t('notes') }}</span>
 					<b>{{ stats.originalNotesCount | number }}</b>
 				</div>
 			</div>
 			<div>
-				<span><fa icon="home"/> {{ $t('this-instance') }}</span>
+				<span><fa :icon="['fal', 'home']"/> {{ $t('this-instance') }}</span>
 				<span @click="setChartSrc('notes')"><fa :icon="['far', 'chart-bar']"/></span>
 			</div>
 		</div>
@@ -49,21 +49,21 @@
 				</div>
 			</div>
 			<div>
-				<span><fa icon="home"/> {{ $t('this-instance') }}</span>
-				<span @click="setChartSrc('drive')"><fa :icon="['far', 'chart-bar']"/></span>
+				<span><fa :icon="['fal', 'home']"/> {{ $t('this-instance') }}</span>
+				<span @click="setChartSrc('drive')"><fa :icon="['fal', 'chart-bar']"/></span>
 			</div>
 		</div>
 		<div>
 			<div>
-				<div><fa :icon="['far', 'hdd']"/></div>
+				<div><fa :icon="['fal', 'hdd']"/></div>
 				<div>
 					<span>{{ $t('instances') }}</span>
 					<b>{{ stats.instances | number }}</b>
 				</div>
 			</div>
 			<div>
-				<span><fa icon="globe"/> {{ $t('federated') }}</span>
-				<span @click="setChartSrc('federation-instances-total')"><fa :icon="['far', 'chart-bar']"/></span>
+				<span><fa :icon="['fal', 'globe']"/> {{ $t('federated') }}</span>
+				<span @click="setChartSrc('federation-instances-total')"><fa :icon="['fal', 'chart-bar']"/></span>
 			</div>
 		</div>
 	</div>
@@ -93,7 +93,7 @@ import XCpuMemory from "./dashboard.cpu-memory.vue";
 import XQueue from "./dashboard.queue-charts.vue";
 import XCharts from "./dashboard.charts.vue";
 import XApLog from "./dashboard.ap-log.vue";
-import { faDatabase } from '@fortawesome/free-solid-svg-icons';
+import { faDatabase } from '@fortawesome/pro-light-svg-icons';
 import MarqueeText from 'vue-marquee-text-component';
 import randomColor from 'randomcolor';
 

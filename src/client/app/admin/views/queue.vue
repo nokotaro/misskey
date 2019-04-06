@@ -8,12 +8,12 @@
 			<ui-horizon-group inputs v-if="latestStats" class="fit-bottom">
 				<ui-input :value="latestStats.deliver.activeSincePrevTick | number" type="text" readonly>
 					<span>Process</span>
-					<template #prefix><fa :icon="fasPlayCircle"/></template>
+					<template #prefix><fa :icon="faPlayCircle"/></template>
 					<template #suffix>jobs/tick</template>
 				</ui-input>
 				<ui-input :value="latestStats.deliver.active | number" type="text" readonly>
 					<span>Active</span>
-					<template #prefix><fa :icon="farPlayCircle"/></template>
+					<template #prefix><fa :icon="faDotCircle"/></template>
 					<template #suffix>jobs</template>
 				</ui-input>
 				<ui-input :value="latestStats.deliver.waiting | number" type="text" readonly>
@@ -23,7 +23,7 @@
 				</ui-input>
 				<ui-input :value="latestStats.deliver.delayed | number" type="text" readonly>
 					<span>Delayed</span>
-					<template #prefix><fa :icon="faStopwatch"/></template>
+					<template #prefix><fa :icon="faPauseCircle"/></template>
 					<template #suffix>jobs</template>
 				</ui-input>
 			</ui-horizon-group>
@@ -35,12 +35,12 @@
 			<ui-horizon-group inputs v-if="latestStats" class="fit-bottom">
 				<ui-input :value="latestStats.inbox.activeSincePrevTick | number" type="text" readonly>
 					<span>Process</span>
-					<template #prefix><fa :icon="fasPlayCircle"/></template>
+					<template #prefix><fa :icon="faPlayCircle"/></template>
 					<template #suffix>jobs/tick</template>
 				</ui-input>
 				<ui-input :value="latestStats.inbox.active | number" type="text" readonly>
 					<span>Active</span>
-					<template #prefix><fa :icon="farPlayCircle"/></template>
+					<template #prefix><fa :icon="faDotCircle"/></template>
 					<template #suffix>jobs</template>
 				</ui-input>
 				<ui-input :value="latestStats.inbox.waiting | number" type="text" readonly>
@@ -50,7 +50,7 @@
 				</ui-input>
 				<ui-input :value="latestStats.inbox.delayed | number" type="text" readonly>
 					<span>Delayed</span>
-					<template #prefix><fa :icon="faStopwatch"/></template>
+					<template #prefix><fa :icon="faPauseCircle"/></template>
 					<template #suffix>jobs</template>
 				</ui-input>
 			</ui-horizon-group>
@@ -97,8 +97,7 @@ import Vue from 'vue';
 import i18n from '../../i18n';
 import ApexCharts from 'apexcharts';
 import * as tinycolor from 'tinycolor2';
-import { faTasks, faInbox, faStopwatch, faPlayCircle as fasPlayCircle } from '@fortawesome/free-solid-svg-icons';
-import { faPaperPlane, faStopCircle, faPlayCircle as farPlayCircle, faChartBar } from '@fortawesome/free-regular-svg-icons';
+import { faTasks, faInbox, faPlayCircle, faPauseCircle, faDotCircle, faPaperPlane, faStopCircle, faChartBar } from '@fortawesome/pro-light-svg-icons';
 
 const limit = 200;
 
@@ -114,7 +113,7 @@ export default Vue.extend({
 			jobsLimit: 50,
 			domain: 'deliver',
 			state: 'delayed',
-			faTasks, faPaperPlane, faInbox, faStopwatch, faStopCircle, farPlayCircle, fasPlayCircle, faChartBar
+			faTasks, faPaperPlane, faInbox, faStopCircle, faPlayCircle, faPauseCircle, faDotCircle, faChartBar
 		};
 	},
 

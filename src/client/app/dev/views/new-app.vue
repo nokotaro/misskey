@@ -13,7 +13,7 @@
 			</b-form-group>
 			<b-card :header="$t('@.dev.authority')">
 				<b-form-group :description="$t('@.dev.authority-desc')">
-					<b-alert show variant="warning"><fa icon="exclamation-triangle"/> {{ $t('@.dev.authority-warning') }}</b-alert>
+					<b-alert show variant="warning"><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.dev.authority-warning') }}</b-alert>
 					<b-form-checkbox-group v-model="permission" stacked>
 						<b-form-checkbox value="account-read">{{ $t('@.dev.account-read') }}</b-form-checkbox>
 						<b-form-checkbox value="account-write">{{ $t('@.dev.account-write') }}</b-form-checkbox>
