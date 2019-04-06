@@ -2,7 +2,7 @@
 <div class="notifications" v-hotkey.global="keymap">
 	<button :data-active="isOpen" @click="toggle" :title="$t('title')">
 		<i class="bell"><fa :icon="['fal', 'bell']"/></i>
-		<i class="circle" v-if="hasUnreadNotification"><fa :icon="['fal', 'circle']"/></i>
+		<i class="circle" v-if="hasUnreadNotification"><fa :icon="['fas', 'circle']"/></i>
 	</button>
 	<div class="pop" v-if="isOpen">
 		<mk-notifications/>

@@ -18,7 +18,7 @@
 				<template v-if="!showNav"><fa :icon="['fal', 'angle-down']"/></template>
 				<template v-else><fa :icon="['fal', 'angle-up']"/></template>
 			</span>
-			<i :class="$style.badge" v-if="$store.state.i.hasUnreadMentions || $store.state.i.hasUnreadSpecifiedNotes"><fa :icon="['fal', 'circle']"/></i>
+			<i :class="$style.badge" v-if="$store.state.i.hasUnreadMentions || $store.state.i.hasUnreadSpecifiedNotes"><fa :icon="['fas', 'circle']"/></i>
 		</span>
 	</template>
 
@@ -39,8 +39,8 @@
 					<span :data-active="src == 'imasHybrid'" @click="src = 'imasHybrid'" v-if="enableLocalTimeline"><fa :icon="['fal', 'city']"/> {{ $t('imasHybrid') }}</span>
 					<span :data-active="src == 'global'" @click="src = 'global'" v-if="enableGlobalTimeline"><fa :icon="['fal', 'globe']"/> {{ $t('global') }}</span>
 					<div class="hr"></div>
-					<span :data-active="src == 'mentions'" @click="src = 'mentions'"><fa :icon="['fal', 'at']"/> {{ $t('mentions') }}<i class="badge" v-if="$store.state.i.hasUnreadMentions"><fa :icon="['fal', 'circle']"/></i></span>
-					<span :data-active="src == 'messages'" @click="src = 'messages'"><fa :icon="['fal', 'envelope']"/> {{ $t('messages') }}<i class="badge" v-if="$store.state.i.hasUnreadSpecifiedNotes"><fa :icon="['fal', 'circle']"/></i></span>
+					<span :data-active="src == 'mentions'" @click="src = 'mentions'"><fa :icon="['fal', 'at']"/> {{ $t('mentions') }}<i class="badge" v-if="$store.state.i.hasUnreadMentions"><fa :icon="['fas', 'circle']"/></i></span>
+					<span :data-active="src == 'messages'" @click="src = 'messages'"><fa :icon="['fal', 'envelope']"/> {{ $t('messages') }}<i class="badge" v-if="$store.state.i.hasUnreadSpecifiedNotes"><fa :icon="['fas', 'circle']"/></i></span>
 					<template v-if="lists">
 						<div class="hr" v-if="lists.length > 0"></div>
 						<span v-for="l in lists" :data-active="src == 'list' && list == l" @click="src = 'list'; list = l" :key="l.id"><fa :icon="['fal', 'list']"/> {{ l.title }}</span>

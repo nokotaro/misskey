@@ -17,12 +17,12 @@
 				<div class="links">
 					<ul>
 						<li><router-link to="/" :data-active="$route.name == 'index'"><i><fa :icon="['fal', 'home']" fixed-width/></i>{{ $t('timeline') }}<i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
-						<li><p @click="showNotifications = true"><i><fa :icon="['fal', 'bell']" fixed-width/></i>{{ $t('notifications') }}<i v-if="hasUnreadNotification" class="circle"><fa :icon="['fal', 'circle']"/></i><i><fa :icon="['fal', 'angle-right']"/></i></p></li>
-						<li><router-link to="/i/messaging" :data-active="$route.name == 'messaging'"><i><fa :icon="['fal', 'comments']" fixed-width/></i>{{ $t('@.messaging') }}<i v-if="hasUnreadMessagingMessage" class="circle"><fa :icon="['fal', 'circle']"/></i><i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
-						<li v-if="$store.getters.isSignedIn && ($store.state.i.isLocked || $store.state.i.carefulBot)"><router-link to="/i/received-follow-requests" :data-active="$route.name == 'received-follow-requests'"><i><fa :icon="['fal', 'envelope']" fixed-width/></i>{{ $t('follow-requests') }}<i v-if="$store.getters.isSignedIn && $store.state.i.pendingReceivedFollowRequestsCount" class="circle"><fa :icon="['fal', 'circle']"/></i><i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
+						<li><p @click="showNotifications = true"><i><fa :icon="['fal', 'bell']" fixed-width/></i>{{ $t('notifications') }}<i v-if="hasUnreadNotification" class="circle"><fa :icon="['fas', 'circle']"/></i><i><fa :icon="['fal', 'angle-right']"/></i></p></li>
+						<li><router-link to="/i/messaging" :data-active="$route.name == 'messaging'"><i><fa :icon="['fal', 'comments']" fixed-width/></i>{{ $t('@.messaging') }}<i v-if="hasUnreadMessagingMessage" class="circle"><fa :icon="['fas', 'circle']"/></i><i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
+						<li v-if="$store.getters.isSignedIn && ($store.state.i.isLocked || $store.state.i.carefulBot)"><router-link to="/i/received-follow-requests" :data-active="$route.name == 'received-follow-requests'"><i><fa :icon="['fal', 'envelope']" fixed-width/></i>{{ $t('follow-requests') }}<i v-if="$store.getters.isSignedIn && $store.state.i.pendingReceivedFollowRequestsCount" class="circle"><fa :icon="['fas', 'circle']"/></i><i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
 						<li><router-link to="/featured" :data-active="$route.name == 'featured'"><i><fa :icon="faNewspaper" fixed-width/></i>{{ $t('@.featured-notes') }}<i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
 						<li><router-link to="/explore" :data-active="$route.name == 'explore' || $route.name == 'explore-tag'"><i><fa :icon="faHashtag" fixed-width/></i>{{ $t('@.explore') }}<i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
-						<li><router-link to="/games/reversi" :data-active="$route.name == 'reversi'"><i><fa :icon="['fal', 'gamepad']" fixed-width/></i>{{ $t('game') }}<i v-if="hasGameInvitation" class="circle"><fa :icon="['fal', 'circle']"/></i><i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
+						<li><router-link to="/games/reversi" :data-active="$route.name == 'reversi'"><i><fa :icon="['fal', 'gamepad']" fixed-width/></i>{{ $t('game') }}<i v-if="hasGameInvitation" class="circle"><fa :icon="['fas', 'circle']"/></i><i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
 					</ul>
 					<ul>
 						<li><router-link to="/i/widgets" :data-active="$route.name == 'widgets'"><i><fa :icon="['fal', 'calendar-alt']" fixed-width/></i>{{ $t('widgets') }}<i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
@@ -51,7 +51,7 @@
 			<div class="notifications" v-if="showNotifications">
 				<header>
 					<button @click="showNotifications = false"><fa :icon="['fal', 'times']"/></button>
-					<i v-if="hasUnreadNotification" class="circle"><fa :icon="['fal', 'circle']"/></i>
+					<i v-if="hasUnreadNotification" class="circle"><fa :icon="['fas', 'circle']"/></i>
 				</header>
 				<mk-notifications/>
 			</div>

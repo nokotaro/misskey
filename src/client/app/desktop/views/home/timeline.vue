@@ -15,8 +15,8 @@
 					<span :data-active="src == 'list'" @click="src = 'list'" v-if="list"><fa :icon="['fal', 'list']"/> {{ list.title }}</span>
 				</div>
 				<div class="buttons">
-					<button :data-active="src == 'mentions'" @click="src = 'mentions'" :title="$t('mentions')"><fa :icon="['fal', 'at']"/><i class="indicator" v-if="$store.state.i.hasUnreadMentions"><fa :icon="['fal', 'circle']"/></i></button>
-					<button :data-active="src == 'messages'" @click="src = 'messages'" :title="$t('messages')"><fa :icon="['fal', 'envelope']"/><i class="indicator" v-if="$store.state.i.hasUnreadSpecifiedNotes"><fa :icon="['fal', 'circle']"/></i></button>
+					<button :data-active="src == 'mentions'" @click="src = 'mentions'" :title="$t('mentions')"><fa :icon="['fal', 'at']"/><i class="indicator" v-if="$store.state.i.hasUnreadMentions"><fa :icon="['fas', 'circle']"/></i></button>
+					<button :data-active="src == 'messages'" @click="src = 'messages'" :title="$t('messages')"><fa :icon="['fal', 'envelope']"/><i class="indicator" v-if="$store.state.i.hasUnreadSpecifiedNotes"><fa :icon="['fas', 'circle']"/></i></button>
 					<button @click="chooseTag" :title="$t('hashtag')" ref="tagButton"><fa :icon="['fal', 'hashtag']"/></button>
 					<button @click="chooseList" :title="$t('list')" ref="listButton"><fa :icon="['fal', 'list']"/></button>
 				</div>

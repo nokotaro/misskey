@@ -14,7 +14,7 @@
 			<a @click="game">
 				<fa :icon="['fal', 'gamepad']"/>
 				<p>{{ $t('game') }}</p>
-				<template v-if="hasGameInvitations"><fa :icon="['fal', 'circle']"/></template>
+				<template v-if="hasGameInvitations"><fa :icon="['fas', 'circle']"/></template>
 			</a>
 		</li>
 	</ul>

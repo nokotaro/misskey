@@ -9,7 +9,7 @@
 		<slot></slot>
 	</div>
 	<mk-stream-indicator v-if="$store.getters.isSignedIn"/>
-	<button class="nav button" v-if="$store.state.device.inDeckMode" @click="isDrawerOpening = !isDrawerOpening"><fa :icon="['fal', 'bars']"/><i v-if="indicate"><fa :icon="['fal', 'circle']"/></i></button>
+	<button class="nav button" v-if="$store.state.device.inDeckMode" @click="isDrawerOpening = !isDrawerOpening"><fa :icon="['fal', 'bars']"/><i v-if="indicate"><fa :icon="['fas', 'circle']"/></i></button>
 	<button class="post button" v-if="$store.state.device.inDeckMode" @click="$post()"><fa :icon="['fal', 'pencil-alt']"/></button>
 </div>
 </template>

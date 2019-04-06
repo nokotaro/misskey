@@ -16,7 +16,7 @@
 				<router-link to="/explore"><fa :icon="faHashtag"/></router-link>
 			</div>
 			<div class="game">
-				<a @click="game"><fa :icon="['fal', 'gamepad']"/><template v-if="hasGameInvitations"><fa :icon="['fal', 'circle']"/></template></a>
+				<a @click="game"><fa :icon="['fal', 'gamepad']"/><template v-if="hasGameInvitations"><fa :icon="['fas', 'circle']"/></template></a>
 			</div>
 		</div>
 
@@ -28,7 +28,7 @@
 				<a @click="notifications"><fa :icon="['fal', 'bell']"/></a>
 			</div>
 			<div class="messaging">
-				<a @click="messaging"><fa :icon="['fal', 'comments']"/><template v-if="hasUnreadMessagingMessage"><fa :icon="['fal', 'circle']"/></template></a>
+				<a @click="messaging"><fa :icon="['fal', 'comments']"/><template v-if="hasUnreadMessagingMessage"><fa :icon="['fas', 'circle']"/></template></a>
 			</div>
 			<div>
 				<a @click="settings"><fa :icon="['fal', 'cog']"/></a>

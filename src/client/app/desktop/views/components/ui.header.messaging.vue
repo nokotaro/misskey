@@ -2,7 +2,7 @@
 <div class="toltmoik">
 	<button @click="open()" :title="$t('@.messaging')">
 		<i class="bell"><fa :icon="faComments"/></i>
-		<i class="circle" v-if="hasUnreadMessagingMessage"><fa :icon="['fal', 'circle']"/></i>
+		<i class="circle" v-if="hasUnreadMessagingMessage"><fa :icon="['fas', 'circle']"/></i>
 	</button>
 </div>
 </template>
