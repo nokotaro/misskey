@@ -24,11 +24,11 @@ export default Vue.extend({
 	computed: {
 		items(): any[] {
 			return [{
-				icon: 'at',
+				icon: ['fal', 'at'],
 				text: this.$t('mention'),
 				action: this.mention
 			}, null, {
-				icon: 'info-circle',
+				icon: ['fal', 'info-circle'],
 				text: this.$t('detail'),
 				action: this.detail
 			}, {
@@ -36,11 +36,11 @@ export default Vue.extend({
 				text: this.$t('copy-content'),
 				action: this.copyContent
 			}, {
-				icon: 'link',
+				icon: ['fal', 'link'],
 				text: this.$t('copy-link'),
 				action: this.copyLink
 			}, this.note.uri ? {
-				icon: 'external-link-square-alt',
+				icon: ['fal', 'external-link-square-alt'],
 				text: this.$t('remote'),
 				action: () => {
 					window.open(this.note.uri, '_blank');
@@ -48,11 +48,11 @@ export default Vue.extend({
 			} : undefined,
 			null,
 			this.isFavorited ? {
-				icon: 'star',
+				icon: ['fal', 'star'],
 				text: this.$t('unfavorite'),
 				action: () => this.toggleFavorite(false)
 			} : {
-				icon: 'star',
+				icon: ['fal', 'star'],
 				text: this.$t('favorite'),
 				action: () => this.toggleFavorite(true)
 			},
@@ -66,17 +66,17 @@ export default Vue.extend({
 				action: () => this.toggleWatch(true)
 			} : undefined,
 			this.note.userId == this.$store.state.i.id ? (this.$store.state.i.pinnedNoteIds || []).includes(this.note.id) ? {
-				icon: 'thumbtack',
+				icon: ['fal', 'thumbtack'],
 				text: this.$t('unpin'),
 				action: () => this.togglePin(false)
 			} : {
-				icon: 'thumbtack',
+				icon: ['fal', 'thumbtack'],
 				text: this.$t('pin'),
 				action: () => this.togglePin(true)
 			} : undefined,
 			...(this.note.userId == this.$store.state.i.id || this.$store.state.i.isAdmin || this.$store.state.i.isModerator ? [
 				null, {
-					icon: ['far', 'trash-alt'],
+					icon: ['fal', 'trash-alt'],
 					text: this.$t('delete'),
 					action: this.del
 				}]

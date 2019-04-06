@@ -66,7 +66,7 @@ export default Vue.extend({
 		return {
 			edit: false,
 			menu: [{
-				icon: 'cog',
+				icon: ['fal', 'cog'],
 				text: this.$t('edit'),
 				action: () => {
 					this.edit = !this.edit;

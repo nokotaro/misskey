@@ -18,13 +18,13 @@ export default Vue.extend({
 
 	data() {
 		let menu = [{
-			icon: ['fas', 'at'],
+			icon: ['fal', 'at'],
 			text: this.$t('mention'),
 			action: () => {
 				this.$post({ mention: this.user });
 			}
 		}, null, {
-			icon: ['fas', 'list'],
+			icon: ['fal', 'list'],
 			text: this.$t('push-to-list'),
 			action: this.pushList
 		}, null, {
@@ -32,7 +32,7 @@ export default Vue.extend({
 			text: this.user.isMuted ? this.$t('unmute') : this.$t('mute'),
 			action: this.toggleMute
 		}, {
-			icon: 'ban',
+			icon: ['fal', 'ban'],
 			text: this.user.isBlocking ? this.$t('unblock') : this.$t('block'),
 			action: this.toggleBlock
 		}, null, {

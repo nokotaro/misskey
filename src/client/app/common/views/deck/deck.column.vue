@@ -168,7 +168,7 @@ export default Vue.extend({
 
 		getMenu() {
 			const items = [{
-				icon: 'pencil-alt',
+				icon: ['fal', 'pencil-alt'],
 				text: this.$t('rename'),
 				action: () => {
 					this.$root.dialog({
@@ -183,13 +183,13 @@ export default Vue.extend({
 					});
 				}
 			}, null, {
-				icon: 'arrow-left',
+				icon: ['fal', 'arrow-left'],
 				text: this.$t('swap-left'),
 				action: () => {
 					this.$store.commit('device/swapLeftDeckColumn', this.column.id);
 				}
 			}, {
-				icon: 'arrow-right',
+				icon: ['fal', 'arrow-right'],
 				text: this.$t('swap-right'),
 				action: () => {
 					this.$store.commit('device/swapRightDeckColumn', this.column.id);
@@ -207,7 +207,7 @@ export default Vue.extend({
 					this.$store.commit('device/swapDownDeckColumn', this.column.id);
 				}
 			} : undefined, null, {
-				icon: ['far', 'window-restore'],
+				icon: ['fal', 'window-restore'],
 				text: this.$t('stack-left'),
 				action: () => {
 					this.$store.commit('device/stackLeftDeckColumn', this.column.id);
@@ -219,7 +219,7 @@ export default Vue.extend({
 					this.$store.commit('device/popRightDeckColumn', this.column.id);
 				}
 			} : undefined, null, {
-				icon: ['far', 'trash-alt'],
+				icon: ['fal', 'trash-alt'],
 				text: this.$t('remove'),
 				action: () => {
 					this.$store.commit('device/removeDeckColumn', this.column.id);

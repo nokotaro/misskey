@@ -140,12 +140,12 @@ export default Vue.extend({
 			this.$contextmenu(e, [{
 				type: 'item',
 				text: this.$t('contextmenu.create-folder'),
-				icon: ['far', 'folder'],
+				icon: ['fal', 'folder'],
 				action: this.createFolder
 			}, {
 				type: 'item',
 				text: this.$t('contextmenu.upload'),
-				icon: 'upload',
+				icon: ['fal', 'upload'],
 				action: this.selectLocalFile
 			}, {
 				type: 'item',

@@ -53,7 +53,7 @@ export default Vue.extend({
 			}, {
 				name: 'people',
 				text: this.$t('people'),
-				icon: ['far', 'laugh'],
+				icon: ['fal', 'laugh'],
 				isActive: false
 			}, {
 				name: 'animals_and_nature',

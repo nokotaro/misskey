@@ -136,7 +136,7 @@ export default Vue.extend({
 			this.$root.new(Menu, {
 				source: this.$refs.add,
 				items: [{
-					icon: 'home',
+					icon: ['fal', 'home'],
 					text: this.$t('@deck.home'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -145,7 +145,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: ['far', 'comments'],
+					icon: ['fal', 'comments'],
 					text: this.$t('@deck.local'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -154,7 +154,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'share-alt',
+					icon: ['fal', 'share-alt'],
 					text: this.$t('@deck.hybrid'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -163,7 +163,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'building',
+					icon: ['fal', 'building'],
 					text: this.$t('@deck.imas'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -172,7 +172,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'city',
+					icon: ['fal', 'city'],
 					text: this.$t('@deck.imasHybrid'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -181,7 +181,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'globe',
+					icon: ['fal', 'globe'],
 					text: this.$t('@deck.global'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -190,7 +190,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'at',
+					icon: ['fal', 'at'],
 					text: this.$t('@deck.mentions'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -199,7 +199,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: ['far', 'envelope'],
+					icon: ['fal', 'envelope'],
 					text: this.$t('@deck.direct'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -208,7 +208,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'list',
+					icon: ['fal', 'list'],
 					text: this.$t('@deck.list'),
 					action: async () => {
 						const lists = await this.$root.api('users/lists/list');
@@ -230,7 +230,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'hashtag',
+					icon: ['fal', 'hashtag'],
 					text: this.$t('@deck.hashtag'),
 					action: () => {
 						this.$root.dialog({
@@ -246,7 +246,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: ['far', 'bell'],
+					icon: ['fal', 'bell'],
 					text: this.$t('@deck.notifications'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -255,7 +255,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'calculator',
+					icon: ['fal', 'calculator'],
 					text: this.$t('@deck.widgets'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {

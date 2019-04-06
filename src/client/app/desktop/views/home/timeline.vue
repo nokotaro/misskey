@@ -123,7 +123,7 @@ export default Vue.extend({
 			const lists = await this.$root.api('users/lists/list');
 
 			let menu = [{
-				icon: 'plus',
+				icon: ['fal', 'plus'],
 				text: this.$t('add-list'),
 				action: () => {
 					this.$root.dialog({
@@ -146,7 +146,7 @@ export default Vue.extend({
 			}
 
 			menu = menu.concat(lists.map(list => ({
-				icon: 'list',
+				icon: ['fal', 'list'],
 				text: list.title,
 				action: () => {
 					this.list = list;
@@ -162,7 +162,7 @@ export default Vue.extend({
 
 		chooseTag() {
 			let menu = [{
-				icon: 'plus',
+				icon: ['fal', 'plus'],
 				text: this.$t('add-tag-timeline'),
 				action: () => {
 					this.$root.new(MkSettingsWindow, {
@@ -176,7 +176,7 @@ export default Vue.extend({
 			}
 
 			menu = menu.concat(this.$store.state.settings.tagTimelines.map(t => ({
-				icon: 'hashtag',
+				icon: ['fal', 'hashtag'],
 				text: t.title,
 				action: () => {
 					this.tagTl = t;

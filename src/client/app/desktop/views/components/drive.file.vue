@@ -73,7 +73,7 @@ export default Vue.extend({
 			this.$contextmenu(e, [{
 				type: 'item',
 				text: this.$t('contextmenu.rename'),
-				icon: 'i-cursor',
+				icon: ['fal', 'i-cursor'],
 				action: this.rename
 			}, {
 				type: 'item',
@@ -83,18 +83,18 @@ export default Vue.extend({
 			}, null, {
 				type: 'item',
 				text: this.$t('contextmenu.copy-url'),
-				icon: 'link',
+				icon: ['fal', 'link'],
 				action: this.copyUrl
 			}, {
 				type: 'link',
 				href: appendQuery(this.file.url, 'download'),
 				text: this.$t('contextmenu.download'),
-				icon: 'download',
+				icon: ['fal', 'download'],
 				download: this.file.name
 			}, null, {
 				type: 'item',
 				text: this.$t('@.delete'),
-				icon: ['far', 'trash-alt'],
+				icon: ['fal', 'trash-alt'],
 				action: this.deleteFile
 			}, null, {
 				type: 'nest',
