@@ -5,7 +5,7 @@
 		<section>
 			<header>
 				<fa :icon="['fal', 'user-ninja']" fixed-width/>
-				<span>Produce</span>
+				<span class="title">Produce</span>
 			</header>
 			<div class="slot">
 				<ui-select v-model="produceIdolType" placeholder="Type">
@@ -27,7 +27,7 @@
 		<section>
 			<header>
 				<fa :icon="['fal', 'user-friends']" fixed-width/>
-				<span>Support</span>
+				<span class="title">Support</span>
 			</header>
 			<div class="slot">
 				<ui-select v-model="supportIdol1Type" placeholder="Type">
@@ -101,7 +101,7 @@
 		<section>
 			<header>
 				<fa :icon="['fal', 'user-plus']" fixed-width/>
-				<span>Guest</span>
+				<span class="title">Guest</span>
 			</header>
 			<div class="slot">
 				<ui-select v-model="guestIdolType" placeholder="Type">
@@ -124,7 +124,7 @@
 		<section>
 			<header>
 				<fa :icon="['fal', 'abacus']" fixed-width/>
-				<span>Cost</span>
+				<span class="title">Cost</span>
 			</header>
 			<div class="slot">
 				<ui-input :value="cost" readonly></ui-input>
@@ -164,7 +164,7 @@ export default Vue.extend({
 		cost() {
 			const $ = x => parseInt(x) || 0;
 
-			return ($(this.produceIdolType) + $(this.produceIdolGrade)) * ($(this.produceIdolType) - 1) +
+			return ($(this.produceIdolType) + $(this.produceIdolGrade)) * ($(this.produceIdolType) - 4) +
 				($(this.supportIdol1Type) + $(this.supportIdol1Grade)) * (~~($(this.supportIdol1Lv) / 10) + 1) +
 				($(this.supportIdol2Type) + $(this.supportIdol2Grade)) * (~~($(this.supportIdol2Lv) / 10) + 1) +
 				($(this.supportIdol3Type) + $(this.supportIdol3Grade)) * (~~($(this.supportIdol3Lv) / 10) + 1) +
@@ -188,4 +188,6 @@ main
 		> *
 			flex 1 1 auto
 
+	.title
+		margin 8px
 </style>
