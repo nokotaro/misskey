@@ -43,6 +43,7 @@ module.exports = {
 		auth: './src/client/app/auth/script.ts',
 		admin: './src/client/app/admin/script.ts',
 		test: './src/client/app/test/script.ts',
+		calc: './src/client/app/calc/script.ts',
 		sw: './src/client/app/sw.js'
 	},
 	module: {

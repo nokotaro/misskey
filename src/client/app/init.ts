@@ -113,6 +113,7 @@ import {
 	faMinus,
 	faCaretDown,
 	faCalculator,
+	faUserFriends,
 	faUsers,
 	faBars,
 	faFileImage,
@@ -152,6 +153,10 @@ import {
 	faPlayCircle,
 	faLightbulb
 } from '@fortawesome/pro-light-svg-icons';
+
+import {
+	faStar as fFaStar
+} from '@fortawesome/pro-solid-svg-icons';
 
 import {
 	faTwitter,
@@ -246,6 +251,7 @@ library.add(
 	faMinus,
 	faCaretDown,
 	faCalculator,
+	faUserFriends,
 	faUsers,
 	faBars,
 	faFileImage,
@@ -286,6 +292,8 @@ library.add(
 	faHdd,
 	faPlayCircle,
 	faLightbulb,
+
+	fFaStar,
 
 	faTwitter,
 	faGithub,
