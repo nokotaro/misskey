@@ -39,7 +39,7 @@
 				<button class="upload" @click="chooseFile"><fa :icon="['fal', 'upload']"/></button>
 				<button class="drive" @click="chooseFileFromDrive"><fa :icon="['fal', 'cloud']"/></button>
 				<button class="kao" @click="kao"><fa :icon="['fal', 'cat']"/></button>
-				<button class="poll" @click="poll = true"><fa :icon="['fal', 'poll-h']"/></button>
+				<button class="poll" @click="poll = true"><fa :icon="['fal', 'poll-people']"/></button>
 				<button class="cw" @click="useCw = !useCw"><fa :icon="['fal', 'eye-slash']"/></button>
 				<button class="broadcast" @click="useBroadcast = !useBroadcast"><fa :icon="['fal', 'bullhorn']"/></button>
 				<button class="post-as" @click="usePostAs = !usePostAs" v-if="$store.getters.isSignedIn && ($store.state.i.isAdmin || $store.state.i.isModerator)"><fa :icon="['fal', 'user-ninja']"/></button>

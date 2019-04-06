@@ -1,7 +1,7 @@
 <template>
 <div class="mkw-polls">
 	<ui-container :show-header="!props.compact">
-		<template #header><fa :icon="['fal', 'poll-h']"/>{{ $t('title') }}</template>
+		<template #header><fa :icon="['fal', 'poll-people']"/>{{ $t('title') }}</template>
 		<template #func>
 			<button :title="$t('title')" @click="fetch">
 				<fa v-if="!fetching && more" :icon="['fal', 'arrow-right']"/>

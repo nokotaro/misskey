@@ -57,7 +57,7 @@
 	<template v-if="notification.type == 'poll_vote'">
 		<mk-avatar class="avatar" :user="notification.user"/>
 		<div class="text">
-			<p><fa :icon="['fal', 'poll-h']"/><mk-user-name :user="notification.user"/></p>
+			<p><fa :icon="['fal', 'poll-people']"/><mk-user-name :user="notification.user"/></p>
 			<p class="note-ref"><fa :icon="['fal', 'quote-left']"/>{{ getNoteSummary(notification.note) }}<fa :icon="['fal', 'quote-right']"/></p>
 		</div>
 	</template>

@@ -58,7 +58,7 @@
 		<mk-avatar class="avatar" :user="notification.user"/>
 		<div>
 			<header>
-				<fa :icon="['fal', 'poll-h']"/>
+				<fa :icon="['fal', 'poll-people']"/>
 				<router-link :to="notification.user | userPage"><mk-user-name :user="notification.user"/></router-link>
 				<mk-time :time="notification.createdAt"/>
 			</header>
