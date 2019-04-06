@@ -8,6 +8,7 @@ import * as cors from '@koa/cors';
 import * as Router from 'koa-router';
 import sendSwiftDriveFile from './send-swift-drive-file';
 import sendDriveFile from './send-drive-file';
+import sendEmoji from './send-emoji';
 
 // Init app
 const app = new Koa();
@@ -35,6 +36,8 @@ router.get('/app-default.jpg', ctx => {
 });
 
 router.get('/swift/:container/:id', sendSwiftDriveFile);
+
+router.get('/:name@:host/*', sendEmoji);
 
 router.get('/:id', sendDriveFile);
 router.get('/:id/*', sendDriveFile);
