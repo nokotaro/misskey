@@ -305,6 +305,17 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 		return;
 	}
 
+	if (note.qa === 'bestAnswer') {
+		await Note.update({
+			_id: note.replyId
+		}, {
+			$set: {
+				updatedAt: note.createdAt,
+				qa: 'resolvedQuestion'
+			}
+		});
+	}
+
 	// 統計を更新
 	notesChart.update(note, true);
 	perUserNotesChart.update(user, note, true);
