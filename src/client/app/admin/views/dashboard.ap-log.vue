@@ -3,8 +3,8 @@
 	<table>
 		<thead>
 			<tr>
-				<th><fa :icon="faExchangeAlt"/> In/Out</th>
-				<th><fa :icon="faBolt"/> Activity</th>
+				<th><fa :icon="['fal', 'exchange']"/> In/Out</th>
+				<th><fa :icon="['fal', 'bolt']"/> Activity</th>
 				<th><fa :icon="['fal', 'server']"/> Host</th>
 				<th><fa :icon="['fal', 'user']"/> Actor</th>
 			</tr>
