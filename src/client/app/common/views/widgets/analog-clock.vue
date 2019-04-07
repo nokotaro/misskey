@@ -1,8 +1,8 @@
 <template>
 <div class="mkw-analog-clock">
-	<ui-container :naked="props.style % 2 === 0" :show-header="false">
+	<ui-container :naked="props.style & 1" :show-header="false">
 		<div class="mkw-analog-clock--body">
-			<mk-analog-clock :dark="$store.state.device.darkmode" :smooth="props.style < 2"/>
+			<mk-analog-clock :dark="$store.state.device.darkmode" :smooth="props.style & 2" :with-digital="props.style & 4"/>
 		</div>
 	</ui-container>
 </div>
@@ -18,7 +18,7 @@ export default define({
 }).extend({
 	methods: {
 		func() {
-			this.props.style = (this.props.style + 1) % 4;
+			this.props.style = ++this.props.style & 7;
 			this.save();
 		}
 	}
