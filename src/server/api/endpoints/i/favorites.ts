@@ -1,7 +1,9 @@
 import $ from 'cafy';
 import ID, { transform } from '../../../../misc/cafy-id';
-import Favorite, { packMany } from '../../../../models/favorite';
+import Favorite, { packMany as packManyFavorites } from '../../../../models/favorite';
 import define from '../../define';
+import Note, { packMany as packManyNotes } from '../../../../models/note';
+import NoteReaction from '../../../../models/note-reaction';
 
 export const meta = {
 	desc: {
@@ -21,6 +23,11 @@ export const meta = {
 			default: 10
 		},
 
+		reaction: {
+			validator: $.optional.nullable.str,
+			default: null as string
+		},
+
 		sinceId: {
 			validator: $.optional.type(ID),
 			transform: transform,
@@ -34,7 +41,10 @@ export const meta = {
 };
 
 export default define(meta, async (ps, user) => {
-	const query = {
+	const query = ps.reaction ? {
+		userId: user._id,
+		reaction: ps.reaction
+	} : {
 		userId: user._id
 	} as any;
 
@@ -53,12 +63,29 @@ export default define(meta, async (ps, user) => {
 		};
 	}
 
-	// Get favorites
-	const favorites = await Favorite
-		.find(query, {
-			limit: ps.limit,
-			sort: sort
-		});
+	if (ps.reaction) {
+		// Get reactions
+		const reactions = await NoteReaction
+			.find(query, {
+				limit: ps.limit,
+				sort: sort
+			});
 
-	return await packMany(favorites, user);
+		// Get notes
+		const notes = await Note
+			.find({
+				_id: { $in: reactions.map(x => x.noteId) }
+			});
+
+		return await packManyNotes(notes, user);
+	} else {
+		// Get favorites
+		const favorites = await Favorite
+			.find(query, {
+				limit: ps.limit,
+				sort: sort
+			});
+
+		return await packManyFavorites(favorites, user);
+	}
 });
