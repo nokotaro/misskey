@@ -69,13 +69,15 @@ interface IQuestionChoice {
 	_misskey_votes?: number;
 }
 
-const actorMap = {
-	'Application': true,
-	'Group': true,
-	'Organization': true,
-	'Person': true,
+export const actorMap = {
+	'Application': false,
+	'Group': false,
+	'Organization': false,
+	'Person': false,
 	'Service': true
 };
+
+export const actorIsBot: Record<keyof typeof actorMap, boolean> = actorMap;
 
 export const validActor = Object.keys(actorMap);
 

@@ -6,7 +6,7 @@ import config from '../../../config';
 import User, { validateUsername, isValidName, IUser, IRemoteUser, isRemoteUser } from '../../../models/user';
 import Resolver from '../resolver';
 import { resolveImage } from './image';
-import { isCollectionOrOrderedCollection, isCollection, IActor, IObject, validActor } from '../type';
+import { isCollectionOrOrderedCollection, isCollection, IActor, IObject, validActor, actorIsBot } from '../type';
 import { IDriveFile } from '../../../models/drive-file';
 import Meta from '../../../models/meta';
 import { fromHtml } from '../../../mfm/fromHtml';
@@ -182,7 +182,7 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 			...services,
 			tags,
 			...is,
-			isBot: is.isService,
+			isBot: actorIsBot[person.type],
 			isCat: (person as any).isCat === true,
 			isKaho: (person as any).isKaho === true,
 			avatarAngle: (person as any).avatarAngle
@@ -375,7 +375,7 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: obje
 		fields,
 		...services,
 		tags,
-		isBot: object.type == 'Service',
+		isBot: actorIsBot[person.type],
 		isCat: (person as any).isCat === true,
 		isKaho: (person as any).isKaho === true,
 		isLocked: person.manuallyApprovesFollowers,
