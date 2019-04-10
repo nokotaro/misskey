@@ -159,6 +159,7 @@ export default define(meta, async (ps, me) => {
 		response.recaptchaSecretKey = instance.recaptchaSecretKey;
 		response.proxyAccount = instance.proxyAccount;
 		response.informationAccount = instance.informationAccount;
+		response.futabaAnzuBotAccount = instance.futabaAnzuBotAccount;
 		response.twitterConsumerKey = instance.twitterConsumerKey;
 		response.twitterConsumerSecret = instance.twitterConsumerSecret;
 		response.githubClientId = instance.githubClientId;

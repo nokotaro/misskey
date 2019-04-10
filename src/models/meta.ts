@@ -206,6 +206,7 @@ export type IMeta = {
 
 	proxyAccount?: string;
 	informationAccount?: string;
+	futabaAnzuBotAccount?: string;
 
 	enableRecaptcha?: boolean;
 	recaptchaSiteKey?: string;

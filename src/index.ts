@@ -18,6 +18,7 @@ import serverStats from './daemons/server-stats';
 import notesStats from './daemons/notes-stats';
 import queueStats from './daemons/queue-stats';
 import imasStats from './daemons/imas-stats';
+import futabaAnzuBot from './daemons/futaba-anzu-bot';
 import loadConfig from './config/load';
 import { Config } from './config/types';
 import { lessThan } from './prelude/array';
@@ -54,6 +55,7 @@ function main() {
 			notesStats();
 			queueStats();
 			imasStats();
+			futabaAnzuBot();
 		}
 	}
 

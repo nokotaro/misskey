@@ -169,6 +169,13 @@ export const meta = {
 			}
 		},
 
+		futabaAnzuBotAccount: {
+			validator: $.optional.nullable.str,
+			desc: {
+				'ja-JP': '双葉杏botプロデューサーのユーザー名'
+			}
+		},
+
 		maintainerName: {
 			validator: $.optional.str,
 			desc: {
@@ -438,6 +445,10 @@ export default define(meta, async (ps) => {
 
 	if (ps.informationAccount !== undefined) {
 		set.informationAccount = ps.informationAccount;
+	}
+
+	if (ps.futabaAnzuBotAccount !== undefined) {
+		set.futabaAnzuBotAccount = ps.futabaAnzuBotAccount;
 	}
 
 	if (ps.maintainerName !== undefined) {

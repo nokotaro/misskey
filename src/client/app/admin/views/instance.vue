@@ -56,6 +56,12 @@
 			<ui-info warn>{{ $t('information-account-warn') }}</ui-info>
 		</section>
 		<section>
+			<header><fa :icon="faRobot"/> {{ $t('futaba-anzu-bot-account-config') }}</header>
+			<ui-info>{{ $t('futaba-anzu-bot-account-info') }}</ui-info>
+			<ui-input v-model="futabaAnzuBotAccount"><template #prefix>@</template>{{ $t('futaba-anzu-bot-account-username') }}<template #desc>{{ $t('futaba-anzu-bot-account-username-desc') }}</template></ui-input>
+			<ui-info warn>{{ $t('futaba-anzu-bot-account-warn') }}</ui-info>
+		</section>
+		<section>
 			<header><fa :icon="faEnvelope"/> {{ $t('email-config') }}</header>
 			<ui-switch v-model="enableEmail">{{ $t('enable-email') }}<template #desc>{{ $t('email-config-info') }}</template></ui-switch>
 			<ui-input v-model="email" type="email" :disabled="!enableEmail">{{ $t('email') }}</ui-input>
@@ -148,7 +154,7 @@ import Vue from 'vue';
 import i18n from '../../i18n';
 import { url, host } from '../../config';
 import { toUnicode } from 'punycode';
-import { faHeadset, faShieldAlt, faGhost, faBullhorn, faUserPlus, faBolt, faEnvelope } from '@fortawesome/pro-light-svg-icons';
+import { faHeadset, faShieldAlt, faGhost, faBullhorn, faRobot, faUserPlus, faBolt, faEnvelope } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('admin/views/instance.vue'),
@@ -189,6 +195,7 @@ export default Vue.extend({
 			discordClientSecret: null,
 			proxyAccount: null,
 			informationAccount: null,
+			futabaAnzuBotAccount: null,
 			inviteCode: null,
 			enableExternalUserRecommendation: false,
 			externalUserRecommendationEngine: null,
@@ -209,6 +216,7 @@ export default Vue.extend({
 			faShieldAlt,
 			faGhost,
 			faBullhorn,
+			faRobot,
 			faUserPlus,
 			faEnvelope,
 			faBolt
@@ -240,6 +248,7 @@ export default Vue.extend({
 			this.recaptchaSecretKey = meta.recaptchaSecretKey;
 			this.proxyAccount = meta.proxyAccount;
 			this.informationAccount = meta.informationAccount;
+			this.futabaAnzuBotAccount = meta.futabaAnzuBotAccount;
 			this.enableTwitterIntegration = meta.enableTwitterIntegration;
 			this.twitterConsumerKey = meta.twitterConsumerKey;
 			this.twitterConsumerSecret = meta.twitterConsumerSecret;
@@ -304,6 +313,7 @@ export default Vue.extend({
 				recaptchaSecretKey: this.recaptchaSecretKey,
 				proxyAccount: this.proxyAccount,
 				informationAccount: this.informationAccount,
+				futabaAnzuBotAccount: this.futabaAnzuBotAccount,
 				enableTwitterIntegration: this.enableTwitterIntegration,
 				twitterConsumerKey: this.twitterConsumerKey,
 				twitterConsumerSecret: this.twitterConsumerSecret,
