@@ -15,13 +15,8 @@
 			<button @click="react('rip')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="9" :title="$t('@.reactions.rip')" v-particle><mk-reaction-icon reaction="rip"/></button>
 			<button @click="react('pudding')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="10" :title="$t('@.reactions.pudding')" v-particle><mk-reaction-icon reaction="pudding"/></button>
 		</div>
-		<div v-if="enableEmojiReaction" class="text">
-			<input v-model="text" placeholder="絵文字入力" @keyup.enter="reactText" @input="tryReactText" v-autocomplete="{ model: 'text' }">
-			<button title="決定" @click="reactText"><fa icon="check"/></button>
-			<button title="選択" class="emoji" @click="emoji" ref="emoji" v-if="!$root.isMobile">
-				<fa :icon="['far', 'laugh']"/>
-			</button>
-			<button title="ランダム" @click="react('-random')"><fa :icon="faRandom"/></button>
+		<div v-if="enableEmojiReaction" ref="pickButton">
+			<ui-button @click="pickEmoji">{{ $t('react-emoji') }}</ui-button>
 		</div>
 	</div>
 </div>
@@ -31,8 +26,7 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import anime from 'animejs';
-import { emojiRegex } from '../../../../../misc/emoji-regex';
-import { faRandom } from '@fortawesome/free-solid-svg-icons';
+import EmojiPicker from '../../../desktop/views/components/emoji-picker-dialog.vue';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/reaction-picker.vue'),
@@ -65,7 +59,6 @@ export default Vue.extend({
 
 	data() {
 		return {
-			faRandom,
 			title: this.$t('choose-reaction'),
 			enableEmojiReaction: false,
 			focus: null
@@ -172,19 +165,6 @@ export default Vue.extend({
 			const [x, y, z] = [...([left, top].map(x => parseInt(x.match(/(\d+)/)[1]))), 10002];
 			const vm = this.$root.new(EmojiPicker, { x, y, z });
 			vm.$once('chosen', this.react);
-		},
-
-		async emoji() {
-			const Picker = await import('../../../desktop/views/components/emoji-picker-dialog.vue').then(m => m.default);
-			const button = this.$refs.emoji;
-			const rect = button.getBoundingClientRect();
-			const vm = this.$root.new(Picker, {
-				x: button.offsetWidth + rect.left + window.pageXOffset,
-				y: rect.top + window.pageYOffset
-			});
-			vm.$once('chosen', emoji => {
-				this.react(emoji);
-			});
 		},
 
 		onMouseover(e) {
@@ -339,42 +319,4 @@ export default Vue.extend({
 				&:active
 					background var(--primary)
 					box-shadow inset 0 0.15em 0.3em rgba(27, 31, 35, 0.15)
-
-		> .text
-			display flex
-			justify-content center
-			align-items center
-			width 216px
-
-			> input
-				width 100%
-				padding 10px
-				margin 0
-				font-size 16px
-				color var(--desktopPostFormTextareaFg)
-				background var(--desktopPostFormTextareaBg)
-				outline none
-				border solid 1px var(--primaryAlpha01)
-				border-radius 4px
-				transition border-color .2s ease
-
-				&:hover
-					border-color var(--primaryAlpha02)
-					transition border-color .1s ease
-
-				&:focus
-					border-color var(--primaryAlpha05)
-					transition border-color 0s ease
-
-			> button
-				cursor pointer
-				padding 0 8px
-				margin 0
-				font-size 1em
-				color var(--desktopPostFormTransparentButtonFg)
-				background transparent
-				outline none
-				border solid 1px transparent
-				border-radius 4px
-
 </style>
