@@ -269,14 +269,14 @@ export default Vue.extend({
 
 		> .body
 			padding 8px 0
+			transform-origin top left
 			width 50%
 
 			&.light
 				transform scale(2)
-				transform-origin top left
 
 			&.shade
-				visibility hidden
+				transform scale(0)
 
 			> .cw
 				cursor default
