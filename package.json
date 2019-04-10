@@ -1,7 +1,7 @@
 {
 	"name": "twista",
 	"author": "Acid Chicken (硫酸鶏) <root@acid-chicken.com>",
-	"version": "10.99.0-tf.90",
+	"version": "10.100.0-tf.90",
 	"codename": "seabedhike",
 	"repository": {
 		"type": "git",
@@ -109,7 +109,7 @@
 		"@types/ws": "6.0.1",
 		"@typescript-eslint/parser": "1.5.0",
 		"animejs": "3.0.1",
-		"apexcharts": "3.6.5",
+		"apexcharts": "3.6.2",
 		"async": "2.6.2",
 		"autobind-decorator": "2.4.0",
 		"autosize": "4.0.2",
