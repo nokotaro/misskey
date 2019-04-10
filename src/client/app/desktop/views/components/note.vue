@@ -7,11 +7,11 @@
 	v-hotkey="keymap"
 	:title="title"
 >
+	<mk-renote class="renote" v-if="isRenote" :note="note"/>
 	<x-sub v-for="note in conversation" :key="note.id" :note="note"/>
 	<div class="reply-to" v-if="appearNote.reply && (!$store.getters.isSignedIn || $store.state.settings.showReplyTarget)">
 		<x-sub :note="appearNote.reply"/>
 	</div>
-	<mk-renote class="renote" v-if="isRenote" :note="note"/>
 	<article class="article">
 		<mk-avatar class="avatar" :user="appearNote.user"/>
 		<div class="main">
@@ -28,13 +28,13 @@
 						<mfm v-if="appearNote.text" :text="appearNote.text" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis"/>
 						<a class="rp" v-if="appearNote.renote">RN:</a>
 					</div>
-					<div class="files" v-if="appearNote.files.length > 0">
+					<div class="files" v-if="appearNote.files.length">
 						<mk-media-list :media-list="appearNote.files"/>
 					</div>
 					<mk-poll v-if="appearNote.poll" :note="appearNote" ref="pollViewer"/>
 					<a class="location" v-if="appearNote.geo" :href="`https://maps.google.com/maps?q=${appearNote.geo.coordinates[1]},${appearNote.geo.coordinates[0]}`" target="_blank"><fa :icon="['fal', 'map-marker-alt']"/> 位置情報</a>
 					<div class="renote" v-if="appearNote.renote"><mk-note-preview :note="appearNote.renote"/></div>
-					<mk-url-preview v-for="url in urls" :url="url" :key="url" :compact="compact"/>
+					<mk-url-preview v-for="url in urls" :url="url" :key="url" :mini="mini" :compact="compact"/>
 				</div>
 			</div>
 			<footer v-if="appearNote.deletedAt == null" class="footer">
@@ -43,26 +43,32 @@
 				<button class="replyButton button" @click="reply()" :title="$t('reply')">
 					<template v-if="appearNote.reply"><fa :icon="['fal', 'reply-all']"/></template>
 					<template v-else><fa :icon="['fal', 'reply']"/></template>
-					<p class="count" v-if="appearNote.repliesCount > 0">{{ appearNote.repliesCount }}</p>
+					<p class="count" v-if="appearNote.repliesCount">{{ appearNote.repliesCount }}</p>
 				</button>
+				<!--
+				<button v-if="appearNote.myRenoteId" class="renoteButton button renoted" @click="undoRenote()" title="Undo">
+					<fa :icon="['fal', 'retweet']"/>
+					<p class="count" v-if="appearNote.renoteCount">{{ appearNote.renoteCount }}</p>
+				</button>
+				-->
 				<button v-if="['public', 'home'].includes(appearNote.visibility)" class="renoteButton button" @click="renote()" :title="$t('renote')">
 					<fa :icon="['fal', 'retweet']"/>
-					<p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
+					<p class="count" v-if="appearNote.renoteCount">{{ appearNote.renoteCount }}</p>
 				</button>
 				<button v-else class="inhibitedButton button">
 					<fa :icon="['fal', 'ban']"/>
 				</button>
 				<button v-if="isMyNote" class="inhibitedButton button">
 					<fa :icon="['fal', 'ban']"/>
-					<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
+					<p class="count" v-if="reactionsCount">{{ reactionsCount }}</p>
 				</button>
 				<button v-else-if="appearNote.myReaction" class="reactionButton reacted button" @click="undoReact(appearNote)" ref="reactButton" :title="$t('undo-reaction')">
 					<fa :icon="['fal', 'minus']"/>
-					<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
+					<p class="count" v-if="reactionsCount">{{ reactionsCount }}</p>
 				</button>
 				<button v-else class="reactionButton button" @click="react()" ref="reactButton" :title="$t('add-reaction')">
 					<fa :icon="['fal', 'plus']"/>
-					<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
+					<p class="count" v-if="reactionsCount">{{ reactionsCount }}</p>
 				</button>
 				<button @click="menu()" ref="menuButton" class="button">
 					<fa :icon="['fal', 'ellipsis-h']"/>
@@ -123,6 +129,12 @@ export default Vue.extend({
 			conversation: [],
 			replies: []
 		};
+	},
+
+	computed: {
+		reactionsCount() {
+			return Object.values(this.appearNote.reactionCounts).reduce((a, c) => a + c, 0);
+		}
 	},
 
 	created() {
@@ -240,6 +252,11 @@ export default Vue.extend({
 						color var(--noteText)
 						font-size calc(1em + var(--fontSize))
 
+						&.scroll
+							max-height 200px
+							overflow hidden auto
+							padding 0.5em 0em 0.5em 0.5em
+
 						> .reply
 							margin-right 8px
 							color var(--text)
@@ -304,6 +321,9 @@ export default Vue.extend({
 
 					&.renoteButton:hover
 						color var(--noteActionsRenoteHover)
+
+					&.renoteButton.renoted
+						color var(--primary)
 
 					&.reactionButton:hover
 						color var(--noteActionsReactionHover)

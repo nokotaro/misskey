@@ -3,8 +3,8 @@ import * as tmp from 'tmp';
 import * as fs from 'fs';
 import { serverLogger } from '..';
 import Emoji from '../../models/emoji';
-import { downloadUrl } from '../../misc/donwload-url';
 import { detectMine } from '../../misc/detect-mine';
+import { downloadUrl } from '../../misc/donwload-url';
 
 export default async function(ctx: Koa.BaseContext) {
 	const emoji = await Emoji.findOne({

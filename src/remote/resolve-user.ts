@@ -1,5 +1,5 @@
 import { toUnicode, toASCII } from 'punycode';
-import User, { IUser, IRemoteUser } from '../models/user';
+import User, { IUser, IRemoteUser, isRemoteUser } from '../models/user';
 import webFinger from './webfinger';
 import config from '../config';
 import { createPerson, updatePerson } from './activitypub/models/person';
@@ -72,6 +72,13 @@ export default async (username: string, _host: string, option?: any, resync?: bo
 		return await User.findOne({ uri: self.href });
 	}
 
+	// ユーザーの情報が古かったらついでに更新しておく
+	if (isRemoteUser(user)) {
+		if (user.lastFetchedAt == null || Date.now() - user.lastFetchedAt.getTime() > 1000 * 60 * 60 * 24) {
+			updatePerson(user.uri);
+		}
+	}
+
 	logger.info(`return existing remote user: ${acctLower}`);
 	return user;
 };
@@ -79,8 +86,8 @@ export default async (username: string, _host: string, option?: any, resync?: bo
 async function resolveSelf(acctLower: string) {
 	logger.info(`WebFinger for ${chalk.yellow(acctLower)}`);
 	const finger = await webFinger(acctLower).catch(e => {
-		logger.error(`Failed to WebFinger for ${chalk.yellow(acctLower)}: ${e.message} (${e.status})`);
-		throw e;
+		logger.error(`Failed to WebFinger for ${chalk.yellow(acctLower)}: ${ e.statusCode || e.message }`);
+		throw new Error(`Failed to WebFinger for ${acctLower}: ${ e.statusCode || e.message }`);
 	});
 	const self = finger.links.find(link => link.rel && link.rel.toLowerCase() === 'self');
 	if (!self) {

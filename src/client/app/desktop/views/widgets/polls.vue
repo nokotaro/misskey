@@ -10,13 +10,17 @@
 		</template>
 
 		<div class="mkw-polls--body">
-			<div class="poll" v-if="!fetching && poll != null">
-				<p v-if="poll.text"><router-link :to="poll | notePage">{{ poll.text }}</router-link></p>
-				<p v-if="!poll.text"><router-link :to="poll | notePage"><fa :icon="['fal', 'link']"/></router-link></p>
+			<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+			<div class="poll" v-else-if="poll">
+				<p>
+					<router-link :to="poll | notePage">
+						<misskey-flavored-markdown :text="poll.text" :author="poll.user" :custom-emojis="poll.emojis" v-if="poll.text"/>
+						<fa :icon="['fal', 'link']" v-else/>
+					</router-link>
+				</p>
 				<mk-poll :note="poll"/>
 			</div>
-			<p class="empty" v-if="!fetching && poll == null">{{ $t('nothing') }}</p>
-			<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+			<p class="empty" v-else>{{ $t('nothing') }}</p>
 		</div>
 	</ui-container>
 </div>

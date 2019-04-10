@@ -11,9 +11,9 @@ import NoteReaction from './note-reaction';
 import { packMany as packFileMany, IDriveFile } from './drive-file';
 import Following from './following';
 import Emoji from './emoji';
+import packEmojis from '../misc/pack-emojis';
 import { dbLogger } from '../db/logger';
 import { unique, concat } from '../prelude/array';
-import packEmojis from '../misc/pack-emojis';
 
 const Note = db.get<INote>('notes');
 Note.createIndex('uri', { sparse: true, unique: true });
@@ -381,6 +381,22 @@ export const pack = async (
 				}
 
 				return null;
+			})();
+
+			// Fetch my renote
+			_note.myRenoteId = (async () => {
+				const renote = await Note.findOne({
+					userId: meId,
+					renoteId: _note.id,
+					text: null,
+					poll: null,
+					'fileIds.0': { $exists: false },
+					deletedAt: { $exists: false }
+				}, {
+					_id: 1
+				});
+
+				return renote ? renote._id : null;
 			})();
 		}
 	}

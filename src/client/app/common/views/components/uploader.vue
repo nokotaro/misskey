@@ -35,14 +35,7 @@ export default Vue.extend({
 	methods: {
 		checkExistence(fileData: ArrayBuffer): Promise<any> {
 			return new Promise((resolve, reject) => {
-				const data = new FormData();
-				data.append('md5', getMD5(fileData));
-
-				this.$root.api('drive/files/check_existence', {
-					md5: getMD5(fileData)
-				}).then(resp => {
-					resolve(resp.file);
-				});
+				resolve(null);
 			});
 		},
 

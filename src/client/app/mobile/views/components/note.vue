@@ -6,11 +6,11 @@
 	:class="{ renote: isRenote, smart: $store.state.device.postStyle == 'smart', mini: narrow }"
 	v-hotkey="keymap"
 >
+	<mk-renote class="renote" v-if="isRenote" :note="note"/>
 	<x-sub v-for="note in conversation" :key="note.id" :note="note"/>
 	<div class="reply-to" v-if="appearNote.reply && (!$store.getters.isSignedIn || $store.state.settings.showReplyTarget)">
 		<x-sub :note="appearNote.reply"/>
 	</div>
-	<mk-renote class="renote" v-if="isRenote" :note="note"/>
 	<article class="article">
 		<mk-avatar class="avatar" :user="appearNote.user" v-if="$store.state.device.postStyle != 'smart'"/>
 		<div class="main">
@@ -27,7 +27,7 @@
 						<mfm v-if="appearNote.text" :text="appearNote.text" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis"/>
 						<a class="rp" v-if="appearNote.renote != null">RN:</a>
 					</div>
-					<div class="files" v-if="appearNote.files.length > 0">
+					<div class="files" v-if="appearNote.files.length">
 						<mk-media-list :media-list="appearNote.files"/>
 					</div>
 					<mk-poll v-if="appearNote.poll" :note="appearNote" ref="pollViewer"/>
@@ -42,25 +42,32 @@
 				<button @click="reply()" class="button">
 					<template v-if="appearNote.reply"><fa :icon="['fal', 'reply-all']"/></template>
 					<template v-else><fa :icon="['fal', 'reply']"/></template>
-					<p class="count" v-if="appearNote.repliesCount > 0">{{ appearNote.repliesCount }}</p>
+					<p class="count" v-if="appearNote.repliesCount">{{ appearNote.repliesCount }}</p>
 				</button>
+				<!--
+				<button v-if="appearNote.myRenoteId" @click="undoRenote()" title="Undo" class="button renoted">
+					<fa :icon="['fal', 'retweet']"/>
+					<p class="count" v-if="appearNote.renoteCount">{{ appearNote.renoteCount }}</p>
+				</button>
+				-->
 				<button v-if="['public', 'home'].includes(appearNote.visibility)" @click="renote()" title="Renote" class="button">
-					<fa :icon="['fal', 'retweet']"/><p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
+					<fa :icon="['fal', 'retweet']"/>
+					<p class="count" v-if="appearNote.renoteCount">{{ appearNote.renoteCount }}</p>
 				</button>
 				<button v-else class="button">
 					<fa :icon="['fal', 'ban']"/>
 				</button>
 				<button v-if="isMyNote" class="button">
 					<fa :icon="['fal', 'ban']"/>
-					<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
+					<p class="count" v-if="reactionsCount">{{ reactionsCount }}</p>
 				</button>
 				<button v-else-if="appearNote.myReaction" class="button reacted" @click="undoReact(appearNote)" ref="reactButton">
 					<fa :icon="['fal', 'minus']"/>
-					<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
+					<p class="count" v-if="reactionsCount">{{ reactionsCount }}</p>
 				</button>
 				<button v-else class="button" @click="react()" ref="reactButton">
 					<fa :icon="['fal', 'plus']"/>
-					<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
+					<p class="count" v-if="reactionsCount">{{ reactionsCount }}</p>
 				</button>
 				<button class="button" @click="menu()" ref="menuButton">
 					<fa :icon="['fal', 'ellipsis-h']"/>
@@ -117,6 +124,12 @@ export default Vue.extend({
 			conversation: [],
 			replies: []
 		};
+	},
+
+	computed: {
+		reactionsCount() {
+			return Object.values(this.appearNote.reactionCounts).reduce((a, c) => a + c, 0);
+		}
 	},
 
 	created() {
@@ -229,6 +242,8 @@ export default Vue.extend({
 						padding 0
 						overflow-wrap break-word
 						color var(--noteText)
+						max-height 200px
+						overflow auto
 						font-size calc(1em + var(--fontSize))
 
 						> .reply
@@ -299,6 +314,9 @@ export default Vue.extend({
 						opacity 0.7
 
 					&.reacted
+						color var(--primary)
+
+					&.renoted
 						color var(--primary)
 
 			> .deleted

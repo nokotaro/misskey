@@ -198,7 +198,8 @@ export default Vue.component('misskey-flavored-markdown', {
 						key: Math.random(),
 						props: {
 							url: token.node.props.url,
-							target: '_blank'
+							target: '_blank',
+							trim: true
 						},
 						attrs: {
 							style: 'color:var(--mfmUrl)'
@@ -222,6 +223,7 @@ export default Vue.component('misskey-flavored-markdown', {
 					return [createElement(MkMention, {
 						key: Math.random(),
 						props: {
+							customEmojis: this.customEmojis,
 							host: (token.node.props.host == null && this.author && this.author.host != null ? this.author.host : token.node.props.host) || host,
 							username: token.node.props.username
 						}

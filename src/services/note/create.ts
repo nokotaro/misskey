@@ -1,7 +1,7 @@
 import es from '../../db/elasticsearch';
 import Note, { pack, INote, IChoice } from '../../models/note';
 import User, { isLocalUser, IUser, isRemoteUser, IRemoteUser, ILocalUser } from '../../models/user';
-import { publishMainStream, publishHomeTimelineStream, publishLocalTimelineStream, publishHybridTimelineStream, publishImasTimelineStream, publishImasHybridTimelineStream, publishGlobalTimelineStream, publishUserListStream, publishHashtagStream } from '../stream';
+import { publishMainStream, publishHomeTimelineStream, publishLocalTimelineStream, publishHybridTimelineStream, publishImasTimelineStream, publishImasHybridTimelineStream, publishGlobalTimelineStream, publishUserListStream, publishHashtagStream, publishNoteStream } from '../stream';
 import Following from '../../models/following';
 import { deliver } from '../../queue';
 import renderNote from '../../remote/activitypub/renderer/note';
@@ -31,6 +31,7 @@ import { erase, concat, unique } from '../../prelude/array';
 import insertNoteUnread from './unread';
 import { registerOrFetchInstanceDoc } from '../register-or-fetch-instance-doc';
 import Instance from '../../models/instance';
+import { toASCII } from 'punycode';
 import extractMentions from '../../misc/extract-mentions';
 import extractEmojis from '../../misc/extract-emojis';
 import extractHashtags from '../../misc/extract-hashtags';
@@ -270,6 +271,14 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	// MongoDBのインデックス対象は128文字以上にできない
 	tags = tags.filter(tag => tag.length <= 100);
 
+	const normalizeAsciiHost = (host: string) => {
+		if (host == null) return null;
+		return toASCII(host.toLowerCase());
+	};
+
+	const mentionEmojis = mentionedUsers.map(user => `@${user.usernameLower}` + (user.host != null ? `@${normalizeAsciiHost(user.host)}` : ''));
+	emojis = emojis.concat(mentionEmojis);
+
 	if (data.reply && !user._id.equals(data.reply.userId) && !mentionedUsers.some(u => u._id.equals(data.reply.userId))) {
 		mentionedUsers.push(await User.findOne({ _id: data.reply.userId }));
 	}
@@ -437,6 +446,15 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 		// Publish event
 		if (!user._id.equals(data.renote.userId) && isLocalUser(data.renote._user)) {
 			publishMainStream(data.renote.userId, 'renote', noteObj);
+		}
+
+		// renote対象noteに対してrenotedイベント
+		if (!isQuote(note)) {
+			publishNoteStream(data.renote._id, 'renoted', {
+				renoteeId: user._id,	// renoteした人
+				noteId: note._id,	// renote扱いのNoteId
+				renoteCount: (data.renote.renoteCount || 0) + 1,
+			});
 		}
 	}
 

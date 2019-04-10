@@ -313,25 +313,6 @@ export default Vue.extend({
 			this.$emit('change-uploadings', uploads);
 		},
 
-		setGeo() {
-			if (navigator.geolocation == null) {
-				alert(this.$t('location-alert'));
-				return;
-			}
-
-			navigator.geolocation.getCurrentPosition(pos => {
-				this.geo = pos.coords;
-			}, err => {
-				alert(`%i18n:@error%: ${err.message}`);
-			}, {
-					enableHighAccuracy: true
-				});
-		},
-
-		removeGeo() {
-			this.geo = null;
-		},
-
 		setVisibility() {
 			const w = this.$root.new(MkVisibilityChooser, {
 				source: this.$refs.visibilityButton,

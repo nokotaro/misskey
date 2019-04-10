@@ -398,27 +398,6 @@ export default Vue.extend({
 			//#endregion
 		},
 
-		setGeo() {
-			if (navigator.geolocation == null) {
-				alert(this.$t('geolocation-alert'));
-				return;
-			}
-
-			navigator.geolocation.getCurrentPosition(pos => {
-				this.geo = pos.coords;
-				this.$emit('geo-attached', this.geo);
-			}, err => {
-				alert(`%i18n:@error%: ${err.message}`);
-			}, {
-					enableHighAccuracy: true
-				});
-		},
-
-		removeGeo() {
-			this.geo = null;
-			this.$emit('geo-dettached');
-		},
-
 		setVisibility() {
 			const w = this.$root.new(MkVisibilityChooser, {
 				source: this.$refs.visibilityButton,

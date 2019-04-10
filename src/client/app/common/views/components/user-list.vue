@@ -95,6 +95,7 @@ export default Vue.extend({
 	&.narrow
 		> .user > .body > .name
 			width 100%
+			padding-right 40px
 
 		> .user > .body > .description
 			display none

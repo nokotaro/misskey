@@ -46,6 +46,14 @@ export const meta = {
 			}
 		},
 
+		excludeSfw: {
+			validator: $.optional.bool,
+			default: false,
+			desc: {
+				'ja-JP': 'true にすると、NSFW指定されてないファイルを除外します(fileTypeが指定されている場合のみ有効)'
+			}
+		},
+
 		limit: {
 			validator: $.optional.num.range(1, 100),
 			default: 10
@@ -67,6 +75,30 @@ export const meta = {
 
 		untilDate: {
 			validator: $.optional.num,
+		},
+
+		includeMyRenotes: {
+			validator: $.optional.bool,
+			default: true,
+			desc: {
+				'ja-JP': '自分の行ったRenoteを含めるかどうか'
+			}
+		},
+
+		includeRenotedMyNotes: {
+			validator: $.optional.bool,
+			default: true,
+			desc: {
+				'ja-JP': 'Renoteされた自分の投稿を含めるかどうか'
+			}
+		},
+
+		includeLocalRenotes: {
+			validator: $.optional.bool,
+			default: true,
+			desc: {
+				'ja-JP': 'Renoteされたローカルの投稿を含めるかどうか'
+			}
 		},
 	},
 
@@ -103,6 +135,8 @@ export default define(meta, async (ps, user) => {
 	};
 
 	const query = {
+		$and: [ {} ],
+
 		deletedAt: null,
 
 		// public only
@@ -129,6 +163,53 @@ export default define(meta, async (ps, user) => {
 		};
 	}
 
+	if (ps.includeMyRenotes === false) {
+		query.$and.push({
+			$or: [{
+				userId: { $ne: user._id }
+			}, {
+				renoteId: null
+			}, {
+				text: { $ne: null }
+			}, {
+				fileIds: { $ne: [] }
+			}, {
+				poll: { $ne: null }
+			}]
+		});
+	}
+
+	if (ps.includeRenotedMyNotes === false) {
+		query.$and.push({
+			$or: [{
+				'_renote.userId': { $ne: user._id }
+			}, {
+				renoteId: null
+			}, {
+				text: { $ne: null }
+			}, {
+				fileIds: { $ne: [] }
+			}, {
+				poll: { $ne: null }
+			}]
+		});
+	}
+
+	if (ps.includeLocalRenotes === false) {
+		query.$and.push({
+			$or: [{
+				'_renote.user.host': { $ne: null }
+			}, {
+				renoteId: null
+			}, {
+				text: { $ne: null }
+			}, {
+				fileIds: { $ne: [] }
+			}, {
+				poll: { $ne: null }
+			}]
+		});
+	}
 	const withFiles = ps.withFiles != null ? ps.withFiles : ps.mediaOnly;
 
 	if (withFiles) {
@@ -146,6 +227,10 @@ export default define(meta, async (ps, user) => {
 			query['_files.metadata.isSensitive'] = {
 				$ne: true
 			};
+		}
+
+		if (ps.excludeSfw) {
+			query['_files.metadata.isSensitive'] = true;
 		}
 	}
 

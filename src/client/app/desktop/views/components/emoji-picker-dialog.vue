@@ -16,16 +16,18 @@ export default Vue.extend({
 	props: {
 		x: {
 			type: Number,
-			required: true
+			required: false,
+			default: 0
 		},
 		y: {
 			type: Number,
-			required: true
+			required: false,
+			default: 0
 		},
 		z: {
 			type: Number,
 			required: false,
-			default: 3000
+			default: 13000
 		},
 		w: {
 			type: String,

@@ -30,6 +30,7 @@ export default Vue.extend({
 			faNewspaper,
 			makePromise: cursor => this.$root.api('notes/featured', {
 				limit: 30,
+				days: 7,
 			}).then(notes => {
 				notes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 				return notes;

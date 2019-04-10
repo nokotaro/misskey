@@ -41,6 +41,8 @@ export type Source = {
 
 	proxy?: string;
 
+	proxyProxy?: string;
+
 	accesslog?: string;
 
 	clusterLimit?: number;

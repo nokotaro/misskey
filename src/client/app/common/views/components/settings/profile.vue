@@ -115,7 +115,6 @@
 	<section>
 		<details>
 			<summary>{{ $t('danger-zone') }}</summary>
-			<ui-button @click="deleteAccount()">{{ $t('delete-account') }}</ui-button>
 		</details>
 	</section>
 </ui-card>

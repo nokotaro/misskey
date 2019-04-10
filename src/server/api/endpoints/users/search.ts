@@ -1,7 +1,9 @@
 import $ from 'cafy';
 import * as escapeRegexp from 'escape-regexp';
-import User, { pack, validateUsername, IUser } from '../../../../models/user';
+import User, { pack, validateUsername, IUser, isRemoteUser } from '../../../../models/user';
 import define from '../../define';
+import { toDbHost } from '../../../../misc/convert-host';
+import { updatePerson } from '../../../../remote/activitypub/models/person';
 
 export const meta = {
 	desc: {
@@ -63,6 +65,7 @@ export const meta = {
 
 export default define(meta, async (ps, me) => {
 	const isUsername = validateUsername(ps.query.replace('@', ''), !ps.localOnly);
+	const isHostname = ps.query.replace('@', '').match(/\./) != null;
 
 	let users: IUser[] = [];
 
@@ -89,7 +92,28 @@ export default define(meta, async (ps, me) => {
 
 			users = users.concat(otherUsers);
 		}
+	} else if (isHostname) {
+		users = await User
+		.find({
+			host: toDbHost(ps.query.replace('@', '')),
+			isSuspended: { $ne: true }
+		}, {
+			limit: ps.limit - users.length
+		});
 	}
+
+	// ついでにバックグラウンドでリモートユーザー情報を更新しておく
+	updateUsers(users);
 
 	return await Promise.all(users.map(user => pack(user, me, { detail: ps.detail })));
 });
+
+async function updateUsers(users: IUser[]) {
+	for (const user of users) {
+		if (isRemoteUser(user)) {
+			if (user.lastFetchedAt == null || Date.now() - user.lastFetchedAt.getTime() > 1000 * 60 * 60 * 24 * 30) {	// 30days
+				await updatePerson(user.uri).catch(() => {});
+			}
+		}
+	}
+}

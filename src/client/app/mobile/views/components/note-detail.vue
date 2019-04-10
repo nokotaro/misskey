@@ -9,13 +9,13 @@
 		<template v-if="!conversationFetching"><fa :icon="['fal', 'ellipsis-v']"/></template>
 		<template v-if="conversationFetching"><fa :icon="['fal', 'spinner']" pulse/></template>
 	</button>
+	<mk-renote class="renote" v-if="isRenote" :note="note" mini/>
 	<div class="conversation">
 		<x-sub v-for="note in conversation" :key="note.id" :note="note"/>
 	</div>
 	<div class="reply-to" v-if="appearNote.reply">
 		<x-sub :note="appearNote.reply"/>
 	</div>
-	<mk-renote class="renote" v-if="isRenote" :note="note" mini/>
 	<article>
 		<header>
 			<mk-avatar class="avatar" :user="appearNote.user"/>
@@ -35,7 +35,7 @@
 					<span v-if="appearNote.deletedAt" style="opacity:.5">({{ $t('deleted') }})</span>
 					<mfm v-if="appearNote.text" :text="appearNote.text" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis"/>
 				</div>
-				<div class="files" v-if="appearNote.files.length > 0">
+				<div class="files" v-if="appearNote.files.length">
 					<mk-media-list :media-list="appearNote.files" :raw="true"/>
 				</div>
 				<mk-poll v-if="appearNote.poll" :note="appearNote"/>
@@ -63,26 +63,32 @@
 			<button @click="reply()" :title="$t('title')">
 				<template v-if="appearNote.reply"><fa :icon="['fal', 'reply-all']"/></template>
 				<template v-else><fa :icon="['fal', 'reply']"/></template>
-				<p class="count" v-if="appearNote.repliesCount > 0">{{ appearNote.repliesCount }}</p>
+				<p class="count" v-if="appearNote.repliesCount">{{ appearNote.repliesCount }}</p>
 			</button>
+			<!--
+			<button v-if="appearNote.myRenoteId != null" @click="undoRenote()" title="Undo" class="renoted">
+				<fa :icon="['fal', 'retweet']"/>
+				<p class="count" v-if="appearNote.renoteCount">{{ appearNote.renoteCount }}</p>
+			</button>
+			-->
 			<button v-if="['public', 'home'].includes(appearNote.visibility)" @click="renote()" title="Renote">
 				<fa :icon="['fal', 'retweet']"/>
-				<p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
+				<p class="count" v-if="appearNote.renoteCount">{{ appearNote.renoteCount }}</p>
 			</button>
 			<button v-else>
 				<fa :icon="['fal', 'ban']"/>
 			</button>
 			<button v-if="isMyNote" class="reactionButton self">
 				<fa :icon="['fal', 'ban']"/>
-				<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
+				<p class="count" v-if="reactionsCount">{{ reactionsCount }}</p>
 			</button>
 			<button v-else-if="appearNote.myReaction" class="reactionButton reacted" @click="undoReact(appearNote)" ref="reactButton">
 				<fa :icon="['fal', 'minus']"/>
-				<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
+				<p class="count" v-if="reactionsCount">{{ reactionsCount }}</p>
 			</button>
 			<button v-else class="reactionButton" @click="react()" ref="reactButton">
 				<fa :icon="['fal', 'plus']"/>
-				<p class="count" v-if="Object.values(appearNote.reactionCounts).some(x => x)">{{ Object.values(appearNote.reactionCounts).reduce((a, c) => a + c, 0) }}</p>
+				<p class="count" v-if="reactionsCount">{{ reactionsCount }}</p>
 			</button>
 			<button @click="menu()" ref="menuButton">
 				<fa :icon="['fal', 'ellipsis-h']"/>
@@ -127,6 +133,12 @@ export default Vue.extend({
 			conversationFetching: false,
 			replies: []
 		};
+	},
+
+	computed: {
+		reactionsCount() {
+			return Object.values(this.appearNote.reactionCounts).reduce((a, c) => a + c, 0);
+		}
 	},
 
 	watch: {
@@ -354,6 +366,9 @@ export default Vue.extend({
 					opacity 0.7
 
 				&.reacted
+					color var(--primary)
+
+				&.renoted
 					color var(--primary)
 
 	> .replies

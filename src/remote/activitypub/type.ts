@@ -33,13 +33,43 @@ export interface IActivity extends IObject {
 export interface ICollection extends IObject {
 	type: 'Collection';
 	totalItems: number;
-	items: IObject | string | IObject[] | string[];
+	items?: IObject | string | IObject[] | string[];
+	current?: ICollectionPage;
+	first?: ICollectionPage;
+	last?: ICollectionPage;
+}
+
+export interface ICollectionPage extends IObject {
+	type: 'CollectionPage';
+	totalItems: number;
+	items?: IObject | string | IObject[] | string[];
+	current?: ICollectionPage;
+	first?: ICollectionPage;
+	last?: ICollectionPage;	partOf: string;
+	next?: ICollectionPage;
+	prev?: ICollectionPage;
 }
 
 export interface IOrderedCollection extends IObject {
 	type: 'OrderedCollection';
 	totalItems: number;
-	orderedItems: IObject | string | IObject[] | string[];
+	orderedItems?: IObject | string | IObject[] | string[];
+	current?: IOrderedCollectionPage;
+	first?: IOrderedCollectionPage;
+	last?: IOrderedCollectionPage;
+}
+
+export interface IOrderedCollectionPage extends IObject {
+	type: 'OrderedCollectionPage';
+	totalItems: number;
+	orderedItems?: IObject | string | IObject[] | string[];
+	current?: IOrderedCollectionPage;
+	first?: IOrderedCollectionPage;
+	last?: IOrderedCollectionPage;
+	partOf: string;
+	next?: IOrderedCollectionPage;
+	prev?: IOrderedCollectionPage;
+	startIndex?: number;
 }
 
 export interface INote extends IObject {
@@ -157,6 +187,8 @@ export interface IBlock extends IActivity {
 export type Object =
 	ICollection |
 	IOrderedCollection |
+	ICollectionPage |
+	IOrderedCollectionPage |
 	ICreate |
 	IDelete |
 	IUpdate |
