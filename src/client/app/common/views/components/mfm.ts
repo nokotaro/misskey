@@ -114,7 +114,7 @@ export default Vue.component('misskey-flavored-markdown', {
 				case 'small': {
 					return [createElement('small', {
 						attrs: {
-							style: 'font-size:calc(.75em + var(--fontSize) * .75);opacity:0.7'
+							style: 'font-size:calc(.75em + var(--fontSize)*.75);opacity:0.7'
 						},
 					}, genEl(token.children))];
 				}
@@ -180,7 +180,7 @@ export default Vue.component('misskey-flavored-markdown', {
 						attrs: {
 							style: (this.$store.state.settings.disableAnimatedMfm || isLong || isMany) ?
 								'display:inline-block' :
-								'display:inline-block;animation:jump 0.75s linear infinite'
+								'display:inline-block;animation:jump .75s linear infinite'
 						},
 					}, genEl(token.children));
 				}
