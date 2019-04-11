@@ -7,17 +7,23 @@ const text = `みなさん ! おはようございまーっす♪
 今日も一日、元気いっぱいがんばろー !
 #双葉杏bot`;
 
-const sevenOClock = (date: Date) => (date.setHours(7, 0, 0, 0), date);
+const requestCreate = (date: Date) => (date.setHours(7, 0, 0, 0), date.getTime() === (lastCreatedAt && lastCreatedAt.getTime())) ?
+	Promise.reject() :
+	Promise.resolve(lastCreatedAt = date);
+
+let lastCreatedAt: Date = null;
 
 export default function() {
-	scheduleJob('futaba-anzu-bot', { hour: 7 }, date => fetchMeta()
+	scheduleJob('futaba-anzu-bot', {
+		hour: 7,
+		minute: 0,
+		second: 0,
+	}, date => fetchMeta()
 		.then(meta => User.findOne({
 			usernameLower: meta.futabaAnzuBotAccount.toLowerCase(),
 			host: null
 		}))
 		.then(user => user || Promise.reject<IUser>('Anzu bot not found.'))
-		.then(user => create(user, {
-			createdAt: sevenOClock(date),
-			text
-		})));
+		.then(user => requestCreate(date)
+			.then(createdAt => create(user, { createdAt, text }))));
 }
