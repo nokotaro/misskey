@@ -6,11 +6,11 @@
 			<div class="buttons">
 				<a class="quote" v-if="!quote" @click="onQuote">{{ $t('quote') }}</a>
 				<ui-button class="button cancel" inline @click="cancel">{{ $t('cancel') }}</ui-button>
-				<ui-button class="button ok"   inline :primary="visibility == 'public'" @click="ok('public')" :disabled="wait">
-					<fa icon="globe"/> {{ 'Renote' }}
-				</ui-button>
 				<ui-button class="button home" inline :primary="visibility == 'home'"   @click="ok('home')"   :disabled="wait">
-					<fa icon="home"/> {{ 'Renote' }}
+					<fa :icon="['fal', 'home']"/> {{ 'Renote' }}
+				</ui-button>
+				<ui-button class="button ok"   inline :primary="visibility == 'public'" @click="ok('public')" :disabled="wait">
+					<fa :icon="['fal', 'globe']"/> {{ 'Renote' }}
 				</ui-button>
 			</div>
 		</footer>
@@ -39,7 +39,7 @@ export default Vue.extend({
 		return {
 			wait: false,
 			quote: false,
-			visibility: 'home'
+			visibility: 'public'
 		};
 	},
 
