@@ -6,12 +6,12 @@
 	@drop.stop="onDrop"
 >
 	<div class="content">
-		<div v-if="visibility == 'specified'" class="visibleUsers">
+		<div v-if="visibility == 'specified'" class="visible-users">
 			<span class="title">
 				<fa :icon="['fal', 'user-friends']" class="ako"/>
 				<span>{{ $t('@.send-to') }}</span>
 			</span>
-			<a class="visibleUser" @click="removeVisibleUser(u)" v-for="u in visibleUsers">
+			<a class="visible-user" @click="removeVisibleUser(u)" v-for="u in visibleUsers">
 				<div><fa :icon="['fal', 'user-minus']" fixed-width/></div>
 				<span>
 					<mk-avatar :user="u"/>
@@ -705,7 +705,7 @@ export default Vue.extend({
 				border-radius 0 0 4px 4px
 				transition border-color .3s ease
 
-		> .visibleUsers
+		> .visible-users
 			align-items center
 			display flex
 			flex-flow wrap
@@ -725,7 +725,7 @@ export default Vue.extend({
 				> span
 					vertical-align 4px
 
-			> .visibleUser
+			> .visible-user
 				align-items center
 				border solid 1px
 				border-radius 16px
