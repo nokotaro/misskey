@@ -26,5 +26,4 @@ export default Vue.extend({
 		font-size 1.5em
 		font-weight 600
 		color var(--text)
-
 </style>

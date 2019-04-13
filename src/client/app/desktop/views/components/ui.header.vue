@@ -157,5 +157,4 @@ export default Vue.extend({
 					@media (max-width 1100px)
 						> .clock
 							display none
-
 </style>

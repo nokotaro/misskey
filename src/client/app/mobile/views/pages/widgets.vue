@@ -182,5 +182,4 @@ main
 
 			> *
 				pointer-events none
-
 </style>

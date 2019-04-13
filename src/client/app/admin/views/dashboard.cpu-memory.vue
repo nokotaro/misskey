@@ -181,5 +181,4 @@ export default Vue.extend({
 			&:first-child
 				margin-right 0
 				margin-bottom 26px
-
 </style>

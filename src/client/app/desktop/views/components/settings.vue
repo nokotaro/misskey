@@ -88,5 +88,4 @@ export default Vue.extend({
 		flex auto
 		overflow auto
 		background var(--bg)
-
 </style>

@@ -467,5 +467,4 @@ export default Vue.extend({
 			display inline-block
 			margin 0 8px
 			min-width 70px
-
 </style>

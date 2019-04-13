@@ -69,5 +69,4 @@ export default Vue.extend({
 		margin 0
 		line-height 64px
 		text-align center
-
 </style>

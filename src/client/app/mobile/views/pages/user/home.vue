@@ -60,5 +60,4 @@ export default Vue.extend({
 
 		@media (min-width 500px)
 			margin 0 0 16px 0
-
 </style>

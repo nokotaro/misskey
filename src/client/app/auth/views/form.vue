@@ -140,5 +140,4 @@ export default Vue.extend({
 		> header
 			> h1
 				font-size 16px
-
 </style>

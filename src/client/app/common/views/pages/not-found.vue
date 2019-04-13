@@ -61,5 +61,4 @@ export default Vue.extend({
 
 		> figcaption
 			text-align center
-
 </style>

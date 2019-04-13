@@ -49,5 +49,4 @@ export default Vue.extend({
 	> a
 		display block
 		padding-bottom 16px
-
 </style>

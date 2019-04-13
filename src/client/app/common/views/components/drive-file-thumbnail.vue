@@ -183,5 +183,4 @@ export default Vue.extend({
 			max-width 100%
 			height 100%
 			object-fit contain
-
 </style>

@@ -121,5 +121,4 @@ export default Vue.extend({
 
 			&:hover
 				color var(--desktopTimelineSrcHover)
-
 </style>

@@ -166,5 +166,4 @@ export default define({
 			opacity 0.7
 			font-size 12px
 			color var(--text)
-
 </style>

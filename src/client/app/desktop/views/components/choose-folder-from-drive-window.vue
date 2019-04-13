@@ -52,5 +52,4 @@ export default Vue.extend({
 		padding 16px
 		background var(--desktopPostFormBg)
 		text-align right
-
 </style>

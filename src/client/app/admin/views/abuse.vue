@@ -79,5 +79,4 @@ export default Vue.extend({
 .haexwsjc
 	padding-bottom 16px
 	border-bottom solid 1px var(--faceDivider)
-
 </style>

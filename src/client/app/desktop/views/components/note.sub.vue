@@ -107,5 +107,4 @@ export default Vue.extend({
 					pre
 						max-height 120px
 						font-size 80%
-
 </style>

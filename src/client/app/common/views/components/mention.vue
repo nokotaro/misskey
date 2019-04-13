@@ -81,5 +81,4 @@ export default Vue.extend({
 	> .main
 		> .host.fade
 			opacity 0.5
-
 </style>

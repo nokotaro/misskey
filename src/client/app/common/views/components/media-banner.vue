@@ -94,5 +94,4 @@ export default Vue.extend({
 		.audio
 			display block
 			width 100%
-
 </style>

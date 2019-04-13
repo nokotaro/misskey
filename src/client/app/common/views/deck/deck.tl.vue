@@ -176,5 +176,4 @@ export default Vue.extend({
 
 		&.desc
 			font-size 14px
-
 </style>

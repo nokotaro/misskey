@@ -171,5 +171,4 @@ export default Vue.extend({
 			max-width 200px
 			text-align center
 			border-top dashed 1px #c4cdd4
-
 </style>

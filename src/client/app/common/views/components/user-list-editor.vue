@@ -151,5 +151,4 @@ export default Vue.extend({
 				> .username
 					margin-left 8px
 					opacity 0.7
-
 </style>

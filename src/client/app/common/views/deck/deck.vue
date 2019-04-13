@@ -416,5 +416,4 @@ export default Vue.extend({
 
 		&:active
 			color var(--faceTextButtonActive)
-
 </style>

@@ -335,5 +335,4 @@ export default Vue.extend({
 .zoom-in-top-leave-active {
 	transform-origin: center -16px;
 }
-
 </style>

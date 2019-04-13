@@ -352,5 +352,4 @@ export default define({
 			&:active
 				background var(--primaryDarken10) !important
 				transition background 0s ease
-
 </style>

@@ -132,5 +132,4 @@ export default Vue.extend({
 			max-height 350px
 			font-size 1rem
 			overflow auto
-
 </style>

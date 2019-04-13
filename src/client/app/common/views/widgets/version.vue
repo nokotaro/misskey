@@ -26,5 +26,4 @@ p
 	font-size 0.7em
 	color var(--text)
 	opacity 0.8
-
 </style>

@@ -65,5 +65,4 @@ export default Vue.extend({
 			font-size 10px
 			color var(--notificationIndicator)
 			animation blink 1s infinite
-
 </style>

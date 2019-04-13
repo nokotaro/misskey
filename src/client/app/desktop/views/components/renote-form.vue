@@ -235,5 +235,4 @@ export default Vue.extend({
 			> .button
 				display block
 				margin 4px
-
 </style>

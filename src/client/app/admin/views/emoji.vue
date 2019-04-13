@@ -176,5 +176,4 @@ export default Vue.extend({
 
 		@media (min-width 500px)
 			padding-left 16px
-
 </style>

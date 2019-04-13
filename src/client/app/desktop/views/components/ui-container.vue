@@ -128,5 +128,4 @@ export default Vue.extend({
 				padding 8px 6px
 				font-size 14px
 				color var(--text)
-
 </style>

@@ -240,5 +240,4 @@ export default Vue.extend({
 
 	> .content
 		z-index 1
-
 </style>

@@ -41,8 +41,6 @@ export default Vue.extend({
 </script>
 
 <style lang="stylus" scoped>
-
-
 .mk-connect-failed
 	width 100%
 	padding 32px 18px
@@ -100,6 +98,5 @@ export default Vue.extend({
 
 		> img
 			height 150px
-
 </style>
 

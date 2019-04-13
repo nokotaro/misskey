@@ -868,5 +868,4 @@ export default Vue.extend({
 		height 100%
 		border dashed 2px var(--primaryAlpha05)
 		pointer-events none
-
 </style>

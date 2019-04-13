@@ -306,5 +306,4 @@ export default Vue.extend({
 .xvvuvgsv
 	> b
 		margin-right 16px
-
 </style>

@@ -56,6 +56,5 @@ export default Vue.extend({
 
 .browser
 	height 100%
-
 </style>
 

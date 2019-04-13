@@ -335,5 +335,4 @@ export default Vue.extend({
 
 		> .ext
 			opacity 0.5
-
 </style>

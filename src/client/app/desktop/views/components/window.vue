@@ -616,5 +616,4 @@ export default Vue.extend({
 	&:not([flexible])
 		> .main > .body > .content
 			height calc(100% - 40px)
-
 </style>

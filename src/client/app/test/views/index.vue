@@ -78,5 +78,4 @@ export default Vue.extend({
 main
 	max-width 700px
 	margin 0 auto
-
 </style>

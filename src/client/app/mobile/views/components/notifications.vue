@@ -180,5 +180,4 @@ export default Vue.extend({
 	> .placeholder
 		padding 32px
 		opacity 0.3
-
 </style>

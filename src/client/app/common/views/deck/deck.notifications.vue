@@ -232,5 +232,4 @@ export default Vue.extend({
 		padding 16px
 		text-align center
 		color var(--text)
-
 </style>

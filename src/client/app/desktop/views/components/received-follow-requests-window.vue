@@ -66,5 +66,4 @@ export default Vue.extend({
 
 		> span
 			margin 0 0 0 auto
-
 </style>

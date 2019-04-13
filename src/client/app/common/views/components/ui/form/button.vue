@@ -77,5 +77,4 @@ export default Vue.extend({
 	&.round
 		> button
 			border-radius 64px
-
 </style>

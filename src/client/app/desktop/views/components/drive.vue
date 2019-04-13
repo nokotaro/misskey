@@ -774,5 +774,4 @@ export default Vue.extend({
 
 	> input
 		display none
-
 </style>

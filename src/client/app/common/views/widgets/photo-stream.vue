@@ -121,5 +121,4 @@ export default define({
 
 	> [data-icon]
 		margin-right 4px
-
 </style>

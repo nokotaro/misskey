@@ -139,5 +139,4 @@ export default Vue.extend({
 				color inherit
 				line-height $height
 				border-left solid 1px rgba(#000, 0.1)
-
 </style>

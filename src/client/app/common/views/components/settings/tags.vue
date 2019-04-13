@@ -63,5 +63,4 @@ export default Vue.extend({
 
 	> .add
 		margin-top 16px
-
 </style>

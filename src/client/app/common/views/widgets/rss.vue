@@ -112,5 +112,4 @@ export default define({
 
 					&:nth-child(even)
 						background rgba(#000, 0.05)
-
 </style>

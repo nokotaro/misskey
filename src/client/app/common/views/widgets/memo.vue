@@ -101,5 +101,4 @@ export default define({
 			&:disabled
 				opacity 0.7
 				cursor default
-
 </style>

@@ -152,5 +152,4 @@ export default Vue.extend({
 
 		&, *
 			color var(--primaryForeground) !important
-
 </style>

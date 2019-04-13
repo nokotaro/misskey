@@ -239,5 +239,4 @@ export default Vue.extend({
 
 				> span:last-child:not(:first-child)
 					opacity 0.6
-
 </style>

@@ -144,5 +144,4 @@ export default Vue.extend({
 			&:not(.success)
 				> b
 					color #ad4339
-
 </style>

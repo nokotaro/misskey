@@ -449,5 +449,4 @@ export default Vue.extend({
 
 					> .avatar
 						margin 0 12px 0 0
-
 </style>

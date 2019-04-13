@@ -306,5 +306,4 @@ export default Vue.extend({
 				display block
 				margin 16px 0 0 0
 				opacity 0.7
-
 </style>

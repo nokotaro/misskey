@@ -241,5 +241,4 @@ root(fill)
 
 		&, *
 			cursor not-allowed !important
-
 </style>

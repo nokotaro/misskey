@@ -29,5 +29,4 @@ export default define({
 .mkw-analog-clock
 	.mkw-analog-clock--body
 		padding 8px
-
 </style>

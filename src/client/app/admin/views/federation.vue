@@ -506,5 +506,4 @@ export default Vue.extend({
 
 		&:first-child
 			min-width 200px
-
 </style>

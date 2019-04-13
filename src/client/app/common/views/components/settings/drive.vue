@@ -173,5 +173,4 @@ export default Vue.extend({
 
 	> p
 		margin 0
-
 </style>

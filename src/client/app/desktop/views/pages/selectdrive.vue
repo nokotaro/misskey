@@ -59,8 +59,6 @@ export default Vue.extend({
 </script>
 
 <style lang="stylus" scoped>
-
-
 .mkp-selectdrive
 	display block
 	position fixed
@@ -179,5 +177,4 @@ export default Vue.extend({
 			&:active
 				background #ececec
 				border-color #dcdcdc
-
 </style>

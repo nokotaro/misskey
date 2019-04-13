@@ -126,5 +126,4 @@ export default Vue.extend({
 				left -5px
 				border 2px solid var(--primaryAlpha03)
 				border-radius 8px
-
 </style>

@@ -73,5 +73,4 @@ export default Vue.extend({
 		content ""
 		display block
 		clear both
-
 </style>

@@ -382,5 +382,4 @@ export default Vue.extend({
 	> .replies
 		> *
 			border-top 1px solid var(--faceDivider)
-
 </style>

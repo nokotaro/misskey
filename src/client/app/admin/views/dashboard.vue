@@ -284,5 +284,4 @@ export default Vue.extend({
 
 	> .cpu-memory
 		margin-bottom 16px
-
 </style>

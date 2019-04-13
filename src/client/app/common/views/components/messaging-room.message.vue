@@ -265,5 +265,4 @@ export default Vue.extend({
 	&[data-is-deleted]
 		> .balloon
 			opacity 0.5
-
 </style>

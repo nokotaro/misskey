@@ -58,5 +58,4 @@ main
 	@media (min-width 500px)
 		> * > .post
 			margin-bottom 16px
-
 </style>

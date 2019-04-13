@@ -101,5 +101,4 @@ export default Vue.extend({
 
 			[data-icon]
 				margin-right 0
-
 </style>

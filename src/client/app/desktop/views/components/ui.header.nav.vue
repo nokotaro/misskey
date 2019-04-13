@@ -137,5 +137,4 @@ export default Vue.extend({
 
 				@media (max-width 700px)
 					padding 0 12px
-
 </style>

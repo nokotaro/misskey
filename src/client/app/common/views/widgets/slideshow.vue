@@ -161,5 +161,4 @@ export default define({
 
 			&.b
 				opacity 0
-
 </style>

@@ -343,5 +343,4 @@ export default Vue.extend({
 			> .deleted
 				color var(--noteText)
 				opacity 0.7
-
 </style>

@@ -301,5 +301,4 @@ export default Vue.extend({
 
 	input[type=file]
 		display none
-
 </style>

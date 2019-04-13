@@ -502,5 +502,4 @@ export default Vue.extend({
 							> p
 								display block
 								margin 0
-
 </style>

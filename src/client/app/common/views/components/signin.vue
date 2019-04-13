@@ -103,5 +103,4 @@ export default Vue.extend({
 		background-position center
 		background-size cover
 		border-radius 100%
-
 </style>

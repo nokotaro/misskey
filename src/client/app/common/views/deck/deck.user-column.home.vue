@@ -227,5 +227,4 @@ export default Vue.extend({
 		background-size cover
 		background-clip content-box
 		border-radius 4px
-
 </style>

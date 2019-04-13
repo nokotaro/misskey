@@ -293,5 +293,4 @@ export default Vue.extend({
 	&.isMobile
 		> main
 			padding $headerHeight 0 0 0
-
 </style>

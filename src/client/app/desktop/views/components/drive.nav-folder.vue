@@ -114,5 +114,4 @@ export default Vue.extend({
 
 	i.cloud
 		margin-right 4px
-
 </style>

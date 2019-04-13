@@ -105,5 +105,4 @@ export default Vue.extend({
 		padding 0
 		width 256px
 		background #899492
-
 </style>

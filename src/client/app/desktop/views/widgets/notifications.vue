@@ -36,5 +36,4 @@ export default define({
 .notifications
 	max-height 300px
 	overflow auto
-
 </style>

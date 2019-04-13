@@ -72,5 +72,4 @@ export default Vue.extend({
 
 				&:last-child
 					margin-bottom 0 !important
-
 </style>

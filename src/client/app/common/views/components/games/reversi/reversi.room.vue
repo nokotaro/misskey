@@ -351,5 +351,4 @@ export default Vue.extend({
 
 		> .status
 			margin 0 0 16px 0
-
 </style>

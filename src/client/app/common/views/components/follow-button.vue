@@ -198,5 +198,4 @@ export default Vue.extend({
 
 	*
 		pointer-events none
-
 </style>

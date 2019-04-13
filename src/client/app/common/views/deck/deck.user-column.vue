@@ -262,5 +262,4 @@ export default Vue.extend({
 						display block
 						font-size 80%
 						opacity 0.7
-
 </style>

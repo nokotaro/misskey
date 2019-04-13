@@ -51,5 +51,4 @@ export default define({
 	.mk-messaging
 		max-height 250px
 		overflow auto
-
 </style>

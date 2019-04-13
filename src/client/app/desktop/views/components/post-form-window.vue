@@ -104,5 +104,4 @@ export default Vue.extend({
 	.mk-post-form-window--body
 		.notePreview
 				margin 16px 22px
-
 </style>

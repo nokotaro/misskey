@@ -104,5 +104,4 @@ export default Vue.extend({
 
 		&.debug
 			opacity 0.7
-
 </style>

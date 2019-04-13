@@ -104,5 +104,4 @@ svg
 	padding 10px
 	width 100%
 	cursor all-scroll
-
 </style>

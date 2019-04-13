@@ -82,5 +82,4 @@ export default Vue.extend({
 		padding 16px
 		border solid 1px var(--faceDivider)
 		border-radius 4px
-
 </style>

@@ -83,5 +83,4 @@ main
 		text-align center
 		color var(--text)
 		opacity 0.7
-
 </style>

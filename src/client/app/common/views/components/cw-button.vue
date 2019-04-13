@@ -66,5 +66,4 @@ export default Vue.extend({
 			content '('
 		&:after
 			content ')'
-
 </style>

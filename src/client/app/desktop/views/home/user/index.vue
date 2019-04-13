@@ -87,5 +87,4 @@ export default Vue.extend({
 	> .main
 		> .header
 			margin-bottom 16px
-
 </style>

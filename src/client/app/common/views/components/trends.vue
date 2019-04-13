@@ -96,5 +96,4 @@ export default Vue.extend({
 
 			> .chart
 				height 30px
-
 </style>

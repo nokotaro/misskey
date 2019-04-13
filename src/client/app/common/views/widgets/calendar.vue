@@ -198,5 +198,4 @@ export default define({
 				&:nth-child(3)
 					> .meter > .val
 						background #41ddde
-
 </style>

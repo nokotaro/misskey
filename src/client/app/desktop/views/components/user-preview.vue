@@ -161,5 +161,4 @@ export default Vue.extend({
 		position absolute
 		top 8px
 		right 8px
-
 </style>

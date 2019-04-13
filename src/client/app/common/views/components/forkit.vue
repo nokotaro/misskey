@@ -19,7 +19,6 @@ export default Vue.extend({
 });
 </script>
 
-
 <style lang="stylus" scoped>
 .a
 	display block
@@ -45,5 +44,4 @@ export default Vue.extend({
 			transform rotate(-25deg)
 		40%, 80%
 			transform rotate(10deg)
-
 </style>

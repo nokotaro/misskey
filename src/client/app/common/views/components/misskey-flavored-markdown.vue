@@ -79,5 +79,4 @@ export default Vue.extend({
 
 	>>> pre code
 		font-size 80%
-
 </style>

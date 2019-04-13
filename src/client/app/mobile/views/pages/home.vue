@@ -240,7 +240,6 @@ main
 						margin-left 6px
 						font-size 10px
 						color var(--notificationIndicator)
-
 </style>
 
 <style lang="stylus" module>
@@ -253,5 +252,4 @@ main
 	font-size 10px
 	color var(--notificationIndicator)
 	vertical-align middle
-
 </style>

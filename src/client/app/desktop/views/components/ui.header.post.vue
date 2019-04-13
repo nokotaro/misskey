@@ -50,5 +50,4 @@ export default Vue.extend({
 		&:active
 			background var(--primaryDarken10) !important
 			transition background 0s ease
-
 </style>

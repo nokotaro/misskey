@@ -122,5 +122,4 @@ export default Vue.extend({
 
 		> .localOnly
 			margin-left 4px
-
 </style>

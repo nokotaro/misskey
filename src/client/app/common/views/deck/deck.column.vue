@@ -430,5 +430,4 @@ export default Vue.extend({
 		overflow auto
 		overflow-x hidden
 		-webkit-overflow-scrolling touch
-
 </style>

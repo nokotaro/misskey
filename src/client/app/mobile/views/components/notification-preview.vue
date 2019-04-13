@@ -132,6 +132,5 @@ export default Vue.extend({
 	&.reply, &.mention
 		.text p [data-icon]
 			color #fff
-
 </style>
 

@@ -34,5 +34,4 @@ export default Vue.extend({
 .content
 	height 100%
 	overflow auto
-
 </style>

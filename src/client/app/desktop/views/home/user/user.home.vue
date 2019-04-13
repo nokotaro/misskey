@@ -47,5 +47,4 @@ export default Vue.extend({
 .lnctpgve
 	> *
 		margin-bottom 16px
-
 </style>

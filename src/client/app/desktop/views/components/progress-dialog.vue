@@ -40,8 +40,6 @@ export default Vue.extend({
 </script>
 
 <style lang="stylus" module>
-
-
 .body
 	padding 18px 24px 24px 24px
 
@@ -94,5 +92,4 @@ export default Vue.extend({
 	@keyframes progress-dialog-tag-progress-waiting
 		from {background-position: 0 0;}
 		to   {background-position: -64px 32px;}
-
 </style>

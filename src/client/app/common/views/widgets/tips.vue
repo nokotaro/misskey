@@ -104,5 +104,4 @@ export default define({
 			font-family inherit
 			border solid 1px var(--text)
 			border-radius 2px
-
 </style>

@@ -19,12 +19,9 @@ export default Vue.extend({
 </script>
 
 <style lang="stylus" scoped>
-
-
 .ui-form
 	> fieldset
 		margin 0
 		padding 0
 		border none
-
 </style>

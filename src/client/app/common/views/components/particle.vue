@@ -49,5 +49,4 @@ export default Vue.extend({
 	&.active
 		transition-duration 1s
 		background-position -2500px 0
-
 </style>

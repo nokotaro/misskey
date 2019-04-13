@@ -106,5 +106,4 @@ export default Vue.extend({
 		font-size 16px
 		line-height 20px
 		cursor pointer
-
 </style>

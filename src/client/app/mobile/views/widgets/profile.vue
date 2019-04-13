@@ -62,5 +62,4 @@ export default define({
 	font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 	font-weight 600
 	text-shadow 0 0 8px rgba(#000, 0.5)
-
 </style>

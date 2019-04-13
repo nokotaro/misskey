@@ -155,5 +155,4 @@ export default Vue.extend({
 					text-align left
 					max-height 120px
 					overflow auto
-
 </style>

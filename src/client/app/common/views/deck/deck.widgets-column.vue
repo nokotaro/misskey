@@ -167,6 +167,5 @@ export default Vue.extend({
 				color #fff
 				background rgba(#000, 0.7)
 				border-radius 4px
-
 </style>
 

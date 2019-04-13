@@ -259,5 +259,4 @@ export default Vue.extend({
 
 					&:active > div
 						background var(--primaryDarken10)
-
 </style>

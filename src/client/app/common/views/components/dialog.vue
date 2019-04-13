@@ -245,5 +245,4 @@ export default Vue.extend({
 
 		> .buttons
 			margin-top 16px
-
 </style>

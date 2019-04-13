@@ -175,5 +175,4 @@ export default Vue.extend({
 		&.receiveFollowRequest
 			> div > header [data-icon]
 				color #888
-
 </style>

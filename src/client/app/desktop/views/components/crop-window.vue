@@ -71,8 +71,6 @@ export default Vue.extend({
 </script>
 
 <style lang="stylus" module>
-
-
 .header
 	> [data-icon]
 		margin-right 4px
@@ -157,7 +155,6 @@ export default Vue.extend({
 .skip
 	left 16px
 	width 150px
-
 </style>
 
 <style lang="stylus">

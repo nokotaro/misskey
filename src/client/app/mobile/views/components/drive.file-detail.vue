@@ -245,5 +245,4 @@ export default Vue.extend({
 				border solid 1px #dfdfdf
 				border-radius 2px
 				background #f5f5f5
-
 </style>

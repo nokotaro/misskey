@@ -256,5 +256,4 @@ export default Vue.extend({
 
 			&:active
 				box-shadow 0 0 0 100px inset rgba(0, 0, 0, 0.1)
-
 </style>

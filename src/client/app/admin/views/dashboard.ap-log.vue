@@ -106,5 +106,4 @@ export default Vue.extend({
 
 		td.out
 			color #55bb83
-
 </style>

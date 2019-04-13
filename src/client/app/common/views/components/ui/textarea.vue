@@ -190,5 +190,4 @@ root(fill)
 
 .ui-textarea:not(.fill)
 	root(false)
-
 </style>

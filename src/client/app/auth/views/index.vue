@@ -149,5 +149,4 @@ export default Vue.extend({
 			width 32px
 			height 32px
 			margin 16px auto
-
 </style>

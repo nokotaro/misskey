@@ -242,5 +242,4 @@ export default Vue.extend({
 		> span
 			margin 0 8px
 			line-height 32px
-
 </style>

@@ -94,5 +94,4 @@ export default Vue.extend({
 				max-height 100px
 				white-space pre-wrap
 				word-break break-all
-
 </style>

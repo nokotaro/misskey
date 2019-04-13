@@ -112,5 +112,4 @@ export default Vue.extend({
 					color var(--subNoteText)
 					max-height 100px
 					overflow auto
-
 </style>

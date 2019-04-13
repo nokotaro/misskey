@@ -95,5 +95,4 @@ export default Vue.extend({
 
 		&:focus
 			box-shadow 0 0 0 2px var(--primaryAlpha05) !important
-
 </style>

@@ -150,5 +150,4 @@ export default define({
 	&[data-mobile]
 		> p
 			color #fff
-
 </style>

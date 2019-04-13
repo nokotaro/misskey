@@ -407,5 +407,4 @@ export default Vue.extend({
 .fade-enter, .fade-leave-to
 	transition opacity 0.5s
 	opacity 0
-
 </style>

@@ -76,5 +76,4 @@ export default Vue.extend({
 <style lang="stylus" scoped>
 .gcafiosrssbtbnbzqupfmglvzgiaipyv
 	box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.3)
-
 </style>

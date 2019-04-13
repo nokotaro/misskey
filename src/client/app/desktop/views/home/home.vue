@@ -403,5 +403,4 @@ export default Vue.extend({
 					width 100%
 					max-width 700px
 					margin 0 auto
-
 </style>

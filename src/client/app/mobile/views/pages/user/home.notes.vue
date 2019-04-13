@@ -56,5 +56,4 @@ export default Vue.extend({
 
 		> i
 			margin-right 4px
-
 </style>

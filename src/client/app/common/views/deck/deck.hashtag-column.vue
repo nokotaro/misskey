@@ -115,5 +115,4 @@ export default Vue.extend({
 
 	> .tl
 		background var(--face)
-
 </style>

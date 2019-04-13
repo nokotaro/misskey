@@ -260,5 +260,4 @@ export default Vue.extend({
 			margin-right 4px
 			margin-left 2px
 			text-align left
-
 </style>

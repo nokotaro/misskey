@@ -63,5 +63,4 @@ main
 		> a
 			display inline-block
 			margin 0 16px
-
 </style>

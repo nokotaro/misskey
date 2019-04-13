@@ -611,5 +611,4 @@ export default Vue.extend({
 
 	> .file
 		display none
-
 </style>

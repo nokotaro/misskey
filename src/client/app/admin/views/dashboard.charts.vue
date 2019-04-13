@@ -523,5 +523,4 @@ export default Vue.extend({
 				&:not(.active)
 					color var(--primary)
 					cursor pointer
-
 </style>

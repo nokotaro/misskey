@@ -76,5 +76,4 @@ svg
 		&.day
 			&:hover
 				fill rgba(#000, 0.05)
-
 </style>

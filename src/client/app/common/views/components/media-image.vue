@@ -107,5 +107,4 @@ export default Vue.extend({
 
 		> *
 			display block
-
 </style>

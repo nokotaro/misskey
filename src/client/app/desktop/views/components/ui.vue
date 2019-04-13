@@ -106,5 +106,4 @@ export default Vue.extend({
 
 	> .content.zen
 		padding 0 !important
-
 </style>

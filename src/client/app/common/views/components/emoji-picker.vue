@@ -181,5 +181,4 @@ export default Vue.extend({
 					font-size 28px
 					transition transform 0.2s ease
 					pointer-events none
-
 </style>

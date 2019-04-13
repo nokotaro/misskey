@@ -349,5 +349,4 @@ export default Vue.extend({
 					font-weight 600
 					color var(--primary)
 					border-color var(--primary)
-
 </style>

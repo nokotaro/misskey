@@ -86,5 +86,4 @@ export default Vue.extend({
 	border-radius 0 4px 4px 4px
 	box-shadow 2px 2px 8px rgba(#000, 0.2)
 	opacity 0
-
 </style>

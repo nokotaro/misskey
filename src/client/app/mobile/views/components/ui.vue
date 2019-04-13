@@ -132,5 +132,4 @@ export default Vue.extend({
 			right 28px
 			background var(--primary)
 			color var(--primaryForeground)
-
 </style>

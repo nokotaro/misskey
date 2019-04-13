@@ -357,5 +357,4 @@ export default Vue.extend({
 .back-leave-active {
 	opacity: 0;
 }
-
 </style>

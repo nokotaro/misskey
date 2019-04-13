@@ -43,5 +43,4 @@ export default Vue.extend({
 
 	mk-poll
 		font-size 80%
-
 </style>
