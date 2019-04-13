@@ -481,25 +481,25 @@ export default Vue.extend({
 			> .preview
 				padding 16px
 
-		> .visibleUsers
-			align-items center
-			display flex
-			flex-flow wrap
-			gap 8px
-			margin 8px
+			> .visibleUsers
+				align-items center
+				display flex
+				flex-flow wrap
+				gap 8px
+				margin 8px
 
-			.ako
-				height 32px
-				margin 0 6px
-				padding 6px 0
-				vertical-align bottom
+				.ako
+					height 32px
+					margin 0 6px
+					padding 6px 0
+					vertical-align bottom
 
-			> .title
-				color var(--text)
-				padding 0 6px 0 0
+				> .title
+					color var(--text)
+					padding 0 6px 0 0
 
-				> span
-					vertical-align 4px
+					> span
+						vertical-align 4px
 
 				> .visibleUser
 					align-items center
