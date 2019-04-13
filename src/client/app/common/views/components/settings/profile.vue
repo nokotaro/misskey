@@ -207,6 +207,7 @@ export default Vue.extend({
 			const data = new FormData();
 			data.append('file', file);
 			data.append('i', this.$store.state.i.token);
+			data.append('force', 'true');
 
 			fetch(apiUrl + '/drive/files/create', {
 				method: 'POST',
@@ -229,6 +230,7 @@ export default Vue.extend({
 			const data = new FormData();
 			data.append('file', file);
 			data.append('i', this.$store.state.i.token);
+			data.append('force', 'true');
 
 			fetch(apiUrl + '/drive/files/create', {
 				method: 'POST',

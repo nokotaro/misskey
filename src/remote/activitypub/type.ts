@@ -100,8 +100,8 @@ interface IQuestionChoice {
 }
 
 export const actorMap = {
-	'Application': false,
-	'Group': false,
+	// 'Application': false,
+	// 'Group': false,
 	'Organization': false,
 	'Person': false,
 	'Service': true

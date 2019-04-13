@@ -157,7 +157,7 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 		user = await User.insert({
 			avatarId: null,
 			bannerId: null,
-			createdAt: Date.parse(person.published) || null,
+			createdAt: new Date(),
 			lastFetchedAt: new Date(),
 			description: fromHtml(person.summary),
 			followersCount,
@@ -381,7 +381,6 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: obje
 		isCat: (person as any).isCat === true,
 		isKaho: (person as any).isKaho === true,
 		isLocked: person.manuallyApprovesFollowers,
-		createdAt: Date.parse(person.published) || null,
 		publicKey: {
 			id: person.publicKey.id,
 			publicKeyPem: person.publicKey.publicKeyPem

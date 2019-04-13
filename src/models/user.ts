@@ -167,8 +167,8 @@ export interface IRemoteUser extends IUserBase {
 	lastFetchedAt: Date;
 	isAdmin: false;
 	isModerator: false;
-	isApplication?: boolean;
-	isGroup?: boolean;
+	// isApplication?: boolean;
+	// isGroup?: boolean;
 	isOrganization?: boolean;
 	isPerson?: boolean;
 	isService?: boolean;
