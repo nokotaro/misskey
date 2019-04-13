@@ -35,5 +35,7 @@ block meta
 
 	if !user.host
 		link(rel='alternate' href=url type='application/activity+json')
+	if user.host
+		meta(name='robots' content='noindex')
 	if note.uri
 		link(rel='alternate' href=note.uri type='application/activity+json')
