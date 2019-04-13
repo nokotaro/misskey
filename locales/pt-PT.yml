@@ -15,6 +15,7 @@ common:
   application-authorization: "Aplicativos autorizados"
   close: "Fechar"
   do-not-copy-paste: "Por favor, não digite ou copie o código aqui. A conta pode ser comprometida."
+  enter-username: "Digite o nome de usuário."
   got-it: "Entendi!"
   customization-tips:
     title: "Dicas de personalização"
@@ -139,7 +140,6 @@ common/views/components/games/reversi/reversi.index.vue:
   invitations: "Você foi convidado!"
   my-games: "Meu jogo"
   all-games: "Todos os jogos"
-  enter-username: "Digite o nome de usuário."
   game-state:
     ended: "Terminado"
 common/views/components/games/reversi/reversi.room.vue:

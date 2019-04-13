@@ -17,6 +17,7 @@ common:
   application-authorization: "Autorizaciones de la aplicación."
   close: "Cerrar"
   do-not-copy-paste: "Por favor no copies código aquí. Tu cuenta puede resultar comprometida."
+  enter-username: "Ingresar nombre de usuario"
   enter-password: "Escribe una contraseña"
   2fa: "Autenticación de dos factores"
   got-it: "¡Listo!"
@@ -209,7 +210,6 @@ common/views/components/games/reversi/reversi.index.vue:
   invitations: "¡Has recibido una invitación!"
   my-games: "Mis juegos"
   all-games: "Todos los juegos"
-  enter-username: "Ingresar nombre de usuario"
   game-state:
     ended: "Finalizado"
     playing: "En progreso"
@@ -636,7 +636,6 @@ desktop/views/components/post-form.vue:
   visibility: "Visibilidad"
   geolocation-alert: "Tu dispositivo no tiene soporte de geolocalización."
   error: "Error"
-  enter-username: "Por favor escribe un nombre de usuario..."
   annotations: "Anotaciones a la publicación (opcional)"
 desktop/views/components/post-form-window.vue:
   note: "Nota nueva"

@@ -15,6 +15,7 @@ common:
   application-authorization: "Autorisierte Anwendungen"
   close: "Schließen"
   load-more: "Mehr laden"
+  enter-username: "Bitte gib einen Benutzernamen ein"
   enter-password: "Bitte Passwort eingeben"
   2fa: "Zwei-Faktor-Authentifizierung"
   got-it: "Verstanden!"
@@ -168,7 +169,6 @@ common/views/components/games/reversi/reversi.index.vue:
   rule: "Spielanleitung"
   mode-invite: "Einladen"
   all-games: "Alle Spiele"
-  enter-username: "Bitte gib einen Benutzernamen ein"
   game-state:
     ended: "Fertig"
 common/views/components/games/reversi/reversi.room.vue:
@@ -481,7 +481,6 @@ desktop/views/components/post-form.vue:
   text-remain: "{} Zeichen verbleibend"
   visibility: "Sichtbarkeit"
   error: "Fehler"
-  enter-username: "Bitte gib einen Benutzernamen ein..."
 desktop/views/components/post-form-window.vue:
   note: "Neue Notiz"
   reply: "Antworten"

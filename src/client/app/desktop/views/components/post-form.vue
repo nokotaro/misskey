@@ -7,10 +7,20 @@
 >
 	<div class="content">
 		<div v-if="visibility == 'specified'" class="visibleUsers">
-			<span v-for="u in visibleUsers">
-				<mk-user-name :user="u"/><a @click="removeVisibleUser(u)">[x]</a>
+			<span class="title">
+				<fa :icon="['fal', 'user-friends']" class="ako"/>
+				<span>{{ $t('@.send-to') }}</span>
 			</span>
-			<a @click="addVisibleUser">{{ $t('add-visible-user') }}</a>
+			<a class="visibleUser" @click="removeVisibleUser(u)" v-for="u in visibleUsers">
+				<div><fa :icon="['fal', 'user-minus']" fixed-width/></div>
+				<span>
+					<mk-avatar :user="u"/>
+					<mk-user-name :user="u"/>
+				</span>
+			</a>
+			<a @click="addVisibleUser">
+				<fa :icon="['fal', 'user-plus']" class="ako"/>
+			</a>
 		</div>
 		<div class="hashtags" v-if="recentHashtags.length && $store.state.settings.suggestRecentHashtags">
 			<b>{{ $t('recent-tags') }}:</b>
@@ -435,7 +445,7 @@ export default Vue.extend({
 
 		addVisibleUser() {
 			this.$root.dialog({
-				title: this.$t('enter-username'),
+				title: this.$t('@.enter-username'),
 				user: true
 			}).then(({ canceled, result: user }) => {
 				if (canceled) return;
@@ -696,12 +706,67 @@ export default Vue.extend({
 				transition border-color .3s ease
 
 		> .visibleUsers
-			margin-bottom 8px
-			font-size 14px
+			align-items center
+			display flex
+			flex-flow wrap
+			gap 8px
+			margin 0 8px 8px
 
-			> span
-				margin-right 16px
-				color var(--primary)
+			.ako
+				height 32px
+				margin 0 6px
+				padding 6px 0
+				vertical-align bottom
+
+			> .title
+				color var(--text)
+				padding 0 6px 0 0
+
+				> span
+					vertical-align 4px
+
+			> .visibleUser
+				align-items center
+				border solid 1px
+				border-radius 16px
+				display flex
+				height 32px
+				overflow hidden
+
+				&:hover
+					> *:first-child
+						padding 0 0 0 2px
+						width 32px
+
+					> *:last-child
+						padding 0 2px 0 0
+
+				> *
+					align-items center
+					display flex
+					justify-content center
+					transition all .2s ease
+
+					&:first-child
+						align-items center
+						background currentColor
+						display flex
+						height 100%
+						justify-content center
+						width 0
+
+						> svg
+							color var(--secondary)
+					
+					&:last-child
+						flex 1 0 auto
+						gap 4px
+						margin 0 8px
+						padding 0 18px 0 16px
+
+						> .mk-avatar
+							height 24px
+							width 24px
 
 		> .hashtags
 			margin 0 0 8px 0

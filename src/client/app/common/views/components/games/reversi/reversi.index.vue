@@ -101,7 +101,7 @@ export default Vue.extend({
 
 		async match() {
 			const { result: user } = await this.$root.dialog({
-				title: this.$t('enter-username'),
+				title: this.$t('@.enter-username'),
 				user: {
 					local: true
 				}

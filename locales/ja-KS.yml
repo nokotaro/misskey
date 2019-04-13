@@ -22,6 +22,7 @@ common:
   close: "さいなら"
   do-not-copy-paste: "ここにコードを入力したり張り付けたりせんといてください。プロデューサーが不正利用されるかも分からん。知らんけど。"
   load-more: "もっとあらへんのか！"
+  enter-username: "ユーザー名を入力してや"
   enter-password: "パスワードを入れてや"
   2fa: "二段階認証"
   got-it: "ほい"
@@ -207,7 +208,6 @@ common/views/components/games/reversi/reversi.index.vue:
   invitations: "対局の招待がきてんで！"
   my-games: "自分の対局"
   all-games: "みんなの対局"
-  enter-username: "ユーザー名を入力してや"
   game-state:
     ended: "終了"
     playing: "進行中"
@@ -693,7 +693,6 @@ desktop/views/components/post-form.vue:
   visibility: "公開範囲"
   geolocation-alert: "あんさんのつことる端末は位置情報に対応しとらんみたいやわ、知らんけど。"
   error: "エラー"
-  enter-username: "ユーザー名を入力してや"
   annotations: "もっと教えてな(別にええけど)"
 desktop/views/components/post-form-window.vue:
   note: "新規投稿"

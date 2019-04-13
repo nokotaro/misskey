@@ -23,6 +23,8 @@ common:
   close: "閉じる"
   do-not-copy-paste: "ここにコードを入力したり張り付けたりしないでください。プロデューサーが不正利用される可能性があります。"
   load-more: "もっと読み込む"
+  send-to: "宛先"
+  enter-username: "ユーザー名を入力してください"
   enter-password: "パスワードを入力してください"
   2fa: "二段階認証"
   customize-home: "ホームをカスタマイズ"
@@ -394,7 +396,6 @@ common/views/components/games/reversi/reversi.index.vue:
   invitations: "対局の招待があります！"
   my-games: "自分の対局"
   all-games: "みんなの対局"
-  enter-username: "ユーザー名を入力してください"
   game-state:
     ended: "終了"
     playing: "進行中"
@@ -1034,7 +1035,6 @@ desktop/views/components/post-form.vue:
   information: "インフォメーション"
   geolocation-alert: "お使いの端末は位置情報に対応していません"
   error: "エラー"
-  enter-username: "ユーザー名を入力してください"
   annotations: "内容への注釈 (オプション)"
   broadcast: "常駐させる内容 (オプション)"
 

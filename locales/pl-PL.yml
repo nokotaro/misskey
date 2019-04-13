@@ -17,6 +17,7 @@ common:
   application-authorization: "Współpraca twista"
   close: "Zamknij"
   load-more: "Załaduj więcej"
+  enter-username: "Wprowadź nazwę użytkownika"
   enter-password: "Wprowadź Hasło"
   2fa: "Uwierzytelnienie dwuetapowe"
   customize-home: "Dostosuj stronę główną"
@@ -237,7 +238,6 @@ common/views/components/games/reversi/reversi.index.vue:
   invitations: "Otrzymałeś(-aś) zaproszenie!"
   my-games: "Moje gry"
   all-games: "Wszystkie gry"
-  enter-username: "Wprowadź nazwę użytkownika"
   game-state:
     ended: "Zakończono"
     playing: "W trakcie"
@@ -721,7 +721,6 @@ desktop/views/components/post-form.vue:
   visibility: "Widoczność"
   geolocation-alert: "Twoje urządzenie nie obsługuje geolokalizacji."
   error: "Bład"
-  enter-username: "Wprowadź nazwę użytkownika…"
   annotations: "Treść ostrzeżenia (opcjonalnie)"
 desktop/views/components/post-form-window.vue:
   note: "Nowy wpis"

@@ -22,6 +22,7 @@ common:
   close: "Fermer"
   do-not-copy-paste: "Veuillez ne pas entrer ou coller le code ici. Le compte pourrait être compromis."
   load-more: "Charger plus"
+  enter-username: "Saisir un nom d'utilisateur"
   enter-password: "Veuillez entrer le mot de passe"
   2fa: "Authentification à deux facteurs"
   customize-home: "Personnaliser la disposition de votre accueil"
@@ -269,7 +270,6 @@ common/views/components/games/reversi/reversi.index.vue:
   invitations: "Vous avez reçu une invitation !"
   my-games: "Mes jeux"
   all-games: "Tous les jeux"
-  enter-username: "Saisir un nom d'utilisateur"
   game-state:
     ended: "Terminée"
     playing: "En cours"
@@ -799,7 +799,6 @@ desktop/views/components/post-form.vue:
   visibility: "Visibilité"
   geolocation-alert: "Votre appareil ne prend pas en charge les services de localisation"
   error: "Erreur"
-  enter-username: "Saisir un nom d'utilisateur …"
   annotations: "Commenter le contenu (optionnel)"
 desktop/views/components/post-form-window.vue:
   note: "Nouvelle note"

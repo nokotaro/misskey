@@ -22,6 +22,7 @@ common:
   close: "닫기"
   do-not-copy-paste: "여기에 코드를 입력하거나 붙여넣지 마십시오. 계정이 무단으로 사용될 수 있습니다."
   load-more: "더보기"
+  enter-username: "사용자명을 입력해주세요"
   enter-password: "비밀번호를 입력하여 주십시오"
   2fa: "2단계 인증"
   customize-home: "홈 커스터마이징"
@@ -334,7 +335,6 @@ common/views/components/games/reversi/reversi.index.vue:
   invitations: "게임 초대가 있습니다!"
   my-games: "내 대국"
   all-games: "모두의 대국"
-  enter-username: "사용자명을 입력해주세요"
   game-state:
     ended: "종료"
     playing: "진행중"
@@ -882,7 +882,6 @@ desktop/views/components/post-form.vue:
   visibility: "공개설정"
   geolocation-alert: "사용하시는 장치가 위치정보 기능에 대응하지 않습니다"
   error: "오류"
-  enter-username: "사용자명을 입력해주세요"
   annotations: "내용 주석 (선택적)"
 desktop/views/components/post-form-window.vue:
   note: "새 글"

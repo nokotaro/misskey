@@ -22,6 +22,7 @@ common:
   close: "关闭"
   do-not-copy-paste: "请不要在这里输入或粘贴代码。您帐户可能会受到损害。"
   load-more: "加载更多"
+  enter-username: "输入用户名"
   enter-password: "请输入您的密码"
   2fa: "双重身份验证"
   customize-home: "自定义主页"
@@ -334,7 +335,6 @@ common/views/components/games/reversi/reversi.index.vue:
   invitations: "您收到了一则邀请!"
   my-games: "我的游戏"
   all-games: "所有游戏"
-  enter-username: "输入用户名"
   game-state:
     ended: "结束"
     playing: "游戏进行中"
@@ -882,7 +882,6 @@ desktop/views/components/post-form.vue:
   visibility: "可见性"
   geolocation-alert: "您的设备不提供位置服务"
   error: "错误"
-  enter-username: "请填写一个用户名"
   annotations: "注释帖子（可选）"
 desktop/views/components/post-form-window.vue:
   note: "新建帖子"
