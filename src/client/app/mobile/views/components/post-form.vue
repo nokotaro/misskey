@@ -501,48 +501,48 @@ export default Vue.extend({
 				> span
 					vertical-align 4px
 
-			> .visibleUser
-				align-items center
-				border solid 1px
-				border-radius 16px
-				display flex
-				height 32px
-				overflow hidden
-
-				&:hover
-					> *:first-child
-						padding 0 0 0 2px
-						width 32px
-
-					> *:last-child
-						padding 0 2px 0 0
-
-				> *
+				> .visibleUser
 					align-items center
+					border solid 1px
+					border-radius 16px
 					display flex
-					justify-content center
-					transition all .2s ease
+					height 32px
+					overflow hidden
 
-					&:first-child
+					&:hover
+						> *:first-child
+							padding 0 0 0 2px
+							width 32px
+
+						> *:last-child
+							padding 0 2px 0 0
+
+					> *
 						align-items center
-						background currentColor
 						display flex
-						height 100%
 						justify-content center
-						width 0
+						transition all .2s ease
 
-						> svg
-							color var(--secondary)
-					
-					&:last-child
-						flex 1 0 auto
-						gap 4px
-						margin 0 8px
-						padding 0 18px 0 16px
+						&:first-child
+							align-items center
+							background currentColor
+							display flex
+							height 100%
+							justify-content center
+							width 0
 
-						> .mk-avatar
-							height 24px
-							width 24px
+							> svg
+								color var(--secondary)
+						
+						&:last-child
+							flex 1 0 auto
+							gap 4px
+							margin 0 8px
+							padding 0 18px 0 16px
+
+							> .mk-avatar
+								height 24px
+								width 24px
 
 			> input
 				z-index 1
