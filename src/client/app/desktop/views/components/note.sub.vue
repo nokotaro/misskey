@@ -9,7 +9,7 @@
 				<mk-cw-button v-model="showContent" :note="note"/>
 			</p>
 			<div class="content" v-show="note.cw == null || showContent">
-				<mk-sub-note-content class="text" :class="{ scroll : true }" :note="note"/>
+				<mk-sub-note-content class="text" :note="note"/>
 			</div>
 		</div>
 	</div>
