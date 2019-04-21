@@ -1,5 +1,6 @@
 import Vue, { VNode } from 'vue';
 import { length } from 'stringz';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { MfmForest } from '../../../../../mfm/prelude';
 import { parse, parsePlain } from '../../../../../mfm/parse';
 import MkUrl from './url.vue';
@@ -11,6 +12,7 @@ import MkGoogle from './google.vue';
 import { host } from '../../../config';
 import { preorderF, countNodesF } from '../../../../../prelude/tree';
 import * as config from '../../../config';
+import { faNicoru } from '../../../icons/faNicoru';
 
 function sumTextsLength(ts: MfmForest): number {
 	const textNodes = preorderF(ts).filter(n => n.type === 'text');
@@ -216,7 +218,16 @@ export default Vue.component('misskey-flavored-markdown', {
 							title: token.node.props.url,
 							style: 'color:var(--mfmLink)'
 						}
-					}, genEl(token.children))];
+					}, token.node.props.nico ? [
+						createElement(FontAwesomeIcon, {
+							key: Math.random(),
+							props: {
+								icon: faNicoru,
+								fixedWidth: true
+							}
+						}),
+						...genEl(token.children)
+					] : genEl(token.children))];
 				}
 
 				case 'mention': {

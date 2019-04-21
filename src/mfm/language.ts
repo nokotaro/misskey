@@ -229,12 +229,12 @@ export const mfmLanguage = P.createLanguage({
 			let url: string;
 			if (!match) {
 				const match = text.match(/^<(https?:\/\/.*?)>/);
-				if (!match)
+				if (!match) {
 					return P.makeFailure(i, 'not a url');
-				url = match[1];
-				i += 2;
-			} else
+				}
+			} else {
 				url = match[0];
+			}
 			url = removeOrphanedBrackets(url);
 			if (url.endsWith('.')) url = url.substr(0, url.lastIndexOf('.'));
 			if (url.endsWith(',')) url = url.substr(0, url.lastIndexOf(','));
@@ -242,16 +242,28 @@ export const mfmLanguage = P.createLanguage({
 		}).map(x => createLeaf('url', { url: x }));
 	},
 	link: r => {
-		return P.seqObj(
+		const general = P.seqObj(
 			['silent', P.string('?').fallback(null).map(x => x != null)] as any,
 			P.string('['), ['text', P.regexp(/[^\n\[\]]+/)] as any, P.string(']'),
 			P.string('('), ['url', r.url] as any, P.string(')'),
-		).map((x: any) => {
-			return createTree('link', r.inline.atLeast(1).tryParse(x.text), {
-				silent: x.silent,
-				url: x.url.node.props.url
-			});
+		);
+		const nico = P((input, i) => {
+			const text = input.substr(i);
+			const nico =
+				text.match(/^((?:lv|s[mo])\d+)(?:#((?:\d+:)?(?:[0-5]?\d:)?[0-5]\d|\d+))?/) || // videos
+				text.match(/^(?:a[prz]|c[ho]|dw|gm|kn|im|jps|mylist\/|n[cqw]|user\/(?:illust\/)?)\d+/); // non-videos
+			return nico ? P.makeSuccess(i + nico[0].length, {
+				text,
+				nico: true,
+				silent: false,
+				url: `https://nico.ms/${nico[1]}${nico[2] ? `?from=${nico[2].split(':').reverse().reduce((a, c, i) => a + ~~c * (60 ** i), 0)}` : ''}`
+			}) : P.makeFailure(i, 'not a nicolink');
 		});
+		return P.alt(general, nico).map((x: any) => createTree('link', (x.nico ? r.text : r.inline).atLeast(1).tryParse(x.text), {
+			nico: x.nico,
+			silent: x.silent,
+			url: typeof x.url === 'string' ? x.url : x.url.node.props.url
+		}));
 	},
 	emoji: () => {
 		const name = P.regexp(/:(@?[\w-]+(?:@[\w.-]+)?):/i, 1).map(x => createLeaf('emoji', { name: x }));
