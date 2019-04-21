@@ -1,5 +1,5 @@
 import $ from 'cafy';
-import User from '../../../../models/user';
+import User, { ILocalUser, pack } from '../../../../models/user';
 import { publishMainStream } from '../../../../services/stream';
 import define from '../../define';
 
@@ -24,6 +24,8 @@ export default define(meta, async (ps, user) => {
 
 	let widget;
 
+	let updated: ILocalUser;
+
 	//#region Desktop home
 	if (widget == null && user.clientSettings.home) {
 		const desktopHome = user.clientSettings.home;
@@ -31,11 +33,11 @@ export default define(meta, async (ps, user) => {
 		if (widget) {
 				widget.data = ps.data;
 
-			await User.update(user._id, {
+			updated = await User.findOneAndUpdate({ _id: user._id }, {
 				$set: {
 					'clientSettings.home': desktopHome
 				}
-			});
+			}, { returnNewDocument: true });
 		}
 	}
 	//#endregion
@@ -47,11 +49,11 @@ export default define(meta, async (ps, user) => {
 		if (widget) {
 				widget.data = ps.data;
 
-			await User.update(user._id, {
+			updated = await User.findOneAndUpdate({ _id: user._id }, {
 				$set: {
 					'clientSettings.mobileHome': mobileHome
 				}
-			});
+			}, { returnNewDocument: true });
 		}
 	}
 	//#endregion
@@ -67,11 +69,11 @@ export default define(meta, async (ps, user) => {
 		if (widget) {
 				widget.data = ps.data;
 
-			await User.update(user._id, {
+			updated = await User.findOneAndUpdate({ _id: user._id }, {
 				$set: {
 					'clientSettings.deck': deck
 				}
-			});
+			}, { returnNewDocument: true });
 		}
 	}
 	//#endregion
@@ -81,7 +83,7 @@ export default define(meta, async (ps, user) => {
 			id: ps.id, data: ps.data
 		});
 
-		return;
+		return updated && await pack(updated, user);
 	} else {
 		throw new Error('widget not found');
 	}

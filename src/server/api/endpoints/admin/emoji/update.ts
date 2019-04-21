@@ -49,7 +49,7 @@ export default define(meta, async (ps) => {
 		ps.contentType || await detectUrlMine(ps.url) :
 		emoji.contentType || 'image/png';
 
-	await Emoji.update({ _id: emoji._id }, {
+	return await Emoji.findOneAndUpdate({ _id: emoji._id }, {
 		$set: {
 			updatedAt: new Date(),
 			name: ps.name,
@@ -57,7 +57,5 @@ export default define(meta, async (ps) => {
 			contentType,
 			url: ps.url
 		}
-	});
-
-	return;
+	}, { returnNewDocument: true });
 });

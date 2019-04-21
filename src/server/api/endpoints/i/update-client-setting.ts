@@ -1,5 +1,5 @@
 import $ from 'cafy';
-import User from '../../../../models/user';
+import User, { pack } from '../../../../models/user';
 import { publishMainStream } from '../../../../services/stream';
 import define from '../../define';
 
@@ -23,9 +23,9 @@ export default define(meta, async (ps, user) => {
 	const x: any = {};
 	x[`clientSettings.${ps.name}`] = ps.value;
 
-	await User.update(user._id, {
+	const updated = await User.findOneAndUpdate(user._id, {
 		$set: x
-	});
+	}, { returnNewDocument: true });
 
 	// Publish event
 	publishMainStream(user._id, 'clientSettingUpdated', {
@@ -33,5 +33,5 @@ export default define(meta, async (ps, user) => {
 		value: ps.value
 	});
 
-	return;
+	return await pack(updated, user);
 });

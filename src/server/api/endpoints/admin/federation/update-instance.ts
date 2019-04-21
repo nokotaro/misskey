@@ -23,19 +23,17 @@ export const meta = {
 	}
 };
 
-export default define(meta, async (ps, me) => {
+export default define(meta, async ps => {
 	const instance = await Instance.findOne({ host: ps.host });
 
 	if (instance == null) {
 		throw new Error('instance not found');
 	}
 
-	Instance.update({ host: ps.host }, {
+	return await Instance.findOneAndUpdate({ host: ps.host }, {
 		$set: {
 			isBlocked: ps.isBlocked,
 			isMarkedAsClosed: ps.isClosed
 		}
-	});
-
-	return;
+	}, { returnNewDocument: true });
 });

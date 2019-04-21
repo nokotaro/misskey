@@ -1,6 +1,6 @@
 import $ from 'cafy';
 import * as bcrypt from 'bcryptjs';
-import User from '../../../../../models/user';
+import User, { pack } from '../../../../../models/user';
 import define from '../../../define';
 
 export const meta = {
@@ -23,12 +23,10 @@ export default define(meta, async (ps, user) => {
 		throw new Error('incorrect password');
 	}
 
-	await User.update(user._id, {
+	return await pack(await User.findOneAndUpdate(user._id, {
 		$set: {
 			'twoFactorSecret': null,
 			'twoFactorEnabled': false
 		}
-	});
-
-	return;
+	}, { returnNewDocument: true }), user);
 });

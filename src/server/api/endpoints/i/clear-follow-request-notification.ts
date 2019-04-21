@@ -1,4 +1,4 @@
-import User from '../../../../models/user';
+import User, { pack } from '../../../../models/user';
 import define from '../../define';
 
 export const meta = {
@@ -13,11 +13,9 @@ export const meta = {
 };
 
 export default define(meta, async (ps, user) => {
-	await User.update({ _id: user._id }, {
+	return await pack(await User.findOneAndUpdate({ _id: user._id }, {
 		$set: {
 			pendingReceivedFollowRequestsCount: 0
 		}
-	});
-
-	return;
+	}, { returnNewDocument: true }), user);
 });

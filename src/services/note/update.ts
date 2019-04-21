@@ -31,7 +31,7 @@ export default async function(user: IUser, note: INote, requestQa?: 'question' |
 			...(qa !== undefined ? { qa } : {})
 		}
 	}, {
-		new: true
+		returnNewDocument: true
 	});
 
 	if (qa === 'bestAnswer') {

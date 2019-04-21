@@ -559,9 +559,7 @@ export default define(meta, async (ps) => {
 		set.swPrivateKey = ps.swPrivateKey;
 	}
 
-	await Meta.update({}, {
+	return await Meta.findOneAndUpdate({}, {
 		$set: set
-	}, { upsert: true });
-
-	return;
+	}, { upsert: true, returnNewDocument: true });
 });

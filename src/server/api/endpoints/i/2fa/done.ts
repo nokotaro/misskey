@@ -1,6 +1,6 @@
 import $ from 'cafy';
 import * as speakeasy from 'speakeasy';
-import User from '../../../../../models/user';
+import User, { pack } from '../../../../../models/user';
 import define from '../../../define';
 
 export const meta = {
@@ -32,12 +32,10 @@ export default define(meta, async (ps, user) => {
 		throw new Error('not verified');
 	}
 
-	await User.update(user._id, {
+	return await pack(await User.findOneAndUpdate({ _id: user._id }, {
 		$set: {
 			'twoFactorSecret': user.twoFactorTempSecret,
 			'twoFactorEnabled': true
 		}
-	});
-
-	return;
+	}, { returnNewDocument: true }), user);
 });
