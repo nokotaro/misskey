@@ -534,7 +534,7 @@ common/views/components/poll-editor.vue:
   day: "S"
 common/views/components/reaction-picker.vue:
   choose-reaction: "Send a reaction"
-  react-emoji: "Choose a reaction from emojis"
+  react-emoji: "Choose from emojis"
 common/views/components/emoji-picker.vue:
   custom-emoji: "Custom Emoji"
   people: "People"

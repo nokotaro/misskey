@@ -604,7 +604,7 @@ common/views/components/poll-editor.vue:
 
 common/views/components/reaction-picker.vue:
   choose-reaction: "リアクションを選択"
-  react-emoji: "絵文字からリアクションを選択"
+  react-emoji: "絵文字から選択"
 
 common/views/components/emoji-picker.vue:
   custom-emoji: "カスタム絵文字"
