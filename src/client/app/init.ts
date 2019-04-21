@@ -351,7 +351,7 @@ Vue.mixin({
 console.info(`twista v${version} (${codename})`);
 console.info(
 	`%c${locale['common']['do-not-copy-paste']}`,
-	'color: red; background: yellow; font-size: 16px; font-weight: 600;');
+	'background:yellow;color:red;font-family:fot-rodin-pron,a-otf-ud-shin-go-pr6n,sans-serif;font-size:16px;font-weight:600');
 
 // BootTimer解除
 window.clearTimeout((window as any).mkBootTimer);
