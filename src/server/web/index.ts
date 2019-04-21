@@ -12,7 +12,7 @@ import { ObjectID } from 'mongodb';
 
 import packFeed from './feed';
 import urlPreview from './url-preview';
-import User from '../../models/user';
+import User, { ILocalUser } from '../../models/user';
 import parseAcct from '../../misc/acct/parse';
 import config from '../../config';
 import Note, { pack as packNote } from '../../models/note';
@@ -135,6 +135,16 @@ router.get('/@:user.json', async ctx => {
 
 //#region for crawlers
 // User
+export const resolveUser: (user: string) => Promise<ILocalUser> = async user => ObjectID.isValid(user) &&
+	await User.findOne({
+		_id: new ObjectID(user),
+		host: null
+	}) ||
+	await User.findOne({
+		usernameLower: user.toLowerCase(),
+		host: null
+	});
+
 router.get('/@:user', async (ctx, next) => {
 	const { username, host } = parseAcct(ctx.params.user);
 	const user = await User.findOne({
@@ -156,17 +166,7 @@ router.get('/@:user', async (ctx, next) => {
 });
 
 router.get('/users/:user', async ctx => {
-	if (!ObjectID.isValid(ctx.params.user)) {
-		ctx.status = 404;
-		return;
-	}
-
-	const userId = new ObjectID(ctx.params.user);
-
-	const user = await User.findOne({
-		_id: userId,
-		host: null
-	});
+	const user = await resolveUser(ctx.params.user);
 
 	if (user === null) {
 		ctx.status = 404;
