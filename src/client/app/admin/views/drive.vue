@@ -38,7 +38,7 @@
 				<div class="kidvdlkg" v-for="file in files">
 					<div @click="file._open = !file._open">
 						<div>
-							<div class="thumbnail" :style="thumbnail(file)"></div>
+							<x-file-thumbnail class="thumbnail" :file="file" fit="contain" @click="showFileMenu(file)"/>
 						</div>
 						<div>
 							<header>
@@ -74,9 +74,14 @@
 import Vue from 'vue';
 import i18n from '../../i18n';
 import { faCloud, faTerminal, faSearch, faTrashAlt, faEye, faEyeSlash } from '@fortawesome/pro-light-svg-icons';
+import XFileThumbnail from '../../common/views/components/drive-file-thumbnail.vue';
 
 export default Vue.extend({
 	i18n: i18n('admin/views/drive.vue'),
+
+	components: {
+		XFileThumbnail
+	},
 
 	data() {
 		return {
@@ -150,13 +155,6 @@ export default Vue.extend({
 			});
 		},
 
-		thumbnail(file: any): any {
-			return {
-				'background-color': file.properties.avgColor && file.properties.avgColor.length == 3 ? `rgb(${file.properties.avgColor.join(',')})` : 'transparent',
-				'background-image': `url(${file.thumbnailUrl})`
-			};
-		},
-
 		async del(file: any) {
 			const process = async () => {
 				await this.$root.api('drive/files/delete', { fileId: file.id });
@@ -178,9 +176,9 @@ export default Vue.extend({
 			this.$root.api('drive/files/update', {
 				fileId: file.id,
 				isSensitive: !file.isSensitive
+			}).then(() => {
+				file.isSensitive = !file.isSensitive;
 			});
-
-			file.isSensitive = !file.isSensitive;
 		},
 
 		async show() {
@@ -243,7 +241,7 @@ export default Vue.extend({
 
 		> div:nth-child(1)
 			> .thumbnail
-				display block
+				display flex
 				width 64px
 				height 64px
 				background-size cover

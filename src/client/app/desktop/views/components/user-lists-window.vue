@@ -1,85 +1,35 @@
 <template>
 <mk-window ref="window" width="450px" height="500px" @closed="destroyDom">
 	<template #header><fa :icon="['fal', 'list']"/> {{ $t('title') }}</template>
-
-	<div class="xkxvokkjlptzyewouewmceqcxhpgzprp">
-		<button class="ui" @click="add">{{ $t('create-list') }}</button>
-		<a v-for="list in lists" :key="list.id" @click="choice(list)">{{ list.title }}</a>
-	</div>
+	<x-lists :class="$style.content" @choosen="choosen"/>
 </mk-window>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
+import MkUserListWindow from './user-list-window.vue';
 
 export default Vue.extend({
 	i18n: i18n('desktop/views/components/user-lists-window.vue'),
-	data() {
-		return {
-			fetching: true,
-			lists: []
-		};
-	},
-	mounted() {
-		this.$root.api('users/lists/list').then(lists => {
-			this.fetching = false;
-			this.lists = lists;
-		});
+	components: {
+		XLists: () => import('../../../common/views/components/user-lists.vue').then(m => m.default)
 	},
 	methods: {
-		add() {
-			this.$root.dialog({
-				title: this.$t('list-name'),
-				input: true
-			}).then(async ({ canceled, result: title }) => {
-				if (canceled) return;
-				const list = await this.$root.api('users/lists/create', {
-					title
-				});
-
-				this.$emit('choosen', list);
-			});
-		},
-		choice(list) {
-			this.$emit('choosen', list);
-		},
 		close() {
 			(this as any).$refs.window.close();
+		},
+		choosen(list) {
+			this.$root.new(MkUserListWindow, {
+				list
+			});
 		}
 	}
 });
 </script>
 
-<style lang="stylus" scoped>
-.xkxvokkjlptzyewouewmceqcxhpgzprp
-	padding 16px
-
-	> button
-		display block
-		margin-bottom 16px
-		color var(--primaryForeground)
-		background var(--primary)
-		width 100%
-		border-radius 38px
-		user-select none
-		cursor pointer
-		padding 0 16px
-		min-width 100px
-		line-height 38px
-		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
-		font-size 14px
-		font-weight 600
-
-		&:hover
-			background var(--primaryLighten10)
-
-		&:active
-			background var(--primaryDarken10)
-
-	> a
-		display block
-		padding 16px
-		border solid 1px var(--faceDivider)
-		border-radius 4px
+<style lang="stylus" module>
+.content
+	height 100%
+	overflow auto
 </style>

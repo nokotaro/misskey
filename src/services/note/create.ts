@@ -172,7 +172,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	const uri = split && split[split.length - 1];
 
 	if (uri) {
-		const note = await resolveNote(uri).catch(() => null);
+		const note = await resolveNote(uri, null, true).catch(() => null);
 
 		if (note) {
 			data.renote = note;

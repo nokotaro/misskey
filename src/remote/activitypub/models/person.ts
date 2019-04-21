@@ -302,13 +302,6 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: obje
 	}
 	//#endregion
 
-	// 繋がらないインスタンスに何回も試行するのを防ぐ, 後続の同様処理の連続試行を防ぐ ため 試行前にも更新する
-	await User.update({ _id: exist._id }, {
-		$set: {
-			lastFetchedAt: new Date(),
-		},
-	});
-
 	if (resolver == null) resolver = new Resolver();
 
 	const object = hint || await resolver.resolve(uri) as any;
@@ -586,7 +579,7 @@ export async function fetchOutbox(userId: mongo.ObjectID, force = false) {
 				// Note[Replay]
 			} else {
 				// Note[Original]
-				await resolveNote(activity.object, resolver);
+				await resolveNote(activity.object, resolver, true);
 			}
 		} else if (activity.type === 'Announce') {
 			// Renote

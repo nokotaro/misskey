@@ -37,15 +37,7 @@
 			<button class="emoji" @click="emoji" ref="emoji">
 				<fa :icon="['fal', 'laugh']"/>
 			</button>
-			<div class="files" :class="{ with: poll }" v-show="files.length">
-				<x-draggable :list="files" :options="{ animation: 150 }">
-					<div v-for="file in files" :key="file.id">
-						<div class="img" :style="{ backgroundImage: `url(${file.thumbnailUrl || '/assets/thumbnail-not-available.png'})` }" :title="file.name"></div>
-						<img class="remove" @click="detachMedia(file.id)" src="/assets/desktop/remove.png" :title="$t('attach-cancel')" alt=""/>
-					</div>
-				</x-draggable>
-				<p class="remain">{{ 4 - files.length }}/4</p>
-			</div>
+			<x-post-form-attaches class="files" :files="files" :detachMediaFn="detachMedia"/>
 			<mk-poll-editor v-if="poll" ref="poll" @destroyed="poll = false" @updated="onPollUpdate()"/>
 		</div>
 		<input v-show="useBroadcast" ref="broadcast" v-model="broadcast" :placeholder="$t('broadcast')" v-autocomplete="{ model: 'broadcast' }">
@@ -89,7 +81,6 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import insertTextAtCursor from 'insert-text-at-cursor';
-import * as XDraggable from 'vuedraggable';
 import getFace from '../../../common/scripts/get-face';
 import MkVisibilityChooser from '../../../common/views/components/visibility-chooser.vue';
 import MkRatingChooser from '../../../common/views/components/rating-chooser.vue';
@@ -99,14 +90,15 @@ import { erase, unique } from '../../../../../prelude/array';
 import { length } from 'stringz';
 import { toASCII } from 'punycode';
 import extractMentions from '../../../../../misc/extract-mentions';
+import XPostFormAttaches from '../../../common/views/components/post-form-attaches.vue';
 
 export default Vue.extend({
 	i18n: i18n('desktop/views/components/post-form.vue'),
 
 	components: {
-		XDraggable,
 		MkVisibilityChooser,
-		MkRatingChooser
+		MkRatingChooser,
+		XPostFormAttaches
 	},
 
 	props: {

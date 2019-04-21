@@ -3,7 +3,7 @@
 	<div class="backdrop" ref="backdrop" @click="close"></div>
 	<div class="popover" :class="{ isMobile: $root.isMobile }" ref="popover">
 		<p v-if="!$root.isMobile">{{ title }}</p>
-		<div class="buttons" ref="buttons" :class="{ showFocus }">
+		<div class="buttons" ref="buttons">
 			<button @click="react('like')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="1" :title="$t('@.reactions.like')" v-particle><mk-reaction-icon reaction="like"/></button>
 			<button @click="react('love')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="2" :title="$t('@.reactions.love')" v-particle><mk-reaction-icon reaction="love"/></button>
 			<button @click="react('laugh')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="3" :title="$t('@.reactions.laugh')" v-particle><mk-reaction-icon reaction="laugh"/></button>
@@ -44,12 +44,6 @@ export default Vue.extend({
 			required: false
 		},
 
-		showFocus: {
-			type: Boolean,
-			required: false,
-			default: false
-		},
-
 		animation: {
 			type: Boolean,
 			required: false,
@@ -61,7 +55,6 @@ export default Vue.extend({
 		return {
 			title: this.$t('choose-reaction'),
 			enableEmojiReaction: false,
-			focus: null
 		};
 	},
 
@@ -69,43 +62,19 @@ export default Vue.extend({
 		keymap(): any {
 			return {
 				'esc': this.close,
-				'enter|space|plus': this.choose,
-				'up|k': this.focusUp,
-				'left|h|shift+tab': this.focusLeft,
-				'right|l|tab': this.focusRight,
-				'down|j': this.focusDown,
-				'1': () => this.react('like'),
-				'2': () => this.react('love'),
-				'3': () => this.react('laugh'),
-				'4': () => this.react('hmm'),
-				'5': () => this.react('surprise'),
-				'6': () => this.react('congrats'),
-				'7': () => this.react('angry'),
-				'8': () => this.react('confused'),
-				'9': () => this.react('rip'),
-				'0': () => this.react('pudding'),
 			};
-		}
-	},
-
-	watch: {
-		focus(i) {
-			this.$refs.buttons.children[i].focus();
-
-			if (this.showFocus) {
-				this.title = this.$refs.buttons.children[i].title;
-			}
 		}
 	},
 
 	mounted() {
 		this.$root.getMeta().then(meta => {
 			this.enableEmojiReaction = meta.enableEmojiReaction;
+			this.$nextTick(() => {
+				if (this.$refs.text) this.$refs.text.focus();
+			});
 		});
 
 		this.$nextTick(() => {
-			this.focus = 0;
-
 			const popover = this.$refs.popover as any;
 
 			const rect = this.source.getBoundingClientRect();
@@ -197,26 +166,6 @@ export default Vue.extend({
 				}
 			});
 		},
-
-		focusUp() {
-			this.focus = this.focus == 0 ? 9 : this.focus < 5 ? (this.focus + 4) : (this.focus - 5);
-		},
-
-		focusDown() {
-			this.focus = this.focus == 9 ? 0 : this.focus >= 5 ? (this.focus - 4) : (this.focus + 5);
-		},
-
-		focusRight() {
-			this.focus = this.focus == 9 ? 0 : (this.focus + 1);
-		},
-
-		focusLeft() {
-			this.focus = this.focus == 0 ? 9 : (this.focus - 1);
-		},
-
-		choose() {
-			this.$refs.buttons.childNodes[this.focus].click();
-		}
 	}
 });
 </script>
@@ -287,21 +236,6 @@ export default Vue.extend({
 			grid repeat(2, 1fr) \/ repeat(5, 1fr)
 			padding 4px 4px 8px
 			text-align center
-
-			&.showFocus
-				> button:focus
-					z-index 1
-
-					&:after
-						content ""
-						pointer-events none
-						position absolute
-						top 0
-						right 0
-						bottom 0
-						left 0
-						border 2px solid var(--primaryAlpha03)
-						border-radius 4px
 
 			> button
 				padding 0
