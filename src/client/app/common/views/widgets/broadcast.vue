@@ -15,13 +15,14 @@
 					<path class="wave d" d="M29.18,1.06c-0.479-0.502-1.273-0.522-1.775-0.044c-0.016,0.015-0.029,0.029-0.045,0.044c-0.5,0.52-0.5,1.36,0,1.88 c1.361,1.4,2.041,3.24,2.041,5.08s-0.68,3.66-2.041,5.08c-0.5,0.52-0.5,1.36,0,1.88c0.509,0.508,1.332,0.508,1.841,0 c1.86-1.92,2.8-4.44,2.8-6.96C31.99,5.424,30.98,2.931,29.18,1.06z"></path>
 				</svg>
 			</div>
+			<h1 v-if="!fetching">{{ announcements.length ? announcements[i].title : $t('no-broadcasts') }}</h1>
+			<a @click="prev"><fa :icon="['fal', 'angle-left']" v-if="announcements.length > 1"/></a>
+			<a @click="next"><fa :icon="['fal', 'angle-right']" v-if="announcements.length > 1"/></a>
 			<p class="fetching" v-if="fetching">{{ $t('fetching') }}<mk-ellipsis/></p>
-			<h1 v-if="!fetching">{{ announcements.length == 0 ? $t('no-broadcasts') : announcements[i].title }}</h1>
-			<p v-if="!fetching">
-				<span v-if="announcements.length != 0" v-html="announcements[i].text"></span>
-				<template v-if="announcements.length == 0">{{ $t('have-a-nice-day') }}</template>
+			<p v-else-if="announcements.length" v-html="announcements[i].text"></p>
+			<p v-else class="no">
+				<template>{{ $t('have-a-nice-day') }}</template>
 			</p>
-			<a v-if="announcements.length > 1" @click="next">{{ $t('next') }} &gt;&gt;</a>
 		</div>
 	</ui-container>
 </div>
@@ -52,11 +53,14 @@ export default define({
 		});
 	},
 	methods: {
+		prev() {
+			if (!this.i--) {
+				this.i += this.announcements.length;
+			}
+		},
 		next() {
-			if (this.i == this.announcements.length - 1) {
+			if (++this.i === this.announcements.length) {
 				this.i = 0;
-			} else {
-				this.i++;
 			}
 		},
 		func() {
@@ -73,27 +77,23 @@ export default define({
 
 <style lang="stylus" scoped>
 .anltbovirfeutcigvwgmgxipejaeozxi-body
-	padding 10px
 	background var(--announcementsBg)
+	display grid
+	gap 8px
+	grid minmax(40px, max-content) 1fr / 16px 16px 1fr
+	padding 8px
 
 	&[data-melt]
 		background transparent
 
 	&[data-found]
-		padding-left 50px
-
 		> .icon
 			display block
 
-	&:after
-		content ""
-		display block
-		clear both
-
 	> .icon
 		display none
-		float left
-		margin-left -40px
+		grid-column 1 / 3
+		padding 4px
 
 		> svg
 			fill currentColor
@@ -128,24 +128,33 @@ export default define({
 						opacity 1
 
 	> h1
-		margin 0
-		font-size 0.95em
-		font-weight 300
 		color var(--announcementsTitle)
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+		font-size 1em
+		font-weight 600
+		margin 0
 
 	> p
-		display block
-		z-index 1
-		margin 0
-		font-size 0.7em
 		color var(--announcementsText)
+		font-size 0.7em
+		margin 0
 
 		&.fetching
+			align-items center
+			display flex
+			grid-column 1 / -1
+			grid-row 1 / -1
+			justify-content center
 			text-align center
+			vertical-align middle
+
+		&.no
+			grid-column 3
 
 	> a
-		display block
-		font-size 0.7em
+		align-items flex-end
+		display flex
+		justify-content center
 
 	&[data-mobile]
 		> p
