@@ -334,7 +334,7 @@ export default Vue.extend({
 					.text p [data-icon]
 						color #888
 
-				&.reply, &.mention
+				&.reply, &.mention, &.poll_vote
 					.text p [data-icon]
 						color #555
 
