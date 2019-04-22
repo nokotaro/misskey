@@ -113,7 +113,7 @@
 					<template v-if="notification.type == 'poll_vote'">
 						<mk-avatar class="avatar" :user="notification.user"/>
 						<div class="text">
-							<p><fa :icon="['fal', 'poll-people']"/><a :href="notification.user | userPage" v-user-preview="notification.user.id">
+							<p><fa :icon="['fal', 'vote-yea']"/><a :href="notification.user | userPage" v-user-preview="notification.user.id">
 								<mk-user-name :user="notification.user"/>
 							</a></p>
 							<router-link class="note-ref" :to="notification.note | notePage" :title="getNoteSummary(notification.note)">
