@@ -92,7 +92,7 @@ router.get('/assets/emojis/:query', async ctx => {
 		});
 
 		if (user)
-			ctx.redirect(user.avatarUrl);
+			ctx.redirect(user.avatarUrl || `${config.driveUrl}/default-avatar.jpg`);
 		else
 			ctx.status = 404;
 	} else {
