@@ -2,7 +2,7 @@ import * as WebSocket from 'ws';
 import * as request from 'request-promise-native';
 import config from '../config';
 import { query } from '../prelude/url';
-import { resolveNote } from '../remote/activitypub/models/note';
+import { createNote } from '../remote/activitypub/models/note';
 
 const interval = 1024;
 
@@ -26,7 +26,7 @@ export default function() {
 					} = JSON.parse(data.payload);
 
 					if (typeof payload.uri === 'string')
-						resolveNote(payload.uri);
+						createNote(payload.uri);
 				}
 			} finally {
 			}
@@ -45,7 +45,7 @@ export default function() {
 				json: true
 			}).then(response => Array.isArray(response) && response
 				.filter(x => typeof x === 'object' && typeof x.uri === 'string')
-				.reduceRight<Promise<void>>((a, c) => a.then(() => resolveNote(c)).then(() => {}), Promise.resolve())));
+				.reduceRight<Promise<void>>((a, c) => a.then(() => createNote(c)).then(() => {}), Promise.resolve())));
 
 		socket.on('close', _ => setTimeout(connect, interval, socket));
 	};
