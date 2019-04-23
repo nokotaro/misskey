@@ -6,12 +6,16 @@
 	</div>
 </div>
 <a class="gqnyydlzavusgskkfvwvjiattxdzsqlf" v-else
+	ref="container"
 	:href="image.url"
-	:style="style"
 	:title="image.name"
 	@click.prevent="onClick"
 >
-	<div v-if="image.type === 'image/gif'">GIF</div>
+	<img class="cover" :src="src" ref="blur">
+	<img class="contain" :src="src">
+	<div>
+		<div class="gif" v-if="image.type === 'image/gif'">GIF</div>
+	</div>
 </a>
 </template>
 
@@ -38,24 +42,16 @@ export default Vue.extend({
 		};
 	}
 	computed: {
-		style(): any {
-			let url = `url(${
-				this.$store.state.device.disableShowingAnimatedImages
-					? getStaticImageUrl(this.image.thumbnailUrl)
-					: this.image.thumbnailUrl
-			})`;
-
-			if (this.$store.state.device.loadRemoteMedia || this.$store.state.device.lightmode) {
-				url = null;
-			} else if (this.raw || this.$store.state.device.loadRawImages) {
-				url = `url(${this.image.url})`;
-			}
-
-			return {
-				'background-color': this.image.properties.avgColor && this.image.properties.avgColor.length == 3 ? `rgb(${this.image.properties.avgColor.join(',')}, 0.3)` : 'transparent',
-				'background-image': url
-			};
+		src(): string {
+			return this.$store.state.device.disableShowingAnimatedImages
+				? getStaticImageUrl(this.image.thumbnailUrl)
+				: this.image.thumbnailUrl;
 		}
+	},
+	mounted() {
+		const rect = (this.$refs.container as HTMLAnchorElement).getBoundingClientRect();
+
+		(this.$refs.blur as HTMLImageElement).style.filter = `blur(${Math.max(rect.width, rect.height)}`;
 	},
 	methods: {
 		onClick() {
@@ -69,7 +65,7 @@ export default Vue.extend({
 
 <style lang="stylus" scoped>
 .gqnyydlzavusgskkfvwvjiattxdzsqlf
-	display block
+	display grid
 	cursor zoom-in
 	overflow hidden
 	width 100%
@@ -78,20 +74,34 @@ export default Vue.extend({
 	background-size contain
 	background-repeat no-repeat
 
-	> div
-		background-color var(--text)
-		border-radius 6px
-		color var(--secondary)
-		display inline-block
-		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
-		font-size 14px
-		font-weight 600
-		left 12px
-		opacity .5
-		padding 0 6px
-		text-align center
-		top 12px
-		pointer-events none
+	> *
+		grid-row 1
+		grid-column 1
+		height 100%
+		width 100%
+
+		&.contain
+			object-fit contain
+
+		&.cover
+			filter blur(100vmax)
+			object-fit cover
+			transition filter .2s ease
+
+		> .gif
+			background-color var(--text)
+			border-radius 6px
+			color var(--secondary)
+			display inline-block
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+			font-size 14px
+			font-weight 600
+			left 12px
+			opacity .5
+			padding 0 6px
+			text-align center
+			top 12px
+			pointer-events none
 
 .qjewsnkgzzxlxtzncydssfbgjibiehcy
 	display flex
@@ -101,7 +111,6 @@ export default Vue.extend({
 	color #fff
 
 	> div
-		display table-cell
 		text-align center
 		font-size 12px
 
