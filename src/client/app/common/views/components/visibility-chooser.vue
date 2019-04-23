@@ -1,49 +1,49 @@
 <template>
 <div class="gqyayizv">
 	<div class="backdrop" ref="backdrop" @click="close"></div>
-	<div class="popover" :class="{ isMobile: $root.isMobile }" ref="popover">
+	<div class="popover" :class="{ isMobile: $root.isMobile, dialog }" ref="popover">
 		<div @click="choose('public')" :class="{ active: v == 'public' }">
-			<div><fa icon="globe"/></div>
+			<div><fa :icon="['fal', 'globe']"/></div>
 			<div>
 				<span>{{ $t('public') }}</span>
 			</div>
 		</div>
 		<div @click="choose('home')" :class="{ active: v == 'home' }">
-			<div><fa icon="home"/></div>
+			<div><fa :icon="['fal', 'home']"/></div>
 			<div>
 				<span>{{ $t('home') }}</span>
 				<span>{{ $t('home-desc') }}</span>
 			</div>
 		</div>
 		<div @click="choose('followers')" :class="{ active: v == 'followers' }">
-			<div><fa icon="unlock"/></div>
+			<div><fa :icon="['fal', 'unlock']"/></div>
 			<div>
 				<span>{{ $t('followers') }}</span>
 				<span>{{ $t('followers-desc') }}</span>
 			</div>
 		</div>
 		<div @click="choose('specified')" :class="{ active: v == 'specified' }">
-			<div><fa icon="envelope"/></div>
+			<div><fa :icon="['fal', 'envelope']"/></div>
 			<div>
 				<span>{{ $t('specified') }}</span>
 				<span>{{ $t('specified-desc') }}</span>
 			</div>
 		</div>
 		<div @click="choose('local-public')" :class="{ active: v == 'local-public' }">
-			<div><fa icon="globe"/></div>
+			<div><fa :icon="['fal', 'globe']"/></div>
 			<div>
 				<span>{{ $t('local-public') }}</span>
 				<span>{{ $t('local-public-desc') }}</span>
 			</div>
 		</div>
 		<div @click="choose('local-home')" :class="{ active: v == 'local-home' }">
-			<div><fa icon="home"/></div>
+			<div><fa :icon="['fal', 'home']"/></div>
 			<div>
 				<span>{{ $t('local-home') }}</span>
 			</div>
 		</div>
 		<div @click="choose('local-followers')" :class="{ active: v == 'local-followers' }">
-			<div><fa icon="unlock"/></div>
+			<div><fa :icon="['fal', 'unlock']"/></div>
 			<div>
 				<span>{{ $t('local-followers') }}</span>
 			</div>
@@ -66,6 +66,10 @@ export default Vue.extend({
 		currentVisibility: {
 			type: String,
 			required: false
+		},
+		dialog: {
+			type: Boolean,
+			required: false
 		}
 	},
 	data() {
@@ -78,6 +82,8 @@ export default Vue.extend({
 			const popover = this.$refs.popover as any;
 
 			const rect = this.source.getBoundingClientRect();
+			const xOffset = this.dialog ? 0 : window.pageXOffset;
+			const yOffset = this.dialog ? 0 : window.pageYOffset;
 			const width = popover.offsetWidth;
 			const height = popover.offsetHeight;
 
@@ -85,13 +91,13 @@ export default Vue.extend({
 			let top;
 
 			if (this.$root.isMobile) {
-				const x = rect.left + window.pageXOffset + (this.source.offsetWidth / 2);
-				const y = rect.top + window.pageYOffset + (this.source.offsetHeight / 2);
+				const x = rect.left + xOffset + (this.source.offsetWidth / 2);
+				const y = rect.top + yOffset + (this.source.offsetHeight / 2);
 				left = (x - (width / 2));
 				top = (y - (height / 2));
 			} else {
-				const x = rect.left + window.pageXOffset + (this.source.offsetWidth / 2);
-				const y = rect.top + window.pageYOffset + this.source.offsetHeight;
+				const x = rect.left + xOffset + (this.source.offsetWidth / 2);
+				const y = rect.top + yOffset + this.source.offsetHeight;
 				left = (x - (width / 2));
 				top = y;
 			}
@@ -175,6 +181,9 @@ export default Vue.extend({
 		transform scale(0.5)
 		opacity 0
 
+		&.dialog
+			position fixed
+
 		&:not(.isMobile)
 			$arrow-size = 10px
 
@@ -225,9 +234,9 @@ export default Vue.extend({
 
 				> span:first-child
 					display block
-					font-weight bold
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+					font-weight 600
 
 				> span:last-child:not(:first-child)
 					opacity 0.6
-
 </style>

@@ -6,11 +6,11 @@
 		<ui-container :body-togglable="true"
 			:expanded="$store.state.device.expandUsersActivity"
 			@toggle="expanded => $store.commit('device/set', { key: 'expandUsersActivity', value: expanded })">
-			<template #header><fa icon="chart-bar"/>{{ $t('activity') }}</template>
-			<x-activity :user="user" :limit="35" style="padding: 16px;"/>
+			<template #header><fa :icon="['fal', 'chart-bar']"/>{{ $t('activity') }}</template>
+			<x-activity :user="user" :limit="35" style="padding:16px"/>
 		</ui-container>
 	</div>
-	<x-photos :user="user"/>
+	<!--x-photos :user="user"/-->
 	<x-timeline ref="tl" :user="user"/>
 </div>
 </template>
@@ -47,5 +47,4 @@ export default Vue.extend({
 .lnctpgve
 	> *
 		margin-bottom 16px
-
 </style>

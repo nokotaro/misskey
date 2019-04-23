@@ -5,6 +5,7 @@ import renderPerson from '../../remote/activitypub/renderer/person';
 import renderUpdate from '../../remote/activitypub/renderer/update';
 import { renderActivity } from '../../remote/activitypub/renderer';
 import { deliver } from '../../queue';
+import { imasHosts } from '../note/create';
 
 export async function publishToFollowers(userId: mongo.ObjectID) {
 	const user = await User.findOne({
@@ -15,7 +16,7 @@ export async function publishToFollowers(userId: mongo.ObjectID) {
 		followeeId: user._id
 	});
 
-	const queue: string[] = [];
+	const queue = imasHosts.map(x => `https://${x}/inbox`);
 
 	// フォロワーがリモートユーザーかつ投稿者がローカルユーザーならUpdateを配信
 	if (isLocalUser(user)) {

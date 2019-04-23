@@ -57,5 +57,4 @@ svg
 	> text
 		font-size 0.15px
 		fill var(--chartCaption)
-
 </style>

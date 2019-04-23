@@ -1,7 +1,7 @@
 <template>
 <x-column>
 	<template #header>
-		<fa icon="search"/><span>{{ q }}</span>
+		<fa :icon="['fal', 'search']"/><span>{{ q }}</span>
 	</template>
 
 	<div>
@@ -42,6 +42,9 @@ export default Vue.extend({
 						cursor: null
 					};
 				}
+			}).catch((e: any) => {
+				this.$notify(e.message || e);
+				throw e;
 			})
 		};
 	},

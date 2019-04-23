@@ -2,7 +2,7 @@
 <div class="toltmoik">
 	<button @click="open()" :title="$t('@.messaging')">
 		<i class="bell"><fa :icon="faComments"/></i>
-		<i class="circle" v-if="hasUnreadMessagingMessage"><fa icon="circle"/></i>
+		<i class="circle" v-if="hasUnreadMessagingMessage"><fa :icon="['fas', 'circle']"/></i>
 	</button>
 </div>
 </template>
@@ -11,7 +11,7 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import MkMessagingWindow from './messaging-window.vue';
-import { faComments } from '@fortawesome/free-regular-svg-icons';
+import { faComments } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n(),
@@ -65,5 +65,4 @@ export default Vue.extend({
 			font-size 10px
 			color var(--notificationIndicator)
 			animation blink 1s infinite
-
 </style>

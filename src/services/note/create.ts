@@ -1,7 +1,7 @@
 import es from '../../db/elasticsearch';
 import Note, { pack, INote, IChoice } from '../../models/note';
 import User, { isLocalUser, IUser, isRemoteUser, IRemoteUser, ILocalUser } from '../../models/user';
-import { publishMainStream, publishHomeTimelineStream, publishLocalTimelineStream, publishHybridTimelineStream, publishGlobalTimelineStream, publishUserListStream, publishHashtagStream } from '../stream';
+import { publishMainStream, publishHomeTimelineStream, publishLocalTimelineStream, publishHybridTimelineStream, publishImasTimelineStream, publishImasHybridTimelineStream, publishGlobalTimelineStream, publishUserListStream, publishHashtagStream, publishNoteStream } from '../stream';
 import Following from '../../models/following';
 import { deliver } from '../../queue';
 import renderNote from '../../remote/activitypub/renderer/note';
@@ -27,14 +27,16 @@ import activeUsersChart from '../../services/chart/active-users';
 import instanceChart from '../../services/chart/instance';
 import * as deepcopy from 'deepcopy';
 
-import { erase, concat } from '../../prelude/array';
+import { erase, concat, unique } from '../../prelude/array';
 import insertNoteUnread from './unread';
 import { registerOrFetchInstanceDoc } from '../register-or-fetch-instance-doc';
 import Instance from '../../models/instance';
+import { toASCII } from 'punycode';
 import extractMentions from '../../misc/extract-mentions';
 import extractEmojis from '../../misc/extract-emojis';
 import extractHashtags from '../../misc/extract-hashtags';
 import { genId } from '../../misc/gen-id';
+import { resolveNote } from '../../remote/activitypub/models/note';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
@@ -92,6 +94,7 @@ class NotificationManager {
 
 type Option = {
 	createdAt?: Date;
+	author?: IUser;
 	name?: string;
 	text?: string;
 	reply?: INote;
@@ -100,10 +103,12 @@ type Option = {
 	geo?: any;
 	poll?: any;
 	viaMobile?: boolean;
+	qa?: string;
 	localOnly?: boolean;
 	cw?: string;
 	visibility?: string;
 	visibleUsers?: IUser[];
+	rating?: string;
 	apMentions?: IUser[];
 	apHashtags?: string[];
 	apEmojis?: string[];
@@ -112,13 +117,84 @@ type Option = {
 	app?: IApp;
 };
 
+export const imasHosts = [
+	'imastodon.blue',
+	'imastodon.net',
+	'imastodon.org',
+];
+
+const nyaizable = (text: string) => {
+	if (typeof text !== 'string')
+		return false;
+
+	const trim = text.trim();
+	const match = trim.match(/<\/?!?nya>/ig) || [];
+	const stack: string[] = [];
+	for (const tag of [...match]
+		.map(x => x.toLocaleLowerCase()))
+			if (tag.includes('/')) {
+				if (stack.pop() !== tag.replace('/', ''))
+					return false;
+			} else
+				stack.push(tag);
+	return !!stack.length;
+};
+
+const kahoizable = (text: string) => {
+	if (typeof text !== 'string')
+		return false;
+
+	const trim = text.trim();
+	const match = trim.match(/<\/?!?kaho>/ig) || [];
+	const stack: string[] = [];
+	for (const tag of [...match]
+		.map(x => x.toLocaleLowerCase()))
+			if (tag.includes('/')) {
+				if (stack.pop() !== tag.replace('/', ''))
+					return false;
+			} else
+				stack.push(tag);
+	return !!stack.length;
+};
+
 export default async (user: IUser, data: Option, silent = false) => new Promise<INote>(async (res, rej) => {
 	const isFirstNote = user.notesCount === 0;
 
+	if (data.author == null) data.author = null;
 	if (data.createdAt == null) data.createdAt = new Date();
 	if (data.visibility == null) data.visibility = 'public';
+	if (data.rating == null) data.rating = null;
+	if (data.qa == null) data.qa = null;
 	if (data.viaMobile == null) data.viaMobile = false;
 	if (data.localOnly == null) data.localOnly = false;
+
+	//#region Auto Quote
+	const split = data.text && data.text.trim().split(/[\n\r\s]/ig);
+	const uri = split && split[split.length - 1];
+
+	if (uri) {
+		const note = await resolveNote(uri, null, true).catch(() => null);
+
+		if (note) {
+			data.renote = note;
+
+			const sep = '[\\n\\r\\s]';
+			const url = encodeURI(uri)
+				.replace('\\', '\\\\')
+				.replace('$', '\\$')
+				.replace('.', '\\.')
+				.replace('?', '\\?')
+				.replace('+', '\\+')
+				.replace('*', '\\*')
+				.replace('(', '\\(')
+				.replace(')', '\\)');
+			const match = data.text.match(new RegExp(`^(.*?(${sep}+[QR][ENT]:)?${sep}+)?${url}${sep}*$`));
+
+			if (match)
+				data.text = match[1];
+		}
+	}
+	//#endregion
 
 	// サイレンス
 	if (user.isSilenced && data.visibility == 'public') {
@@ -164,33 +240,45 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 		data.localOnly = true;
 	}
 
-	if (data.text) {
-		data.text = data.text.trim();
-	}
+	const nyaize = nyaizable(data.text);
+	const kahoize = kahoizable(data.text);
+	const kahosafe = kahoize ? data.text && data.text.replace(/^<\/?!?kaho>/ig, '') : data.text;
+	const text = nyaize ? kahosafe && kahosafe.replace(/^<\/?!?nya>/ig, '') : kahosafe;
 
 	let tags = data.apHashtags;
 	let emojis = data.apEmojis;
 	let mentionedUsers = data.apMentions;
 
+	const parseEmojisInToken = true;
+
 	// Parse MFM if needed
-	if (!tags || !emojis || !mentionedUsers) {
-		const tokens = data.text ? parse(data.text) : [];
+	if (parseEmojisInToken || !tags || !emojis || !mentionedUsers) {
+		const text = data.text && data.text.replace(/^<\/?!?(nya|kaho)>/ig, '');
+		const tokens = text ? parse(text) : [];
 		const cwTokens = data.cw ? parse(data.cw) : [];
 		const choiceTokens = data.poll && data.poll.choices
-			? concat((data.poll.choices as IChoice[]).map(choice => parse(choice.text)))
+			? concat((data.poll.choices as IChoice[]).map(choice => parse(choice.text && choice.text.replace(/^<\/?!?(nya|kaho)>/ig, ''))))
 			: [];
 
 		const combinedTokens = tokens.concat(cwTokens).concat(choiceTokens);
 
 		tags = data.apHashtags || extractHashtags(combinedTokens);
 
-		emojis = data.apEmojis || extractEmojis(combinedTokens);
+		emojis = unique(concat([data.apEmojis || [], extractEmojis(combinedTokens)]));
 
 		mentionedUsers = data.apMentions || await extractMentionedUsers(user, combinedTokens);
 	}
 
 	// MongoDBのインデックス対象は128文字以上にできない
 	tags = tags.filter(tag => tag.length <= 100);
+
+	const normalizeAsciiHost = (host: string) => {
+		if (host == null) return null;
+		return toASCII(host.toLowerCase());
+	};
+
+	const mentionEmojis = mentionedUsers.map(user => `@${user.usernameLower}` + (user.host != null ? `@${normalizeAsciiHost(user.host)}` : ''));
+	emojis = emojis.concat(mentionEmojis);
 
 	if (data.reply && !user._id.equals(data.reply.userId) && !mentionedUsers.some(u => u._id.equals(data.reply.userId))) {
 		mentionedUsers.push(await User.findOne({ _id: data.reply.userId }));
@@ -210,12 +298,32 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 		}
 	}
 
+	const answerable = data.reply && data.reply.qa === 'question';
+
+	const bestAnswerable = answerable && data.reply.userId === user._id;
+
+	data.qa =
+		['bestAnswer'].includes(data.qa) && bestAnswerable ? 'bestAnswer' :
+		['bestAnswer', 'answer'].includes(data.qa) && answerable ? 'answer' :
+		['question'].includes(data.qa) ? 'question' : null;
+
 	const note = await insertNote(user, data, tags, emojis, mentionedUsers);
 
 	res(note);
 
 	if (note == null) {
 		return;
+	}
+
+	if (note.qa === 'bestAnswer') {
+		await Note.update({
+			_id: note.replyId
+		}, {
+			$set: {
+				updatedAt: note.createdAt,
+				qa: 'resolvedQuestion'
+			}
+		});
 	}
 
 	// 統計を更新
@@ -296,7 +404,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 
 	createMentionedEvents(mentionedUsers, note, nm);
 
-	const noteActivity = await renderNoteOrRenoteActivity(data, note);
+	const noteActivity = await renderNoteOrRenoteActivity(data, note, text);
 
 	if (isLocalUser(user)) {
 		deliverNoteToMentionedRemoteUsers(mentionedUsers, user, noteActivity);
@@ -321,7 +429,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 
 	// If it is renote
 	if (data.renote) {
-		const type = data.text ? 'quote' : 'renote';
+		const type = text ? 'quote' : 'renote';
 
 		// Notify
 		if (isLocalUser(data.renote._user)) {
@@ -340,6 +448,15 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 		if (!user._id.equals(data.renote.userId) && isLocalUser(data.renote._user)) {
 			publishMainStream(data.renote.userId, 'renote', noteObj);
 		}
+
+		// renote対象noteに対してrenotedイベント
+		if (!isQuote(note)) {
+			publishNoteStream(data.renote._id, 'renoted', {
+				renoteeId: user._id,	// renoteした人
+				noteId: note._id,	// renote扱いのNoteId
+				renoteCount: (data.renote.renoteCount || 0) + 1,
+			});
+		}
 	}
 
 	if (!silent) {
@@ -351,13 +468,13 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	});
 
 	// Register to search database
-	index(note);
+	index(note, text);
 });
 
-async function renderNoteOrRenoteActivity(data: Option, note: INote) {
+async function renderNoteOrRenoteActivity(data: Option, note: INote, text: string) {
 	if (data.localOnly) return null;
 
-	const content = data.renote && data.text == null && data.poll == null && (data.files == null || data.files.length == 0)
+	const content = data.renote && !text && !data.poll && (!data.files || !data.files.length)
 		? renderAnnounce(data.renote.uri ? data.renote.uri : `${config.url}/notes/${data.renote._id}`, note)
 		: renderCreate(await renderNote(note, false), note);
 
@@ -385,6 +502,10 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 			deliver(user, noteActivity, renote._user.inbox);
 		}
 
+		if (note.visibility === 'public') {
+			deliverNoteToImasHosts(user, noteObj);
+		}
+
 		if (['followers', 'specified'].includes(note.visibility)) {
 			const detailPackedNote = await pack(note, user, {
 				detail: true
@@ -392,12 +513,14 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 			// Publish event to myself's stream
 			publishHomeTimelineStream(note.userId, detailPackedNote);
 			publishHybridTimelineStream(note.userId, detailPackedNote);
+			publishImasHybridTimelineStream(note.userId, detailPackedNote);
 
 			if (note.visibility == 'specified') {
 				for (const u of visibleUsers) {
 					if (!u._id.equals(user._id)) {
 						publishHomeTimelineStream(u._id, detailPackedNote);
 						publishHybridTimelineStream(u._id, detailPackedNote);
+						publishImasHybridTimelineStream(u._id, detailPackedNote);
 					}
 				}
 			}
@@ -405,7 +528,7 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 			// Publish event to myself's stream
 			publishHomeTimelineStream(note.userId, noteObj);
 
-			// Publish note to local and hybrid timeline stream
+			// Publish note to local, imas, and hybrid timeline stream
 			if (note.visibility != 'home') {
 				publishLocalTimelineStream(noteObj);
 			}
@@ -415,6 +538,7 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 			} else {
 				// Publish event to myself's stream
 				publishHybridTimelineStream(note.userId, noteObj);
+				publishImasHybridTimelineStream(note.userId, noteObj);
 			}
 		}
 	}
@@ -422,6 +546,12 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 	// Publish note to global timeline stream
 	if (note.visibility == 'public' && note.replyId == null) {
 		publishGlobalTimelineStream(noteObj);
+
+		// Publish note to imas timeline stream
+		if (!note._user.host || imasHosts.includes(note._user.host)) {
+			publishImasTimelineStream(noteObj);
+			publishImasHybridTimelineStream(null, noteObj);
+		}
 	}
 
 	if (['public', 'home', 'followers'].includes(note.visibility)) {
@@ -437,6 +567,7 @@ async function insertNote(user: IUser, data: Option, tags: string[], emojis: str
 	const insert: any = {
 		_id: genId(data.createdAt),
 		createdAt: data.createdAt,
+		authorId: data.author ? data.author._id : null,
 		fileIds: data.files ? data.files.map(file => file._id) : [],
 		replyId: data.reply ? data.reply._id : null,
 		renoteId: data.renote ? data.renote._id : null,
@@ -458,6 +589,7 @@ async function insertNote(user: IUser, data: Option, tags: string[], emojis: str
 				? data.visibleUsers.map(u => u._id)
 				: []
 			: [],
+		rating: data.rating,
 
 		// 以下非正規化データ
 		_reply: data.reply ? {
@@ -504,16 +636,14 @@ async function insertNote(user: IUser, data: Option, tags: string[], emojis: str
 	}
 }
 
-function index(note: INote) {
-	if (note.text == null || config.elasticsearch == null) return;
+function index(note: INote, text: string) {
+	if (!text || !config.elasticsearch) return;
 
 	es.index({
 		index: 'misskey',
 		type: 'note',
 		id: note._id.toString(),
-		body: {
-			text: note.text
-		}
+		body: { text }
 	});
 }
 
@@ -623,6 +753,12 @@ async function publishToFollowers(note: INote, user: IUser, noteActivity: any) {
 function deliverNoteToMentionedRemoteUsers(mentionedUsers: IUser[], user: ILocalUser, noteActivity: any) {
 	for (const u of mentionedUsers.filter(u => isRemoteUser(u))) {
 		deliver(user, noteActivity, (u as IRemoteUser).inbox);
+	}
+}
+
+function deliverNoteToImasHosts(user: ILocalUser, noteActivity: any) {
+	for (const x of imasHosts.map(x => `https://${x}/inbox`)) {
+		deliver(user, noteActivity, x);
 	}
 }
 

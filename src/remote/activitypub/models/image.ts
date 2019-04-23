@@ -60,8 +60,8 @@ export async function createImage(actor: IRemoteUser, value: any): Promise<IDriv
 /**
  * Imageを解決します。
  *
- * Misskeyに対象のImageが登録されていればそれを返し、そうでなければ
- * リモートサーバーからフェッチしてMisskeyに登録しそれを返します。
+ * twistaに対象のImageが登録されていればそれを返し、そうでなければ
+ * リモートサーバーからフェッチしてtwistaに登録しそれを返します。
  */
 export async function resolveImage(actor: IRemoteUser, value: any): Promise<IDriveFile> {
 	// TODO

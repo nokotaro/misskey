@@ -3,22 +3,22 @@
  */
 
 import * as gulp from 'gulp';
-import * as gutil from 'gulp-util';
 import * as ts from 'gulp-typescript';
-const sourcemaps = require('gulp-sourcemaps');
+import * as sourcemaps from 'gulp-sourcemaps';
 import tslint from 'gulp-tslint';
-const cssnano = require('gulp-cssnano');
-const stylus = require('gulp-stylus');
+const postcss = require('gulp-postcss'); // import * as postcss from 'gulp-postcss';
 import * as uglifyComposer from 'gulp-uglify/composer';
+import * as cssnano from 'cssnano';
+import * as through2 from 'through2';
 import * as rimraf from 'rimraf';
 import chalk from 'chalk';
-const imagemin = require('gulp-imagemin');
+import * as imagemin from 'gulp-imagemin';
 import * as rename from 'gulp-rename';
 import * as mocha from 'gulp-mocha';
 import * as replace from 'gulp-replace';
-const uglifyes = require('uglify-es');
+import * as uglifyes from 'uglify-es';
 
-const locales = require('./locales');
+import locales from './locales';
 
 const uglify = uglifyComposer(uglifyes, console);
 
@@ -100,15 +100,17 @@ gulp.task('build:client:script', () => {
 		.pipe(replace('LANGS', JSON.stringify(Object.keys(locales))))
 		.pipe(isProduction ? uglify({
 			toplevel: true
-		} as any) : gutil.noop())
+		} as any) : through2())
 		.pipe(gulp.dest('./built/client/assets/'));
 });
 
 gulp.task('build:client:styles', () =>
 	gulp.src('./src/client/app/init.css')
 		.pipe(isProduction
-			? (cssnano as any)()
-			: gutil.noop())
+			? postcss([
+				cssnano()
+			])
+			: through2())
 		.pipe(gulp.dest('./built/client/assets/'))
 );
 
@@ -118,18 +120,11 @@ gulp.task('copy:client', () =>
 			'./src/client/assets/**/*',
 			'./src/client/app/*/assets/**/*'
 		])
-			.pipe(isProduction ? (imagemin as any)() : gutil.noop())
+			.pipe(isProduction ? (imagemin as any)() : through2())
 			.pipe(rename(path => {
 				path.dirname = path.dirname.replace('assets', '.');
 			}))
 			.pipe(gulp.dest('./built/client/assets/'))
-);
-
-gulp.task('doc', () =>
-	gulp.src('./src/docs/**/*.styl')
-		.pipe(stylus())
-		.pipe((cssnano as any)())
-		.pipe(gulp.dest('./built/docs/assets/'))
 );
 
 gulp.task('build:client', gulp.parallel(
@@ -141,8 +136,7 @@ gulp.task('build:client', gulp.parallel(
 gulp.task('build', gulp.parallel(
 	'build:ts',
 	'build:copy',
-	'build:client',
-	'doc'
+	'build:client'
 ));
 
 gulp.task('default', gulp.task('build'));

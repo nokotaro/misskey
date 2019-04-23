@@ -3,8 +3,8 @@
 	<div class="body">
 		<header>
 			<h1>{{ $t('select-file') }}<span class="count" v-if="files.length > 0">({{ files.length }})</span></h1>
-			<button class="close" @click="cancel"><fa icon="times"/></button>
-			<button v-if="multiple" class="ok" @click="ok"><fa icon="check"/></button>
+			<button class="close" @click="cancel"><fa :icon="['fal', 'times']"/></button>
+			<button v-if="multiple" class="ok" @click="ok"><fa :icon="['fal', 'check']"/></button>
 		</header>
 		<x-drive class="drive" ref="browser"
 			:select-file="true"
@@ -77,7 +77,7 @@ export default Vue.extend({
 				text-align center
 				line-height 42px
 				font-size 1em
-				font-weight normal
+				font-weight 300
 
 				> .count
 					margin-left 4px
@@ -101,5 +101,4 @@ export default Vue.extend({
 			height calc(100% - 42px)
 			overflow scroll
 			-webkit-overflow-scrolling touch
-
 </style>

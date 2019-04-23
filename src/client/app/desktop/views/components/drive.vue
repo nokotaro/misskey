@@ -4,10 +4,10 @@
 		<div class="path" @contextmenu.prevent.stop="() => {}">
 			<x-nav-folder :class="{ current: folder == null }"/>
 			<template v-for="folder in hierarchyFolders">
-				<span class="separator"><fa icon="angle-right"/></span>
+				<span class="separator"><fa :icon="['fal', 'angle-right']"/></span>
 				<x-nav-folder :folder="folder" :key="folder.id"/>
 			</template>
-			<span class="separator" v-if="folder != null"><fa icon="angle-right"/></span>
+			<span class="separator" v-if="folder != null"><fa :icon="['fal', 'angle-right']"/></span>
 			<span class="folder current" v-if="folder != null">{{ folder.name }}</span>
 		</div>
 		<!--
@@ -66,7 +66,7 @@ import XFolder from './drive.folder.vue';
 import XFile from './drive.file.vue';
 import contains from '../../../common/scripts/contains';
 import { url } from '../../../config';
-import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCloudUploadAlt } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('desktop/views/components/drive.vue'),
@@ -140,12 +140,12 @@ export default Vue.extend({
 			this.$contextmenu(e, [{
 				type: 'item',
 				text: this.$t('contextmenu.create-folder'),
-				icon: ['far', 'folder'],
+				icon: ['fal', 'folder'],
 				action: this.createFolder
 			}, {
 				type: 'item',
 				text: this.$t('contextmenu.upload'),
-				icon: 'upload',
+				icon: ['fal', 'upload'],
 				action: this.selectLocalFile
 			}, {
 				type: 'item',
@@ -622,7 +622,8 @@ export default Vue.extend({
 					text-decoration underline
 
 				&.current
-					font-weight bold
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+					font-weight 600
 					cursor default
 
 					&:hover
@@ -772,5 +773,4 @@ export default Vue.extend({
 
 	> input
 		display none
-
 </style>

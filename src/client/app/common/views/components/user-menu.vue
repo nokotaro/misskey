@@ -8,8 +8,8 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import copyToClipboard from '../../../common/scripts/copy-to-clipboard';
-import { faExclamationCircle, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
-import { faSnowflake } from '@fortawesome/free-regular-svg-icons';
+import { faExclamationCircle, faMicrophoneSlash } from '@fortawesome/pro-light-svg-icons';
+import { faSnowflake } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/user-menu.vue'),
@@ -18,21 +18,21 @@ export default Vue.extend({
 
 	data() {
 		let menu = [{
-			icon: ['fas', 'at'],
+			icon: ['fal', 'at'],
 			text: this.$t('mention'),
 			action: () => {
 				this.$post({ mention: this.user });
 			}
 		}, null, {
-			icon: ['fas', 'list'],
+			icon: ['fal', 'list'],
 			text: this.$t('push-to-list'),
 			action: this.pushList
 		}, null, {
-			icon: this.user.isMuted ? ['fas', 'eye'] : ['far', 'eye-slash'],
+			icon: this.user.isMuted ? ['fal', 'eye'] : ['fal', 'eye-slash'],
 			text: this.user.isMuted ? this.$t('unmute') : this.$t('mute'),
 			action: this.toggleMute
 		}, {
-			icon: 'ban',
+			icon: ['fal', 'ban'],
 			text: this.user.isBlocking ? this.$t('unblock') : this.$t('block'),
 			action: this.toggleBlock
 		}, null, {

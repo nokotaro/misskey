@@ -22,5 +22,4 @@ export default Vue.extend({
 .nbogcrmo
 	> *
 		margin-right 10px
-
 </style>

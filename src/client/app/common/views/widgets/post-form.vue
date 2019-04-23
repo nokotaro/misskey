@@ -1,7 +1,7 @@
 <template>
 <div>
 	<ui-container :show-header="props.design == 0">
-		<template #header><fa icon="pencil-alt"/>{{ $t('title') }}</template>
+		<template #header><fa :icon="['fal', 'pencil-alt']"/>{{ $t('title') }}</template>
 
 		<div class="lhcuptdmcdkfwmipgazeawoiuxpzaclc-body"
 			@dragover.stop="onDragover"
@@ -18,15 +18,23 @@
 					v-autocomplete="{ model: 'text' }"
 				></textarea>
 				<button class="emoji" @click="emoji" ref="emoji" v-if="!$root.isMobile">
-					<fa :icon="['far', 'laugh']"/>
+					<fa :icon="['fal', 'laugh']"/>
 				</button>
 			</div>
 			<x-post-form-attaches class="files" :files="files" :detachMediaFn="detachMedia"/>
 			<input ref="file" type="file" multiple="multiple" tabindex="-1" @change="onChangeFile"/>
 			<mk-uploader ref="uploader" @uploaded="attachMedia"/>
 			<footer>
-				<button @click="chooseFile"><fa icon="upload"/></button>
-				<button @click="chooseFileFromDrive"><fa icon="cloud"/></button>
+				<button @click="chooseFile"><fa :icon="['fal', 'upload']"/></button>
+				<button @click="chooseFileFromDrive"><fa :icon="['fal', 'cloud']"/></button>
+				<button @click="kao"><fa :icon="['fal', 'cat']"/></button>
+				<button @click="setVisibility" ref="visibilityButton">
+					<span v-if="visibility === 'public'"><fa :icon="['fal', 'globe']"/></span>
+					<span v-if="visibility === 'home'"><fa :icon="['fal', 'home']"/></span>
+					<span v-if="visibility === 'followers'"><fa :icon="['fal', 'unlock']"/></span>
+					<span v-if="visibility === 'specified'"><fa :icon="['fal', 'envelope']"/></span>
+					<span v-if="localOnly" class="localOnly"><fa :icon="['fal', 'heart']"/></span>
+				</button>
 				<button @click="post" :disabled="posting" class="post">{{ $t('note') }}</button>
 			</footer>
 		</div>
@@ -38,6 +46,8 @@
 import define from '../../../common/define-widget';
 import i18n from '../../../i18n';
 import insertTextAtCursor from 'insert-text-at-cursor';
+import getFace from '../../../common/scripts/get-face';
+import MkVisibilityChooser from '../../../common/views/components/visibility-chooser.vue';
 import XPostFormAttaches from '../components/post-form-attaches.vue';
 
 export default define({
@@ -49,7 +59,8 @@ export default define({
 	i18n: i18n('desktop/views/widgets/post-form.vue'),
 
 	components: {
-		XPostFormAttaches
+		XPostFormAttaches,
+		MkVisibilityChooser
 	},
 
 	data() {
@@ -57,6 +68,8 @@ export default define({
 			posting: false,
 			text: '',
 			files: [],
+			visibility: 'public',
+			localOnly: false,
 		};
 	},
 
@@ -72,6 +85,11 @@ export default define({
 			];
 			return xs[Math.floor(Math.random() * xs.length)];
 		}
+	},
+
+	mounted() {
+		// デフォルト公開範囲
+		this.applyVisibility(this.$store.state.settings.defaultNoteVisibility);
 	},
 
 	methods: {
@@ -166,25 +184,39 @@ export default define({
 			});
 		},
 
+		kao() {
+			this.text += getFace();
+		},
+
+		setVisibility() {
+			const w = this.$root.new(MkVisibilityChooser, {
+				source: this.$refs.visibilityButton,
+				currentVisibility: this.visibility
+			});
+			w.$once('chosen', v => {
+				this.applyVisibility(v);
+			});
+		},
+
+		applyVisibility(v :string) {
+			const m = v.match(/^local-(.+)/);
+			if (m) {
+				this.localOnly = true;
+				this.visibility = m[1];
+			} else {
+				this.localOnly = false;
+				this.visibility = v;
+			}
+		},
+
 		post() {
 			this.posting = true;
-
-			let visibility = 'public';
-			let localOnly = false;
-
-			const m = this.$store.state.settings.defaultNoteVisibility.match(/^local-(.+)/);
-			if (m) {
-				visibility = m[1];
-				localOnly = true;
-			} else {
-				visibility = this.$store.state.settings.defaultNoteVisibility;
-			}
 
 			this.$root.api('notes/create', {
 				text: this.text == '' ? undefined : this.text,
 				fileIds: this.files.length > 0 ? this.files.map(f => f.id) : undefined,
-				visibility,
-				localOnly,
+				visibility: this.visibility,
+				localOnly: this.localOnly,
 			}).then(data => {
 				this.clear();
 			}).catch(err => {
@@ -255,6 +287,13 @@ export default define({
 			&:hover
 				color var(--textHighlighted)
 
+		> button > .localOnly
+			color var(--primary)
+			position absolute
+			top 0
+			right 2px
+			transform scale(.8)
+
 		> .post
 			display block
 			margin 0 0 0 auto
@@ -274,5 +313,4 @@ export default define({
 			&:active
 				background var(--primaryDarken10) !important
 				transition background 0s ease
-
 </style>

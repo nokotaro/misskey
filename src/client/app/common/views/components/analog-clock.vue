@@ -79,8 +79,8 @@ export default Vue.extend({
 		},
 
 		ms(): number {
-			return this.now.getMilliseconds() * this.smooth;
-		}
+			return this.now.getMilliseconds() * (!!this.smooth as any as number);
+		},
 		s(): number {
 			return this.now.getSeconds();
 		},

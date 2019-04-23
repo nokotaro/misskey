@@ -3,10 +3,10 @@
 	<mk-notes ref="timeline" :make-promise="makePromise" @inited="() => $emit('loaded')">
 		<template #header>
 			<header class="oh5y2r7l5lx8j6jj791ykeiwgihheguk">
-				<span :data-active="mode == 'default'" @click="mode = 'default'"><fa :icon="['far', 'comment-alt']"/> {{ $t('default') }}</span>
-				<span :data-active="mode == 'with-replies'" @click="mode = 'with-replies'"><fa icon="comments"/> {{ $t('with-replies') }}</span>
-				<span :data-active="mode == 'with-media'" @click="mode = 'with-media'"><fa :icon="['far', 'images']"/> {{ $t('with-media') }}</span>
-				<span :data-active="mode == 'my-posts'" @click="mode = 'my-posts'"><fa icon="user"/> {{ $t('my-posts') }}</span>
+				<span :data-active="mode == 'default'" @click="mode = 'default'"><fa :icon="['fal', 'comment-alt']"/> {{ $t('default') }}</span>
+				<span :data-active="mode == 'with-replies'" @click="mode = 'with-replies'"><fa :icon="['fal', 'comments']"/> {{ $t('with-replies') }}</span>
+				<span :data-active="mode == 'with-media'" @click="mode = 'with-media'"><fa :icon="['fal', 'images']"/> {{ $t('with-media') }}</span>
+				<span :data-active="mode == 'my-posts'" @click="mode = 'my-posts'"><fa :icon="['fal', 'user']"/> {{ $t('my-posts') }}</span>
 			</header>
 		</template>
 	</mk-notes>
@@ -102,7 +102,8 @@ export default Vue.extend({
 		&[data-active]
 			color var(--primary)
 			cursor default
-			font-weight bold
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+			font-weight 600
 
 			&:before
 				content ""
@@ -120,5 +121,4 @@ export default Vue.extend({
 
 			&:hover
 				color var(--desktopTimelineSrcHover)
-
 </style>

@@ -1,11 +1,10 @@
 <template>
 <div class="obdskegsannmntldydackcpzezagxqfy">
 	<header v-if="meta">
-		<p><b>Misskey</b><span>{{ meta.version }}</span></p>
+		<p><b>twista</b><span>{{ meta.version }}</span></p>
 		<p><b>Machine</b><span>{{ meta.machine }}</span></p>
 		<p><b>OS</b><span>{{ meta.os }}</span></p>
 		<p><b>Node</b><span>{{ meta.node }}</span></p>
-		<p>{{ $t('@.ai-chan-kawaii') }}</p>
 	</header>
 
 	<marquee-text v-if="instances.length > 0" class="instances" :repeat="10" :duration="60">
@@ -17,28 +16,28 @@
 	<div v-if="stats" class="stats">
 		<div>
 			<div>
-				<div><fa icon="user"/></div>
+				<div><fa :icon="['fal', 'user']"/></div>
 				<div>
 					<span>{{ $t('accounts') }}</span>
 					<b>{{ stats.originalUsersCount | number }}</b>
 				</div>
 			</div>
 			<div>
-				<span><fa icon="home"/> {{ $t('this-instance') }}</span>
-				<span @click="setChartSrc('users')"><fa :icon="['far', 'chart-bar']"/></span>
+				<span><fa :icon="['fal', 'home']"/> {{ $t('this-instance') }}</span>
+				<span @click="setChartSrc('users')"><fa :icon="['fal', 'chart-bar']"/></span>
 			</div>
 		</div>
 		<div>
 			<div>
-				<div><fa icon="pencil-alt"/></div>
+				<div><fa :icon="['fal', 'pencil-alt']"/></div>
 				<div>
 					<span>{{ $t('notes') }}</span>
 					<b>{{ stats.originalNotesCount | number }}</b>
 				</div>
 			</div>
 			<div>
-				<span><fa icon="home"/> {{ $t('this-instance') }}</span>
-				<span @click="setChartSrc('notes')"><fa :icon="['far', 'chart-bar']"/></span>
+				<span><fa :icon="['fal', 'home']"/> {{ $t('this-instance') }}</span>
+				<span @click="setChartSrc('notes')"><fa :icon="['fal', 'chart-bar']"/></span>
 			</div>
 		</div>
 		<div>
@@ -50,21 +49,21 @@
 				</div>
 			</div>
 			<div>
-				<span><fa icon="home"/> {{ $t('this-instance') }}</span>
-				<span @click="setChartSrc('drive')"><fa :icon="['far', 'chart-bar']"/></span>
+				<span><fa :icon="['fal', 'home']"/> {{ $t('this-instance') }}</span>
+				<span @click="setChartSrc('drive')"><fa :icon="['fal', 'chart-bar']"/></span>
 			</div>
 		</div>
 		<div>
 			<div>
-				<div><fa :icon="['far', 'hdd']"/></div>
+				<div><fa :icon="['fal', 'hdd']"/></div>
 				<div>
 					<span>{{ $t('instances') }}</span>
 					<b>{{ stats.instances | number }}</b>
 				</div>
 			</div>
 			<div>
-				<span><fa icon="globe"/> {{ $t('federated') }}</span>
-				<span @click="setChartSrc('federation-instances-total')"><fa :icon="['far', 'chart-bar']"/></span>
+				<span><fa :icon="['fal', 'globe']"/> {{ $t('federated') }}</span>
+				<span @click="setChartSrc('federation-instances-total')"><fa :icon="['fal', 'chart-bar']"/></span>
 			</div>
 		</div>
 	</div>
@@ -94,7 +93,7 @@ import XCpuMemory from "./dashboard.cpu-memory.vue";
 import XQueue from "./dashboard.queue-charts.vue";
 import XCharts from "./dashboard.charts.vue";
 import XApLog from "./dashboard.ap-log.vue";
-import { faDatabase } from '@fortawesome/free-solid-svg-icons';
+import { faDatabase } from '@fortawesome/pro-light-svg-icons';
 import MarqueeText from 'vue-marquee-text-component';
 import randomColor from 'randomcolor';
 
@@ -285,5 +284,4 @@ export default Vue.extend({
 
 	> .cpu-memory
 		margin-bottom 16px
-
 </style>

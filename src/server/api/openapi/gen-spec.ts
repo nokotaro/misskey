@@ -12,14 +12,14 @@ export function genOpenapiSpec(lang = 'ja-JP') {
 
 		info: {
 			version: 'v1',
-			title: 'Misskey API',
-			description: '**Misskey is a decentralized microblogging platform.**\n\n' + description,
+			title: 'twista API',
+			description: '**twista is a decentralized microblogging platform.**\n\n' + description,
 			'x-logo': { url: '/assets/api-doc.png' }
 		},
 
 		externalDocs: {
 			description: 'Repository',
-			url: 'https://github.com/syuilo/misskey'
+			url: 'https://github.com/346design/twista.283.cloud'
 		},
 
 		servers: [{
@@ -118,7 +118,7 @@ export function genOpenapiSpec(lang = 'ja-JP') {
 			description: desc,
 			externalDocs: {
 				description: 'Source code',
-				url: `https://github.com/syuilo/misskey/blob/develop/src/server/api/endpoints/${endpoint.name}.ts`
+				url: `https://github.com/346design/twista.283.cloud/blob/develop/src/server/api/endpoints/${endpoint.name}.ts`
 			},
 			...(endpoint.meta.tags ? {
 				tags: endpoint.meta.tags
@@ -185,17 +185,6 @@ export function genOpenapiSpec(lang = 'ja-JP') {
 								$ref: '#/components/schemas/Error'
 							},
 							examples: basicErrors['403']
-						}
-					}
-				},
-				'418': {
-					description: 'I\'m Ai',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '#/components/schemas/Error'
-							},
-							examples: basicErrors['418']
 						}
 					}
 				},

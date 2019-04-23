@@ -23,6 +23,7 @@
 				@focus="focused = true"
 				@blur="focused = false"
 				@keydown="$emit('keydown', $event)"
+				:list="id"
 			>
 			<input v-else ref="input"
 				:type="type"
@@ -37,7 +38,11 @@
 				@focus="focused = true"
 				@blur="focused = false"
 				@keydown="$emit('keydown', $event)"
+				:list="id"
 			>
+			<datalist :id="id" v-if="datalist">
+				<option v-for="data in datalist" :value="data"/>
+			</datalist>
 		</template>
 		<template v-else>
 			<input ref="input"
@@ -56,8 +61,8 @@
 	</div>
 	<div class="toggle" v-if="withPasswordToggle">
 		<a @click='togglePassword'>
-			<span v-if="type == 'password'"><fa :icon="['fa', 'eye']"/> {{ $t('@.show-password') }}</span>
-			<span v-if="type != 'password'"><fa :icon="['far', 'eye-slash']"/> {{ $t('@.hide-password') }}</span>
+			<span v-if="type == 'password'"><fa :icon="['fal', 'eye']"/> {{ $t('@.show-password') }}</span>
+			<span v-if="type != 'password'"><fa :icon="['fal', 'eye-slash']"/> {{ $t('@.hide-password') }}</span>
 		</a>
 	</div>
 	<div class="desc"><slot name="desc"></slot></div>
@@ -130,6 +135,10 @@ export default Vue.extend({
 			required: false,
 			default: false
 		},
+		datalist: {
+			type: Array,
+			required: false,
+		},
 		inline: {
 			type: Boolean,
 			required: false,
@@ -147,7 +156,8 @@ export default Vue.extend({
 		return {
 			v: this.value,
 			focused: false,
-			passwordStrength: ''
+			passwordStrength: '',
+			id: Math.random().toString()
 		};
 	},
 	computed: {
@@ -345,10 +355,11 @@ root(fill)
 		> input
 			display block
 			width 100%
+			height 32px
 			margin 0
 			padding 0
 			font inherit
-			font-weight fill ? bold : normal
+			font-weight fill ? 600 : 300
 			font-size 16px
 			line-height 32px
 			color var(--inputText)
@@ -458,5 +469,4 @@ root(fill)
 
 		&, *
 			cursor not-allowed !important
-
 </style>

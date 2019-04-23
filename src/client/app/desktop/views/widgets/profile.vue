@@ -6,7 +6,7 @@
 			:data-melt="props.design == 2"
 		>
 			<div class="banner"
-				:style="$store.state.i.bannerUrl ? `background-image: url(${$store.state.i.bannerUrl})` : ''"
+				:style="$store.state.i.bannerUrl ? `background-image:url(${$store.state.i.bannerUrl})` : ''"
 				:title="$t('update-banner')"
 				@click="updateBanner()"
 			></div>
@@ -116,7 +116,8 @@ export default define({
 		display block
 		margin 10px 0 0 84px
 		line-height 16px
-		font-weight bold
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+		font-weight 600
 		color var(--text)
 
 	> .username
@@ -126,5 +127,4 @@ export default define({
 		font-size 0.9em
 		color var(--text)
 		opacity 0.7
-
 </style>

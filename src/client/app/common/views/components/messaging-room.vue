@@ -4,11 +4,11 @@
 	@drop.prevent.stop="onDrop"
 >
 	<div class="body">
-		<p class="init" v-if="init"><fa icon="spinner .spin"/>{{ $t('@.loading') }}</p>
-		<p class="empty" v-if="!init && messages.length == 0"><fa icon="info-circle"/>{{ $t('empty') }}</p>
-		<p class="no-history" v-if="!init && messages.length > 0 && !existMoreMessages"><fa icon="flag"/>{{ $t('no-history') }}</p>
+		<p class="init" v-if="init"><fa :icon="['fal', 'spinner .spin']"/>{{ $t('@.loading') }}</p>
+		<p class="empty" v-if="!init && messages.length == 0"><fa :icon="['fal', 'info-circle']"/>{{ $t('empty') }}</p>
+		<p class="no-history" v-if="!init && messages.length > 0 && !existMoreMessages"><fa :icon="['fal', 'flag']"/>{{ $t('no-history') }}</p>
 		<button class="more" :class="{ fetching: fetchingMoreMessages }" v-if="existMoreMessages" @click="fetchMoreMessages" :disabled="fetchingMoreMessages">
-			<template v-if="fetchingMoreMessages"><fa icon="spinner" pulse fixed-width/></template>{{ fetchingMoreMessages ? $t('@.loading') : $t('@.load-more') }}
+			<template v-if="fetchingMoreMessages"><fa :icon="['fal', 'spinner']" pulse fixed-width/></template>{{ fetchingMoreMessages ? $t('@.loading') : $t('@.load-more') }}
 		</button>
 		<template v-for="(message, i) in _messages">
 			<x-message :message="message" :key="message.id"/>
@@ -34,7 +34,7 @@ import i18n from '../../../i18n';
 import XMessage from './messaging-room.message.vue';
 import XForm from './messaging-room.form.vue';
 import { url } from '../../../config';
-import { faArrowCircleDown } from '@fortawesome/free-solid-svg-icons';
+import { faArrowCircleDown } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/messaging-room.vue'),
@@ -352,7 +352,8 @@ export default Vue.extend({
 				display inline-block
 				margin 0
 				padding 0 16px
-				//font-weight bold
+				//font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+				//font-weight 600
 				line-height 32px
 				color var(--messagingRoomDateDividerText)
 				background var(--messagingRoomBg)
@@ -406,5 +407,4 @@ export default Vue.extend({
 .fade-enter, .fade-leave-to
 	transition opacity 0.5s
 	opacity 0
-
 </style>

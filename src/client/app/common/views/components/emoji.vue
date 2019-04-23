@@ -1,14 +1,13 @@
 <template>
-<img v-if="customEmoji" class="fvgwvorwhxigeolkkrcderjzcawqrscl custom" :class="{ normal: normal }" :src="url" :alt="alt" :title="alt"/>
-<img v-else-if="char && !useOsDefaultEmojis" class="fvgwvorwhxigeolkkrcderjzcawqrscl" :src="url" :alt="alt" :title="alt"/>
-<span v-else-if="char && useOsDefaultEmojis">{{ char }}</span>
-<span v-else>:{{ name }}:</span>
+<img v-if="customEmoji" class="fvgwvorwhxigeolkkrcderjzcawqrscl custom" :class="{ normal }" :src="url" :alt="alt" :title="title"/>
+<img v-else-if="!char" class="fvgwvorwhxigeolkkrcderjzcawqrscl custom unknown" :class="{ normal, avatar: name && name.startsWith('@'), circle: $store.state.settings.circleIcons }" :src="animate ? `${config.url}/assets/emojis/${name}` : `${config.url}/proxy/${name}.png?url=${encodeURIComponent(`${config.url}/assets/emojis/${name}`)}&static=1`" :alt="`:${name}:`" :title="`:${name}:`"/>
+<span v-else-if="useOsDefaultEmojis">{{ char }}</span>
+<img v-else class="fvgwvorwhxigeolkkrcderjzcawqrscl" :src="url" :alt="alt" :title="alt"/>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-// スクリプトサイズがデカい
-//import { lib } from 'emojilib';
+import { lib } from 'emojilib';
 import { getStaticImageUrl } from '../../../common/scripts/get-static-image-url';
 import { twemojiBase } from '../../../../../misc/twemoji-base';
 
@@ -35,6 +34,15 @@ export default Vue.extend({
 			type: Boolean,
 			default: false
 		},
+		config: {
+			required: false,
+			default: {}
+		},
+		animate: {
+			type: Boolean,
+			required: false,
+			default: false
+		}
 	},
 
 	data() {
@@ -47,6 +55,10 @@ export default Vue.extend({
 
 	computed: {
 		alt(): string {
+			return this.customEmoji ? `:${this.customEmoji.resolvable}:` : this.char;
+		},
+
+		title(): string {
 			return this.customEmoji ? `:${this.customEmoji.name}:` : this.char;
 		},
 
@@ -64,10 +76,10 @@ export default Vue.extend({
 					? getStaticImageUrl(customEmoji.url)
 					: customEmoji.url;
 			} else {
-				//const emoji = lib[this.name];
-				//if (emoji) {
-				//	this.char = emoji.char;
-				//}
+				const emoji = lib[this.name];
+				if (emoji) {
+					this.char = emoji.char;
+				}
 			}
 		} else {
 			this.char = this.emoji;
@@ -104,4 +116,18 @@ export default Vue.extend({
 			&:hover
 				transform none
 
+		&.avatar
+			border-radius 8px
+			object-fit cover
+			width 2.5em
+
+			&.normal
+				width 1.25em
+
+			&.circle
+				border-radius 50%
+
+		&.unknown::before
+			display inline-block
+			margin 12px 0 0
 </style>

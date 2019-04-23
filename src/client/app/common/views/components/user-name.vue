@@ -1,5 +1,5 @@
 <template>
-<mfm :text="user.name || user.username" :should-break="false" :plain-text="true" :custom-emojis="user.emojis"/>
+<mfm class="sakura" :text="user.name || user.username" :should-break="false" :plain-text="true" :custom-emojis="user.emojis"/>
 </template>
 
 <script lang="ts">
@@ -14,3 +14,9 @@ export default Vue.extend({
 	}
 });
 </script>
+
+<style lang="stylus" scoped>
+.sakura
+	font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+	font-weight 600
+</style>

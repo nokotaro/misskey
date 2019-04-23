@@ -25,20 +25,25 @@ export const meta = {
 		aliases: {
 			validator: $.optional.arr($.str.min(1)),
 			default: [] as string[]
+		},
+
+		contentType: {
+			validator: $.optional.nullable.str,
+			default: null as string
 		}
 	}
 };
 
 export default define(meta, async (ps) => {
-	const type = await detectUrlMine(ps.url);
+	const contentType = ps.contentType || await detectUrlMine(ps.url);
 
 	const emoji = await Emoji.insert({
 		updatedAt: new Date(),
 		name: ps.name,
 		host: null,
 		aliases: ps.aliases,
-		url: ps.url,
-		type,
+		contentType,
+		url: ps.url
 	});
 
 	return {

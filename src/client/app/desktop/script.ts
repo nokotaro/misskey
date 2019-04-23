@@ -9,7 +9,6 @@ import VueRouter from 'vue-router';
 import './style.styl';
 
 import init from '../init';
-import fuckAdBlock from '../common/scripts/fuck-ad-block';
 import composeNotification from '../common/scripts/compose-notification';
 
 import MkHome from './views/home/home.vue';
@@ -19,7 +18,6 @@ import MkDrive from './views/pages/drive.vue';
 import MkMessagingRoom from './views/pages/messaging-room.vue';
 import MkReversi from './views/pages/games/reversi.vue';
 import MkShare from '../common/views/pages/share.vue';
-import MkFollow from '../common/views/pages/follow.vue';
 import MkNotFound from '../common/views/pages/not-found.vue';
 import MkSettings from './views/pages/settings.vue';
 
@@ -164,7 +162,6 @@ init(async (launch, os) => {
 			{ path: '/selectdrive', component: MkSelectDrive },
 			{ path: '/share', component: MkShare },
 			{ path: '/games/reversi/:game?', component: MkReversi },
-			{ path: '/authorize-follow', component: MkFollow },
 			{ path: '/deck', redirect: '/' },
 			{ path: '*', component: MkNotFound }
 		],
@@ -175,13 +172,6 @@ init(async (launch, os) => {
 
 	// Launch the app
 	const [app, _] = launch(router);
-
-	if (os.store.getters.isSignedIn) {
-		/**
-		 * Fuck AD Block
-		 */
-		fuckAdBlock(app);
-	}
 
 	/**
 	 * Init Notification

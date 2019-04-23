@@ -11,7 +11,7 @@ import { ApiError } from '../../error';
 
 export const meta = {
 	desc: {
-		'ja-JP': 'ハイブリッドタイムラインを取得します。'
+		'ja-JP': 'ホーム+ローカルタイムラインを取得します。'
 	},
 
 	tags: ['notes'],
@@ -86,6 +86,29 @@ export const meta = {
 			}
 		},
 
+		fileType: {
+			validator: $.optional.arr($.str),
+			desc: {
+				'ja-JP': '指定された種類のファイルが添付された投稿のみを取得します'
+			}
+		},
+
+		excludeNsfw: {
+			validator: $.optional.bool,
+			default: false,
+			desc: {
+				'ja-JP': 'true にすると、NSFW指定されたファイルを除外します(fileTypeが指定されている場合のみ有効)'
+			}
+		},
+
+		excludeSfw: {
+			validator: $.optional.bool,
+			default: false,
+			desc: {
+				'ja-JP': 'true にすると、NSFW指定されてないファイルを除外します(fileTypeが指定されている場合のみ有効)'
+			}
+		},
+
 		mediaOnly: {
 			validator: $.optional.bool,
 			deprecated: true,
@@ -104,7 +127,7 @@ export const meta = {
 
 	errors: {
 		stlDisabled: {
-			message: 'Social timeline has been disabled.',
+			message: 'Home+Local timeline has been disabled.',
 			code: 'STL_DISABLED',
 			id: '620763f4-f621-4533-ab33-0577a1a3c342'
 		},
@@ -256,6 +279,24 @@ export default define(meta, async (ps, user) => {
 		query.$and.push({
 			fileIds: { $exists: true, $ne: [] }
 		});
+	}
+
+	if (ps.fileType) {
+		query.fileIds = { $exists: true, $ne: [] };
+
+		query['_files.contentType'] = {
+			$in: ps.fileType
+		};
+
+		if (ps.excludeNsfw) {
+			query['_files.metadata.isSensitive'] = {
+				$ne: true
+			};
+		}
+
+		if (ps.excludeSfw) {
+			query['_files.metadata.isSensitive'] = true;
+		}
 	}
 
 	if (ps.sinceId) {

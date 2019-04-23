@@ -45,7 +45,11 @@ export default Vue.extend({
 		},
 		style(): any {
 			return {
-				borderRadius: this.$store.state.settings.circleIcons ? '100%' : null
+				borderRadius: this.$store.state.settings.circleIcons ? '100%' : null,
+				transform: this.user.avatarAngle ?
+					`rotate(${['0', 'initial', 'inherit', 'unset', 'revert'].includes(this.user.avatarAngle) ? this.user.avatarAngle :
+					this.user.avatarAngle.startsWith('+') ? `-${this.user.avatarAngle.slice(1)}` :
+					this.user.avatarAngle.startsWith('-') ? this.user.avatarAngle.slice(1) : `-${this.user.avatarAngle}`})` : null
 			};
 		},
 		url(): string {
@@ -61,7 +65,8 @@ export default Vue.extend({
 						? `rgb(${this.user.avatarColor.join(',')})`
 						: null,
 				backgroundImage: this.lightmode ? null : `url(${this.url})`,
-				borderRadius: this.$store.state.settings.circleIcons ? '100%' : null
+				borderRadius: this.$store.state.settings.circleIcons ? '100%' : null,
+				transform: `rotate(${this.user.avatarAngle})` || null
 			};
 		}
 	},
@@ -115,5 +120,4 @@ export default Vue.extend({
 		top 0
 		transition border-radius 1s ease
 		z-index 1
-
 </style>

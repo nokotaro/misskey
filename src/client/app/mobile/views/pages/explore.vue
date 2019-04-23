@@ -1,6 +1,6 @@
 <template>
 <mk-ui>
-	<template #header><span style="margin-right:4px;"><fa :icon="faHashtag"/></span>{{ $t('@.explore') }}</template>
+	<template #header><span style="margin-right:4px"><fa :icon="faHashtag"/></span>{{ $t('@.explore') }}</template>
 
 	<main>
 		<x-explore v-bind="$attrs"/>
@@ -11,7 +11,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
-import { faHashtag } from '@fortawesome/free-solid-svg-icons';
+import { faHashtag } from '@fortawesome/pro-light-svg-icons';
 import XExplore from '../../../common/views/pages/explore.vue';
 
 export default Vue.extend({

@@ -1,11 +1,11 @@
 import $ from 'cafy';
 import ID, { transform } from '../../../../misc/cafy-id';
 import define from '../../define';
-import User from '../../../../models/user';
+import User, { pack } from '../../../../models/user';
 
 export const meta = {
 	desc: {
-		'ja-JP': '指定したユーザーの公式アカウントを解除します。',
+		'ja-JP': '指定したユーザーの公式プロデューサーを解除します。',
 		'en-US': 'Mark a user as unverified.'
 	},
 
@@ -26,7 +26,7 @@ export const meta = {
 	}
 };
 
-export default define(meta, async (ps) => {
+export default define(meta, async (ps, me) => {
 	const user = await User.findOne({
 		_id: ps.userId
 	});
@@ -35,13 +35,11 @@ export default define(meta, async (ps) => {
 		throw new Error('user not found');
 	}
 
-	await User.findOneAndUpdate({
+	return await pack(await User.findOneAndUpdate({
 		_id: user._id
 	}, {
 		$set: {
 			isVerified: false
 		}
-	});
-
-	return;
+	}, { returnNewDocument: true }), me);
 });

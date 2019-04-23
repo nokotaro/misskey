@@ -79,7 +79,7 @@ export default async (job: Bull.Job): Promise<void> => {
 		}) as IRemoteUser;
 	}
 
-	// Update Person activityの場合は、ここで署名検証/更新処理まで実施して終了
+	// Update activityの場合は、ここで署名検証/更新処理まで実施して終了
 	if (activity.type === 'Update') {
 		if (activity.object && validActor.includes(activity.object.type)) {
 			if (user == null) {
@@ -93,9 +93,19 @@ export default async (job: Bull.Job): Promise<void> => {
 		}
 	}
 
-	// アクティビティを送信してきたユーザーがまだMisskeyサーバーに登録されていなかったら登録する
+	// アクティビティを送信してきたユーザーがまだtwistaサーバーに登録されていなかったら登録する
 	if (user === null) {
-		user = await resolvePerson(activity.actor) as IRemoteUser;
+		try {
+			user = await resolvePerson(activity.actor) as IRemoteUser;
+		} catch (e) {
+			// 対象が4xxならスキップ
+			if (e.statusCode >= 400 && e.statusCode < 500) {
+				logger.warn(`Ignored actor ${activity.actor} - ${e.statusCode}`);
+				return;
+			}
+			logger.error(`Error in actor ${activity.actor} - ${e.statusCode || e}`);
+			throw e;
+		}
 	}
 
 	if (user === null) {
@@ -166,6 +176,11 @@ function ValidateActivity(activity: any, host: string) {
 		if (typeof activity.object.attributedTo === 'string') {
 			const uriHost = toUnicode(new URL(activity.object.attributedTo).hostname.toLowerCase());
 			if (host !== uriHost) throw new Error('activity.object.attributedTo has different host');
+		} else if (Array.isArray(activity.object.attributedTo)) {
+			const hosts = (activity.object.attributedTo as any[])
+				.filter(x => typeof x === 'string')
+				.map(x => toUnicode(new URL(x).hostname.toLowerCase()));
+			if (hosts.length && !hosts.includes(host)) throw new Error('activity.object.attributedTo doesn\'t have same host');
 		}
 	}
 }

@@ -108,6 +108,6 @@ export default define(meta, async (ps, user) => {
 		publishReversiStream(child._id, 'invited', packed);
 		publishMainStream(child._id, 'reversiInvited', packed);
 
-		return;
+		return packed;
 	}
 });

@@ -1,8 +1,8 @@
 <template>
 <mk-ui>
-	<template #header><span style="margin-right:4px;"><fa icon="home"/></span>{{ $t('dashboard') }}</template>
+	<template #header><span style="margin-right:4px"><fa :icon="['fal', 'home']"/></span>{{ $t('dashboard') }}</template>
 	<template #func>
-		<button @click="customizing = !customizing"><fa icon="cog"/></button>
+		<button @click="customizing = !customizing"><fa :icon="['fal', 'cog']"/></button>
 	</template>
 	<main>
 		<template v-if="customizing">
@@ -13,7 +13,6 @@
 					<option value="calendar">{{ $t('@.widgets.calendar') }}</option>
 					<option value="activity">{{ $t('@.widgets.activity') }}</option>
 					<option value="rss">{{ $t('@.widgets.rss') }}</option>
-					<option value="photo-stream">{{ $t('@.widgets.photo-stream') }}</option>
 					<option value="slideshow">{{ $t('@.widgets.slideshow') }}</option>
 					<option value="hashtags">{{ $t('@.widgets.hashtags') }}</option>
 					<option value="posts-monitor">{{ $t('@.widgets.posts-monitor') }}</option>
@@ -34,7 +33,7 @@
 			>
 				<div v-for="widget in widgets" class="customize-container" :key="widget.id">
 					<header>
-						<span class="handle"><fa icon="bars"/></span>{{ widget.name }}<button class="remove" @click="removeWidget(widget)"><fa icon="times"/></button>
+						<span class="handle"><fa :icon="['fal', 'bars']"/></span>{{ widget.name }}<button class="remove" @click="removeWidget(widget)"><fa :icon="['fal', 'times']"/></button>
 					</header>
 					<div @click="widgetFunc(widget.id)">
 						<component :is="`mkw-${widget.name}`" :widget="widget" :ref="widget.id" :is-customize-mode="true" platform="mobile"/>
@@ -86,9 +85,6 @@ export default Vue.extend({
 			}, {
 				name: 'rss',
 				id: 'c', data: {}
-			}, {
-				name: 'photo-stream',
-				id: 'd', data: {}
 			}, {
 				name: 'nav',
 				id: 'f', data: {}
@@ -186,5 +182,4 @@ main
 
 			> *
 				pointer-events none
-
 </style>

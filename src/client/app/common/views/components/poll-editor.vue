@@ -1,20 +1,20 @@
 <template>
 <div class="mk-poll-editor">
 	<p class="caution" v-if="choices.length < 2">
-		<fa icon="exclamation-triangle"/>{{ $t('no-only-one-choice') }}
+		<fa :icon="['fal', 'exclamation-triangle']"/>{{ $t('no-only-one-choice') }}
 	</p>
 	<ul ref="choices">
 		<li v-for="(choice, i) in choices">
 			<input :value="choice" @input="onInput(i, $event)" :placeholder="$t('choice-n').replace('{}', i + 1)">
 			<button @click="remove(i)" :title="$t('remove')">
-				<fa icon="times"/>
+				<fa :icon="['fal', 'times']"/>
 			</button>
 		</li>
 	</ul>
-	<button class="add" v-if="choices.length < 10" @click="add">{{ $t('add') }}</button>
+	<button class="add" v-if="choices.length < 20" @click="add">{{ $t('add') }}</button>
 	<button class="add" v-else disabled>{{ $t('no-more') }}</button>
 	<button class="destroy" @click="destroy" :title="$t('destroy')">
-		<fa icon="times"/>
+		<fa :icon="['fal', 'times']"/>
 	</button>
 	<section>
 		<ui-switch v-model="multiple">{{ $t('multiple') }}</ui-switch>

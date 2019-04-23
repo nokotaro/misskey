@@ -163,7 +163,7 @@ export default Vue.extend({
 			padding 24px
 			font-size 20px
 			text-align center
-			font-weight normal
+			font-weight 300
 
 		> .cancel
 			margin 0 auto
@@ -171,5 +171,4 @@ export default Vue.extend({
 			max-width 200px
 			text-align center
 			border-top dashed 1px #c4cdd4
-
 </style>

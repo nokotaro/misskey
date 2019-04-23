@@ -12,7 +12,7 @@
 		:x="record.x + ((1 - record.v) / 2)" :y="record.date.weekday + ((1 - record.v) / 2)"
 		rx="1" ry="1"
 		:fill="record.color"
-		style="pointer-events: none;"/>
+		style="pointer-events:none"/>
 	<rect class="today"
 		width="1" height="1"
 		:x="data[0].x" :y="data[0].date.weekday"
@@ -76,5 +76,4 @@ svg
 		&.day
 			&:hover
 				fill rgba(#000, 0.05)
-
 </style>

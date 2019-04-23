@@ -1,6 +1,6 @@
 import $ from 'cafy';
 import ID, { transform } from '../../../../misc/cafy-id';
-import User, { isValidName, isValidDescription, isValidLocation, isValidBirthday, pack } from '../../../../models/user';
+import User, { isValidName, isValidDescription, isValidLocation, isValidBirthday, isValidAngle, pack } from '../../../../models/user';
 import { publishMainStream } from '../../../../services/stream';
 import DriveFile from '../../../../models/drive-file';
 import acceptAllFollowRequests from '../../../../services/following/requests/accept-all';
@@ -16,7 +16,7 @@ import { ApiError } from '../../error';
 
 export const meta = {
 	desc: {
-		'ja-JP': 'アカウント情報を更新します。',
+		'ja-JP': 'プロデューサー情報を更新します。',
 		'en-US': 'Update myself'
 	},
 
@@ -37,7 +37,7 @@ export const meta = {
 		description: {
 			validator: $.optional.nullable.str.pipe(isValidDescription),
 			desc: {
-				'ja-JP': 'アカウントの説明や自己紹介'
+				'ja-JP': 'プロデューサーの説明や自己紹介'
 			}
 		},
 
@@ -86,10 +86,18 @@ export const meta = {
 			}
 		},
 
+		avatarAngle: {
+			validator: $.optional.nullable.str.pipe(isValidAngle),
+			transform: transform,
+			desc: {
+				'ja-JP': 'アイコンに設定する画像の角度'
+			}
+		},
+
 		isLocked: {
 			validator: $.optional.bool,
 			desc: {
-				'ja-JP': '鍵アカウントか否か'
+				'ja-JP': '鍵プロデューサーか否か'
 			}
 		},
 
@@ -118,6 +126,13 @@ export const meta = {
 			validator: $.optional.bool,
 			desc: {
 				'ja-JP': '猫か否か'
+			}
+		},
+
+		isKaho: {
+			validator: $.optional.bool,
+			desc: {
+				'ja-JP': 'ｺﾐﾔｶﾎか否か'
 			}
 		},
 
@@ -176,11 +191,13 @@ export default define(meta, async (ps, user, app) => {
 	if (ps.avatarId !== undefined) updates.avatarId = ps.avatarId;
 	if (ps.bannerId !== undefined) updates.bannerId = ps.bannerId;
 	if (ps.wallpaperId !== undefined) updates.wallpaperId = ps.wallpaperId;
+	if (ps.avatarAngle !== undefined) updates.avatarAngle = ps.avatarAngle;
 	if (typeof ps.isLocked == 'boolean') updates.isLocked = ps.isLocked;
 	if (typeof ps.isBot == 'boolean') updates.isBot = ps.isBot;
 	if (typeof ps.carefulBot == 'boolean') updates.carefulBot = ps.carefulBot;
 	if (typeof ps.autoAcceptFollowed == 'boolean') updates.autoAcceptFollowed = ps.autoAcceptFollowed;
 	if (typeof ps.isCat == 'boolean') updates.isCat = ps.isCat;
+	if (typeof ps.isKaho == 'boolean') updates.isKaho = ps.isKaho;
 	if (typeof ps.autoWatch == 'boolean') updates['settings.autoWatch'] = ps.autoWatch;
 	if (typeof ps.alwaysMarkNsfw == 'boolean') updates['settings.alwaysMarkNsfw'] = ps.alwaysMarkNsfw;
 

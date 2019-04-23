@@ -1,6 +1,6 @@
 import $ from 'cafy';
 import * as bcrypt from 'bcryptjs';
-import User from '../../../../models/user';
+import User, { pack } from '../../../../models/user';
 import define from '../../define';
 import { createDeleteNotesJob, createDeleteDriveFilesJob } from '../../../../queue';
 import Message from '../../../../models/messaging-message';
@@ -8,6 +8,8 @@ import Signin from '../../../../models/signin';
 
 export const meta = {
 	requireCredential: true,
+
+	requireModerator: true, // ToDo
 
 	secure: true,
 
@@ -26,7 +28,7 @@ export default define(meta, async (ps, user) => {
 		throw new Error('incorrect password');
 	}
 
-	await User.update({ _id: user._id }, {
+	const updated = await User.findOneAndUpdate({ _id: user._id }, {
 		$set: {
 			isDeleted: true,
 			name: null,
@@ -41,12 +43,12 @@ export default define(meta, async (ps, user) => {
 			fields: [],
 			clientSettings: {},
 		}
-	});
+	}, { returnNewDocument: true });
 
 	Message.remove({ userId: user._id });
 	Signin.remove({ userId: user._id });
 	createDeleteNotesJob(user);
 	createDeleteDriveFilesJob(user);
 
-	return;
+	return await pack(updated, user);
 });

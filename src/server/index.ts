@@ -17,14 +17,22 @@ import * as slow from 'koa-slow';
 
 import activityPub from './activitypub';
 import nodeinfo from './nodeinfo';
+import ostatus from './ostatus';
 import wellKnown from './well-known';
 import config from '../config';
 import networkChart from '../services/chart/network';
 import apiServer from './api';
+import apiStreamingServer from './api/streaming';
+import fileServer from './file';
+import proxyServer from './proxy';
+import webServer from './web';
 import { sum } from '../prelude/array';
 import User from '../models/user';
 import Logger from '../services/logger';
 import { program } from '../argv';
+import Emoji from '../models/emoji';
+import { lib, ordered } from 'emojilib';
+import { twemojiBase } from '../misc/twemoji-base';
 
 export const serverLogger = new Logger('server', 'gray', false);
 
@@ -61,8 +69,8 @@ if (config.url.startsWith('https') && !config.disableHsts) {
 }
 
 app.use(mount('/api', apiServer));
-app.use(mount('/files', require('./file')));
-app.use(mount('/proxy', require('./proxy')));
+app.use(mount('/files', fileServer));
+app.use(mount('/proxy', proxyServer));
 
 // Init router
 const router = new Router();
@@ -70,7 +78,44 @@ const router = new Router();
 // Routing
 router.use(activityPub.routes());
 router.use(nodeinfo.routes());
+router.use(ostatus.routes());
 router.use(wellKnown.routes());
+
+router.get('/assets/emojis/:query', async ctx => {
+	const query: string = ctx.params.query;
+
+	if (query.startsWith('@')) {
+		const [, username, host = null] = query.split('@');
+		const user = await User.findOne({
+			usernameLower: username.toLowerCase(),
+			host
+		});
+
+		if (user)
+			ctx.redirect(user.avatarUrl || `${config.driveUrl}/default-avatar.jpg`);
+		else
+			ctx.status = 404;
+	} else {
+		const [name, host = null] = query.split('@');
+		const emoji = await Emoji.findOne({
+			host,
+			$or: [
+				{ name },
+				{
+					aliases: { $in: [name] }
+				}
+			]
+		});
+
+		if (emoji)
+			ctx.redirect(emoji.url);
+		else if (ordered.includes(name)) {
+			const runed = [...lib[name].char].map(x => x.codePointAt(0).toString(16));
+			ctx.redirect(`${twemojiBase}/2/svg/${((runed.includes('200d') ? runed : runed.filter(x => x !== 'fe0f')).filter(x => x && x.length)).join('-')}.svg`);
+		} else
+			ctx.status = 404;
+	}
+});
 
 router.get('/verify-email/:code', async ctx => {
 	const user = await User.findOne({ emailVerifyCode: ctx.params.code });
@@ -93,7 +138,7 @@ router.get('/verify-email/:code', async ctx => {
 // Register router
 app.use(router.routes());
 
-app.use(mount(require('./web')));
+app.use(mount(webServer));
 
 function createServer() {
 	if (config.https) {
@@ -113,7 +158,7 @@ export const startServer = () => {
 	const server = createServer();
 
 	// Init stream server
-	require('./api/streaming')(server);
+	apiStreamingServer(server as http.Server);
 
 	// Listen
 	server.listen(config.port);
@@ -125,7 +170,7 @@ export default () => new Promise(resolve => {
 	const server = createServer();
 
 	// Init stream server
-	require('./api/streaming')(server);
+	apiStreamingServer(server as http.Server);
 
 	// Listen
 	server.listen(config.port, resolve);

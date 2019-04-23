@@ -29,6 +29,11 @@ export const meta = {
 
 		aliases: {
 			validator: $.arr($.str)
+		},
+
+		contentType: {
+			validator: $.optional.nullable.str,
+			default: null as string
 		}
 	}
 };
@@ -40,17 +45,17 @@ export default define(meta, async (ps) => {
 
 	if (emoji == null) throw new Error('emoji not found');
 
-	const type = await detectUrlMine(ps.url);
+	const contentType = ps.url ?
+		ps.contentType || await detectUrlMine(ps.url) :
+		emoji.contentType || 'image/png';
 
-	await Emoji.update({ _id: emoji._id }, {
+	return await Emoji.findOneAndUpdate({ _id: emoji._id }, {
 		$set: {
 			updatedAt: new Date(),
 			name: ps.name,
 			aliases: ps.aliases,
-			url: ps.url,
-			type,
+			contentType,
+			url: ps.url
 		}
-	});
-
-	return;
+	}, { returnNewDocument: true });
 });

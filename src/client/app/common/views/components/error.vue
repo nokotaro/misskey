@@ -1,6 +1,6 @@
 <template>
 <div class="wjqjnyhzogztorhrdgcpqlkxhkmuetgj">
-	<p><fa icon="exclamation-triangle"/> {{ $t('@.error.title') }}</p>
+	<p><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.error.title') }}</p>
 	<ui-button @click="() => $emit('retry')">{{ $t('@.error.retry') }}</ui-button>
 </div>
 </template>
@@ -24,5 +24,4 @@ export default Vue.extend({
 
 	> p
 		margin 0 0 8px 0
-
 </style>

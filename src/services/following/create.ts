@@ -147,14 +147,14 @@ export default async function(follower: IUser, followee: IUser, requestId?: stri
 		if (blocked != null) throw new IdentifiableError('3338392a-f764-498d-8855-db939dcf8c48', 'blocked');
 	}
 
-	// フォロー対象が鍵アカウントである or
+	// フォロー対象が鍵プロデューサーである or
 	// フォロワーがBotであり、フォロー対象がBotからのフォローに慎重である or
 	// フォロワーがローカルユーザーであり、フォロー対象がリモートユーザーである
 	// 上記のいずれかに当てはまる場合はすぐフォローせずにフォローリクエストを発行しておく
 	if (followee.isLocked || (followee.carefulBot && follower.isBot) || (isLocalUser(follower) && isRemoteUser(followee))) {
 		let autoAccept = false;
 
-		// 鍵アカウントであっても、既にフォローされていた場合はスルー
+		// 鍵プロデューサーであっても、既にフォローされていた場合はスルー
 		const following = await Following.findOne({
 			followerId: follower._id,
 			followeeId: followee._id,

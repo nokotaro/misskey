@@ -25,6 +25,7 @@ common:
   close: "Zavřít"
   do-not-copy-paste: "Prosím nezadávejte ani nevkládejte sem kód. Váš účet může být kompromitován."
   load-more: "Načíst více"
+  enter-username: "Zadejte své uživatelské jméno"
   enter-password: "Prosím zadejte heslo"
   2fa: "Dvoufaktorová autentikace"
   customize-home: "Přizpůsobit vzhled domovské stránky"
@@ -276,7 +277,6 @@ common:
     tips: "Tipy"
     hashtags: "Hashtagy"
   dev: "Nepodařilo se vytvořit aplikace. Prosím zkuste to znovu."
-  ai-chan-kawaii: "Ai-chan kawaii!"
   you: "Vy"
 auth/views/form.vue:
   share-access: "Chcete dovolit aplikaci <i>{name}</i> přístup k vašemu účtu?"
@@ -322,7 +322,6 @@ common/views/components/games/reversi/reversi.index.vue:
   mode-invite: "Pozvat"
   my-games: "Moje hra"
   all-games: "Všechny hry"
-  enter-username: "Zadejte své uživatelské jméno"
   game-state:
     ended: "Ukončené"
     playing: "Probíhají"
@@ -733,7 +732,6 @@ desktop/views/components/post-form.vue:
   visibility: "Viditelnost"
   geolocation-alert: "Vaše zařízení nepodporuje lokační službu"
   error: "Chyba"
-  enter-username: "Zadejte své uživatelské jméno..."
 desktop/views/components/post-form-window.vue:
   note: "Nový příspěvek"
   reply: "Odpovědět"

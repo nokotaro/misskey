@@ -47,7 +47,7 @@ describe('API', () => {
 	});
 
 	describe('signup', () => {
-		it('不正なユーザー名でアカウントが作成できない', async(async () => {
+		it('不正なユーザー名でプロデューサーが作成できない', async(async () => {
 			const res = await request('/signup', {
 				username: 'test.',
 				password: 'test'
@@ -55,7 +55,7 @@ describe('API', () => {
 			expect(res).have.status(400);
 		}));
 
-		it('空のパスワードでアカウントが作成できない', async(async () => {
+		it('空のパスワードでプロデューサーが作成できない', async(async () => {
 			const res = await request('/signup', {
 				username: 'test',
 				password: ''
@@ -63,7 +63,7 @@ describe('API', () => {
 			expect(res).have.status(400);
 		}));
 
-		it('正しくアカウントが作成できる', async(async () => {
+		it('正しくプロデューサーが作成できる', async(async () => {
 			const me = {
 				username: 'test',
 				password: 'test'
@@ -76,7 +76,7 @@ describe('API', () => {
 			expect(res.body).have.property('username').eql(me.username);
 		}));
 
-		it('同じユーザー名のアカウントは作成できない', async(async () => {
+		it('同じユーザー名のプロデューサーは作成できない', async(async () => {
 			await signup({
 				username: 'test'
 			});
@@ -136,7 +136,7 @@ describe('API', () => {
 	});
 
 	describe('i/update', () => {
-		it('アカウント設定を更新できる', async(async () => {
+		it('プロデューサー設定を更新できる', async(async () => {
 			const me = await signup();
 
 			const myName = '大室櫻子';
@@ -366,6 +366,55 @@ describe('API', () => {
 			};
 			const res = await request('/notes/create', post, me);
 			expect(res).have.status(400);
+		}));
+
+		it('can make nyaize enable', async(async () => {
+			const me = await signup();
+
+			const post = {
+				text: 'なん<nya>なん<!nya>なん</!nya>なん</nya>なん'
+			};
+
+			const res = await request('/notes/create', post, me);
+
+			expect(res).have.status(200);
+			expect(res.body).be.a('object');
+			expect(res.body).have.property('createdNote');
+			expect(res.body.createdNote).have.property('text').eql('なんにゃんなんにゃんなん');
+		}));
+
+		it('can make nyaize disable', async(async () => {
+			const me = await signup();
+
+			await request('/i/update', {
+				isCat: true
+			}, me);
+
+			const post = {
+				text: 'なん<!nya>なん<nya>なん</nya>なん</!nya>なん'
+			};
+
+			const res = await request('/notes/create', post, me);
+
+			expect(res).have.status(200);
+			expect(res.body).be.a('object');
+			expect(res.body).have.property('createdNote');
+			expect(res.body.createdNote).have.property('text').eql('にゃんなんにゃんなんにゃん');
+		}));
+
+		it('ignore syntax when invalid syntax', async(async () => {
+			const me = await signup();
+
+			const post = {
+				text: 'なん<nya>なん'
+			};
+
+			const res = await request('/notes/create', post, me);
+
+			expect(res).have.status(200);
+			expect(res.body).be.a('object');
+			expect(res.body).have.property('createdNote');
+			expect(res.body.createdNote).have.property('text').eql(post.text);
 		}));
 
 		it('存在しないリプライ先で怒られる', async(async () => {

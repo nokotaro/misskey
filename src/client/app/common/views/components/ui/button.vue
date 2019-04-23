@@ -1,7 +1,7 @@
 <template>
 <component class="dmtdnykelhudezerjlfpbhgovrgnqqgr"
 	:is="link ? 'a' : 'button'"
-	:class="{ inline, primary, wait }"
+	:class="{ inline, primary, wait, concat }"
 	:type="type"
 	@click="$emit('click')"
 	@mousedown="onMousedown"
@@ -17,6 +17,9 @@
 import Vue from 'vue';
 export default Vue.extend({
 	inject: {
+		concat: {
+			default: false
+		},
 		horizonGrouped: {
 			default: false
 		}
@@ -53,8 +56,22 @@ export default Vue.extend({
 			required: false,
 			default: false
 		},
+		grow: {
+			type: Number,
+			required: false,
+			default: 0
+		},
+		shrink: {
+			type: Number,
+			required: false,
+			default: 0
+		}
 	},
 	mounted() {
+		if (this.concat) {
+			this.$el.style.flex = `${this.grow} ${this.shrink} auto`;
+		}
+
 		if (this.autofocus) {
 			this.$nextTick(() => {
 				this.$el.focus();
@@ -112,7 +129,7 @@ export default Vue.extend({
 	margin 0
 	padding 8px 10px
 	text-align center
-	font-weight normal
+	font-weight 300
 	font-size 16px
 	line-height 24px
 	border none
@@ -162,13 +179,21 @@ export default Vue.extend({
 	&:not(.inline) + .dmtdnykelhudezerjlfpbhgovrgnqqgr
 		margin-top 16px
 
+	&.concat
+		&.inline
+			min-width auto
+
+		> .ripples
+			border-radius 0
+
 	&.inline
 		display inline-block
 		width auto
 		min-width 100px
 
 	&.primary
-		font-weight bold
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+		font-weight 600
 
 	&.wait
 		background linear-gradient(
@@ -215,5 +240,4 @@ export default Vue.extend({
 
 	> .content
 		z-index 1
-
 </style>

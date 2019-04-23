@@ -2,8 +2,8 @@
 <div v-if="!fetching" class="kcthdwmv">
 	<mk-note-detail :note="note" :key="note.id"/>
 	<footer>
-		<router-link v-if="note.next" :to="note.next"><fa icon="angle-left"/> {{ $t('next') }}</router-link>
-		<router-link v-if="note.prev" :to="note.prev">{{ $t('prev') }} <fa icon="angle-right"/></router-link>
+		<router-link v-if="note.next" :to="note.next"><fa :icon="['fal', 'angle-left']"/> {{ $t('next') }}</router-link>
+		<router-link v-if="note.prev" :to="note.prev">{{ $t('prev') }} <fa :icon="['fal', 'angle-right']"/></router-link>
 	</footer>
 </div>
 </template>
@@ -55,5 +55,4 @@ export default Vue.extend({
 		> a
 			display inline-block
 			margin 0 16px
-
 </style>

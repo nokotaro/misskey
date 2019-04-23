@@ -1,6 +1,6 @@
 <template>
 <form class="wlvfdpkp" @submit.prevent="onSubmit">
-	<i><fa icon="search"/></i>
+	<i><fa :icon="['fal', 'fingerprint']"/></i>
 	<input v-model="q" type="search" :placeholder="$t('placeholder')" v-autocomplete="{ model: 'q' }"/>
 	<div class="result"></div>
 </form>
@@ -95,5 +95,4 @@ export default Vue.extend({
 
 		&:focus
 			box-shadow 0 0 0 2px var(--primaryAlpha05) !important
-
 </style>

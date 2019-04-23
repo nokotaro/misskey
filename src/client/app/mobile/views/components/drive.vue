@@ -1,17 +1,17 @@
 <template>
 <div class="kmmwchoexgckptowjmjgfsygeltxfeqs">
 	<nav ref="nav">
-		<a @click.prevent="goRoot()" href="/i/drive"><fa icon="cloud"/>{{ $t('@.drive') }}</a>
+		<a @click.prevent="goRoot()" href="/i/drive"><fa :icon="['fal', 'cloud']"/>{{ $t('@.drive') }}</a>
 		<template v-for="folder in hierarchyFolders">
-			<span :key="folder.id + '>'"><fa icon="angle-right"/></span>
+			<span :key="folder.id + '>'"><fa :icon="['fal', 'angle-right']"/></span>
 			<a :key="folder.id" @click.prevent="cd(folder)" :href="`/i/drive/folder/${folder.id}`">{{ folder.name }}</a>
 		</template>
 		<template v-if="folder != null">
-			<span><fa icon="angle-right"/></span>
+			<span><fa :icon="['fal', 'angle-right']"/></span>
 			<p>{{ folder.name }}</p>
 		</template>
 		<template v-if="file != null">
-			<span><fa icon="angle-right"/></span>
+			<span><fa :icon="['fal', 'angle-right']"/></span>
 			<p>{{ file.name }}</p>
 		</template>
 	</nav>
@@ -379,43 +379,30 @@ export default Vue.extend({
 			});
 		},
 
-		openContextMenu() {
-			const fn = window.prompt(this.$t('prompt'));
-			if (fn == null || fn == '') return;
-			switch (fn) {
-				case '1':
-					this.selectLocalFile();
-					break;
-				case '2':
-					this.urlUpload();
-					break;
-				case '3':
-					this.createFolder();
-					break;
-				case '4':
-					this.renameFolder();
-					break;
-				case '5':
-					this.moveFolder();
-					break;
-				case '6':
-					this.deleteFolder();
-					break;
-			}
-		},
-
 		selectLocalFile() {
 			(this.$refs.file as any).click();
 		},
 
 		createFolder() {
-			const name = window.prompt(this.$t('folder-name'));
-			if (name == null || name == '') return;
-			this.$root.api('drive/folders/create', {
-				name: name,
-				parentId: this.folder ? this.folder.id : undefined
-			}).then(folder => {
-				this.addFolder(folder, true);
+			this.$root.dialog({
+				title: this.$t('folder-name')
+				input: {
+					default: this.folder.name
+				}
+			}).then(({ result: name }) => {
+				if (!name) {
+					this.$root.dialog({
+						type: 'error',
+						text: this.$t('folder-name-cannot-empty')
+					});
+					return;
+				}
+				this.$root.api('drive/folders/create', {
+					name: name,
+					parentId: this.folder ? this.folder.id : undefined
+				}).then(folder => {
+					this.addFolder(folder, true);
+				});
 			});
 		},
 
@@ -427,13 +414,25 @@ export default Vue.extend({
 				});
 				return;
 			}
-			const name = window.prompt(this.$t('folder-name'), this.folder.name);
-			if (name == null || name == '') return;
-			this.$root.api('drive/folders/update', {
-				name: name,
-				folderId: this.folder.id
-			}).then(folder => {
-				this.cd(folder);
+			this.$root.dialog({
+				title: this.$t('folder-name')
+				input: {
+					default: this.folder.name
+				}
+			}).then(({ result: name }) => {
+				if (!name) {
+					this.$root.dialog({
+						type: 'error',
+						text: this.$t('cannot-empty')
+					});
+					return;
+				}
+				this.$root.api('drive/folders/update', {
+					name: name,
+					folderId: this.folder.id
+				}).then(folder => {
+					this.cd(folder);
+				});
 			});
 		},
 
@@ -522,7 +521,8 @@ export default Vue.extend({
 			color inherit
 
 			&:last-child
-				font-weight bold
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+				font-weight 600
 
 			> [data-icon]
 				margin-right 4px
@@ -610,5 +610,4 @@ export default Vue.extend({
 
 	> .file
 		display none
-
 </style>

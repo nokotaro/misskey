@@ -5,6 +5,7 @@ import * as nestedProperty from 'nested-property';
 import MiOS from './mios';
 import { erase } from '../../prelude/array';
 import getNoteSummary from '../../misc/get-note-summary';
+import getNotificationSummary from '../../misc/get-notification-summary';
 
 const defaultSettings = {
 	home: null,
@@ -13,7 +14,7 @@ const defaultSettings = {
 	tagTimelines: [],
 	fetchOnScroll: true,
 	remainDeletedNote: false,
-	showPostFormOnTopOfTl: false,
+	showPostFormOnTopOfTl: true,
 	suggestRecentHashtags: true,
 	showClockOnHeader: true,
 	circleIcons: true,
@@ -28,6 +29,7 @@ const defaultSettings = {
 	disableViaMobile: false,
 	memo: null,
 	iLikeSushi: false,
+	disableAnimatedMfm: false,
 	rememberNoteVisibility: false,
 	defaultNoteVisibility: 'public',
 	webSearchEngine: 'https://www.google.com/?#q={{query}}',
@@ -49,12 +51,14 @@ const defaultDeviceSettings = {
 	roundedCorners: true,
 	reduceMotion: false,
 	darkmode: true,
-	darkTheme: 'bb5a8287-a072-4b0a-8ae5-ea2a0d33f4f2',
-	lightTheme: 'light',
+	darkTheme: 'fef11dc4-6b17-436e-b374-73282c44ddc0',
+	lightTheme: '2d066d6e-bd39-4f23-bd48-686d5c1c6ae8',
 	lineWidth: 1,
 	fontSize: 0,
 	themes: [],
 	enableSounds: true,
+	enableSoundsInTimeline: false,
+	enableSoundsInNotifications: true,
 	soundVolume: 0.5,
 	mediaVolume: 0.5,
 	lang: null,
@@ -109,6 +113,11 @@ export default (os: MiOS) => new Vuex.Store({
 			if (state.behindNotes.some(n => n.id === note.id)) return;
 			state.behindNotes.push(note);
 			document.title = `(${state.behindNotes.length}) ${getNoteSummary(note)}`;
+		},
+
+		pushBehindNotification(state, notification) {
+			state.behindNotes.push(notification);
+			document.title = `(${state.behindNotes.length}) ${getNotificationSummary(notification)}`;
 		},
 
 		clearBehindNotes(state) {

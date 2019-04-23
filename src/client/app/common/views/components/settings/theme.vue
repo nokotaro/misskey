@@ -1,6 +1,6 @@
 <template>
 <ui-card>
-	<template #title><fa icon="palette"/> {{ $t('theme') }}</template>
+	<template #title><fa :icon="['fal', 'palette']"/> {{ $t('theme') }}</template>
 	<section class="nicnklzforebnpfgasiypmpdaaglujqm fit-top">
 		<div class="dark">
 			<div class="toggleWrapper">
@@ -48,7 +48,7 @@
 		<a href="https://assets.msky.cafe/theme/list" target="_blank">{{ $t('find-more-theme') }}</a>
 
 		<details class="creator">
-			<summary><fa icon="palette"/> {{ $t('create-a-theme') }}</summary>
+			<summary><fa :icon="['fal', 'palette']"/> {{ $t('create-a-theme') }}</summary>
 			<div>
 				<span>{{ $t('base-theme') }}:</span>
 				<ui-radio v-model="myThemeBase" value="light">{{ $t('base-theme-light') }}</ui-radio>
@@ -63,34 +63,34 @@
 				</ui-textarea>
 			</div>
 			<div>
-				<div style="padding-bottom:8px;">{{ $t('primary-color') }}:</div>
+				<div style="padding-bottom:8px">{{ $t('primary-color') }}:</div>
 				<color-picker v-model="myThemePrimary"/>
 			</div>
 			<div>
-				<div style="padding-bottom:8px;">{{ $t('secondary-color') }}:</div>
+				<div style="padding-bottom:8px">{{ $t('secondary-color') }}:</div>
 				<color-picker v-model="myThemeSecondary"/>
 			</div>
 			<div>
-				<div style="padding-bottom:8px;">{{ $t('text-color') }}:</div>
+				<div style="padding-bottom:8px">{{ $t('text-color') }}:</div>
 				<color-picker v-model="myThemeText"/>
 			</div>
-			<ui-button @click="preview()"><fa icon="eye"/> {{ $t('preview-created-theme') }}</ui-button>
-			<ui-button primary @click="gen()"><fa :icon="['far', 'save']"/> {{ $t('save-created-theme') }}</ui-button>
+			<ui-button @click="preview()"><fa :icon="['fal', 'eye']"/> {{ $t('preview-created-theme') }}</ui-button>
+			<ui-button primary @click="gen()"><fa :icon="['fal', 'save']"/> {{ $t('save-created-theme') }}</ui-button>
 		</details>
 
 		<details>
-			<summary><fa icon="download"/> {{ $t('install-a-theme') }}</summary>
-			<ui-button @click="import_()"><fa icon="file-import"/> {{ $t('import') }}</ui-button>
-			<input ref="file" type="file" accept=".misskeytheme" style="display:none;" @change="onUpdateImportFile"/>
+			<summary><fa :icon="['fal', 'download']"/> {{ $t('install-a-theme') }}</summary>
+			<ui-button @click="import_()"><fa :icon="['fal', 'file-import']"/> {{ $t('import') }}</ui-button>
+			<input ref="file" type="file" accept=".misskeytheme" style="display:none" @change="onUpdateImportFile"/>
 			<p>{{ $t('import-by-code') }}:</p>
 			<ui-textarea v-model="installThemeCode">
 				<span>{{ $t('theme-code') }}</span>
 			</ui-textarea>
-			<ui-button @click="() => install(this.installThemeCode)"><fa icon="check"/> {{ $t('install') }}</ui-button>
+			<ui-button @click="() => install(this.installThemeCode)"><fa :icon="['fal', 'check']"/> {{ $t('install') }}</ui-button>
 		</details>
 
 		<details>
-			<summary><fa icon="folder-open"/> {{ $t('manage-themes') }}</summary>
+			<summary><fa :icon="['fal', 'folder-open']"/> {{ $t('manage-themes') }}</summary>
 			<ui-select v-model="selectedThemeId" :placeholder="$t('select-theme')">
 				<optgroup :label="$t('builtin-themes')">
 					<option v-for="x in builtinThemes" :value="x.id" :key="x.id">{{ x.name }}</option>
@@ -112,8 +112,8 @@
 				<ui-textarea readonly tall :value="selectedThemeCode">
 					<span>{{ $t('theme-code') }}</span>
 				</ui-textarea>
-				<ui-button @click="export_()" link :download="`${selectedTheme.name}.misskeytheme`" ref="export"><fa icon="box"/> {{ $t('export') }}</ui-button>
-				<ui-button @click="uninstall()" v-if="!builtinThemes.some(t => t.id == selectedTheme.id)"><fa :icon="['far', 'trash-alt']"/> {{ $t('uninstall') }}</ui-button>
+				<ui-button @click="export_()" link :download="`${selectedTheme.name}.misskeytheme`" ref="export"><fa :icon="['fal', 'box']"/> {{ $t('export') }}</ui-button>
+				<ui-button @click="uninstall()" v-if="!builtinThemes.some(t => t.id == selectedTheme.id)"><fa :icon="['fal', 'trash-alt']"/> {{ $t('uninstall') }}</ui-button>
 			</template>
 		</details>
 	</section>
@@ -128,7 +128,8 @@ import { Chrome } from 'vue-color';
 import * as uuid from 'uuid';
 import * as tinycolor from 'tinycolor2';
 import * as JSON5 from 'json5';
-import { faMoon, faSun } from '@fortawesome/free-regular-svg-icons';
+import { faSun } from '@fortawesome/pro-light-svg-icons';
+import { faMoon } from '@fortawesome/pro-light-svg-icons';
 
 // 後方互換性のため
 function convertOldThemedefinition(t) {

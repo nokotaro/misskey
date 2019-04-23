@@ -11,8 +11,9 @@ import { getFriendIds } from '../server/api/common/get-friends';
 import config from '../config';
 import FollowRequest from './follow-request';
 import fetchMeta from '../misc/fetch-meta';
-import Emoji from './emoji';
 import { dbLogger } from '../db/logger';
+import { validActor } from '../remote/activitypub/type';
+import packEmojis from '../misc/pack-emojis';
 
 const User = db.get<IUser>('users');
 
@@ -70,7 +71,7 @@ type IUserBase = {
 	isSilenced: boolean;
 
 	/**
-	 * 鍵アカウントか否か
+	 * 鍵プロデューサーか否か
 	 */
 	isLocked: boolean;
 
@@ -90,7 +91,7 @@ type IUserBase = {
 	autoAcceptFollowed: boolean;
 
 	/**
-	 * このアカウントに届いているフォローリクエストの数
+	 * このプロデューサーに届いているフォローリクエストの数
 	 */
 	pendingReceivedFollowRequestsCount: number;
 
@@ -133,10 +134,12 @@ export interface ILocalUser extends IUserBase {
 		name: string;
 		value: string;
 	}[];
+	isKaho: boolean;
 	isCat: boolean;
 	isAdmin?: boolean;
 	isModerator?: boolean;
 	isVerified?: boolean;
+	avatarAngle?: string;
 	twoFactorSecret: string;
 	twoFactorEnabled: boolean;
 	twoFactorTempSecret?: string;
@@ -152,6 +155,7 @@ export interface ILocalUser extends IUserBase {
 export interface IRemoteUser extends IUserBase {
 	inbox: string;
 	sharedInbox?: string;
+	outbox?: string;
 	featured?: string;
 	endpoints: string[];
 	uri: string;
@@ -163,6 +167,11 @@ export interface IRemoteUser extends IUserBase {
 	lastFetchedAt: Date;
 	isAdmin: false;
 	isModerator: false;
+	// isApplication?: boolean;
+	// isGroup?: boolean;
+	isOrganization?: boolean;
+	isPerson?: boolean;
+	isService?: boolean;
 }
 
 export type IUser = ILocalUser | IRemoteUser;
@@ -196,6 +205,10 @@ export function isValidLocation(location: string): boolean {
 
 export function isValidBirthday(birthday: string): boolean {
 	return typeof birthday == 'string' && /^([0-9]{4})\-([0-9]{2})-([0-9]{2})$/.test(birthday);
+}
+
+export function isValidAngle(angle: string): boolean {
+	return typeof angle == 'string' && /^([+-]?(\d*\.)?\d+(deg|g?rad|turn)|0|initial|inherit|unset|revert)$/.test(angle);
 }
 //#endregion
 
@@ -274,6 +287,9 @@ export const pack = (
 		avatarColor: true,
 		avatarUrl: true,
 		emojis: true,
+		avatarAngle: true,
+		...(validActor.reduce<Record<string, boolean>>((a, c) => (a[`is${c}`] = true, a), {})),
+		isKaho: true,
 		isCat: true,
 		isBot: true,
 		isAdmin: true,
@@ -406,11 +422,13 @@ export const pack = (
 
 	// カスタム絵文字添付
 	if (_user.emojis) {
-		_user.emojis = Emoji.find({
-			name: { $in: _user.emojis },
-			host: _user.host
-		}, {
-			fields: { _id: false }
+		_user.emojis = packEmojis(_user.emojis, _user.host, {
+			custom: true,
+			avatar: true,
+			foreign: true
+		}).catch(e => {
+			console.warn(e);
+			return [];
 		});
 	}
 

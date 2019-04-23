@@ -4,17 +4,21 @@
 	<div class="main">
 		<component :is="src == 'list' ? 'mk-user-list-timeline' : 'x-core'" ref="tl" v-bind="options">
 			<header class="zahtxcqi">
-				<span :data-active="src == 'home'" @click="src = 'home'"><fa icon="home"/> {{ $t('home') }}</span>
-				<span :data-active="src == 'local'" @click="src = 'local'" v-if="enableLocalTimeline"><fa :icon="['far', 'comments']"/> {{ $t('local') }}</span>
-				<span :data-active="src == 'hybrid'" @click="src = 'hybrid'" v-if="enableLocalTimeline"><fa icon="share-alt"/> {{ $t('hybrid') }}</span>
-				<span :data-active="src == 'global'" @click="src = 'global'" v-if="enableGlobalTimeline"><fa icon="globe"/> {{ $t('global') }}</span>
-				<span :data-active="src == 'tag'" @click="src = 'tag'" v-if="tagTl"><fa icon="hashtag"/> {{ tagTl.title }}</span>
-				<span :data-active="src == 'list'" @click="src = 'list'" v-if="list"><fa icon="list"/> {{ list.title }}</span>
+				<div class="timelines">
+					<span :data-active="src == 'home'" @click="src = 'home'"><fa :icon="['fal', 'home']"/> {{ $t('home') }}</span>
+					<span :data-active="src == 'local'" @click="src = 'local'" v-if="enableLocalTimeline"><fa :icon="['fal', 'comments']"/> {{ $t('local') }}</span>
+					<span :data-active="src == 'hybrid'" @click="src = 'hybrid'" v-if="enableLocalTimeline"><fa :icon="['fal', 'share-alt']"/> {{ $t('hybrid') }}</span>
+					<span :data-active="src == 'imas'" @click="src = 'imas'" v-if="enableLocalTimeline"><fa :icon="['fal', 'building']"/> {{ $t('imas') }}</span>
+					<span :data-active="src == 'imasHybrid'" @click="src = 'imasHybrid'" v-if="enableLocalTimeline"><fa :icon="['fal', 'city']"/> {{ $t('imasHybrid') }}</span>
+					<span :data-active="src == 'global'" @click="src = 'global'" v-if="enableGlobalTimeline"><fa :icon="['fal', 'globe']"/> {{ $t('global') }}</span>
+					<span :data-active="src == 'tag'" @click="src = 'tag'" v-if="tagTl"><fa :icon="['fal', 'hashtag']"/> {{ tagTl.title }}</span>
+					<span :data-active="src == 'list'" @click="src = 'list'" v-if="list"><fa :icon="['fal', 'list']"/> {{ list.title }}</span>
+				</div>
 				<div class="buttons">
-					<button :data-active="src == 'mentions'" @click="src = 'mentions'" :title="$t('mentions')"><fa icon="at"/><i class="indicator" v-if="$store.state.i.hasUnreadMentions"><fa icon="circle"/></i></button>
-					<button :data-active="src == 'messages'" @click="src = 'messages'" :title="$t('messages')"><fa :icon="['far', 'envelope']"/><i class="indicator" v-if="$store.state.i.hasUnreadSpecifiedNotes"><fa icon="circle"/></i></button>
-					<button @click="chooseTag" :title="$t('hashtag')" ref="tagButton"><fa icon="hashtag"/></button>
-					<button @click="chooseList" :title="$t('list')" ref="listButton"><fa icon="list"/></button>
+					<button :data-active="src == 'mentions'" @click="src = 'mentions'" :title="$t('mentions')"><fa :icon="['fal', 'at']"/><i class="indicator" v-if="$store.state.i.hasUnreadMentions"><fa :icon="['fas', 'circle']"/></i></button>
+					<button :data-active="src == 'messages'" @click="src = 'messages'" :title="$t('messages')"><fa :icon="['fal', 'envelope']"/><i class="indicator" v-if="$store.state.i.hasUnreadSpecifiedNotes"><fa :icon="['fas', 'circle']"/></i></button>
+					<button @click="chooseTag" :title="$t('hashtag')" ref="tagButton"><fa :icon="['fal', 'hashtag']"/></button>
+					<button @click="chooseList" :title="$t('list')" ref="listButton"><fa :icon="['fal', 'list']"/></button>
 				</div>
 			</header>
 		</component>
@@ -78,7 +82,7 @@ export default Vue.extend({
 			) && this.src === 'global') this.src = 'local';
 			if (!(
 				this.enableLocalTimeline = !meta.disableLocalTimeline || this.$store.state.i.isModerator || this.$store.state.i.isAdmin
-			) && ['local', 'hybrid'].includes(this.src)) this.src = 'home';
+			) && ['local', 'hybrid', 'imas', 'imasHybrid'].includes(this.src)) this.src = 'home';
 		});
 
 		if (this.$store.state.device.tl) {
@@ -119,7 +123,7 @@ export default Vue.extend({
 			const lists = await this.$root.api('users/lists/list');
 
 			let menu = [{
-				icon: 'plus',
+				icon: ['fal', 'plus'],
 				text: this.$t('add-list'),
 				action: () => {
 					this.$root.dialog({
@@ -142,7 +146,7 @@ export default Vue.extend({
 			}
 
 			menu = menu.concat(lists.map(list => ({
-				icon: 'list',
+				icon: ['fal', 'list'],
 				text: list.title,
 				action: () => {
 					this.list = list;
@@ -158,7 +162,7 @@ export default Vue.extend({
 
 		chooseTag() {
 			let menu = [{
-				icon: 'plus',
+				icon: ['fal', 'plus'],
 				text: this.$t('add-tag-timeline'),
 				action: () => {
 					this.$root.new(MkSettingsWindow, {
@@ -172,7 +176,7 @@ export default Vue.extend({
 			}
 
 			menu = menu.concat(this.$store.state.settings.tagTimelines.map(t => ({
-				icon: 'hashtag',
+				icon: ['fal', 'hashtag'],
 				text: t.title,
 				action: () => {
 					this.tagTl = t;
@@ -205,13 +209,43 @@ export default Vue.extend({
 		z-index 10
 		background var(--faceHeader)
 		box-shadow 0 var(--lineWidth) var(--desktopTimelineHeaderShadow)
+		display flex
+
+		> .timelines
+			flex 1 1 auto
+
+			> span
+				display inline-block
+				padding 0 10px
+				line-height 42px
+				font-size 12px
+				user-select none
+
+				&[data-active]
+					color var(--primary)
+					cursor default
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+					font-weight 600
+
+					&:before
+						content ""
+						display block
+						position absolute
+						bottom 0
+						left -8px
+						width calc(100% + 16px)
+						height 2px
+						background var(--primary)
+
+				&:not([data-active])
+					color var(--desktopTimelineSrc)
+					cursor pointer
+
+					&:hover
+						color var(--desktopTimelineSrcHover)
 
 		> .buttons
-			position absolute
-			z-index 2
-			top 0
-			right 0
-			padding-right 8px
+			flex 0 0 auto
 
 			> button
 				padding 0 8px
@@ -243,34 +277,4 @@ export default Vue.extend({
 						width 100%
 						height 2px
 						background var(--primary)
-
-		> span
-			display inline-block
-			padding 0 10px
-			line-height 42px
-			font-size 12px
-			user-select none
-
-			&[data-active]
-				color var(--primary)
-				cursor default
-				font-weight bold
-
-				&:before
-					content ""
-					display block
-					position absolute
-					bottom 0
-					left -8px
-					width calc(100% + 16px)
-					height 2px
-					background var(--primary)
-
-			&:not([data-active])
-				color var(--desktopTimelineSrc)
-				cursor pointer
-
-				&:hover
-					color var(--desktopTimelineSrcHover)
-
 </style>

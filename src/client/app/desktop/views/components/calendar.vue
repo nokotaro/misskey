@@ -1,17 +1,18 @@
 <template>
 <div class="mk-calendar" :data-melt="design == 4 || design == 5" :class="{ shadow: $store.state.device.useShadow, round: $store.state.device.roundedCorners }">
-	<template v-if="design == 0 || design == 1">
-		<button @click="prev" :title="$t('prev')"><fa icon="chevron-circle-left"/></button>
+	<template v-if="!design || !~-design">
+		<button @click="prev" :title="$t('prev')"><fa :icon="['fal', 'chevron-circle-left']"/></button>
 		<p class="title">{{ $t('title', { year, month }) }}</p>
-		<button @click="next" :title="$t('next')"><fa icon="chevron-circle-right"/></button>
+		<button @click="next" :title="$t('next')"><fa :icon="['fal', 'chevron-circle-right']"/></button>
 	</template>
 
 	<div class="calendar">
-		<template v-if="design == 0 || design == 2 || design == 4">
+		<template v-if="~design & 1">
 		<div class="weekday"
 			v-for="(day, i) in Array(7).fill(0)"
 			:data-today="year == today.getFullYear() && month == today.getMonth() + 1 && today.getDay() == i"
-			:data-is-donichi="i == 0 || i == 6"
+			:data-is-saturday="!(i - 6)"
+			:data-is-sunday="!i"
 		>{{ weekdayText[i] }}</div>
 		</template>
 		<div v-for="n in paddingDays"></div>
@@ -19,7 +20,8 @@
 			:data-today="isToday(i + 1)"
 			:data-selected="isSelected(i + 1)"
 			:data-is-out-of-range="isOutOfRange(i + 1)"
-			:data-is-donichi="isDonichi(i + 1)"
+			:data-is-saturday="isSaturday(i + 1)"
+			:data-is-sunday="isSunday(i + 1)"
 			@click="go(i + 1)"
 			:title="isOutOfRange(i + 1) ? null : $t('go')"
 		>
@@ -35,10 +37,6 @@ import i18n from '../../../i18n';
 
 const eachMonthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-function isLeapYear(year) {
-	return !(year & (year % 25 ? 3 : 15));
-}
-
 export default Vue.extend({
 	i18n: i18n('desktop/views/components/calendar.vue'),
 	props: {
@@ -51,11 +49,13 @@ export default Vue.extend({
 		}
 	},
 	data() {
+		const today = new Date();
+
 		return {
-			today: new Date(),
-			year: new Date().getFullYear(),
-			month: new Date().getMonth() + 1,
-			selected: new Date(),
+			today,
+			year: today.getFullYear(),
+			month: today.getMonth() + 1,
+			selected: today,
 			weekdayText: [
 				this.$t('@.weekday-short.sunday'),
 				this.$t('@.weekday-short.monday'),
@@ -69,16 +69,12 @@ export default Vue.extend({
 	},
 	computed: {
 		paddingDays(): number {
-			const date = new Date(this.year, this.month - 1, 1);
-			return date.getDay();
+			return new Date(this.year, this.month - 1, 1).getDay();
 		},
 		days(): number {
-			let days = eachMonthDays[this.month - 1];
+			const days = eachMonthDays[this.month - 1];
 
-			// うるう年なら+1日
-			if (this.month == 2 && isLeapYear(this.year)) days++;
-
-			return days;
+			return days + ((this.month == 2 && !((y => y & (y % 25 ? 3 : 15))(this.year))) as any as number);
 		}
 	},
 	methods: {
@@ -92,13 +88,15 @@ export default Vue.extend({
 
 		isOutOfRange(day) {
 			const test = (new Date(this.year, this.month - 1, day)).getTime();
-			return test > this.today.getTime() ||
-				(this.start ? test < (this.start as any).getTime() : false);
+			return test > this.today.getTime() || this.start && test < (this.start as any).getTime();
 		},
 
-		isDonichi(day) {
-			const weekday = (new Date(this.year, this.month - 1, day)).getDay();
-			return weekday == 0 || weekday == 6;
+		isSaturday(day) {
+			return new Date(this.year, this.month - 1, day).getDay() == 6;
+		},
+
+		isSunday(day) {
+			return !new Date(this.year, this.month - 1, day).getDay();
 		},
 
 		prev() {
@@ -151,8 +149,9 @@ export default Vue.extend({
 		padding 0 16px
 		text-align center
 		line-height 42px
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 		font-size 0.9em
-		font-weight bold
+		font-weight 600
 		color var(--faceHeaderText)
 		background var(--faceHeader)
 		box-shadow 0 var(--lineWidth) rgba(#000, 0.07)
@@ -199,15 +198,21 @@ export default Vue.extend({
 			&.weekday
 				color var(--calendarWeek)
 
-				&[data-is-donichi]
-					color var(--calendarSaturdayOrSunday)
+				&[data-is-saturday]
+					color var(--calendarSaturday, var(--calendarSaturdayOrSunday))
+
+				&[data-is-sunday]
+					color var(--calendarSunday, var(--calendarSaturdayOrSunday))
 
 				&[data-today]
 					box-shadow 0 0 0 var(--lineWidth) var(--calendarWeek) inset
 					border-radius 6px
 
-					&[data-is-donichi]
-						box-shadow 0 0 0 var(--lineWidth) var(--calendarSaturdayOrSunday) inset
+					&[data-is-saturday]
+						box-shadow 0 0 0 var(--lineWidth) var(--calendarSaturday, var(--calendarSaturdayOrSunday)) inset
+
+					&[data-is-sunday]
+						box-shadow 0 0 0 var(--lineWidth) var(--calendarSunday, var(--calendarSaturdayOrSunday)) inset
 
 			&.day
 				cursor pointer
@@ -222,15 +227,21 @@ export default Vue.extend({
 				&:active > div
 					background var(--faceClearButtonActive)
 
-				&[data-is-donichi]
+				&[data-is-saturday]
 					color var(--calendarSaturdayOrSunday)
+					color var(--calendarSaturday)
+
+				&[data-is-sunday]
+					color var(--calendarSaturdayOrSunday)
+					color var(--calendarSunday)
 
 				&[data-is-out-of-range]
 					cursor default
 					opacity 0.5
 
 				&[data-selected]
-					font-weight bold
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+					font-weight 600
 
 					> div
 						background var(--faceClearButtonHover)
@@ -248,5 +259,4 @@ export default Vue.extend({
 
 					&:active > div
 						background var(--primaryDarken10)
-
 </style>

@@ -27,7 +27,6 @@ import MkUserList from './views/pages/user-list.vue';
 import MkReversi from './views/pages/games/reversi.vue';
 import MkTag from './views/pages/tag.vue';
 import MkShare from '../common/views/pages/share.vue';
-import MkFollow from '../common/views/pages/follow.vue';
 import MkNotFound from '../common/views/pages/not-found.vue';
 
 import PostForm from './views/components/post-form-dialog.vue';
@@ -157,7 +156,6 @@ init((launch, os) => {
 				{ path: 'followers', component: () => import('../common/views/pages/followers.vue').then(m => m.default) },
 			]},
 			{ path: '/notes/:note', component: MkNote },
-			{ path: '/authorize-follow', component: MkFollow },
 			{ path: '*', component: MkNotFound }
 		]
 	});

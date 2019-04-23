@@ -53,6 +53,22 @@ export const meta = {
 			}
 		},
 
+		rating: {
+			validator: $.optional.nullable.str.or(['0', '12', '15', '18']),
+			default: null as any,
+			desc: {
+				'ja-JP': '投稿のレーティング'
+			}
+		},
+
+		qa: {
+			validator: $.optional.nullable.str.or(['question', 'answer', 'bestAnswer']),
+			default: null as any,
+			desc: {
+				'ja-JP': '質問あるいは回答'
+			}
+		},
+
 		text: {
 			validator: $.optional.nullable.str.pipe(text =>
 				length(text.trim()) <= maxNoteTextLength && text.trim() != ''
@@ -164,7 +180,7 @@ export const meta = {
 			validator: $.optional.obj({
 				choices: $.arr($.str)
 					.unique()
-					.range(2, 10)
+					.range(2, 20)
 					.each(c => c.length > 0 && c.length < 50),
 				multiple: $.optional.bool,
 				expiresAt: $.optional.nullable.num.int(),
@@ -174,6 +190,13 @@ export const meta = {
 				'ja-JP': 'アンケート'
 			},
 			ref: 'poll'
+		},
+
+		as: {
+			validator: $.optional.nullable.str.or(['information']),
+			desc: {
+				'ja-JP': '投稿モード'
+			}
 		}
 	},
 
@@ -227,6 +250,12 @@ export const meta = {
 };
 
 export default define(meta, async (ps, user, app) => {
+	const accounts: Record<string, string> = await fetchMeta() as any;
+
+	const sender = ps.as && (user.isAdmin || user.isModerator) ?
+		await User.findOne({ usernameLower: accounts[`${ps.as}Account`].toLowerCase(), host: null }) :
+		user;
+
 	let visibleUsers: IUser[] = [];
 	if (ps.visibleUserIds) {
 		visibleUsers = await Promise.all(ps.visibleUserIds.map(id => User.findOne({
@@ -303,8 +332,20 @@ export default define(meta, async (ps, user, app) => {
 		ps.visibility = 'specified';
 	}
 
+	//#region qa
+	const answerable = reply && reply.qa === 'question';
+
+	const bestAnswerable = answerable && (user.isAdmin || user.isModerator || reply.userId === user._id);
+
+	const qa =
+		['bestAnswer'].includes(ps.qa) && bestAnswerable ? 'bestAnswer' :
+		['bestAnswer', 'answer'].includes(ps.qa) && answerable ? 'answer' :
+		['question'].includes(ps.qa) ? 'question' : null;
+	//#endregion
+
 	// 投稿を作成
-	const note = await create(user, {
+	const note = await create(sender, {
+		author: sender._id.equals(user._id) ? undefined : user,
 		createdAt: new Date(),
 		files: files,
 		poll: ps.poll ? {
@@ -321,6 +362,8 @@ export default define(meta, async (ps, user, app) => {
 		localOnly: ps.localOnly,
 		visibility: ps.visibility,
 		visibleUsers,
+		rating: ps.rating,
+		qa,
 		apMentions: ps.noExtractMentions ? [] : undefined,
 		apHashtags: ps.noExtractHashtags ? [] : undefined,
 		apEmojis: ps.noExtractEmojis ? [] : undefined,
@@ -328,6 +371,6 @@ export default define(meta, async (ps, user, app) => {
 	});
 
 	return {
-		createdNote: await pack(note, user)
+		createdNote: await pack(note, sender)
 	};
 });

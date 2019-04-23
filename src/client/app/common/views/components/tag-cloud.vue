@@ -1,14 +1,14 @@
 <template>
 <div class="jtivnzhfwquxpsfidertopbmwmchmnmo">
-	<p class="fetching" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
-	<p class="empty" v-else-if="tags.length == 0"><fa icon="exclamation-circle"/>{{ $t('empty') }}</p>
+	<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+	<p class="empty" v-else-if="tags.length == 0"><fa :icon="['fal', 'exclamation-circle']"/>{{ $t('empty') }}</p>
 	<div v-else>
 		<vue-word-cloud
 				:words="tags.slice(0, 20).map(x => [x.name, x.count])"
 				:color="color"
 				:spacing="1">
 			<template slot-scope="{word, text, weight}">
-				<div style="cursor: pointer;" :title="weight">
+				<div style="cursor:pointer" :title="weight">
 					{{ text }}
 				</div>
 			</template>
@@ -36,7 +36,7 @@ export default Vue.extend({
 	},
 	mounted() {
 		this.fetch();
-		this.clock = setInterval(this.fetch, 1000 * 60);
+		this.clock = setInterval(this.fetch, 1000 * 900);
 	},
 	beforeDestroy() {
 		clearInterval(this.clock);
@@ -82,5 +82,4 @@ export default Vue.extend({
 	> div
 		height 100%
 		width 100%
-
 </style>

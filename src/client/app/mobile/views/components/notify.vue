@@ -69,5 +69,4 @@ export default Vue.extend({
 		background-color rgba(#000, 0.5)
 		border-radius 7px
 		overflow hidden
-
 </style>

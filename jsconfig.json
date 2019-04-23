@@ -5,6 +5,7 @@
 		"allowSyntheticDefaultImports": true
 	},
 	"exclude": [
+		"lib",
 		"node_modules",
 		"jspm_packages",
 		"tmp",

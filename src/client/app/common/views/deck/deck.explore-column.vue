@@ -15,7 +15,7 @@ import Vue from 'vue';
 import i18n from '../../../i18n';
 import XColumn from './deck.column.vue';
 import XExplore from '../../../common/views/pages/explore.vue';
-import { faHashtag } from '@fortawesome/free-solid-svg-icons';
+import { faHashtag } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n(),

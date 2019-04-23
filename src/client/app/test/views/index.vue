@@ -12,8 +12,8 @@
 			<mfm :text="mfm" :i="$store.state.i"/>
 		</section>
 		<section>
-			<header style="margin-bottom:0;">AST</header>
-			<ui-textarea v-model="mfmAst" readonly tall style="margin-top:16px;"></ui-textarea>
+			<header style="margin-bottom:0">AST</header>
+			<ui-textarea v-model="mfmAst" readonly tall style="margin-top:16px"></ui-textarea>
 		</section>
 	</ui-card>
 
@@ -47,7 +47,7 @@ import * as JSON5 from 'json5';
 export default Vue.extend({
 	data() {
 		return {
-			mfm: '',
+			mfm: 'Hello World!',
 			dialogType: 'success',
 			dialogTitle: '',
 			dialogText: 'Hello World!',
@@ -78,5 +78,4 @@ export default Vue.extend({
 main
 	max-width 700px
 	margin 0 auto
-
 </style>

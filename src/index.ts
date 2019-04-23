@@ -1,5 +1,5 @@
 /**
- * Misskey Entry Point!
+ * twista Entry Point!
  */
 
 Error.stackTraceLimit = Infinity;
@@ -17,6 +17,8 @@ import Logger from './services/logger';
 import serverStats from './daemons/server-stats';
 import notesStats from './daemons/notes-stats';
 import queueStats from './daemons/queue-stats';
+import imasTlWorker from './daemons/imas-tl-worker';
+import futabaAnzuBot from './daemons/futaba-anzu-bot';
 import loadConfig from './config/load';
 import { Config } from './config/types';
 import { lessThan } from './prelude/array';
@@ -34,7 +36,7 @@ const ev = new Xev();
  * Init process
  */
 function main() {
-	process.title = `Misskey (${cluster.isMaster ? 'master' : 'worker'})`;
+	process.title = `twista (${cluster.isMaster ? 'master' : 'worker'})`;
 
 	if (program.onlyQueue) {
 		queueMain();
@@ -52,6 +54,8 @@ function main() {
 			serverStats();
 			notesStats();
 			queueStats();
+			imasTlWorker();
+			futabaAnzuBot();
 		}
 	}
 
@@ -61,25 +65,12 @@ function main() {
 }
 
 function greet() {
-	if (!program.quiet) {
-		//#region Misskey logo
-		const v = `v${pkg.version}`;
-		console.log('  _____ _         _           ');
-		console.log(' |     |_|___ ___| |_ ___ _ _ ');
-		console.log(' | | | | |_ -|_ -| \'_| -_| | |');
-		console.log(' |_|_|_|_|___|___|_,_|___|_  |');
-		console.log(' ' + chalk.gray(v) + ('                        |___|\n'.substr(v.length)));
-		//#endregion
+	console.log(chalk`${os.hostname()} {gray (PID: ${process.pid.toString()})}`);
 
-		console.log(' Misskey is maintained by @syuilo, @AyaMorisawa, @mei23, and @acid-chicken.');
-		console.log(chalk.keyword('orange')(' If you like Misskey, please donate to support development. https://www.patreon.com/syuilo'));
-
-		console.log('');
-		console.log(chalk`< ${os.hostname()} {gray (PID: ${process.pid.toString()})} >`);
-	}
-
-	bootLogger.info('Welcome to Misskey!');
-	bootLogger.info(`Misskey v${pkg.version}`, null, true);
+	bootLogger.info('Welcome to twista!');
+	bootLogger.info(`twista v${pkg.version}`, null, true);
+	bootLogger.info('twista is maintained by @346design.');
+	bootLogger.info('Misskey (fork base) is maintained by @syuilo, @AyaMorisawa, @mei23, and @acid-chicken.');
 }
 
 /**
@@ -113,7 +104,7 @@ async function masterMain() {
 		process.exit(1);
 	}
 
-	bootLogger.succ('Misskey initialized');
+	bootLogger.succ('twista initialized');
 
 	if (!program.disableClustering) {
 		await spawnWorkers(config.clusterLimit);
@@ -149,7 +140,7 @@ async function queueMain() {
 		process.exit(1);
 	}
 
-	bootLogger.succ('Misskey initialized');
+	bootLogger.succ('twista initialized');
 
 	// start processor
 	require('./queue').default();

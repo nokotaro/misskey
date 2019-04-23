@@ -1,7 +1,7 @@
 <template>
 <div class="mk-user-preview">
 	<template v-if="u != null">
-		<div class="banner" :style="u.bannerUrl ? `background-image: url(${u.bannerUrl})` : ''"></div>
+		<div class="banner" :style="u.bannerUrl ? `background-image:url(${u.bannerUrl})` : ''"></div>
 		<mk-avatar class="avatar" :user="u" :disable-preview="true"/>
 		<div class="title">
 			<router-link class="name" :to="u | userPage"><mk-user-name :user="u"/></router-link>
@@ -123,7 +123,8 @@ export default Vue.extend({
 		> .name
 			display inline-block
 			margin 0
-			font-weight bold
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+			font-weight 600
 			line-height 16px
 			color var(--text)
 
@@ -160,5 +161,4 @@ export default Vue.extend({
 		position absolute
 		top 8px
 		right 8px
-
 </style>

@@ -14,7 +14,7 @@
 
 		<section>
 			<sequential-entrance animation="entranceFromTop" delay="25">
-				<div class="phcqulfl" v-for="user in users">
+				<div class="phcqulfl" v-for="user in users" :key="user.id">
 					<div>
 						<a :href="user | userPage">
 							<mk-avatar class="avatar" :user="user" :disable-link="true"/>
@@ -39,8 +39,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
-import { faList, faICursor, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { faList, faICursor, faUsers } from '@fortawesome/pro-light-svg-icons';
+import { faTrashAlt } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/user-list-editor.vue'),
@@ -115,7 +115,12 @@ export default Vue.extend({
 				listId: this.list.id,
 				userId: user.id
 			}).then(() => {
-				this.fetchUsers();
+				this.$root.api('users/lists/show', {
+					listId: this.list.id
+				}).then(list => {
+					this.list = list;
+					this.fetchUsers();
+				});
 			});
 		}
 	}
@@ -146,5 +151,4 @@ export default Vue.extend({
 				> .username
 					margin-left 8px
 					opacity 0.7
-
 </style>

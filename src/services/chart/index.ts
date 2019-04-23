@@ -158,7 +158,7 @@ export default abstract class Chart<T extends Obj> {
 			data = await this.getTemplate(false, latest.data);
 		} else {
 			// ログが存在しなかったら
-			// (Misskeyインスタンスを建てて初めてのチャート更新時など
+			// (twistaインスタンスを建てて初めてのチャート更新時など
 			// または何らかの理由でチャートコレクションを抹消した場合)
 
 			// 初期ログデータを作成

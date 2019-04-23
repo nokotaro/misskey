@@ -2,7 +2,7 @@
 <component :is="customize ? 'mk-dummy' : 'mk-ui'" v-hotkey.global="keymap" v-if="$store.getters.isSignedIn || $route.name != 'index'">
 	<div class="wqsofvpm" :data-customize="customize">
 		<div class="customize" v-if="customize">
-			<a @click="done()"><fa icon="check"/>{{ $t('done') }}</a>
+			<a @click="done()"><fa :icon="['fal', 'check']"/>{{ $t('done') }}</a>
 			<div>
 				<div class="adder">
 					<p>{{ $t('add-widget') }}</p>
@@ -14,7 +14,6 @@
 						<option value="activity">{{ $t('@.widgets.activity') }}</option>
 						<option value="rss">{{ $t('@.widgets.rss') }}</option>
 						<option value="trends">{{ $t('@.widgets.trends') }}</option>
-						<option value="photo-stream">{{ $t('@.widgets.photo-stream') }}</option>
 						<option value="slideshow">{{ $t('@.widgets.slideshow') }}</option>
 						<option value="version">{{ $t('@.widgets.version') }}</option>
 						<option value="broadcast">{{ $t('@.widgets.broadcast') }}</option>
@@ -145,7 +144,6 @@ export default Vue.extend({
 					'activity',
 					'rss',
 					'hashtags',
-					'photo-stream',
 					'version'
 				],
 				right: [
@@ -348,7 +346,7 @@ export default Vue.extend({
 		display flex
 		justify-content center
 		margin 0 auto
-		max-width 1240px
+		max-width 1440px
 
 		> *
 			.customize-container
@@ -405,5 +403,4 @@ export default Vue.extend({
 					width 100%
 					max-width 700px
 					margin 0 auto
-
 </style>

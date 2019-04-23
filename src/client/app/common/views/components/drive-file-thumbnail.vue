@@ -1,5 +1,5 @@
 <template>
-<div class="zdjebgpv" :class="{ detail }" ref="thumbnail" :style="`background-color: ${ background }`">
+<div class="zdjebgpv" :class="{ detail }" ref="thumbnail" :style="`background-color:${background}`">
 	<img
 		:src="file.url"
 		:alt="file.name"
@@ -12,7 +12,7 @@
 		preload="metadata"
 		controls
 		v-else-if="detail && is === 'video'"/>
-	<img :src="file.thumbnailUrl" alt="" @load="onThumbnailLoaded" :style="`object-fit: ${ fit }`" v-else-if="isThumbnailAvailable"/>
+	<img :src="file.thumbnailUrl" alt="" @load="onThumbnailLoaded" :style="`object-fit:${fit}`" v-else-if="isThumbnailAvailable"/>
 	<fa :icon="faFileImage" class="icon" v-else-if="is === 'image'"/>
 	<fa :icon="faFileVideo" class="icon" v-else-if="is === 'video'"/>
 
@@ -47,7 +47,7 @@ import {
 	faFilePdf,
 	faFileArchive,
 	faFilm
-	} from '@fortawesome/free-solid-svg-icons';
+	} from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	props: {
@@ -183,5 +183,4 @@ export default Vue.extend({
 			max-width 100%
 			height 100%
 			object-fit contain
-
 </style>

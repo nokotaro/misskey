@@ -79,5 +79,4 @@ export default Vue.extend({
 	> .more
 		margin 32px 16px 16px 16px
 		text-align center
-
 </style>

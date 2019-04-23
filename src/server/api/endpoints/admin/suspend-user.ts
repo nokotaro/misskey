@@ -1,7 +1,7 @@
 import $ from 'cafy';
 import ID, { transform } from '../../../../misc/cafy-id';
 import define from '../../define';
-import User, { IUser } from '../../../../models/user';
+import User, { IUser, pack } from '../../../../models/user';
 import Following from '../../../../models/following';
 import deleteFollowing from '../../../../services/following/delete';
 
@@ -28,7 +28,7 @@ export const meta = {
 	}
 };
 
-export default define(meta, async (ps) => {
+export default define(meta, async (ps, me) => {
 	const user = await User.findOne({
 		_id: ps.userId
 	});
@@ -45,17 +45,15 @@ export default define(meta, async (ps) => {
 		throw new Error('cannot suspend moderator');
 	}
 
-	await User.findOneAndUpdate({
+	unFollowAll(user);
+
+	return await pack(await User.findOneAndUpdate({
 		_id: user._id
 	}, {
 		$set: {
 			isSuspended: true
 		}
-	});
-
-	unFollowAll(user);
-
-	return;
+	}, { returnNewDocument: true }), me);
 });
 
 async function unFollowAll(follower: IUser) {

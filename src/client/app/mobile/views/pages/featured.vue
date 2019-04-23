@@ -1,6 +1,6 @@
 <template>
 <mk-ui>
-	<template #header><span style="margin-right:4px;"><fa :icon="faNewspaper"/></span>{{ $t('@.featured-notes') }}</template>
+	<template #header><span style="margin-right:4px"><fa :icon="faNewspaper"/></span>{{ $t('@.featured-notes') }}</template>
 
 	<main>
 		<sequential-entrance animation="entranceFromTop" delay="25">
@@ -16,7 +16,7 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import Progress from '../../../common/scripts/loading';
-import { faNewspaper } from '@fortawesome/free-solid-svg-icons';
+import { faNewspaper } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n(''),
@@ -36,7 +36,8 @@ export default Vue.extend({
 			this.fetching = true;
 
 			this.$root.api('notes/featured', {
-				limit: 30
+				limit: 30,
+				days: 7,
 			}).then(notes => {
 				notes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 				this.notes = notes;
@@ -57,5 +58,4 @@ main
 	@media (min-width 500px)
 		> * > .post
 			margin-bottom 16px
-
 </style>

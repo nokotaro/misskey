@@ -1,6 +1,6 @@
 import $ from 'cafy';
 import ID, { transform } from '../../../../misc/cafy-id';
-import Mute from '../../../../models/mute';
+import Mute, { pack } from '../../../../models/mute';
 import define from '../../define';
 import { ApiError } from '../../error';
 import { getUser } from '../../common/getters';
@@ -74,11 +74,9 @@ export default define(meta, async (ps, user) => {
 	}
 
 	// Create mute
-	await Mute.insert({
+	return await pack(await Mute.insert({
 		createdAt: new Date(),
 		muterId: muter._id,
 		muteeId: mutee._id,
-	});
-
-	return;
+	}), user);
 });

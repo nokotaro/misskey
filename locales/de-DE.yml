@@ -4,19 +4,18 @@ meta:
 common:
   misskey: "Ein ⭐ des Fediversums"
   about-title: "Ein ⭐ des Fediversums."
-  about: "Danke, dass Du Misskey gefunden hast. Misskey ist eine <b>dezentralisierte Microblogging-Plattform</b>, welche auf der ganzen Welt verteilt ist. Da es innerhalb es Fediversums existiert (ein Universum, in dem verschiedene Soziale Netzwerke organisiert sind), ist es unmittelbar mit anderen sozialen Netzwerken verbunden. Warum nimmst du dir nicht einmal eine Auszeit von dem Trubel der Stadt und tauchst in das neue Internet hinein?"
+  about: "Danke, dass Du twista gefunden hast. twista ist eine <b>dezentralisierte Microblogging-Plattform</b>, welche auf der ganzen Welt verteilt ist. Da es innerhalb es Fediversums existiert (ein Universum, in dem verschiedene Soziale Netzwerke organisiert sind), ist es unmittelbar mit anderen sozialen Netzwerken verbunden. Warum nimmst du dir nicht einmal eine Auszeit von dem Trubel der Stadt und tauchst in das neue Internet hinein?"
   intro:
-    title: "Was ist Misskey?"
+    title: "Was ist twista?"
     features: "Funktionen"
     rich-contents: "Notizen"
     reaction: "Reaktionen"
     ui: "Benutzeroberfläche"
     drive: "Drive"
-  adblock:
-    detected: "Bitte deaktiviere den Werbeblocker."
   application-authorization: "Autorisierte Anwendungen"
   close: "Schließen"
   load-more: "Mehr laden"
+  enter-username: "Bitte gib einen Benutzernamen ein"
   enter-password: "Bitte Passwort eingeben"
   2fa: "Zwei-Faktor-Authentifizierung"
   got-it: "Verstanden!"
@@ -100,7 +99,7 @@ common:
   delete: "Löschen"
   loading: "Laden"
   update-available-title: "Aktualisierung verfügbar"
-  update-available: "Eine neue Version von Misskey ist verfügbar ({newer}, aktuell ist {current}). Lade die Seite neu um die aktuelle Version zu laden"
+  update-available: "Eine neue Version von twista ist verfügbar ({newer}, aktuell ist {current}). Lade die Seite neu um die aktuelle Version zu laden"
   my-token-regenerated: "Dein Token wurde generiert. Du wirst jetzt abgemeldet."
   verified-user: "Verifizierter Benutzer"
   do-not-use-in-production: "Dies ist eine Entwicklungsversion. Nicht in einer Produktionsumgebung verwenden."
@@ -164,13 +163,12 @@ common/views/components/games/reversi/reversi.vue:
 common/views/components/games/reversi/reversi.game.vue:
   surrender: "Aufgeben"
 common/views/components/games/reversi/reversi.index.vue:
-  title: "Misskey Reversi"
+  title: "twista Reversi"
   sub-title: "Spiele Reversi mit deinen Freunden!"
   invite: "Einladen"
   rule: "Spielanleitung"
   mode-invite: "Einladen"
   all-games: "Alle Spiele"
-  enter-username: "Bitte gib einen Benutzernamen ein"
   game-state:
     ended: "Fertig"
 common/views/components/games/reversi/reversi.room.vue:
@@ -186,7 +184,7 @@ common/views/components/games/reversi/reversi.room.vue:
 common/views/components/connect-failed.vue:
   title: "Verbindung zum Server ist fehlgeschlagen"
   description: "Es gibt entweder ein Problem mit deiner Internetverbindung, der Server ist nicht erreichbar oder wird gerade gewartet. Bitte versuche es später noch einmal."
-  thanks: "Vielen Dank für das nutzen von Misskey."
+  thanks: "Vielen Dank für das nutzen von twista."
   troubleshoot: "Problembehandlung"
 common/views/components/connect-failed.troubleshooter.vue:
   title: "Problembehandlung"
@@ -202,8 +200,8 @@ common/views/components/connect-failed.troubleshooter.vue:
   no-internet: "Keine Internetverbindung"
   no-internet-desc: "Bitte vergewissere dich, dass du mit dem Internet verbunden bist."
   no-server: "Verbindung mit dem Server nicht möglich"
-  no-server-desc: "Die Internetverbindung scheint in Ordnung zu sein, aber eine Verbindung mit dem Misskey Server konnte nicht hergestellt werden. Möglicherweise ist dieser zur Zeit offline oder in der Wartung, bitte versuche es später noch einmal."
-  success: "Erfolgreich mit dem Misskey Server verbunden"
+  no-server-desc: "Die Internetverbindung scheint in Ordnung zu sein, aber eine Verbindung mit dem twista Server konnte nicht hergestellt werden. Möglicherweise ist dieser zur Zeit offline oder in der Wartung, bitte versuche es später noch einmal."
+  success: "Erfolgreich mit dem twista Server verbunden"
   success-desc: "Die Verbindung scheint zu funktionieren. Bitte lade die Seite neu."
   flush: "Cache leeren"
   set-version: "Version angeben"
@@ -483,7 +481,6 @@ desktop/views/components/post-form.vue:
   text-remain: "{} Zeichen verbleibend"
   visibility: "Sichtbarkeit"
   error: "Fehler"
-  enter-username: "Bitte gib einen Benutzernamen ein..."
 desktop/views/components/post-form-window.vue:
   note: "Neue Notiz"
   reply: "Antworten"

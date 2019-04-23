@@ -16,11 +16,11 @@ let pending = 0;
 //#endregion
 
 /**
- * Misskey Operating System
+ * twista Operating System
  */
 export default class MiOS extends EventEmitter {
 	/**
-	 * Misskeyの /meta で取得できるメタ情報
+	 * twistaの /meta で取得できるメタ情報
 	 */
 	private meta: {
 		data: { [x: string]: any };
@@ -28,7 +28,7 @@ export default class MiOS extends EventEmitter {
 	};
 
 	public get instanceName() {
-		return this.meta ? this.meta.data.name : 'Misskey';
+		return this.meta ? this.meta.data.name : 'twista';
 	}
 
 	private isMetaFetching = false;
@@ -294,7 +294,7 @@ export default class MiOS extends EventEmitter {
 			});
 
 			// トークンが再生成されたとき
-			// このままではMisskeyが利用できないので強制的にサインアウトさせる
+			// このままではtwistaが利用できないので強制的にサインアウトさせる
 			main.on('myTokenRegenerated', () => {
 				alert('%i18n:common.my-token-regenerated%');
 				this.signout();
@@ -314,7 +314,7 @@ export default class MiOS extends EventEmitter {
 		// Reject when browser not service worker supported
 		if (!isSwSupported) return;
 
-		// Reject when not signed in to Misskey
+		// Reject when not signed in to twista
 		if (!this.store.getters.isSignedIn) return;
 
 		// When service worker activated
@@ -384,7 +384,7 @@ export default class MiOS extends EventEmitter {
 	public requests = [];
 
 	/**
-	 * Misskey APIにリクエストします
+	 * twista APIにリクエストします
 	 * @param endpoint エンドポイント名
 	 * @param data パラメータ
 	 */
@@ -451,7 +451,7 @@ export default class MiOS extends EventEmitter {
 	}
 
 	/**
-	 * Misskeyのメタ情報を取得します
+	 * twistaのメタ情報を取得します
 	 */
 	@autobind
 	public getMetaSync() {
@@ -459,7 +459,7 @@ export default class MiOS extends EventEmitter {
 	}
 
 	/**
-	 * Misskeyのメタ情報を取得します
+	 * twistaのメタ情報を取得します
 	 * @param force キャッシュを無視するか否か
 	 */
 	@autobind
@@ -472,7 +472,7 @@ export default class MiOS extends EventEmitter {
 				return;
 			}
 
-			const expire = 1000 * 60; // 1min
+			const expire = 1000 * 60 * 5; // 5min
 
 			// forceが有効, meta情報を保持していない or 期限切れ
 			if (force || this.meta == null || Date.now() - this.meta.chachedAt.getTime() > expire) {

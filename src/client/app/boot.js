@@ -42,6 +42,7 @@
 	if (`${url.pathname}/`.startsWith('/auth/')) app = 'auth';
 	if (`${url.pathname}/`.startsWith('/admin/')) app = 'admin';
 	if (`${url.pathname}/`.startsWith('/test/')) app = 'test';
+	if (`${url.pathname}/`.startsWith('/calc/')) app = 'calc';
 	//#endregion
 
 	// Script version
@@ -137,9 +138,9 @@
 			localStorage.setItem('v', meta.version);
 
 			alert(
-				'Misskeyの新しいバージョンがあります。ページを再度読み込みします。' +
+				'twistaの新しいバージョンがあります。ページを再度読み込みします。' +
 				'\n\n' +
-				'New version of Misskey available. The page will be reloaded.');
+				'New version of twista available. The page will be reloaded.');
 
 			refresh();
 		}

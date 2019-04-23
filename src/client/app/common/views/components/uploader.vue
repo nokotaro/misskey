@@ -2,9 +2,9 @@
 <div class="mk-uploader">
 	<ol v-if="uploads.length > 0">
 		<li v-for="ctx in uploads" :key="ctx.id">
-			<div class="img" :style="{ backgroundImage: `url(${ ctx.img })` }"></div>
+			<div class="img" :style="{ backgroundImage: `url(${ctx.img})` }"></div>
 			<div class="top">
-				<p class="name"><fa icon="spinner" pulse/>{{ ctx.name }}</p>
+				<p class="name"><fa :icon="['fal', 'spinner']" pulse/>{{ ctx.name }}</p>
 				<p class="status">
 					<span class="initing" v-if="ctx.progress == undefined">{{ $t('waiting') }}<mk-ellipsis/></span>
 					<span class="kb" v-if="ctx.progress != undefined">{{ String(Math.floor(ctx.progress.value / 1024)).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,') }}<i>KB</i> / {{ String(Math.floor(ctx.progress.max / 1024)).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,') }}<i>KB</i></span>
@@ -23,7 +23,6 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import { apiUrl } from '../../../config';
-import getMD5 from '../../scripts/get-md5';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/uploader.vue'),
@@ -35,14 +34,7 @@ export default Vue.extend({
 	methods: {
 		checkExistence(fileData: ArrayBuffer): Promise<any> {
 			return new Promise((resolve, reject) => {
-				const data = new FormData();
-				data.append('md5', getMD5(fileData));
-
-				this.$root.api('drive/files/check_existence', {
-					md5: getMD5(fileData)
-				}).then(resp => {
-					resolve(resp.file);
-				});
+				resolve(null);
 			});
 		},
 
@@ -226,5 +218,4 @@ export default Vue.extend({
 				@keyframes bg
 					from {background-position: 0 0;}
 					to   {background-position: -64px 32px;}
-
 </style>

@@ -18,6 +18,7 @@ import Featured from './activitypub/featured';
 import renderQuestion from '../remote/activitypub/renderer/question';
 import { inbox as processInbox } from '../queue';
 import { isSelfHost } from '../misc/convert-host';
+import { resolveUser } from './web';
 
 // Init router
 const router = new Router();
@@ -204,18 +205,18 @@ async function userInfo(ctx: Router.IRouterContext, user: IUser) {
 
 router.get('/users/:user', async (ctx, next) => {
 	if (!isActivityPubReq(ctx)) return await next();
+	
+	const user = await resolveUser(ctx.params.user);
 
-	if (!ObjectID.isValid(ctx.params.user)) {
-		ctx.status = 404;
-		return;
-	}
+	if (!user) return await next();
 
-	const userId = new ObjectID(ctx.params.user);
+	await userInfo(ctx, user);
+});
 
-	const user = await User.findOne({
-		_id: userId,
-		host: null
-	});
+router.get('/users/:user.json', async (ctx, next) => {
+	const user = await resolveUser(ctx.params.user);
+
+	if (!user) return await next();
 
 	await userInfo(ctx, user);
 });

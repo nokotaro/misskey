@@ -15,7 +15,7 @@ import Vue from 'vue';
 import i18n from '../../../i18n';
 import XColumn from './deck.column.vue';
 import XNotes from './deck.notes.vue';
-import { faNewspaper } from '@fortawesome/free-solid-svg-icons';
+import { faNewspaper } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n(),
@@ -30,6 +30,7 @@ export default Vue.extend({
 			faNewspaper,
 			makePromise: cursor => this.$root.api('notes/featured', {
 				limit: 30,
+				days: 7,
 			}).then(notes => {
 				notes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 				return notes;

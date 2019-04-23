@@ -2,8 +2,8 @@
 <div class="mk-selectdrive">
 	<header>
 		<h1>{{ $t('select-file') }}<span class="count" v-if="files.length > 0">({{ files.length }})</span></h1>
-		<button class="upload" @click="upload"><fa icon="upload"/></button>
-		<button v-if="multiple" class="ok" @click="ok"><fa icon="check"/></button>
+		<button class="upload" @click="upload"><fa :icon="['fal', 'upload']"/></button>
+		<button v-if="multiple" class="ok" @click="ok"><fa :icon="['fal', 'check']"/></button>
 	</header>
 	<x-drive ref="browser" select-file :multiple="multiple" is-naked :top="$store.state.uiHeaderHeight"/>
 </div>
@@ -75,7 +75,7 @@ export default Vue.extend({
 			text-align center
 			line-height 42px
 			font-size 1em
-			font-weight normal
+			font-weight 300
 
 			> .count
 				margin-left 4px
@@ -97,5 +97,4 @@ export default Vue.extend({
 
 	> .mk-drive
 		top 42px
-
 </style>

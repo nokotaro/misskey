@@ -7,20 +7,20 @@
 	<span class="is-admin" v-if="note.user.isAdmin">admin</span>
 	<span class="is-bot" v-if="note.user.isBot">bot</span>
 	<span class="is-cat" v-if="note.user.isCat">cat</span>
+	<span class="is-kaho" v-if="note.user.isKaho">ｺﾐﾔｶﾎ</span>
 	<span class="username"><mk-acct :user="note.user"/></span>
-	<span class="is-verified" v-if="note.user.isVerified" :title="$t('@.verified-user')"><fa icon="star"/></span>
+	<span class="is-verified" v-if="note.user.isVerified" :title="$t('@.verified-user')"><fa :icon="faBadgeCheck"/></span>
 	<div class="info">
-		<span class="app" v-if="note.app && !mini && $store.state.settings.showVia">via <b>{{ note.app.name }}</b></span>
-		<span class="mobile" v-if="note.viaMobile"><fa icon="mobile-alt"/></span>
+		<span class="mobile" v-if="note.viaMobile"><fa :icon="['fal', 'mobile-alt']"/></span>
 		<router-link class="created-at" :to="note | notePage">
 			<mk-time :time="note.createdAt"/>
 		</router-link>
 		<span class="visibility" v-if="note.visibility != 'public'">
-			<fa v-if="note.visibility == 'home'" icon="home"/>
-			<fa v-if="note.visibility == 'followers'" icon="unlock"/>
-			<fa v-if="note.visibility == 'specified'" icon="envelope"/>
+			<fa v-if="note.visibility == 'home'" :icon="['fal', 'home']"/>
+			<fa v-if="note.visibility == 'followers'" :icon="['fal', 'unlock']"/>
+			<fa v-if="note.visibility == 'specified'" :icon="['fal', 'envelope']"/>
 		</span>
-		<span class="localOnly" v-if="note.localOnly == true"><fa icon="heart"/></span>
+		<span class="localOnly" v-if="note.localOnly == true"><fa :icon="['fal', 'heart']"/></span>
 	</div>
 </header>
 </template>
@@ -28,9 +28,15 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
+import { faBadgeCheck } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n(),
+	data() {
+		return {
+			faBadgeCheck
+		};
+	}
 	props: {
 		note: {
 			type: Object,
@@ -64,8 +70,9 @@ export default Vue.extend({
 		padding 0
 		overflow hidden
 		color var(--noteHeaderName)
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 		font-size 1em
-		font-weight bold
+		font-weight 600
 		text-decoration none
 		text-overflow ellipsis
 
@@ -75,6 +82,7 @@ export default Vue.extend({
 	> .is-admin
 	> .is-bot
 	> .is-cat
+	> .is-kaho
 		flex-shrink 0
 		align-self center
 		margin 0 .5em 0 0
@@ -109,15 +117,9 @@ export default Vue.extend({
 		> .mobile
 			margin-right 8px
 
-		> .app
-			margin-right 8px
-			padding-right 8px
-			border-right solid 1px var(--faceDivider)
-
 		> .visibility
 			margin-left 8px
 
 		> .localOnly
 			margin-left 4px
-
 </style>

@@ -16,8 +16,8 @@
 	:title="title"
 >
 	<p class="name">
-		<template v-if="hover"><fa :icon="['far', 'folder-open']" fixed-width/></template>
-		<template v-if="!hover"><fa :icon="['far', 'folder']" fixed-width/></template>
+		<template v-if="hover"><fa :icon="['fal', 'folder-open']" fixed-width/></template>
+		<template v-if="!hover"><fa :icon="['fal', 'folder']" fixed-width/></template>
 		{{ folder.name }}
 	</p>
 </div>
@@ -56,22 +56,22 @@ export default Vue.extend({
 			this.$contextmenu(e, [{
 				type: 'item',
 				text: this.$t('contextmenu.move-to-this-folder'),
-				icon: 'arrow-right',
+				icon: ['fal', 'arrow-right'],
 				action: this.go
 			}, {
 				type: 'item',
 				text: this.$t('contextmenu.show-in-new-window'),
-				icon: ['far', 'window-restore'],
+				icon: ['fal', 'window-restore'],
 				action: this.newWindow
 			}, null, {
 				type: 'item',
 				text: this.$t('contextmenu.rename'),
-				icon: 'i-cursor',
+				icon: ['fal', 'i-cursor'],
 				action: this.rename
 			}, null, {
 				type: 'item',
 				text: this.$t('@.delete'),
-				icon: ['far', 'trash-alt'],
+				icon: ['fal', 'trash-alt'],
 				action: this.deleteFolder
 			}], {
 				closed: () => {
@@ -260,5 +260,4 @@ export default Vue.extend({
 			margin-right 4px
 			margin-left 2px
 			text-align left
-
 </style>

@@ -9,7 +9,7 @@
 		<x-theme/>
 
 		<ui-card>
-			<template #title><fa icon="desktop"/> {{ $t('@._settings.appearance') }}</template>
+			<template #title><fa :icon="['fal', 'desktop']"/> {{ $t('@._settings.appearance') }}</template>
 
 			<section v-if="!$root.isMobile">
 				<ui-switch v-model="showPostFormOnTopOfTl">{{ $t('@._settings.post-form-on-timeline') }}</ui-switch>
@@ -95,7 +95,7 @@
 
 	<template v-if="page == null || page == 'behavior'">
 		<ui-card>
-			<template #title><fa icon="sliders-h"/> {{ $t('@._settings.behavior') }}</template>
+			<template #title><fa :icon="['fal', 'sliders-h']"/> {{ $t('@._settings.behavior') }}</template>
 
 			<section>
 				<ui-switch v-model="fetchOnScroll">{{ $t('@._settings.fetch-on-scroll') }}
@@ -138,11 +138,15 @@
 		</ui-card>
 
 		<ui-card>
-			<template #title><fa icon="volume-up"/> {{ $t('@._settings.sound') }}</template>
+			<template #title><fa :icon="['fal', 'volume-up']"/> {{ $t('@._settings.sound') }}</template>
 
 			<section>
 				<ui-switch v-model="enableSounds">{{ $t('@._settings.enable-sounds') }}
 					<template #desc>{{ $t('@._settings.enable-sounds-desc') }}</template>
+				</ui-switch>
+				<ui-switch :disabled="!enableSounds" v-model="enableSoundsInTimeline">{{ 'Timeline' }}
+				</ui-switch>
+				<ui-switch :disabled="!enableSounds" v-model="enableSoundsInNotifications">{{ 'Notifications' }}
 				</ui-switch>
 				<label>{{ $t('@._settings.volume') }}</label>
 				<input type="range"
@@ -151,7 +155,7 @@
 					max="1"
 					step="0.1"
 				/>
-				<ui-button @click="soundTest"><fa icon="volume-up"/> {{ $t('@._settings.test') }}</ui-button>
+				<ui-button @click="soundTest"><fa :icon="['fal', 'volume-up']"/> {{ $t('@._settings.test') }}</ui-button>
 			</section>
 		</ui-card>
 
@@ -168,7 +172,7 @@
 
 	<template v-if="page == null || page == 'hashtags'">
 		<ui-card>
-			<template #title><fa icon="hashtag"/> {{ $t('@._settings.tags') }}</template>
+			<template #title><fa :icon="['fal', 'hashtag']"/> {{ $t('@._settings.tags') }}</template>
 			<section>
 				<x-tags/>
 			</section>
@@ -179,27 +183,25 @@
 		<x-mute-and-block/>
 	</template>
 
-	<!--
 	<template v-if="page == null || page == 'apps'">
 		<ui-card>
-			<template #title><fa icon="puzzle-piece"/> {{ $t('@._settings.apps') }}</template>
+			<template #title><fa :icon="['fal', 'puzzle-piece']"/> {{ $t('@._settings.apps') }}</template>
 			<section>
 				<x-apps/>
 			</section>
 		</ui-card>
 	</template>
-	-->
 
 	<template v-if="page == null || page == 'security'">
 		<ui-card>
-			<template #title><fa icon="unlock-alt"/> {{ $t('@._settings.password') }}</template>
+			<template #title><fa :icon="['fal', 'unlock-alt']"/> {{ $t('@._settings.password') }}</template>
 			<section>
 				<x-password/>
 			</section>
 		</ui-card>
 
 		<ui-card v-if="!$root.isMobile">
-			<template #title><fa icon="mobile-alt"/> {{ $t('@.2fa') }}</template>
+			<template #title><fa :icon="['fal', 'mobile-alt']"/> {{ $t('@.2fa') }}</template>
 			<section>
 				<x-2fa/>
 			</section>
@@ -207,7 +209,7 @@
 
 		<!--
 		<ui-card>
-			<template #title><fa icon="sign-in-alt"/> {{ $t('@._settings.signin') }}</template>
+			<template #title><fa :icon="['fal', 'sign-in-alt']"/> {{ $t('@._settings.signin') }}</template>
 			<section>
 				<x-signins/>
 			</section>
@@ -221,7 +223,7 @@
 
 	<template v-if="page == null || page == 'other'">
 		<ui-card>
-			<template #title><fa icon="sync-alt"/> {{ $t('@._settings.update') }}</template>
+			<template #title><fa :icon="['fal', 'sync-alt']"/> {{ $t('@._settings.update') }}</template>
 			<section>
 				<p>
 					<span>{{ $t('@._settings.version') }} <i>{{ version }}</i></span>
@@ -238,7 +240,7 @@
 		</ui-card>
 
 		<ui-card>
-			<template #title><fa icon="cogs"/> {{ $t('@._settings.advanced-settings') }}</template>
+			<template #title><fa :icon="['fal', 'cogs']"/> {{ $t('@._settings.advanced-settings') }}</template>
 			<section>
 				<ui-switch v-model="debug">
 					{{ $t('@._settings.debug-mode') }}<template #desc>{{ $t('@._settings.debug-mode-desc') }}</template>
@@ -335,6 +337,16 @@ export default Vue.extend({
 		enableSounds: {
 			get() { return this.$store.state.device.enableSounds; },
 			set(value) { this.$store.commit('device/set', { key: 'enableSounds', value }); }
+		},
+
+		enableSoundsInTimeline: {
+			get() { return this.$store.state.device.enableSoundsInTimeline; },
+			set(value) { this.$store.commit('device/set', { key: 'enableSoundsInTimeline', value }); }
+		},
+
+		enableSoundsInNotifications: {
+			get() { return this.$store.state.device.enableSoundsInNotifications; },
+			set(value) { this.$store.commit('device/set', { key: 'enableSoundsInNotifications', value }); }
 		},
 
 		soundVolume: {

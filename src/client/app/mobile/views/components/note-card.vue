@@ -89,5 +89,4 @@ export default Vue.extend({
 			display inline-block
 			padding 8px
 			color var(--text)
-
 </style>

@@ -81,6 +81,14 @@ export default Vue.extend({
 			this.endpoint = 'notes/hybrid-timeline';
 			this.connection = this.$root.stream.useSharedConnection('hybridTimeline');
 			this.connection.on('note', prepend);
+		} else if (this.src == 'imas') {
+			this.endpoint = 'notes/imas-timeline';
+			this.connection = this.$root.stream.useSharedConnection('imasTimeline');
+			this.connection.on('note', prepend);
+		} else if (this.src == 'imasHybrid') {
+			this.endpoint = 'notes/imas-hybrid-timeline';
+			this.connection = this.$root.stream.useSharedConnection('imasHybridTimeline');
+			this.connection.on('note', prepend);
 		} else if (this.src == 'global') {
 			this.endpoint = 'notes/global-timeline';
 			this.connection = this.$root.stream.useSharedConnection('globalTimeline');
@@ -146,5 +154,4 @@ export default Vue.extend({
 
 	> p
 		margin 0 0 8px 0
-
 </style>

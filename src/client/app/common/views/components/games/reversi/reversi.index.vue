@@ -101,7 +101,7 @@ export default Vue.extend({
 
 		async match() {
 			const { result: user } = await this.$root.dialog({
-				title: this.$t('enter-username'),
+				title: this.$t('@.enter-username'),
 				user: {
 					local: true
 				}
@@ -142,7 +142,7 @@ export default Vue.extend({
 		padding 24px
 		font-size 24px
 		text-align center
-		font-weight normal
+		font-weight 300
 		color #fff
 		background linear-gradient(to bottom, var(--reversiBannerGradientStart), var(--reversiBannerGradientEnd))
 
@@ -179,8 +179,9 @@ export default Vue.extend({
 		> h2
 			margin 0
 			padding 16px 0 8px 0
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 			font-size 16px
-			font-weight bold
+			font-weight 600
 
 	.invitation
 		margin 8px 0
@@ -241,5 +242,4 @@ export default Vue.extend({
 		> span
 			margin 0 8px
 			line-height 32px
-
 </style>

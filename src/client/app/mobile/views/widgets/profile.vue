@@ -2,7 +2,7 @@
 <div class="mkw-profile">
 	<ui-container>
 		<div :class="$style.banner"
-			:style="$store.state.i.bannerUrl ? `background-image: url(${$store.state.i.bannerUrl})` : ''"
+			:style="$store.state.i.bannerUrl ? `background-image:url(${$store.state.i.bannerUrl})` : ''"
 		></div>
 		<img :class="$style.avatar"
 			:src="$store.state.i.avatarUrl"
@@ -59,7 +59,7 @@ export default define({
 	margin 0
 	line-height 100px
 	color #fff
-	font-weight bold
+	font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+	font-weight 600
 	text-shadow 0 0 8px rgba(#000, 0.5)
-
 </style>

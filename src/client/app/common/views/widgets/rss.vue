@@ -1,11 +1,11 @@
 <template>
 <div class="mkw-rss">
 	<ui-container :show-header="!props.compact">
-		<template #header><fa icon="rss-square"/>RSS</template>
-		<template #func><button title="設定" @click="setting"><fa icon="cog"/></button></template>
+		<template #header><fa :icon="['fal', 'rss-square']"/>RSS</template>
+		<template #func><button title="設定" @click="setting"><fa :icon="['fal', 'cog']"/></button></template>
 
 		<div class="mkw-rss--body" :data-mobile="platform == 'mobile'">
-			<p class="fetching" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+			<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
 			<div class="feed" v-else>
 				<a v-for="item in items" :href="item.link" target="_blank" :title="item.title">{{ item.title }}</a>
 			</div>
@@ -22,7 +22,7 @@ export default define({
 	name: 'rss',
 	props: () => ({
 		compact: false,
-		url: 'http://feeds.afpbb.com/rss/afpbb/afpbbnews'
+		url: 'https://idolmaster.jp/blog/?feed=rss2'
 	})
 }).extend({
 	i18n: i18n(),
@@ -112,5 +112,4 @@ export default define({
 
 					&:nth-child(even)
 						background rgba(#000, 0.05)
-
 </style>

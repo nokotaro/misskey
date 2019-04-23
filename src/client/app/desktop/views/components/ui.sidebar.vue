@@ -2,12 +2,12 @@
 <div class="header" :class="navbar" :data-shadow="$store.state.device.useShadow">
 	<div class="body">
 		<div class="post">
-			<button @click="post" :title="$t('title')"><fa icon="pencil-alt"/></button>
+			<button @click="post" :title="$t('title')"><fa :icon="['fal', 'pencil-alt']"/></button>
 		</div>
 
 		<div class="nav" v-if="$store.getters.isSignedIn">
 			<div class="home" :class="{ active: $route.name == 'index' }" @click="goToTop">
-				<router-link to="/"><fa icon="home"/></router-link>
+				<router-link to="/"><fa :icon="['fal', 'home']"/></router-link>
 			</div>
 			<div class="featured" :class="{ active: $route.name == 'featured' }">
 				<router-link to="/featured"><fa :icon="faNewspaper"/></router-link>
@@ -16,47 +16,47 @@
 				<router-link to="/explore"><fa :icon="faHashtag"/></router-link>
 			</div>
 			<div class="game">
-				<a @click="game"><fa icon="gamepad"/><template v-if="hasGameInvitations"><fa icon="circle"/></template></a>
+				<a @click="game"><fa :icon="['fal', 'gamepad']"/><template v-if="hasGameInvitations"><fa :icon="['fas', 'circle']"/></template></a>
 			</div>
 		</div>
 
 		<div class="nav bottom" v-if="$store.getters.isSignedIn">
 			<div>
-				<a @click="drive"><fa icon="cloud"/></a>
+				<a @click="drive"><fa :icon="['fal', 'cloud']"/></a>
 			</div>
 			<div ref="notificationsButton" :class="{ active: showNotifications }">
-				<a @click="notifications"><fa :icon="['far', 'bell']"/></a>
+				<a @click="notifications"><fa :icon="['fal', 'bell']"/></a>
 			</div>
 			<div class="messaging">
-				<a @click="messaging"><fa icon="comments"/><template v-if="hasUnreadMessagingMessage"><fa icon="circle"/></template></a>
+				<a @click="messaging"><fa :icon="['fal', 'comments']"/><template v-if="hasUnreadMessagingMessage"><fa :icon="['fas', 'circle']"/></template></a>
 			</div>
 			<div>
-				<a @click="settings"><fa icon="cog"/></a>
+				<a @click="settings"><fa :icon="['fal', 'cog']"/></a>
 			</div>
 			<div class="signout">
-				<a @click="signout"><fa icon="power-off"/></a>
+				<a @click="signout"><fa :icon="['fal', 'power-off']"/></a>
 			</div>
 			<div>
-				<router-link to="/i/favorites"><fa icon="star"/></router-link>
+				<router-link to="/i/favorites"><fa :icon="['fal', 'star']"/></router-link>
 			</div>
 			<div v-if="($store.state.i.isLocked || $store.state.i.carefulBot)">
-				<a @click="followRequests"><fa :icon="['far', 'envelope']"/><i v-if="$store.state.i.pendingReceivedFollowRequestsCount">{{ $store.state.i.pendingReceivedFollowRequestsCount }}</i></a>
+				<a @click="followRequests"><fa :icon="['fal', 'envelope']"/><i v-if="$store.state.i.pendingReceivedFollowRequestsCount">{{ $store.state.i.pendingReceivedFollowRequestsCount }}</i></a>
 			</div>
 			<div class="account">
-				<router-link :to="`/@${ $store.state.i.username }`">
+				<router-link :to="`/@${$store.state.i.username}`">
 					<mk-avatar class="avatar" :user="$store.state.i"/>
 				</router-link>
 			</div>
 			<div>
 				<template v-if="$store.state.device.inDeckMode">
-					<a @click="toggleDeckMode(false)"><fa icon="home"/></a>
+					<a @click="toggleDeckMode(false)"><fa :icon="['fal', 'home']"/></a>
 				</template>
 				<template v-else>
-					<a @click="toggleDeckMode(true)"><fa icon="columns"/></a>
+					<a @click="toggleDeckMode(true)"><fa :icon="['fal', 'columns']"/></a>
 				</template>
 			</div>
 			<div>
-				<a @click="dark"><template v-if="$store.state.device.darkmode"><fa icon="moon"/></template><template v-else><fa :icon="['far', 'moon']"/></template></a>
+				<a @click="dark"><template v-if="$store.state.device.darkmode"><fa :icon="['fal', 'moon']"/></template><template v-else><fa :icon="['fal', 'moon']"/></template></a>
 			</div>
 		</div>
 	</div>
@@ -79,7 +79,7 @@ import MkDriveWindow from './drive-window.vue';
 import MkMessagingWindow from './messaging-window.vue';
 import MkGameWindow from './game-window.vue';
 import contains from '../../../common/scripts/contains';
-import { faNewspaper, faHashtag } from '@fortawesome/free-solid-svg-icons';
+import { faNewspaper, faHashtag } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('desktop/views/components/ui.sidebar.vue'),
@@ -148,10 +148,7 @@ export default Vue.extend({
 		},
 
 		list() {
-			const w = this.$root.new(MkUserListsWindow);
-			w.$once('choosen', list => {
-				this.$router.push(`i/lists/${ list.id }`);
-			});
+			this.$root.new(MkUserListsWindow);
 		},
 
 		followRequests() {
@@ -220,7 +217,7 @@ export default Vue.extend({
 
 	position fixed
 	top 0
-	z-index 1000
+	z-index 100000
 	width $width
 	height 100%
 
@@ -256,7 +253,7 @@ export default Vue.extend({
 				height 100%
 				width 100%
 				font-size 1.2em
-				font-weight normal
+				font-weight 300
 				text-decoration none
 				color var(--primaryForeground)
 				background var(--primary) !important

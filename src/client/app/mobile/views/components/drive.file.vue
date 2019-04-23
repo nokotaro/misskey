@@ -1,5 +1,5 @@
 <template>
-<a class="vupkuhvjnjyqaqhsiogfbywvjxynrgsm" @click.prevent="onClick" :href="`/i/drive/file/${ file.id }`" :data-is-selected="isSelected">
+<a class="vupkuhvjnjyqaqhsiogfbywvjxynrgsm" @click.prevent="onClick" :href="`/i/drive/file/${file.id}`" :data-is-selected="isSelected">
 	<div class="container">
 		<x-file-thumbnail class="thumbnail" :file="file" fit="cover"/>
 		<div class="body">
@@ -12,10 +12,10 @@
 				<span class="separator"></span>
 				<span class="data-size">{{ file.datasize | bytes }}</span>
 				<span class="separator"></span>
-				<span class="created-at"><fa :icon="['far', 'clock']"/><mk-time :time="file.createdAt"/></span>
+				<span class="created-at"><fa :icon="['fal', 'clock']"/><mk-time :time="file.createdAt"/></span>
 				<template v-if="file.isSensitive">
 					<span class="separator"></span>
-					<span class="nsfw"><fa :icon="['far', 'eye-slash']"/> {{ $t('nsfw') }}</span>
+					<span class="nsfw"><fa :icon="['fal', 'eye-slash']"/> {{ $t('nsfw') }}</span>
 				</template>
 			</footer>
 		</div>
@@ -98,8 +98,9 @@ export default Vue.extend({
 				display block
 				margin 0
 				padding 0
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 				font-size 0.9em
-				font-weight bold
+				font-weight 600
 				color var(--text)
 				word-break break-word
 
@@ -151,5 +152,4 @@ export default Vue.extend({
 
 		&, *
 			color var(--primaryForeground) !important
-
 </style>

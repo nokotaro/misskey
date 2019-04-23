@@ -2,7 +2,7 @@
 <mk-window class="mk-post-form-window" ref="window" is-modal @closed="onWindowClosed" :animation="animation">
 	<template #header>
 		<span class="mk-post-form-window--header">
-			<span class="icon" v-if="geo"><fa icon="map-marker-alt"/></span>
+			<span class="icon" v-if="geo"><fa :icon="['fal', 'map-marker-alt']"/></span>
 			<span v-if="!reply">{{ $t('note') }}</span>
 			<span v-if="reply">{{ $t('reply') }}</span>
 			<span class="count" v-if="files.length != 0">{{ this.$t('attaches').replace('{}', files.length) }}</span>
@@ -104,5 +104,4 @@ export default Vue.extend({
 	.mk-post-form-window--body
 		.notePreview
 				margin 16px 22px
-
 </style>

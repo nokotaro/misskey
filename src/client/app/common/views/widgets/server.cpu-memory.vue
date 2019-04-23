@@ -1,6 +1,6 @@
 <template>
 <div class="cpu-memory">
-	<svg :viewBox="`0 0 ${ viewBoxX } ${ viewBoxY }`">
+	<svg :viewBox="`0 0 ${viewBoxX} ${viewBoxY}`">
 		<defs>
 			<linearGradient :id="cpuGradientId" x1="0" x2="0" y1="1" y2="0">
 				<stop offset="0%" stop-color="hsl(180, 80%, 70%)"></stop>
@@ -26,10 +26,10 @@
 		<rect
 			x="-2" y="-2"
 			:width="viewBoxX + 4" :height="viewBoxY + 4"
-			:style="`stroke: none; fill: url(#${ cpuGradientId }); mask: url(#${ cpuMaskId })`"/>
+			:style="`fill:url(#${cpuGradientId});mask:url(#${cpuMaskId});stroke:none`"/>
 		<text x="1" y="5">CPU <tspan>{{ cpuP }}%</tspan></text>
 	</svg>
-	<svg :viewBox="`0 0 ${ viewBoxX } ${ viewBoxY }`">
+	<svg :viewBox="`0 0 ${viewBoxX} ${viewBoxY}`">
 		<defs>
 			<linearGradient :id="memGradientId" x1="0" x2="0" y1="1" y2="0">
 				<stop offset="0%" stop-color="hsl(180, 80%, 70%)"></stop>
@@ -55,7 +55,7 @@
 		<rect
 			x="-2" y="-2"
 			:width="viewBoxX + 4" :height="viewBoxY + 4"
-			:style="`stroke: none; fill: url(#${ memGradientId }); mask: url(#${ memMaskId })`"/>
+			:style="`fill:url(#${memGradientId});mask:url(#${memMaskId});stroke:none`"/>
 		<text x="1" y="5">MEM <tspan>{{ memP }}%</tspan></text>
 	</svg>
 </div>
@@ -152,5 +152,4 @@ export default Vue.extend({
 		content ""
 		display block
 		clear both
-
 </style>

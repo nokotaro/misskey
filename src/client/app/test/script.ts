@@ -8,7 +8,7 @@ import Index from './views/index.vue';
 import NotFound from '../common/views/pages/not-found.vue';
 
 init(launch => {
-	document.title = 'Misskey';
+	document.title = 'twista';
 
 	// Init router
 	const router = new VueRouter({

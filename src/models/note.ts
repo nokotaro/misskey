@@ -11,6 +11,7 @@ import NoteReaction from './note-reaction';
 import { packMany as packFileMany, IDriveFile } from './drive-file';
 import Following from './following';
 import Emoji from './emoji';
+import packEmojis from '../misc/pack-emojis';
 import { dbLogger } from '../db/logger';
 import { unique, concat } from '../prelude/array';
 
@@ -41,6 +42,7 @@ export type INote = {
 	fileIds: mongo.ObjectID[];
 	replyId: mongo.ObjectID;
 	renoteId: mongo.ObjectID;
+	authorId: mongo.ObjectID;
 	poll: IPoll;
 	name?: string;
 	text: string;
@@ -71,6 +73,10 @@ export type INote = {
 	visibility: 'public' | 'home' | 'followers' | 'specified';
 
 	visibleUserIds: mongo.ObjectID[];
+
+	rating: null | string;
+
+	qa: 'question' | 'resolvedQuestion' | 'answer' | 'bestAnswer' | null;
 
 	geo: {
 		coordinates: number[];
@@ -251,7 +257,7 @@ export const pack = async (
 	// _note._userを消す前か、_note.userを解決した後でないとホストがわからない
 	if (_note._user) {
 		const host = _note._user.host;
-		// 互換性のため。(古いMisskeyではNoteにemojisが無い)
+		// 互換性のため。(古いtwistaではNoteにemojisが無い)
 		if (_note.emojis == null) {
 			_note.emojis = Emoji.find({
 				host: host
@@ -261,11 +267,13 @@ export const pack = async (
 		} else {
 			_note.emojis = unique(concat([_note.emojis, Object.keys(_note.reactionCounts).map(x => x.replace(/:/g, ''))]));
 
-			_note.emojis = Emoji.find({
-				name: { $in: _note.emojis },
-				host: host
-			}, {
-				fields: { _id: false }
+			_note.emojis = packEmojis(_note.emojis, host, {
+				custom: true,
+				avatar: true,
+				foreign: true
+			}).catch(e => {
+				console.warn(e);
+				return [];
 			});
 		}
 	}
@@ -316,6 +324,10 @@ export const pack = async (
 			_note.renote = pack(_note.renoteId, meId, {
 				detail: _note.text == null
 			});
+		}
+
+		if (_note.authorId) {
+			_note.author = packUser(_note.authorId, meId);
 		}
 
 		// Poll
@@ -370,6 +382,22 @@ export const pack = async (
 
 				return null;
 			})();
+
+			// Fetch my renote
+			_note.myRenoteId = (async () => {
+				const renote = await Note.findOne({
+					userId: meId,
+					renoteId: _note.id,
+					text: null,
+					poll: null,
+					'fileIds.0': { $exists: false },
+					deletedAt: { $exists: false }
+				}, {
+					_id: 1
+				});
+
+				return renote ? renote._id : null;
+			})();
 		}
 	}
 
@@ -395,19 +423,155 @@ export const pack = async (
 	}
 	//#endregion
 
-	if (_note.name) {
-		_note.text = `【${_note.name}】\n${_note.text}`;
+	if (_note.name)
+		_note.text = `[${_note.name}]\n${_note.text}`;
+
+	if ((() => { // Recheck syntax
+		const match = _note.text && _note.text.match(/<\/?!?nya>/ig) || [];
+		const stack: string[] = [];
+		for (const tag of [...match]
+			.map(x => x.toLocaleLowerCase()))
+				if (tag.includes('/')) {
+					if (stack.pop() !== tag.replace('/', ''))
+						return false;
+				} else
+					stack.push(tag);
+		return !stack.length;
+	})()) {
+		const nyamap: Record<string, string> = {
+		//#region nyaize: ja-JP
+			'な': 'にゃ',
+			'ナ': 'ニャ',
+			'ﾅ': 'ﾆｬ'
+		//#endregion
+		};
+
+		//#region nyaize: ko-KR
+		const diffKoKr = '냐'.charCodeAt(0) - '나'.charCodeAt(0);
+		for (let i = '나'.charCodeAt(0); i < '내'.charCodeAt(0); i++)
+			nyamap[String.fromCharCode(i)] = String.fromCharCode(i + diffKoKr);
+		//#endregion
+
+		const raw: string = _note.text;
+		const stack = [!!_note.user.isCat];
+		if (raw) {
+			_note.text = '';
+
+			for (let i = 0; i < raw.length; i++) {
+				const head = raw[i];
+
+				if (head === '<') {
+					const [, tag, state] = raw.slice(i).match(/^<((\/?!?)nya>)/i) || [, , , ];
+
+					if (typeof state === 'string') {
+						if (state[0] === '/')
+							stack.shift();
+						else
+							stack.unshift(!state);
+
+						i += tag.length;
+						continue;
+					}
+				}
+
+				_note.text += stack[0] && nyamap[head] || head;
+			}
+		}
 	}
 
-	if (_note.user.isCat && _note.text) {
-		_note.text = (_note.text
-			// ja-JP
-			.replace(/な/g, 'にゃ').replace(/ナ/g, 'ニャ').replace(/ﾅ/g, 'ﾆｬ')
-			// ko-KR
-			.replace(/[나-낳]/g, (match: string) => String.fromCharCode(
-				match.codePointAt(0)  + '냐'.charCodeAt(0) - '나'.charCodeAt(0)
-			))
-		);
+	if ((() => { // Recheck syntax
+		const match = _note.text && _note.text.match(/<\/?!?kaho>/ig) || [];
+		const stack: string[] = [];
+		for (const tag of [...match]
+			.map(x => x.toLocaleLowerCase()))
+				if (tag.includes('/')) {
+					if (stack.pop() !== tag.replace('/', ''))
+						return false;
+				} else
+					stack.push(tag);
+		return !stack.length;
+	})()) {
+		const kahomap: Record<string, string> = {
+			'う': 'ゔ',
+			'ゝ': 'ゞ',
+			'ゟ': 'ゟ゛',
+			'ウ': 'ヴ',
+			'ヽ': 'ヾ',
+			'ヿ': 'ヿ゛'
+		};
+		//#region kahoize: ja-JP
+		//#region kahoize: ja-JP: hiragana
+		for (let i = 0x3041; i < 0x3097; i++) {
+			const c = String.fromCodePoint(i);
+			if (kahomap[c])
+				continue;
+			else if (0x304a < i && i < 0x3063)
+				kahomap[c] = String.fromCodePoint(i + 1 & ~1);
+			else if (0x3063 < i && i < 0x306a)
+				kahomap[c] = String.fromCodePoint(i | 1);
+			else if (0x306e < i && i < 0x307e)
+				kahomap[c] = String.fromCodePoint(~~(i / 3) * 3 + 1);
+			else
+				kahomap[c] = `${c}゛`;
+		}
+		//#endregion
+		//#region kahoize: ja-JP: katakana
+		for (let i = 0x30a1; i < 0x30fb; i++) {
+			const c = String.fromCodePoint(i);
+			if (kahomap[c])
+				continue;
+			else if (0x30aa < i && i < 0x30c3)
+				kahomap[c] = String.fromCodePoint(i + 1 & ~1);
+			else if (0x30c3 < i && i < 0x30ca)
+				kahomap[c] = String.fromCodePoint(i | 1);
+			else if (0x30ce < i && i < 0x30de)
+				kahomap[c] = String.fromCodePoint(~~(i / 3) * 3 + 1);
+			else if (0x30ee < i && i < 0x30f3)
+				kahomap[c] = String.fromCodePoint(i + 4);
+			else if (0x30f6 < i && i < 0x30fb)
+				kahomap[c] = c;
+			else
+				kahomap[c] = `${c}゛`;
+		}
+		//#endregion
+		//#region kahoize: ja-JP: halfwidth
+		for (let i = 0xff66; i < 0xff9e; i++) {
+			const c = String.fromCodePoint(i);
+			if (kahomap[c])
+				continue;
+			else if (i === 0xff70)
+				kahomap[c] = c;
+			else
+				kahomap[c] = `${c}ﾞ`;
+		}
+		//#endregion
+		//#endregion
+
+		const raw: string = _note.text;
+		const stack = [!!_note.user.isKaho];
+		if (raw) {
+			_note.text = '';
+
+			for (let i = 0; i < raw.length; i++) {
+				const head = raw[i];
+
+				if (head === '<') {
+					const [, tag, state] = raw.slice(i).match(/^<((\/?!?)kaho>)/i) || [, , , ];
+
+					if (typeof state === 'string') {
+						if (state[0] === '/')
+							stack.shift();
+						else
+							stack.unshift(!state);
+
+						i += tag.length;
+						continue;
+					}
+				}
+
+				_note.text += stack[0] && kahomap[head] ? `<opentype palt>${kahomap[head]}</opentype>` : head;
+			}
+		}
 	}
 
 	if (!opts.skipHide) {

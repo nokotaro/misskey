@@ -20,19 +20,18 @@ export default class Resolver {
 			: value;
 
 		switch (collection.type) {
-			case 'Collection': {
+			case 'Collection':
+			case 'CollectionPage':
 				collection.objects = collection.items;
 				break;
-			}
 
-			case 'OrderedCollection': {
+			case 'OrderedCollection':
+			case 'OrderedCollectionPage':
 				collection.objects = collection.orderedItems;
 				break;
-			}
 
-			default: {
+			default:
 				throw new Error(`unknown collection type: ${collection.type}`);
-			}
 		}
 
 		return collection;
@@ -53,10 +52,12 @@ export default class Resolver {
 
 		this.history.add(value);
 
+		console.log(`ResolveRequest: ${value}`);
 		const object = await request({
 			url: value,
 			proxy: config.proxy,
 			timeout: this.timeout,
+			forever: true,
 			headers: {
 				'User-Agent': config.userAgent,
 				Accept: 'application/activity+json, application/ld+json'

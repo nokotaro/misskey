@@ -27,7 +27,7 @@
 
 	<template v-if="tag == null">
 		<mk-user-list :make-promise="verifiedUsers">
-			<fa :icon="faBookmark" fixed-width/>{{ $t('verified-users') }}
+			<fa :icon="faBadgeCheck" fixed-width/>{{ $t('verified-users') }}
 		</mk-user-list>
 		<mk-user-list :make-promise="popularUsers">
 			<fa :icon="faChartLine" fixed-width/>{{ $t('popular-users') }}
@@ -45,8 +45,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
-import { faChartLine, faPlus, faHashtag } from '@fortawesome/free-solid-svg-icons';
-import { faBookmark, faCommentAlt } from '@fortawesome/free-regular-svg-icons';
+import { faChartLine, faPlus, faHashtag, faBadgeCheck, faCommentAlt } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/pages/explore.vue'),
@@ -88,7 +87,11 @@ export default Vue.extend({
 			stats: null,
 			meta: null,
 			num: Vue.filter('number'),
-			faBookmark, faChartLine, faCommentAlt, faPlus, faHashtag
+			faBadgeCheck,
+			faChartLine,
+			faCommentAlt,
+			faPlus,
+			faHashtag
 		};
 	},
 
@@ -153,7 +156,8 @@ export default Vue.extend({
 		margin-right 16px
 
 		&.local
-			font-weight bold
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+			font-weight 600
 
 .kpdsmpnk
 	min-height 100px
@@ -177,12 +181,12 @@ export default Vue.extend({
 
 		> .title
 			display block
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 			font-size 20px
-			font-weight bold
+			font-weight 600
 			color inherit
 
 		> span
 			font-size 14px
 			opacity 0.8
-
 </style>

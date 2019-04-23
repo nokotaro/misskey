@@ -6,7 +6,7 @@
 		@change-selection="onChangeSelection"
 	/>
 	<footer>
-		<button class="upload" :title="$t('upload')" @click="upload"><fa icon="upload"/></button>
+		<button class="upload" :title="$t('upload')" @click="upload"><fa :icon="['fal', 'upload']"/></button>
 		<button class="cancel" @click="close">{{ $t('cancel') }}</button>
 		<button class="ok" @click="ok">{{ $t('ok') }}</button>
 	</footer>
@@ -59,8 +59,6 @@ export default Vue.extend({
 </script>
 
 <style lang="stylus" scoped>
-
-
 .mkp-selectdrive
 	display block
 	position fixed
@@ -155,7 +153,8 @@ export default Vue.extend({
 			border solid 1px var(--primaryLighten15)
 
 			&:not(:disabled)
-				font-weight bold
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+				font-weight 600
 
 			&:hover:not(:disabled)
 				background linear-gradient(to bottom, var(--primaryLighten8) 0%, var(--primaryDarken8) 100%)
@@ -178,5 +177,4 @@ export default Vue.extend({
 			&:active
 				background #ececec
 				border-color #dcdcdc
-
 </style>

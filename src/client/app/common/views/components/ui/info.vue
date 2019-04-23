@@ -1,7 +1,7 @@
 <template>
 <div class="ymxyweixqwsxauxldgpvecjepnwxbylu" :class="{ warn }">
-	<i v-if="warn"><fa icon="exclamation-triangle"/></i>
-	<i v-else><fa icon="info-circle"/></i>
+	<i v-if="warn"><fa :icon="['fal', 'exclamation-triangle']"/></i>
+	<i v-else><fa :icon="['fal', 'info-circle']"/></i>
 	<slot></slot>
 </div>
 </template>
@@ -39,5 +39,4 @@ export default Vue.extend({
 
 	> i
 		margin-right 4px
-
 </style>

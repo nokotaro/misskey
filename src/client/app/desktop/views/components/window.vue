@@ -9,10 +9,10 @@
 				<h1><slot name="header"></slot></h1>
 				<div>
 					<button class="popout" v-if="popoutUrl" @mousedown.stop="() => {}" @click="popout" :title="$t('popout')">
-						<i><fa :icon="['far', 'window-restore']"/></i>
+						<i><fa :icon="['fal', 'window-restore']"/></i>
 					</button>
 					<button class="close" v-if="canClose" @mousedown.stop="() => {}" @click="close" :title="$t('close')">
-						<i><fa icon="times"/></i>
+						<i><fa :icon="['fal', 'times']"/></i>
 					</button>
 				</div>
 			</header>
@@ -575,7 +575,7 @@ export default Vue.extend({
 					text-align center
 					font-size 1em
 					line-height $header-height
-					font-weight normal
+					font-weight 300
 					color var(--desktopWindowTitle)
 
 				> div:last-child
@@ -616,5 +616,4 @@ export default Vue.extend({
 	&:not([flexible])
 		> .main > .body > .content
 			height calc(100% - 40px)
-
 </style>

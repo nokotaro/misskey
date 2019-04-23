@@ -11,13 +11,13 @@
 		<template v-for="(notification, i) in _notifications">
 			<x-notification class="notification" :notification="notification" :key="notification.id"/>
 			<p class="date" v-if="i != notifications.length - 1 && notification._date != _notifications[i + 1]._date" :key="notification.id + '-time'">
-				<span><fa icon="angle-up"/>{{ notification._datetext }}</span>
-				<span><fa icon="angle-down"/>{{ _notifications[i + 1]._datetext }}</span>
+				<span><fa :icon="['fal', 'angle-up']"/>{{ notification._datetext }}</span>
+				<span><fa :icon="['fal', 'angle-down']"/>{{ _notifications[i + 1]._datetext }}</span>
 			</p>
 		</template>
 	</component>
 	<button class="more" :class="{ fetching: fetchingMoreNotifications }" v-if="moreNotifications" @click="fetchMoreNotifications" :disabled="fetchingMoreNotifications">
-		<template v-if="fetchingMoreNotifications"><fa icon="spinner" pulse fixed-width/></template>{{ fetchingMoreNotifications ? this.$t('@.loading') : this.$t('@.load-more') }}
+		<template v-if="fetchingMoreNotifications"><fa :icon="['fal', 'spinner']" pulse fixed-width/></template>{{ fetchingMoreNotifications ? this.$t('@.loading') : this.$t('@.load-more') }}
 	</button>
 	<p class="empty" v-if="notifications.length == 0 && !fetching">{{ $t('empty') }}</p>
 </div>
@@ -27,6 +27,7 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import XNotification from './deck.notification.vue';
+import * as config from '../../../config';
 
 const displayLimit = 20;
 
@@ -125,6 +126,11 @@ export default Vue.extend({
 			});
 
 			this.prepend(notification);
+
+			// タブが非表示ならタイトルで通知
+			if (document.hidden) {
+				this.$store.commit('pushBehindNotification', notification);
+			}
 		},
 
 		prepend(notification) {
@@ -138,6 +144,13 @@ export default Vue.extend({
 				}
 			} else {
 				this.queue.push(notification);
+			}
+
+			// サウンドを再生する
+			if (this.$store.state.device.enableSounds && this.$store.state.device.enableSoundsInNotifications) {
+				const sound = new Audio(`${config.url}/assets/piko.mp3`);
+				sound.volume = this.$store.state.device.soundVolume;
+				sound.play();
 			}
 		},
 
@@ -219,5 +232,4 @@ export default Vue.extend({
 		padding 16px
 		text-align center
 		color var(--text)
-
 </style>

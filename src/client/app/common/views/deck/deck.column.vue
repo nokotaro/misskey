@@ -11,13 +11,13 @@
 			@dragend="onDragend"
 			@contextmenu.prevent.stop="onContextmenu">
 		<button class="toggleActive" @click="toggleActive" v-if="isStacked">
-			<template v-if="active"><fa icon="angle-up"/></template>
-			<template v-else><fa icon="angle-down"/></template>
+			<template v-if="active"><fa :icon="['fal', 'angle-up']"/></template>
+			<template v-else><fa :icon="['fal', 'angle-down']"/></template>
 		</button>
 		<span><slot name="header"></slot></span>
 		<span class="count" v-if="count > 0">({{ count }})</span>
-		<button v-if="!isTemporaryColumn" class="menu" ref="menu" @click.stop="showMenu"><fa icon="caret-down"/></button>
-		<button v-else class="close" @click.stop="close"><fa icon="times"/></button>
+		<button v-if="!isTemporaryColumn" class="menu" ref="menu" @click.stop="showMenu"><fa :icon="['fal', 'caret-down']"/></button>
+		<button v-else class="close" @click.stop="close"><fa :icon="['fal', 'times']"/></button>
 	</header>
 	<div ref="body" v-show="active">
 		<slot></slot>
@@ -30,8 +30,8 @@ import Vue from 'vue';
 import i18n from '../../../i18n';
 import Menu from '../../../common/views/components/menu.vue';
 import { countIf } from '../../../../../prelude/array';
-import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
-import { faWindowMaximize } from '@fortawesome/free-regular-svg-icons';
+import { faArrowUp, faArrowDown } from '@fortawesome/pro-light-svg-icons';
+import { faWindowMaximize } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('deck'),
@@ -168,7 +168,7 @@ export default Vue.extend({
 
 		getMenu() {
 			const items = [{
-				icon: 'pencil-alt',
+				icon: ['fal', 'pencil-alt'],
 				text: this.$t('rename'),
 				action: () => {
 					this.$root.dialog({
@@ -183,13 +183,13 @@ export default Vue.extend({
 					});
 				}
 			}, null, {
-				icon: 'arrow-left',
+				icon: ['fal', 'arrow-left'],
 				text: this.$t('swap-left'),
 				action: () => {
 					this.$store.commit('device/swapLeftDeckColumn', this.column.id);
 				}
 			}, {
-				icon: 'arrow-right',
+				icon: ['fal', 'arrow-right'],
 				text: this.$t('swap-right'),
 				action: () => {
 					this.$store.commit('device/swapRightDeckColumn', this.column.id);
@@ -207,7 +207,7 @@ export default Vue.extend({
 					this.$store.commit('device/swapDownDeckColumn', this.column.id);
 				}
 			} : undefined, null, {
-				icon: ['far', 'window-restore'],
+				icon: ['fal', 'window-restore'],
 				text: this.$t('stack-left'),
 				action: () => {
 					this.$store.commit('device/stackLeftDeckColumn', this.column.id);
@@ -219,7 +219,7 @@ export default Vue.extend({
 					this.$store.commit('device/popRightDeckColumn', this.column.id);
 				}
 			} : undefined, null, {
-				icon: ['far', 'trash-alt'],
+				icon: ['fal', 'trash-alt'],
 				text: this.$t('remove'),
 				action: () => {
 					this.$store.commit('device/removeDeckColumn', this.column.id);
@@ -430,5 +430,4 @@ export default Vue.extend({
 		overflow auto
 		overflow-x hidden
 		-webkit-overflow-scrolling touch
-
 </style>

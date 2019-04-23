@@ -13,7 +13,7 @@
 				<div class="actions">
 					<ui-button @click="resetPassword"><fa :icon="faKey"/> {{ $t('reset-password') }}</ui-button>
 					<ui-horizon-group>
-						<ui-button @click="verifyUser" :disabled="verifying"><fa :icon="faCertificate"/> {{ $t('verify') }}</ui-button>
+						<ui-button @click="verifyUser" :disabled="verifying"><fa :icon="faBadgeCheck"/> {{ $t('verify') }}</ui-button>
 						<ui-button @click="unverifyUser" :disabled="unverifying">{{ $t('unverify') }}</ui-button>
 					</ui-horizon-group>
 					<ui-horizon-group>
@@ -25,7 +25,7 @@
 						<ui-button @click="unsuspendUser" :disabled="unsuspending">{{ $t('unsuspend') }}</ui-button>
 					</ui-horizon-group>
 					<ui-button v-if="user.host != null" @click="updateRemoteUser"><fa :icon="faSync"/> {{ $t('update-remote-user') }}</ui-button>
-					<ui-textarea v-if="user" :value="user | json5" readonly tall style="margin-top:16px;"></ui-textarea>
+					<ui-textarea v-if="user" :value="user | json5" readonly tall style="margin-top:16px"></ui-textarea>
 				</div>
 			</div>
 		</section>
@@ -71,8 +71,7 @@
 import Vue from 'vue';
 import i18n from '../../i18n';
 import parseAcct from "../../../../misc/acct/parse";
-import { faCertificate, faUsers, faTerminal, faSearch, faKey, faSync, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
-import { faSnowflake } from '@fortawesome/free-regular-svg-icons';
+import { faBadgeCheck, faUsers, faTerminal, faSearch, faKey, faSync, faMicrophoneSlash, faSnowflake } from '@fortawesome/pro-light-svg-icons';
 import XUser from './users.user.vue';
 
 export default Vue.extend({
@@ -95,7 +94,7 @@ export default Vue.extend({
 			offset: 0,
 			users: [],
 			existMore: false,
-			faTerminal, faCertificate, faUsers, faSnowflake, faSearch, faKey, faSync, faMicrophoneSlash
+			faTerminal, faBadgeCheck, faUsers, faSnowflake, faSearch, faKey, faSync, faMicrophoneSlash
 		};
 	},
 

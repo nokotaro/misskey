@@ -4,6 +4,7 @@
 export type Source = {
 	repository_url?: string;
 	feedback_url?: string;
+	imasHostTokens?: Record<string, string>;
 	url: string;
 	port: number;
 	https?: { [x: string]: string };
@@ -30,6 +31,7 @@ export type Source = {
 	drive?: {
 		storage: string;
 		bucket?: string;
+		container?: string;
 		prefix?: string;
 		baseUrl?: string;
 		config?: any;
@@ -39,13 +41,18 @@ export type Source = {
 
 	proxy?: string;
 
+	proxyProxy?: string;
+
 	accesslog?: string;
 
 	clusterLimit?: number;
+
+	deliverJobConcurrency?: number;
+	inboxJobConcurrency?: number;
 };
 
 /**
- * Misskeyが自動的に(ユーザーが設定した情報から推論して)設定する情報
+ * twistaが自動的に(ユーザーが設定した情報から推論して)設定する情報
  */
 export type Mixin = {
 	host: string;

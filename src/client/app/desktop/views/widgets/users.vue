@@ -1,16 +1,16 @@
 <template>
 <div class="mkw-users">
 	<ui-container :show-header="!props.compact">
-		<template #header><fa icon="users"/>{{ $t('title') }}</template>
+		<template #header><fa :icon="['fal', 'users']"/>{{ $t('title') }}</template>
 		<template #func>
 			<button :title="$t('title')" @click="refresh">
-				<fa v-if="!fetching && more" icon="arrow-right"/>
-				<fa v-if="!fetching && !more" icon="sync"/>
+				<fa v-if="!fetching && more" :icon="['fal', 'arrow-right']"/>
+				<fa v-if="!fetching && !more" :icon="['fal', 'sync']"/>
 			</button>
 		</template>
 
 		<div class="mkw-users--body">
-			<p class="fetching" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+			<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
 			<template v-else-if="users.length != 0">
 				<div class="user" v-for="_user in users">
 					<mk-avatar class="avatar" :user="_user"/>
@@ -141,5 +141,4 @@ export default define({
 
 			> [data-icon]
 				margin-right 4px
-
 </style>

@@ -5,27 +5,26 @@ meta:
 common:
   misskey: "A ⭐ of fediverse"
   about-title: "A ⭐ of fediverse."
-  about: "Misskeyを見つけていただき、ありがとうございます。Misskeyは、地球で生まれた<b>分散マイクロブログSNS</b>です。Fediverse(様々なSNSで構成される宇宙)の中に存在するため、他のSNSと相互に繋がっています。暫し都会の喧騒から離れて、新しいインターネットにダイブしてみませんか。"
+  about: "twistaを見つけていただき、ありがとうございます。twistaは、地球で生まれた<b>分散マイクロブログSNS</b>です。Fediverse(様々なSNSで構成される宇宙)の中に存在するため、他のSNSと相互に繋がっています。暫し都会の喧騒から離れて、新しいインターネットにダイブしてみませんか。"
   intro:
-    title: "Misskeyって？"
-    about: "Misskeyはオープンソースの<b>分散型マイクロブログSNS</b>です。リッチで高度にカスタマイズできるUI、投稿へのリアクション、ファイルを一元管理できるドライブなど、先進的な機能を揃えています。また、Fediverseと呼ばれるネットワークに接続できるため、他のSNSともやり取りできます。例えば、あなたが何か投稿すると、その投稿はMisskeyだけでなく他のSNSにも伝わります。ちょうどある惑星から他の惑星に電波を発信している様子をイメージしてください。"
+    title: "twistaって？"
+    about: "twistaはオープンソースの<b>分散型マイクロブログSNS</b>であるMisskeyのforkです。リッチで高度にカスタマイズできるUI、投稿へのリアクション、ファイルを一元管理できるドライブなど、先進的な機能を揃えています。また、Fediverseと呼ばれるネットワークに接続できるため、他のSNSともやり取りできます。例えば、あなたが何か投稿すると、その投稿はtwistaだけでなく他のSNSにも伝わります。ちょうどある惑星から他の惑星に電波を発信している様子をイメージしてください。"
     features: "特徴"
     rich-contents: "投稿"
     rich-contents-desc: "自分の考え、話題の出来事、皆と共有したいことについて発信してください。必要であれば、様々な構文を使って投稿を装飾したり、好きな画像、動画などのファイルやアンケートを添付することもできます。"
     reaction: "リアクション"
-    reaction-desc: "あなたの気持ちを伝える最も簡単な方法です。Misskeyは、他のユーザーの投稿に様々なリアクションを付けることができます。いちどMisskeyのリアクション機能を体験してしまうと、もう「いいね」の概念しか存在しないSNSには戻れなくなるかもしれません。"
+    reaction-desc: "あなたの気持ちを伝える最も簡単な方法です。twistaは、他のユーザーの投稿に様々なリアクションを付けることができます。いちどtwistaのリアクション機能を体験してしまうと、もう「いいね」の概念しか存在しないSNSには戻れなくなるかもしれません。"
     ui: "インターフェース"
-    ui-desc: "どのようなUIが使いやすいかは人それぞれです。だから、Misskeyは自由度の高いUIを持っています。レイアウトやデザインを調整したり、カスタマイズ可能な様々なウィジェットを配置したりして、自分だけのホームを作ってください。"
+    ui-desc: "どのようなUIが使いやすいかは人それぞれです。だから、twistaは自由度の高いUIを持っています。レイアウトやデザインを調整したり、カスタマイズ可能な様々なウィジェットを配置したりして、自分だけのホームを作ってください。"
     drive: "ドライブ"
-    drive-desc: "以前投稿したことのある画像をまた投稿したくなったことはありませんか？もしくは、アップロードしたファイルをフォルダ分けして整理したくなったことはありませんか？Misskeyの根幹に組み込まれたドライブ機能によってそれらが解決します。ファイルの共有も簡単です。"
-    outro: "他にもMisskeyにしかない機能はまだまだあるので、ぜひあなた自身の目で確かめてください。Misskeyは分散型SNSなので、このインスタンスが気に入らなければ他のインスタンスを試すこともできます。それでは、GLHF!"
-  adblock:
-    detected: "広告ブロッカーを無効にしてください"
-    warning: "<strong>Misskeyは広告を掲載していません</strong>が、広告をブロックする機能が有効だと一部の機能が利用できなかったり、不具合が発生する場合があります。"
+    drive-desc: "以前投稿したことのある画像をまた投稿したくなったことはありませんか？もしくは、アップロードしたファイルをフォルダ分けして整理したくなったことはありませんか？twistaの根幹に組み込まれたドライブ機能によってそれらが解決します。ファイルの共有も簡単です。"
+    outro: "他にもtwistaにしかない機能はまだまだあるので、ぜひあなた自身の目で確かめてください。twistaは分散型SNSなので、このインスタンスが気に入らなければ他のインスタンスを試すこともできます。それでは、GLHF!"
   application-authorization: "アプリの連携"
   close: "閉じる"
-  do-not-copy-paste: "ここにコードを入力したり張り付けたりしないでください。アカウントが不正利用される可能性があります。"
+  do-not-copy-paste: "ここにコードを入力したり張り付けたりしないでください。プロデューサーが不正利用される可能性があります。"
   load-more: "もっと読み込む"
+  send-to: "宛先"
+  enter-username: "ユーザー名を入力してください"
   enter-password: "パスワードを入力してください"
   2fa: "二段階認証"
   customize-home: "ホームをカスタマイズ"
@@ -118,6 +117,17 @@ common:
     local-public: "公開 (ローカルのみ)"
     local-home: "ホーム (ローカルのみ)"
     local-followers: "フォロワー (ローカルのみ)"
+
+  note-rating:
+    unset: "(未設定)"
+    G: "G"
+    G-desc: "全年齢対象"
+    PG12: "PG12"
+    PG12-desc: "12歳未満要指導"
+    R15+: "R15+"
+    R15+-desc: "15歳未満閲覧禁止"
+    R18+: "R18+"
+    R18+-desc: "18歳未満閲覧禁止"
 
   note-placeholders:
     a: "今どうしてる？"
@@ -237,9 +247,9 @@ common:
   ok: "おｋ"
   cancel: "やめる"
   update-available-title: "更新があります"
-  update-available: "Misskeyの新しいバージョンがあります({newer}。現在{current}を利用中)。ページを再度読み込みすると更新が適用されます。"
+  update-available: "twistaの新しいバージョンがあります({newer}。現在{current}を利用中)。ページを再度読み込みすると更新が適用されます。"
   my-token-regenerated: "あなたのトークンが更新されたのでサインアウトします。"
-  verified-user: "公式アカウント"
+  verified-user: "公式プロデューサー"
   hide-password: "パスワードを隠す"
   show-password: "パスワードを表示する"
 
@@ -291,16 +301,41 @@ common:
     nav: "ナビゲーション"
     tips: "ヒント"
     hashtags: "ハッシュタグ"
+    queue: "キュー"
 
-  dev: "アプリの作成に失敗しました。再度お試しください。"
-  ai-chan-kawaii: "藍ちゃかわいい"
+  dev:
+    failed-to-create: "アプリの作成に失敗しました。再度お試しください。"
+    failed-to-upadte: "アプリの更新に失敗しました。再度お試しください。"
+    succeeded-to-upadte: "アプリの更新に成功しました。"
+    app-name: "アプリケーション名"
+    app-name-desc: "あなたのアプリの名称。"
+    app-name-ex: "ex) twista for iOS"
+    app-overview: "アプリの概要"
+    app-desc: "あなたのアプリの簡単な説明や紹介。"
+    app-desc-ex: "ex) twista iOSクライアント。"
+    app-secret: "アプリシークレットキー"
+    callback-url: "コールバックURL (オプション)"
+    callback-url-desc: "ユーザーが認証フォームで認証した際にリダイレクトするURLを設定できます。"
+    authority: "権限"
+    authority-desc: "ここで要求した機能だけがAPIからアクセスできます。"
+    authority-warning: "アプリ作成後も変更できますが、新たな権限を付与する場合、その時点で関連付けられているユーザーキーはすべて無効になります。"
+    account-read: "プロデューサーの情報を見る。"
+    account-write: "プロデューサーの情報を操作する。"
+    note-write: "投稿する。"
+    reaction-write: "リアクションしたりリアクションをキャンセルする。"
+    following-write: "フォローしたりフォロー解除する。"
+    drive-read: "ドライブを見る。"
+    drive-write: "ドライブを操作する。"
+    notification-read: "通知を見る。"
+    notification-write: "通知を操作する。"
+
   you: "あなた"
 
 auth/views/form.vue:
-  share-access: "<i>{name}</i>があなたのアカウントにアクセスすることを許可しますか？"
+  share-access: "<i>{name}</i>があなたにアクセスすることを許可しますか？"
   permission-ask: "このアプリは次の権限を要求しています:"
-  account-read: "アカウントの情報を見る。"
-  account-write: "アカウントの情報を操作する。"
+  account-read: "プロデューサーの情報を見る。"
+  account-write: "プロデューサーの情報を操作する。"
   note-write: "投稿する。"
   like-write: "いいねしたりいいね解除する。"
   following-write: "フォローしたりフォロー解除する。"
@@ -314,7 +349,7 @@ auth/views/form.vue:
 auth/views/index.vue:
   loading: "読み込み中"
   denied: "アプリケーションの連携をキャンセルしました。"
-  denied-paragraph: "このアプリがあなたのアカウントにアクセスすることはありません。"
+  denied-paragraph: "このアプリがあなたにアクセスすることはありません。"
   already-authorized: "このアプリは既に連携済みです"
   allowed: "アプリケーションの連携を許可しました"
   callback-url: "アプリケーションに戻っています"
@@ -323,7 +358,7 @@ auth/views/index.vue:
   sign-in: "サインインしてください"
 
 common/views/pages/explore.vue:
-  verified-users: "公式アカウント"
+  verified-users: "公式プロデューサー"
   popular-users: "人気のユーザー"
   recently-updated-users: "最近投稿したユーザー"
   recently-registered-users: "新規ユーザー"
@@ -338,6 +373,7 @@ common/views/components/url-preview.vue:
 
 common/views/components/user-list.vue:
   no-users: "ユーザーがいません"
+  follows-you: "あなたをフォローしています"
 
 common/views/components/games/reversi/reversi.vue:
   matching:
@@ -352,8 +388,8 @@ common/views/components/games/reversi/reversi.game.vue:
   can-put-everywhere: "どこでも置けるモード"
 
 common/views/components/games/reversi/reversi.index.vue:
-  title: "Misskey Reversi"
-  sub-title: "他のMisskeyユーザーとリバーシで対戦しよう"
+  title: "twista Reversi"
+  sub-title: "他のtwistaユーザーとリバーシで対戦しよう"
   invite: "招待"
   rule: "遊び方"
   rule-desc: "リバーシは、相手と交互に石をボードに置いて、相手の石を挟んで自分の色に変えてゆき、最終的に残った石が多い方が勝ちというボードゲームです。"
@@ -362,7 +398,6 @@ common/views/components/games/reversi/reversi.index.vue:
   invitations: "対局の招待があります！"
   my-games: "自分の対局"
   all-games: "みんなの対局"
-  enter-username: "ユーザー名を入力してください"
   game-state:
     ended: "終了"
     playing: "進行中"
@@ -389,7 +424,7 @@ common/views/components/games/reversi/reversi.room.vue:
 common/views/components/connect-failed.vue:
   title: "サーバーに接続できません"
   description: "インターネット回線に問題があるか、サーバーがダウンまたはメンテナンスしている可能性があります。しばらくしてから{再度お試し}ください。"
-  thanks: "いつもMisskeyをご利用いただきありがとうございます。"
+  thanks: "いつもtwistaをご利用いただきありがとうございます。"
   troubleshoot: "トラブルシュート"
 
 common/views/components/connect-failed.troubleshooter.vue:
@@ -405,9 +440,9 @@ common/views/components/connect-failed.troubleshooter.vue:
   no-network-desc: "お使いのPCのネットワーク接続が正常か確認してください。"
   no-internet: "インターネットに接続されていません"
   no-internet-desc: "ネットワークには接続されていますが、インターネットには接続されていないようです。お使いのPCのインターネット接続が正常か確認してください。"
-  no-server: "Misskeyのサーバーに接続できません"
-  no-server-desc: "お使いのPCのインターネット接続は正常ですが、Misskeyのサーバーには接続できませんでした。サーバーがダウンまたはメンテナンスしている可能性があるので、しばらくしてから再度御アクセスください。"
-  success: "Misskeyのサーバーに接続できました"
+  no-server: "twistaのサーバーに接続できません"
+  no-server-desc: "お使いのPCのインターネット接続は正常ですが、twistaのサーバーには接続できませんでした。サーバーがダウンまたはメンテナンスしている可能性があるので、しばらくしてから再度御アクセスください。"
+  success: "twistaのサーバーに接続できました"
   success-desc: "正常に接続できるようです。ページを再度読み込みしてください。"
   flush: "キャッシュの削除"
   set-version: "バージョン指定"
@@ -485,7 +520,7 @@ common/views/components/messaging-room.message.vue:
   deleted: "このメッセージは削除されました"
 
 common/views/components/nav.vue:
-  about: "Misskeyについて"
+  about: "twistaについて"
   stats: "統計"
   status: "ステータス"
   wiki: "Wiki"
@@ -569,6 +604,7 @@ common/views/components/poll-editor.vue:
 
 common/views/components/reaction-picker.vue:
   choose-reaction: "リアクションを選択"
+  react-emoji: "絵文字から選択"
 
 common/views/components/emoji-picker.vue:
   custom-emoji: "カスタム絵文字"
@@ -613,8 +649,8 @@ common/views/components/signup.vue:
   password-matched: "確認されました"
   password-not-matched: "一致していません"
   recaptcha: "認証"
-  create: "アカウント作成"
-  some-error: "何らかの原因によりアカウントの作成に失敗しました。再度お試しください。"
+  create: "プロデューサー作成"
+  some-error: "何らかの原因によりプロデューサーの作成に失敗しました。再度お試しください。"
 
 common/views/components/special-message.vue:
   new-year: "Happy New Year!"
@@ -637,10 +673,10 @@ common/views/components/integration-settings.vue:
   title: "サービス連携"
   connect: "接続する"
   disconnect: "切断する"
-  connected-to: "次のアカウントに接続されています"
+  connected-to: "次のプロデューサーに接続されています"
 
 common/views/components/github-setting.vue:
-  description: "お使いのGitHubアカウントをお使いのMisskeyアカウントに接続しておくと、プロフィールでGitHubアカウント情報が表示されるようになったり、GitHubを用いた便利なサインインを利用できるようになります。"
+  description: "お使いのGitHubアカウントをお使いのtwistaプロデューサーに接続しておくと、プロフィールでGitHubアカウント情報が表示されるようになったり、GitHubを用いた便利なサインインを利用できるようになります。"
   connected-to: "次のGitHubアカウントに接続されています"
   detail: "詳細..."
   reconnect: "再接続する"
@@ -648,7 +684,7 @@ common/views/components/github-setting.vue:
   disconnect: "切断する"
 
 common/views/components/discord-setting.vue:
-  description: "お使いのDiscordアカウントをお使いのMisskeyアカウントに接続しておくと、プロフィールでDiscordアカウント情報が表示されるようになったり、Discordを用いた便利なサインインを利用できるようになります。"
+  description: "お使いのDiscordアカウントをお使いのtwistaプロデューサーに接続しておくと、プロフィールでDiscordアカウント情報が表示されるようになったり、Discordを用いた便利なサインインを利用できるようになります。"
   connected-to: "次のDiscordアカウントに接続されています"
   detail: "詳細..."
   reconnect: "再接続する"
@@ -671,6 +707,17 @@ common/views/components/visibility-chooser.vue:
   local-home: "ホーム (ローカルのみ)"
   local-followers: "フォロワー (ローカルのみ)"
 
+common/views/components/rating-chooser.vue:
+  unset: "(未設定)"
+  G: "G"
+  G-desc: "全年齢対象"
+  PG12: "PG12"
+  PG12-desc: "12歳未満要指導"
+  R15+: "R15+"
+  R15+-desc: "15歳未満閲覧禁止"
+  R18+: "R18+"
+  R18+-desc: "18歳未満閲覧禁止"
+
 common/views/components/trends.vue:
   count: "{}人が投稿"
   empty: "トレンドなし"
@@ -686,7 +733,7 @@ common/views/components/language-settings.vue:
 common/views/components/profile-editor.vue:
   title: "プロフィール"
   name: "名前"
-  account: "アカウント"
+  account: "プロデューサー"
   location: "場所"
   description: "自己紹介"
   you-can-include-hashtags: "ハッシュタグを含めることができます。"
@@ -694,8 +741,10 @@ common/views/components/profile-editor.vue:
   birthday: "誕生日"
   avatar: "アイコン"
   banner: "バナー"
-  is-cat: "このアカウントはCatです"
-  is-bot: "このアカウントはBotです"
+  avatar-angle: "アイコンの角度"
+  is-kaho: "このプロデューサーはｺﾐﾔｶﾎです"
+  is-cat: "このプロデューサーはCatです"
+  is-bot: "このプロデューサーはBotです"
   is-locked: "フォローを承認制にする"
   careful-bot: "Botからのフォローだけ承認制にする"
   auto-accept-followed: "フォローしているユーザーからのフォローを自動承認する"
@@ -722,8 +771,8 @@ common/views/components/profile-editor.vue:
   import-requested: "インポートをリクエストしました。これには時間がかかる場合があります。"
   enter-password: "パスワードを入力してください"
   danger-zone: "危険な設定"
-  delete-account: "アカウントを削除"
-  account-deleted: "アカウントが削除されました。データが消えるまで時間がかかる場合があります。"
+  delete-account: "プロデューサーを削除"
+  account-deleted: "プロデューサーが削除されました。データが消えるまで時間がかかる場合があります。"
 
 common/views/components/user-list-editor.vue:
   users: "ユーザー"
@@ -732,6 +781,10 @@ common/views/components/user-list-editor.vue:
   remove-user: "このリストから削除"
   delete-are-you-sure: "リスト「$1」を削除しますか？"
   deleted: "削除しました"
+
+common/views/components/user-lists.vue:
+  create-list: "リストを作成"
+  list-name: "リスト名"
 
 common/views/widgets/broadcast.vue:
   fetching: "確認中"
@@ -781,7 +834,7 @@ common/views/widgets/tips.vue:
   tips-line6: "ドライブでファイルをドラッグしてフォルダ移動できます"
   tips-line7: "ドライブでフォルダをドラッグしてフォルダ移動できます"
   tips-line8: "ホームは設定からカスタマイズできます"
-  tips-line9: "MisskeyはAGPLv3です"
+  tips-line9: "twistaはAGPLv3です"
   tips-line10: "タイムマシンウィジェットを利用すると、簡単に過去のタイムラインに遡れます"
   tips-line11: "投稿の ... をクリックして、投稿をユーザーページにピン留めできます"
   tips-line13: "投稿に添付したファイルは全てドライブに保存されます"
@@ -790,9 +843,8 @@ common/views/widgets/tips.vue:
   tips-line19: "いくつかのウィンドウはブラウザの外に切り離すことができます"
   tips-line20: "カレンダーウィジェットのパーセンテージは、経過の割合を示しています"
   tips-line21: "APIを利用してbotの開発なども行えます"
-  tips-line23: "藍かわいいよ藍"
-  tips-line24: "Misskeyは2014年にサービスを開始しました"
-  tips-line25: "対応ブラウザではMisskeyを開いていなくても通知を受け取れます"
+  tips-line24: "twistaは2019年にサービスを開始しました"
+  tips-line25: "対応ブラウザではtwistaを開いていなくても通知を受け取れます"
 
 common/views/pages/not-found.vue:
   page-not-found: "ページが見つかりませんでした"
@@ -961,6 +1013,7 @@ desktop/views/components/post-form.vue:
   add-visible-user: "+ユーザーを追加"
   attach-location-information: "位置情報を添付する"
   hide-contents: "内容を隠す"
+  use-broadcast: "実況モード"
   reply-placeholder: "この投稿への返信..."
   quote-placeholder: "この投稿を引用..."
   submit: "投稿"
@@ -982,10 +1035,13 @@ desktop/views/components/post-form.vue:
   local-only-message: "この投稿はローカルにのみ公開されます"
   click-to-tagging: "クリックでタグ付け"
   visibility: "公開範囲"
+  rating: "レーティング"
+  post-as: "属性"
+  information: "インフォメーション"
   geolocation-alert: "お使いの端末は位置情報に対応していません"
   error: "エラー"
-  enter-username: "ユーザー名を入力してください"
   annotations: "内容への注釈 (オプション)"
+  broadcast: "常駐させる内容 (オプション)"
 
 desktop/views/components/post-form-window.vue:
   note: "新規投稿"
@@ -1016,7 +1072,7 @@ desktop/views/components/settings.2fa.vue:
   intro: "二段階認証を設定すると、サインイン時にパスワードだけでなく、予め登録しておいた物理的なデバイス(例えばあなたのスマートフォンなど)も必要になり、よりセキュリティが向上します。"
   detail: "詳細..."
   url: "https://www.google.co.jp/intl/ja/landing/2step/"
-  caution: "登録したデバイスを紛失するなどした場合、Misskeyにサインインできなくなりますのでご注意ください。"
+  caution: "登録したデバイスを紛失するなどした場合、twistaにサインインできなくなりますのでご注意ください。"
   register: "デバイスを登録する"
   already-registered: "既に設定は完了しています。"
   unregister: "設定を解除"
@@ -1038,7 +1094,7 @@ common/views/components/media-image.vue:
 
 common/views/components/api-settings.vue:
   intro: "APIを利用するには、上記のトークンを「i」というキーでパラメータに付加してリクエストします。"
-  caution: "アカウントを不正利用される可能性があるため、このトークンは第三者に教えないでください(アプリなどにも入力しないでください)。"
+  caution: "プロデューサーを不正利用される可能性があるため、このトークンは第三者に教えないでください(アプリなどにも入力しないでください)。"
   regeneration-of-token: "万が一このトークンが漏れたりその可能性がある場合はトークンを再生成できます。"
   regenerate-token: "トークンを再生成"
   token: "Token:"
@@ -1097,13 +1153,12 @@ desktop/views/components/settings.tags.vue:
   add: "追加"
   save: "保存"
 
-desktop/views/components/taskmanager.vue:
-  title: "タスクマネージャ"
-
 desktop/views/components/timeline.vue:
   home: "ホーム"
   local: "ローカル"
-  hybrid: "ソーシャル"
+  hybrid: "ホーム+ローカル"
+  imas: "アイマス"
+  imasHybrid: "ホーム+アイマス"
   global: "グローバル"
   mentions: "あなた宛て"
   messages: "ダイレクト投稿"
@@ -1133,7 +1188,7 @@ desktop/views/components/ui.header.post.vue:
   post: "新規投稿"
 
 desktop/views/components/ui.header.search.vue:
-  placeholder: "検索"
+  placeholder: "照会"
 
 desktop/views/components/received-follow-requests-window.vue:
   title: "フォロー申請"
@@ -1142,8 +1197,6 @@ desktop/views/components/received-follow-requests-window.vue:
 
 desktop/views/components/user-lists-window.vue:
   title: "リスト"
-  create-list: "リストを作成"
-  list-name: "リスト名"
 
 desktop/views/components/user-preview.vue:
   notes: "投稿"
@@ -1174,11 +1227,11 @@ admin/views/index.vue:
   abuse: "スパム報告"
   queue: "ジョブキュー"
   logs: "ログ"
-  back-to-misskey: "Misskeyに戻る"
+  back-to-misskey: "twistaに戻る"
 
 admin/views/dashboard.vue:
   dashboard: "ダッシュボード"
-  accounts: "アカウント"
+  accounts: "プロデューサー"
   notes: "投稿"
   drive: "ドライブ"
   instances: "インスタンス"
@@ -1234,11 +1287,21 @@ admin/views/instance.vue:
   enable-discord-integration: "Discord連携を有効にする"
   discord-integration-client-id: "Client ID"
   discord-integration-client-secret: "Client Secret"
-  proxy-account-config: "プロキシアカウントの設定"
-  proxy-account-info: "プロキシアカウントは、特定の条件下でユーザーのリモートフォローを代行するアカウントです。例えば、ユーザーがリモートユーザーをリストに入れたとき、リストに入れられたユーザーを誰もフォローしていないとアクティビティがサーバーに配達されないため、代わりにプロキシアカウントがフォローするようにします。"
-  proxy-account-username: "プロキシアカウントのユーザー名"
-  proxy-account-username-desc: "プロキシとして使用するアカウントのユーザー名を指定してください。"
-  proxy-account-warn: "アカウントは自動で作られないため、そのユーザー名のアカウントを予め作成しておく必要があります。"
+  proxy-account-config: "プロキシプロデューサーの設定"
+  proxy-account-info: "プロキシプロデューサーは、特定の条件下でユーザーのリモートフォローを代行するプロデューサーです。例えば、ユーザーがリモートユーザーをリストに入れたとき、リストに入れられたユーザーを誰もフォローしていないとアクティビティがサーバーに配達されないため、代わりにプロキシプロデューサーがフォローするようにします。"
+  proxy-account-username: "プロキシプロデューサーのユーザー名"
+  proxy-account-username-desc: "プロキシとして使用するプロデューサーのユーザー名を指定してください。"
+  proxy-account-warn: "プロデューサーは自動で作られないため、そのユーザー名のプロデューサーを予め作成しておく必要があります。"
+  information-account-config: "インフォメーションプロデューサーの設定"
+  information-account-info: "インフォメーションプロデューサーは、情報をお知らせするために特別にTLに投稿を流せるプロデューサーです。ActorがPersonではなくOrganizationになります。"
+  information-account-username: "インフォメーションプロデューサーのユーザー名"
+  information-account-username-desc: "インフォメーションとして使用するプロデューサーのユーザー名を指定してください。"
+  information-account-warn: "プロデューサーは自動で作られないため、そのユーザー名のプロデューサーを予め作成しておく必要があります。"
+  futaba-anzu-bot-account-config: "双葉杏botプロデューサーの設定"
+  futaba-anzu-bot-account-info: "双葉杏botプロデューサーは、毎朝7時に自動投稿を行います。"
+  futaba-anzu-bot-account-username: "双葉杏botプロデューサーのユーザー名"
+  futaba-anzu-bot-account-username-desc: "双葉杏botとして使用するプロデューサーのユーザー名を指定してください。"
+  futaba-anzu-bot-account-warn: "プロデューサーは自動で作られないため、そのユーザー名のプロデューサーを予め作成しておく必要があります。"
   max-note-text-length: "投稿の最大文字数"
   disable-registration: "ユーザー登録の受付を停止する"
   disable-local-timeline: "ローカルタイムラインを無効にする"
@@ -1341,12 +1404,12 @@ admin/views/users.vue:
   silence-confirm: "サイレンスしますか？"
   unmake-silence: "サイレンスの解除"
   unsilence-confirm: "サイレンスを解除しますか？"
-  verify: "公式アカウントにする"
-  verify-confirm: "公式アカウントにしますか？"
-  verified: "公式アカウントにしました"
-  unverify: "公式アカウントを解除する"
-  unverify-confirm: "公式アカウントを解除しますか？"
-  unverified: "公式アカウントを解除しました"
+  verify: "公式プロデューサーにする"
+  verify-confirm: "公式プロデューサーにしますか？"
+  verified: "公式プロデューサーにしました"
+  unverify: "公式プロデューサーを解除する"
+  unverify-confirm: "公式プロデューサーを解除しますか？"
+  unverified: "公式プロデューサーを解除しました"
   update-remote-user: "リモートユーザー情報の更新"
   remote-user-updated: "リモートユーザー情報を更新しました"
   users:
@@ -1363,7 +1426,7 @@ admin/views/users.vue:
       admin: "管理者"
       moderator: "モデレーター"
       adminOrModerator: "管理者+モデレーター"
-      verified: "公式アカウント"
+      verified: "公式プロデューサー"
       silenced: "サイレンス済み"
       suspended: "凍結済み"
     origin:
@@ -1389,6 +1452,8 @@ admin/views/emoji.vue:
     name-desc: "a~z 0~9 _ の文字が使えます。"
     aliases: "エイリアス"
     aliases-desc: "スペースで区切って複数設定できます。"
+    contentType: "Content-Type"
+    contentType-desc: "デフォルトは image/png です。"
     url: "絵文字画像URL"
     add: "追加"
     info: "50KB以下のPNG画像をおすすめします。"
@@ -1482,11 +1547,11 @@ desktop/views/pages/welcome.vue:
   timeline: "タイムライン"
   announcements: "お知らせ"
   photos: "最近の画像"
-  powered-by-misskey: "Powered by <b>Misskey</b>."
+  powered-by-misskey: "Powered by <b>twista</b>."
   info: "情報"
 
 desktop/views/pages/drive.vue:
-  title: "Misskey Drive"
+  title: "twista Drive"
 
 desktop/views/pages/note.vue:
   prev: "前の投稿"
@@ -1529,7 +1594,7 @@ desktop/views/pages/user/user.header.vue:
   posts: "投稿"
   following: "フォロー"
   followers: "フォロワー"
-  is-bot: "このアカウントはBotです"
+  is-bot: "このプロデューサーはBotです"
   no-description: "自己紹介はありません"
   years-old: "{age}歳"
   year: "年"
@@ -1576,12 +1641,11 @@ mobile/views/components/drive.vue:
   file-count: "ファイル"
   nothing-in-drive: "ドライブには何もありません"
   folder-is-empty: "このフォルダは空です"
-  prompt: "何をしますか？(数字を入力してください): <1 → ファイルをアップロード | 2 → ファイルをURLでアップロード | 3 → フォルダ作成 | 4 → このフォルダ名を変更 | 5 → このフォルダを移動 | 6 → このフォルダを削除>"
-  deletion-alert: "ごめんなさい！フォルダの削除は未実装です...。"
   folder-name: "フォルダー名"
   here-is-root: "現在いる場所はルートで、フォルダではありません。"
   url-prompt: "アップロードしたいファイルのURL"
   uploading: "アップロードをリクエストしました。アップロードが完了するまで時間がかかる場合があります。"
+  folder-name-cannot-empty: "フォルダ名を空白にすることはできません。"
 
 mobile/views/components/drive-file-chooser.vue:
   select-file: "ファイルを選択"
@@ -1629,11 +1693,13 @@ mobile/views/components/note-preview.vue:
   admin: "admin"
   bot: "bot"
   cat: "cat"
+  kaho: "ｺﾐﾔｶﾎ"
 
 mobile/views/components/note-sub.vue:
   admin: "admin"
   bot: "bot"
   cat: "cat"
+  kaho: "ｺﾐﾔｶﾎ"
 
 mobile/views/components/notifications.vue:
   empty: "ありません！"
@@ -1643,9 +1709,12 @@ mobile/views/components/post-form.vue:
   submit: "投稿"
   reply: "返信"
   renote: "Renote"
+  post-as: "属性"
+  information: "インフォメーション"
   quote-placeholder: "この投稿を引用... (オプション)"
   reply-placeholder: "この投稿への返信..."
   cw-placeholder: "内容への注釈 (オプション)"
+  broadcast-placeholder: "常駐させる内容 (オプション)"
   location-alert: "お使いの端末は位置情報に対応していません"
   error: "エラー"
   username-prompt: "ユーザー名を入力してください"
@@ -1669,11 +1738,19 @@ mobile/views/components/ui.nav.vue:
   widgets: "ウィジェット"
   game: "ゲーム"
   admin: "管理"
-  about: "Misskeyについて"
+  about: "twistaについて"
+
+mobile/views/pages/drive.vue:
+  contextmenu:
+    upload: "ファイルをアップロード"
+    url-upload: "ファイルをURLでアップロード"
+    create-folder: "フォルダーを作成"
+    rename-folder: "フォルダー名を変更"
+    move-folder: "このフォルダを移動"
+    delete-folder: "このフォルダを削除"
 
 mobile/views/pages/user-lists.vue:
   title: "リスト"
-  enter-list-name: "リスト名を入力してください"
 
 mobile/views/pages/signup.vue:
   lets-start: "📦 始めましょう"
@@ -1687,7 +1764,9 @@ mobile/views/pages/following.vue:
 mobile/views/pages/home.vue:
   home: "ホーム"
   local: "ローカル"
-  hybrid: "ソーシャル"
+  hybrid: "ホーム+ローカル"
+  imas: "アイマス"
+  imasHybrid: "ホーム+アイマス"
   global: "グローバル"
   mentions: "あなた宛て"
   messages: "ダイレクト投稿"
@@ -1757,7 +1836,9 @@ deck:
   widgets: "ウィジェット"
   home: "ホーム"
   local: "ローカル"
-  hybrid: "ソーシャル"
+  hybrid: "ホーム+ローカル"
+  imas: "アイマス"
+  imasHybrid: "ホーム+アイマス"
   hashtag: "ハッシュタグ"
   global: "グローバル"
   mentions: "あなた宛て"
@@ -1780,6 +1861,8 @@ deck:
 
 deck/deck.tl-column.vue:
   is-media-only: "メディア投稿のみ"
+  is-sfw-media-only: "SFWメディア投稿のみ"
+  is-nsfw-media-only: "NSFWメディア投稿のみ"
   edit: "オプション"
 
 deck/deck.user-column.vue:
@@ -1826,23 +1909,6 @@ dev/views/apps.vue:
 
 dev/views/new-app.vue:
   create-app: "アプリケーションの作成"
-  app-name: "アプリケーション名"
-  app-name-desc: "あなたのアプリの名称。"
-  app-name-ex: "ex) Misskey for iOS"
-  app-overview: "アプリの概要"
-  app-desc: "あなたのアプリの簡単な説明や紹介。"
-  app-desc-ex: "ex) Misskey iOSクライアント。"
-  callback-url: "コールバックURL (オプション)"
-  callback-url-desc: "ユーザーが認証フォームで認証した際にリダイレクトするURLを設定できます。"
-  authority: "権限"
-  authority-desc: "ここで要求した機能だけがAPIからアクセスできます。"
-  authority-warning: "アプリ作成後も変更できますが、新たな権限を付与する場合、その時点で関連付けられているユーザーキーはすべて無効になります。"
-  account-read: "アカウントの情報を見る。"
-  account-write: "アカウントの情報を操作する。"
-  note-write: "投稿する。"
-  reaction-write: "リアクションしたりリアクションをキャンセルする。"
-  following-write: "フォローしたりフォロー解除する。"
-  drive-read: "ドライブを見る。"
-  drive-write: "ドライブを操作する。"
-  notification-read: "通知を見る。"
-  notification-write: "通知を操作する。"
+
+dev/views/app.vue:
+  update-app: "アプリケーションの作成"

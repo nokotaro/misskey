@@ -35,7 +35,7 @@ export default async (user: ILocalUser, url: string, object: any) => {
 	const addr = await resolveAddr(hostname);
 	if (!addr) return;
 
-	await new  Promise((resolve, reject) => {
+	await new Promise((resolve, reject) => {
 		const req = request({
 			protocol,
 			hostname: addr,

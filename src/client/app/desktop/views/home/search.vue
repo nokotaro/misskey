@@ -3,7 +3,7 @@
 	<mk-notes ref="timeline" :make-promise="makePromise" @inited="inited">
 		<template #header>
 			<header class="oxgbmvii">
-				<span><fa icon="search"/> {{ q }}</span>
+				<span><fa :icon="['fal', 'search']"/> {{ q }}</span>
 			</header>
 		</template>
 	</mk-notes>
@@ -38,6 +38,9 @@ export default Vue.extend({
 						cursor: null
 					};
 				}
+			}).catch((e: any) => {
+				this.$notify(e.message || e);
+				throw e;
 			})
 		};
 	},

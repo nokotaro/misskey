@@ -8,6 +8,7 @@ export type Theme = {
 	base?: 'dark' | 'light';
 	vars: { [key: string]: string };
 	props: { [key: string]: string };
+	revision?: number;
 };
 
 export const lightTheme: Theme = require('../themes/light.json5');
@@ -15,6 +16,7 @@ export const darkTheme: Theme = require('../themes/dark.json5');
 export const lavenderTheme: Theme = require('../themes/lavender.json5');
 export const futureTheme: Theme = require('../themes/future.json5');
 export const halloweenTheme: Theme = require('../themes/halloween.json5');
+export const promoTheme: Theme = require('../themes/promo.json5');
 export const cafeTheme: Theme = require('../themes/cafe.json5');
 export const japaneseSushiSetTheme: Theme = require('../themes/japanese-sushi-set.json5');
 export const gruvboxDarkTheme: Theme = require('../themes/gruvbox-dark.json5');
@@ -31,6 +33,7 @@ export const builtinThemes = [
 	lavenderTheme,
 	futureTheme,
 	halloweenTheme,
+	promoTheme,
 	cafeTheme,
 	japaneseSushiSetTheme,
 	gruvboxDarkTheme,

@@ -4,8 +4,8 @@
 		<img :src="avator" alt=""><mk-user-name :user="user" :key="user.id"/>
 	</template>
 	<div class="wwtwuxyh" v-if="!fetching">
-		<div class="is-suspended" v-if="user.isSuspended"><p><fa icon="exclamation-triangle"/> {{ $t('@.user-suspended') }}</p></div>
-		<div class="is-remote" v-if="user.host != null"><p><fa icon="exclamation-triangle"/> {{ $t('@.is-remote-user') }}<a :href="user.url || user.uri" target="_blank">{{ $t('@.view-on-remote') }}</a></p></div>
+		<div class="is-suspended" v-if="user.isSuspended"><p><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.user-suspended') }}</p></div>
+		<div class="is-remote" v-if="user.host != null"><p><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.is-remote-user') }}<a :href="user.url || user.uri" target="_blank">{{ $t('@.view-on-remote') }}</a></p></div>
 		<header>
 			<div class="banner" :style="style"></div>
 			<div class="body">
@@ -13,8 +13,8 @@
 					<a class="avatar">
 						<img :src="avator" alt="avatar"/>
 					</a>
-					<button class="menu" ref="menu" @click="menu"><fa icon="ellipsis-h"/></button>
-					<mk-follow-button v-if="$store.getters.isSignedIn && $store.state.i.id != user.id" :user="user"/>
+					<button class="menu" ref="menu" @click="menu"><fa :icon="['fal', 'ellipsis-h']"/></button>
+					<mk-follow-button v-if="$store.getters.isSignedIn && $store.state.i.id != user.id" :user="user" :key="user.id"/>
 				</div>
 				<div class="title">
 					<h1><mk-user-name :user="user" :key="user.id"/></h1>
@@ -23,7 +23,7 @@
 				</div>
 				<div class="description">
 					<mfm v-if="user.description" :text="user.description" :is-note="false" :author="user" :i="$store.state.i" :custom-emojis="user.emojis" :key="user.id"/>
-					<x-integrations :user="user" style="margin:20px 0;"/>
+					<x-integrations :user="user" style="margin:20px 0"/>
 				</div>
 				<div class="fields" v-if="user.fields">
 					<dl class="field" v-for="(field, i) in user.fields" :key="i">
@@ -37,10 +37,10 @@
 				</div>
 				<div class="info">
 					<p class="location" v-if="user.host === null && user.profile.location">
-						<fa icon="map-marker"/>{{ user.profile.location }}
+						<fa :icon="['fal', 'map-marker']"/>{{ user.profile.location }}
 					</p>
 					<p class="birthday" v-if="user.host === null && user.profile.birthday">
-						<fa icon="birthday-cake"/>{{ user.profile.birthday.replace('-', '年').replace('-', '月') + '日' }} ({{ $t('years-old', { age }) }})
+						<fa :icon="['fal', 'birthday-cake']"/>{{ user.profile.birthday.replace('-', '年').replace('-', '月') + '日' }} ({{ $t('years-old', { age }) }})
 					</p>
 				</div>
 				<div class="status">
@@ -61,9 +61,9 @@
 		</header>
 		<nav v-if="$route.name == 'user'" :class="{ shadow: $store.state.device.useShadow }">
 			<div class="nav-container">
-				<a :data-active="page == 'home'" @click="page = 'home'"><fa icon="home"/> {{ $t('overview') }}</a>
-				<a :data-active="page == 'notes'" @click="page = 'notes'"><fa :icon="['far', 'comment-alt']"/> {{ $t('timeline') }}</a>
-				<a :data-active="page == 'media'" @click="page = 'media'"><fa icon="image"/> {{ $t('media') }}</a>
+				<a :data-active="page == 'home'" @click="page = 'home'"><fa :icon="['fal', 'home']"/> {{ $t('overview') }}</a>
+				<a :data-active="page == 'notes'" @click="page = 'notes'"><fa :icon="['fal', 'comment-alt']"/> {{ $t('timeline') }}</a>
+				<a :data-active="page == 'media'" @click="page = 'media'"><fa :icon="['fal', 'image']"/> {{ $t('media') }}</a>
 			</div>
 		</nav>
 		<main>
@@ -114,8 +114,8 @@ export default Vue.extend({
 		style(): any {
 			if (this.user.bannerUrl == null) return {};
 			return {
-				backgroundColor: this.user.bannerColor && this.user.bannerColor.length == 3 ? `rgb(${ this.user.bannerColor.join(',') })` : null,
-				backgroundImage: `url(${ this.user.bannerUrl })`
+				backgroundColor: this.user.bannerColor && this.user.bannerColor.length == 3 ? `rgb(${this.user.bannerColor.join(',')})` : null,
+				backgroundImage: `url(${this.user.bannerUrl})`
 			};
 		}
 	},
@@ -169,7 +169,8 @@ export default Vue.extend({
 			font-size 14px
 
 			> a
-				font-weight bold
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+				font-weight 600
 
 			@media (max-width 500px)
 				padding 12px
@@ -232,8 +233,9 @@ export default Vue.extend({
 				> .username
 					display inline-block
 					line-height 20px
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 					font-size 16px
-					font-weight bold
+					font-weight 600
 					color var(--mobileUserPageAcct)
 
 				> .followed
@@ -267,7 +269,8 @@ export default Vue.extend({
 						overflow hidden
 						white-space nowrap
 						text-overflow ellipsis
-						font-weight bold
+						font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+						font-weight 600
 						color var(--mobileUserPageStatusHighlight)
 
 					> .value
@@ -342,8 +345,8 @@ export default Vue.extend({
 					font-size 14px
 
 				&[data-active]
-					font-weight bold
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+					font-weight 600
 					color var(--primary)
 					border-color var(--primary)
-
 </style>

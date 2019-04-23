@@ -17,5 +17,5 @@ export type IEmoji = {
 	updatedAt?: Date;
 	/** AP object id */
 	uri?: string;
-	type?: string;
+	contentType?: string;
 };

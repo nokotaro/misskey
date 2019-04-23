@@ -7,6 +7,7 @@ import User from '../models/user';
 import Acct from '../misc/acct/type';
 import { links } from './nodeinfo';
 import { escapeAttribute, escapeValue } from '../prelude/xml';
+import { authorizeInteractionPath } from './ostatus';
 
 // Init router
 const router = new Router();
@@ -98,7 +99,7 @@ router.get(webFingerPath, async ctx => {
 	};
 	const subscribe = {
 		rel: 'http://ostatus.org/schema/1.0/subscribe',
-		template: `${config.url}/authorize-follow?acct={uri}`
+		template: `${config.url}${authorizeInteractionPath}?acct={uri}`
 	};
 
 	if (ctx.accepts(jrd, xrd) === xrd) {

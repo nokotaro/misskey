@@ -14,13 +14,13 @@
 	<div class="file" @click="file = null" v-if="file">{{ file.name }}</div>
 	<mk-uploader ref="uploader" @uploaded="onUploaded"/>
 	<button class="send" @click="send" :disabled="!canSend || sending" :title="$t('send')">
-		<template v-if="!sending"><fa icon="paper-plane"/></template><template v-if="sending"><fa icon="spinner .spin"/></template>
+		<template v-if="!sending"><fa :icon="['fal', 'paper-plane']"/></template><template v-if="sending"><fa :icon="['fal', 'spinner .spin']"/></template>
 	</button>
 	<button class="attach-from-local" @click="chooseFile" :title="$t('attach-from-local')">
-		<fa icon="upload"/>
+		<fa :icon="['fal', 'upload']"/>
 	</button>
 	<button class="attach-from-drive" @click="chooseFileFromDrive" :title="$t('attach-from-drive')">
-		<fa :icon="['far', 'folder-open']"/>
+		<fa :icon="['fal', 'folder-open']"/>
 	</button>
 	<input ref="file" type="file" @change="onChangeFile"/>
 </div>
@@ -287,7 +287,7 @@ export default Vue.extend({
 		margin 0
 		padding 10px 14px
 		font-size 1em
-		font-weight normal
+		font-weight 300
 		text-decoration none
 		color #aaa
 		transition color 0.1s ease
@@ -301,5 +301,4 @@ export default Vue.extend({
 
 	input[type=file]
 		display none
-
 </style>

@@ -1,12 +1,12 @@
 <template>
 <div class="csqvmxybqbycalfhkxvyfrgbrdalkaoc">
-	<p class="fetching" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
-	<p class="empty" v-else-if="stats.length == 0"><fa icon="exclamation-circle"/>{{ $t('empty') }}</p>
+	<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+	<p class="empty" v-else-if="stats.length == 0"><fa :icon="['fal', 'exclamation-circle']"/>{{ $t('empty') }}</p>
 	<!-- トランジションを有効にするとなぜかメモリリークする -->
 	<transition-group v-else tag="div" name="chart">
 		<div v-for="stat in stats" :key="stat.tag">
 			<div class="tag">
-				<router-link :to="`/tags/${ encodeURIComponent(stat.tag) }`" :title="stat.tag">#{{ stat.tag }}</router-link>
+				<router-link :to="`/tags/${encodeURIComponent(stat.tag)}`" :title="stat.tag">#{{ stat.tag }}</router-link>
 				<p>{{ $t('count').replace('{}', stat.usersCount) }}</p>
 			</div>
 			<x-chart class="chart" :src="stat.chart"/>
@@ -34,7 +34,7 @@ export default Vue.extend({
 	},
 	mounted() {
 		this.fetch();
-		this.clock = setInterval(this.fetch, 1000 * 60);
+		this.clock = setInterval(this.fetch, 1000 * 900);
 	},
 	beforeDestroy() {
 		clearInterval(this.clock);
@@ -96,5 +96,4 @@ export default Vue.extend({
 
 			> .chart
 				height 30px
-
 </style>

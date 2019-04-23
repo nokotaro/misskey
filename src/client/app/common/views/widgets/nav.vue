@@ -28,5 +28,4 @@ export default define({
 
 		i
 			color var(--text)
-
 </style>

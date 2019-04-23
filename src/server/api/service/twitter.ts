@@ -13,25 +13,10 @@ function getUserToken(ctx: Koa.BaseContext) {
 	return ((ctx.headers['cookie'] || '').match(/i=(!\w+)/) || [null, null])[1];
 }
 
-function compareOrigin(ctx: Koa.BaseContext) {
-	function normalizeUrl(url: string) {
-		return url.endsWith('/') ? url.substr(0, url.length - 1) : url;
-	}
-
-	const referer = ctx.headers['referer'];
-
-	return (normalizeUrl(referer) == normalizeUrl(config.url));
-}
-
 // Init router
 const router = new Router();
 
 router.get('/disconnect/twitter', async ctx => {
-	if (!compareOrigin(ctx)) {
-		ctx.throw(400, 'invalid origin');
-		return;
-	}
-
 	const userToken = getUserToken(ctx);
 	if (userToken == null) {
 		ctx.throw(400, 'signin required');
@@ -71,11 +56,6 @@ async function getTwAuth() {
 }
 
 router.get('/connect/twitter', async ctx => {
-	if (!compareOrigin(ctx)) {
-		ctx.throw(400, 'invalid origin');
-		return;
-	}
-
 	const userToken = getUserToken(ctx);
 	if (userToken == null) {
 		ctx.throw(400, 'signin required');
@@ -138,7 +118,7 @@ router.get('/tw/cb', async ctx => {
 		}) as ILocalUser;
 
 		if (user == null) {
-			ctx.throw(404, `@${result.screenName}と連携しているMisskeyアカウントはありませんでした...`);
+			ctx.throw(404, `@${result.screenName}と連携しているtwistaプロデューサーはありませんでした...`);
 			return;
 		}
 
@@ -175,7 +155,7 @@ router.get('/tw/cb', async ctx => {
 			}
 		});
 
-		ctx.body = `Twitter: @${result.screenName} を、Misskey: @${user.username} に接続しました！`;
+		ctx.body = `Twitter: @${result.screenName} を、twista: @${user.username} に接続しました！`;
 
 		// Publish i updated event
 		publishMainStream(user._id, 'meUpdated', await pack(user, user, {

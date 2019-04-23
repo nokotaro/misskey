@@ -15,6 +15,13 @@ export const meta = {
 	requireCredential: false,
 
 	params: {
+		days: {
+			validator: $.optional.num.range(1, 1000),
+			default: 2,
+			desc: {
+				'ja-JP': '最大数'
+			}
+		},
 		limit: {
 			validator: $.optional.num.range(1, 30),
 			default: 10,
@@ -33,7 +40,7 @@ export const meta = {
 };
 
 export default define(meta, async (ps, user) => {
-	const day = 1000 * 60 * 60 * 24 * 3; // 3日前まで
+	const day = 1000 * 60 * 60 * 24 * ps.days;
 
 	const hideUserIds = await getHideUserIds(user);
 

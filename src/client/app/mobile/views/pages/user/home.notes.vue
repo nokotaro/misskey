@@ -1,6 +1,6 @@
 <template>
 <div class="root notes">
-	<p class="fetching" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+	<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
 	<div v-if="!fetching && notes.length > 0">
 		<mk-note-card v-for="note in notes" :key="note.id" :note="note"/>
 	</div>
@@ -56,5 +56,4 @@ export default Vue.extend({
 
 		> i
 			margin-right 4px
-
 </style>

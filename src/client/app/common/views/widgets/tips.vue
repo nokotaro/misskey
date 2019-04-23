@@ -1,6 +1,6 @@
 <template>
 <div class="mkw-tips">
-	<p ref="tip"><fa :icon="['far', 'lightbulb']"/><span v-html="tip"></span></p>
+	<p ref="tip"><fa :icon="['fal', 'lightbulb']"/><span v-html="tip"></span></p>
 </div>
 </template>
 
@@ -40,7 +40,6 @@ export default define({
 			this.$t('tips-line19'),
 			this.$t('tips-line20'),
 			this.$t('tips-line21'),
-			this.$t('tips-line23'),
 			this.$t('tips-line24'),
 			this.$t('tips-line25')
 		];
@@ -105,5 +104,4 @@ export default define({
 			font-family inherit
 			border solid 1px var(--text)
 			border-radius 2px
-
 </style>

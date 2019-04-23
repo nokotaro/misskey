@@ -62,7 +62,7 @@ export default define(meta, async (ps, user) => {
 
 	const winnerId = game.user1Id.equals(user._id) ? game.user2Id : game.user1Id;
 
-	await ReversiGame.update({
+	const updated = await pack(await ReversiGame.findOneAndUpdate({
 		_id: game._id
 	}, {
 		$set: {
@@ -70,12 +70,12 @@ export default define(meta, async (ps, user) => {
 			isEnded: true,
 			winnerId: winnerId
 		}
-	});
+	}), user);
 
 	publishReversiGameStream(game._id, 'ended', {
 		winnerId: winnerId,
-		game: await pack(game._id, user)
+		game: updated
 	});
 
-	return;
+	return updated;
 });

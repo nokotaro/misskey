@@ -28,7 +28,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../i18n';
-import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationCircle } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('admin/views/abuse.vue'),
@@ -79,5 +79,4 @@ export default Vue.extend({
 .haexwsjc
 	padding-bottom 16px
 	border-bottom solid 1px var(--faceDivider)
-
 </style>

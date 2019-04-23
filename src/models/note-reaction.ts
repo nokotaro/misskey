@@ -8,6 +8,7 @@ const NoteReaction = db.get<INoteReaction>('noteReactions');
 NoteReaction.createIndex('noteId');
 NoteReaction.createIndex('userId');
 NoteReaction.createIndex(['userId', 'noteId'], { unique: true });
+NoteReaction.createIndex(['userId', 'reaction']);
 export default NoteReaction;
 
 export interface INoteReaction {
@@ -17,6 +18,13 @@ export interface INoteReaction {
 	userId: mongo.ObjectID;
 	reaction: string;
 }
+
+export const packMany = (
+	noteReactions: any[],
+	me: any
+) => {
+	return Promise.all(noteReactions.map(f => pack(f, me)));
+};
 
 /**
  * Pack a reaction for API response

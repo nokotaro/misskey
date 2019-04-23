@@ -1,6 +1,6 @@
 <template>
 <ui-card>
-	<template #title><fa icon="cloud"/> {{ $t('@.drive') }}</template>
+	<template #title><fa :icon="['fal', 'cloud']"/> {{ $t('@.drive') }}</template>
 
 	<section v-if="!fetching" class="juakhbxthdewydyreaphkepoxgxvfogn">
 		<div class="meter"><div :style="meterStyle"></div></div>
@@ -9,7 +9,7 @@
 
 	<section>
 		<header>{{ $t('stats') }}</header>
-		<div ref="chart" style="margin-bottom: -16px; margin-left: -8px; color: #000;"></div>
+		<div ref="chart" style="color:#000;margin-bottom:-16px;margin-left:-8px"></div>
 	</section>
 </ui-card>
 </template>
@@ -173,5 +173,4 @@ export default Vue.extend({
 
 	> p
 		margin 0
-
 </style>

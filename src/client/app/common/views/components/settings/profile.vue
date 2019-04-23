@@ -1,6 +1,6 @@
 <template>
 <ui-card>
-	<template #title><fa icon="user"/> {{ $t('title') }}</template>
+	<template #title><fa :icon="['fal', 'user']"/> {{ $t('title') }}</template>
 
 	<section class="esokaraujimuwfttfzgocmutcihewscl">
 		<div class="header" :style="bannerStyle">
@@ -20,12 +20,12 @@
 
 			<ui-input v-model="location">
 				<span>{{ $t('location') }}</span>
-				<template #prefix><fa icon="map-marker-alt"/></template>
+				<template #prefix><fa :icon="['fal', 'map-marker-alt']"/></template>
 			</ui-input>
 
 			<ui-input v-model="birthday" type="date">
 				<template #title>{{ $t('birthday') }}</template>
-				<template #prefix><fa icon="birthday-cake"/></template>
+				<template #prefix><fa :icon="['fal', 'birthday-cake']"/></template>
 			</ui-input>
 
 			<ui-textarea v-model="description" :max="500">
@@ -35,20 +35,25 @@
 
 			<ui-select v-model="lang">
 				<template #label>{{ $t('language') }}</template>
-				<template #icon><fa icon="language"/></template>
+				<template #icon><fa :icon="['fal', 'language']"/></template>
 				<option v-for="lang in unique(Object.values(langmap).map(x => x.nativeName)).map(name => Object.keys(langmap).find(k => langmap[k].nativeName == name))" :value="lang" :key="lang">{{ langmap[lang].nativeName }}</option>
 			</ui-select>
 
 			<ui-input type="file" @change="onAvatarChange">
 				<span>{{ $t('avatar') }}</span>
-				<template #icon><fa icon="image"/></template>
+				<template #icon><fa :icon="['fal', 'image']"/></template>
 				<template #desc v-if="avatarUploading">{{ $t('uploading') }}<mk-ellipsis/></template>
 			</ui-input>
 
 			<ui-input type="file" @change="onBannerChange">
 				<span>{{ $t('banner') }}</span>
-				<template #icon><fa icon="image"/></template>
+				<template #icon><fa :icon="['fal', 'image']"/></template>
 				<template #desc v-if="bannerUploading">{{ $t('uploading') }}<mk-ellipsis/></template>
+			</ui-input>
+
+			<ui-input v-model="avatarAngle">
+				<span>{{ $t('avatar-angle') }}</span>
+				<span slot="prefix"><fa :icon="['fal', 'drafting-compass']"/></span>
 			</ui-input>
 
 			<ui-button @click="save(true)"><fa :icon="faSave"/> {{ $t('save') }}</ui-button>
@@ -59,6 +64,7 @@
 		<header><fa :icon="faCogs"/> {{ $t('advanced') }}</header>
 
 		<div>
+			<ui-switch v-model="isKaho" @change="save(false)">{{ $t('is-kaho') }}</ui-switch>
 			<ui-switch v-model="isCat" @change="save(false)">{{ $t('is-cat') }}</ui-switch>
 			<ui-switch v-model="isBot" @change="save(false)">{{ $t('is-bot') }}</ui-switch>
 			<ui-switch v-model="alwaysMarkNsfw">{{ $t('@._settings.always-mark-nsfw') }}</ui-switch>
@@ -109,7 +115,6 @@
 	<section>
 		<details>
 			<summary>{{ $t('danger-zone') }}</summary>
-			<ui-button @click="deleteAccount()">{{ $t('delete-account') }}</ui-button>
 		</details>
 	</section>
 </ui-card>
@@ -122,8 +127,8 @@ import { apiUrl, host } from '../../../../config';
 import { toUnicode } from 'punycode';
 import langmap from 'langmap';
 import { unique } from '../../../../../../prelude/array';
-import { faDownload, faUpload, faUnlockAlt, faBoxes, faCogs } from '@fortawesome/free-solid-svg-icons';
-import { faSave, faEnvelope } from '@fortawesome/free-regular-svg-icons';
+import { faDownload, faUpload, faUnlockAlt, faBoxes, faCogs } from '@fortawesome/pro-light-svg-icons';
+import { faSave, faEnvelope } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/profile-editor.vue'),
@@ -143,6 +148,8 @@ export default Vue.extend({
 			birthday: null,
 			avatarId: null,
 			bannerId: null,
+			avatarAngle: null,
+			isKaho: false,
 			isCat: false,
 			isBot: false,
 			isLocked: false,
@@ -165,8 +172,8 @@ export default Vue.extend({
 		bannerStyle(): any {
 			if (this.$store.state.i.bannerUrl == null) return {};
 			return {
-				backgroundColor: this.$store.state.i.bannerColor && this.$store.state.i.bannerColor.length == 3 ? `rgb(${ this.$store.state.i.bannerColor.join(',') })` : null,
-				backgroundImage: `url(${ this.$store.state.i.bannerUrl })`
+				backgroundColor: this.$store.state.i.bannerColor && this.$store.state.i.bannerColor.length == 3 ? `rgb(${this.$store.state.i.bannerColor.join(',')})` : null,
+				backgroundImage: `url(${this.$store.state.i.bannerUrl})`
 			};
 		},
 	},
@@ -184,6 +191,8 @@ export default Vue.extend({
 		this.birthday = this.$store.state.i.profile.birthday;
 		this.avatarId = this.$store.state.i.avatarId;
 		this.bannerId = this.$store.state.i.bannerId;
+		this.avatarAngle = this.$store.state.i.avatarAngle;
+		this.isKaho = this.$store.state.i.isKaho;
 		this.isCat = this.$store.state.i.isCat;
 		this.isBot = this.$store.state.i.isBot;
 		this.isLocked = this.$store.state.i.isLocked;
@@ -198,6 +207,7 @@ export default Vue.extend({
 			const data = new FormData();
 			data.append('file', file);
 			data.append('i', this.$store.state.i.token);
+			data.append('force', 'true');
 
 			fetch(apiUrl + '/drive/files/create', {
 				method: 'POST',
@@ -220,6 +230,7 @@ export default Vue.extend({
 			const data = new FormData();
 			data.append('file', file);
 			data.append('i', this.$store.state.i.token);
+			data.append('force', 'true');
 
 			fetch(apiUrl + '/drive/files/create', {
 				method: 'POST',
@@ -247,6 +258,8 @@ export default Vue.extend({
 				birthday: this.birthday || null,
 				avatarId: this.avatarId || undefined,
 				bannerId: this.bannerId || undefined,
+				avatarAngle: this.avatarAngle || undefined,
+				isKaho: !!this.isKaho,
 				isCat: !!this.isCat,
 				isBot: !!this.isBot,
 				isLocked: !!this.isLocked,
@@ -360,5 +373,4 @@ export default Vue.extend({
 			width 72px
 			height 72px
 			margin auto
-
 </style>

@@ -3,8 +3,8 @@
 	<div class="body">
 		<header>
 			<h1>{{ $t('select-folder') }}</h1>
-			<button class="close" @click="cancel"><fa icon="times"/></button>
-			<button class="ok" @click="ok"><fa icon="check"/></button>
+			<button class="close" @click="cancel"><fa :icon="['fal', 'times']"/></button>
+			<button class="ok" @click="ok"><fa :icon="['fal', 'check']"/></button>
 		</header>
 		<x-drive ref="browser"
 			select-folder
@@ -59,7 +59,7 @@ export default Vue.extend({
 				text-align center
 				line-height 42px
 				font-size 1em
-				font-weight normal
+				font-weight 300
 
 			> .close
 				position absolute
@@ -79,5 +79,4 @@ export default Vue.extend({
 			height calc(100% - 42px)
 			overflow scroll
 			-webkit-overflow-scrolling touch
-
 </style>

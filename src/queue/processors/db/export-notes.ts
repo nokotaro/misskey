@@ -119,6 +119,8 @@ function serialize(note: INote): any {
 		viaMobile: note.viaMobile,
 		visibility: note.visibility,
 		visibleUserIds: note.visibleUserIds,
+		rating: note.rating,
+		qa: note.qa,
 		appId: note.appId,
 		geo: note.geo,
 		localOnly: note.localOnly

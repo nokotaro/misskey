@@ -26,7 +26,7 @@ export default async function(user: IUser) {
 		id: author.link,
 		title: `${author.name} (@${user.username}@${config.host})`,
 		updated: notes[0].createdAt,
-		generator: 'Misskey',
+		generator: 'twista',
 		description: `${user.notesCount} Notes, ${user.followingCount} Following, ${user.followersCount} Followers${user.description ? ` · ${user.description}` : ''}`,
 		link: author.link,
 		image: user.avatarUrl,

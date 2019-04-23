@@ -3,7 +3,7 @@
 	<div class="backdrop" ref="backdrop" @click="close"></div>
 	<div class="popover" :class="{ isMobile: $root.isMobile }" ref="popover">
 		<p v-if="!$root.isMobile">{{ title }}</p>
-		<div class="buttons" ref="buttons" :class="{ showFocus }">
+		<div class="buttons" ref="buttons">
 			<button @click="react('like')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="1" :title="$t('@.reactions.like')" v-particle><mk-reaction-icon reaction="like"/></button>
 			<button @click="react('love')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="2" :title="$t('@.reactions.love')" v-particle><mk-reaction-icon reaction="love"/></button>
 			<button @click="react('laugh')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="3" :title="$t('@.reactions.laugh')" v-particle><mk-reaction-icon reaction="laugh"/></button>
@@ -15,8 +15,8 @@
 			<button @click="react('rip')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="9" :title="$t('@.reactions.rip')" v-particle><mk-reaction-icon reaction="rip"/></button>
 			<button @click="react('pudding')" @mouseover="onMouseover" @mouseout="onMouseout" tabindex="10" :title="$t('@.reactions.pudding')" v-particle><mk-reaction-icon reaction="pudding"/></button>
 		</div>
-		<div v-if="enableEmojiReaction" class="text">
-			<input v-model="text" placeholder="または絵文字を入力" @keyup.enter="reactText" @input="tryReactText" v-autocomplete="{ model: 'text' }">
+		<div v-if="enableEmojiReaction" ref="pickButton">
+			<ui-button @click="pickEmoji">{{ $t('react-emoji') }}</ui-button>
 		</div>
 	</div>
 </div>
@@ -26,14 +26,14 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import anime from 'animejs';
-import { emojiRegex } from '../../../../../misc/emoji-regex';
+import EmojiPicker from '../../../desktop/views/components/emoji-picker-dialog.vue';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/reaction-picker.vue'),
 	props: {
 		note: {
 			type: Object,
-			required: true
+			required: false
 		},
 
 		source: {
@@ -42,12 +42,6 @@ export default Vue.extend({
 
 		cb: {
 			required: false
-		},
-
-		showFocus: {
-			type: Boolean,
-			required: false,
-			default: false
 		},
 
 		animation: {
@@ -60,9 +54,7 @@ export default Vue.extend({
 	data() {
 		return {
 			title: this.$t('choose-reaction'),
-			text: null,
 			enableEmojiReaction: false,
-			focus: null
 		};
 	},
 
@@ -70,43 +62,19 @@ export default Vue.extend({
 		keymap(): any {
 			return {
 				'esc': this.close,
-				'enter|space|plus': this.choose,
-				'up|k': this.focusUp,
-				'left|h|shift+tab': this.focusLeft,
-				'right|l|tab': this.focusRight,
-				'down|j': this.focusDown,
-				'1': () => this.react('like'),
-				'2': () => this.react('love'),
-				'3': () => this.react('laugh'),
-				'4': () => this.react('hmm'),
-				'5': () => this.react('surprise'),
-				'6': () => this.react('congrats'),
-				'7': () => this.react('angry'),
-				'8': () => this.react('confused'),
-				'9': () => this.react('rip'),
-				'0': () => this.react('pudding'),
 			};
-		}
-	},
-
-	watch: {
-		focus(i) {
-			this.$refs.buttons.children[i].focus();
-
-			if (this.showFocus) {
-				this.title = this.$refs.buttons.children[i].title;
-			}
 		}
 	},
 
 	mounted() {
 		this.$root.getMeta().then(meta => {
 			this.enableEmojiReaction = meta.enableEmojiReaction;
+			this.$nextTick(() => {
+				if (this.$refs.text) this.$refs.text.focus();
+			});
 		});
 
 		this.$nextTick(() => {
-			this.focus = 0;
-
 			const popover = this.$refs.popover as any;
 
 			const rect = this.source.getBoundingClientRect();
@@ -143,25 +111,29 @@ export default Vue.extend({
 
 	methods: {
 		react(reaction) {
-			this.$root.api('notes/reactions/create', {
-				noteId: this.note.id,
-				reaction: reaction
-			}).then(() => {
+			this.$emit('reacted', reaction);
+
+			if (this.note) {
+				this.$root.api('notes/reactions/create', {
+					noteId: this.note.id,
+					reaction
+				}).then(() => {
+					if (this.cb) this.cb();
+					this.$emit('closed');
+					this.destroyDom();
+				});
+			} else {
 				if (this.cb) this.cb();
 				this.$emit('closed');
 				this.destroyDom();
-			});
+			}
 		},
 
-		reactText() {
-			if (!this.text) return;
-			this.react(this.text);
-		},
-
-		tryReactText() {
-			if (!this.text) return;
-			if (!this.text.match(emojiRegex)) return;
-			this.reactText();
+		pickEmoji() {
+			const { left, top } = (this.$refs.popover as HTMLElement).style;
+			const [x, y, z] = [...([left, top].map(x => parseInt(x.match(/(\d+)/)[1]))), 10002];
+			const vm = this.$root.new(EmojiPicker, { x, y, z });
+			vm.$once('chosen', this.react);
 		},
 
 		onMouseover(e) {
@@ -194,26 +166,6 @@ export default Vue.extend({
 				}
 			});
 		},
-
-		focusUp() {
-			this.focus = this.focus == 0 ? 9 : this.focus < 5 ? (this.focus + 4) : (this.focus - 5);
-		},
-
-		focusDown() {
-			this.focus = this.focus == 9 ? 0 : this.focus >= 5 ? (this.focus - 4) : (this.focus + 5);
-		},
-
-		focusRight() {
-			this.focus = this.focus == 9 ? 0 : (this.focus + 1);
-		},
-
-		focusLeft() {
-			this.focus = this.focus == 0 ? 9 : (this.focus - 1);
-		},
-
-		choose() {
-			this.$refs.buttons.childNodes[this.focus].click();
-		}
 	}
 });
 </script>
@@ -246,11 +198,12 @@ export default Vue.extend({
 			> div
 				width 280px
 
-				> button
-					width 50px
-					height 50px
-					font-size 28px
-					border-radius 4px
+				&.buttons
+					> button
+						width 50px
+						height 50px
+						font-size 28px
+						border-radius 4px
 
 		&:not(.isMobile)
 			$arrow-size = 16px
@@ -276,31 +229,18 @@ export default Vue.extend({
 			font-size 14px
 			color var(--popupFg)
 			border-bottom solid var(--lineWidth) var(--faceDivider)
-
-		> .buttons
-			padding 4px 4px 8px 4px
-			width 216px
 			text-align center
 
-			&.showFocus
-				> button:focus
-					z-index 1
-
-					&:after
-						content ""
-						pointer-events none
-						position absolute
-						top 0
-						right 0
-						bottom 0
-						left 0
-						border 2px solid var(--primaryAlpha03)
-						border-radius 4px
+		> .buttons
+			display grid
+			grid repeat(2, 1fr) \/ repeat(5, 1fr)
+			padding 4px 4px 8px
+			text-align center
 
 			> button
 				padding 0
-				width 40px
-				height 40px
+				min-width calc(5em / 3)
+				min-height calc(5em / 3)
 				font-size 24px
 				border-radius 2px
 
@@ -313,30 +253,4 @@ export default Vue.extend({
 				&:active
 					background var(--primary)
 					box-shadow inset 0 0.15em 0.3em rgba(27, 31, 35, 0.15)
-
-		> .text
-			width 216px
-			padding 0 8px 8px 8px
-
-			> input
-				width 100%
-				padding 10px
-				margin 0
-				text-align center
-				font-size 16px
-				color var(--desktopPostFormTextareaFg)
-				background var(--desktopPostFormTextareaBg)
-				outline none
-				border solid 1px var(--primaryAlpha01)
-				border-radius 4px
-				transition border-color .2s ease
-
-				&:hover
-					border-color var(--primaryAlpha02)
-					transition border-color .1s ease
-
-				&:focus
-					border-color var(--primaryAlpha05)
-					transition border-color 0s ease
-
 </style>

@@ -8,7 +8,7 @@ export default (emoji: IEmoji) => ({
 	updated: emoji.updatedAt != null ? emoji.updatedAt.toISOString() : new Date().toISOString,
 	icon: {
 		type: 'Image',
-		mediaType: emoji.type || 'image/png',
+		mediaType: emoji.contentType || 'image/png',
 		url: emoji.url
 	}
 });

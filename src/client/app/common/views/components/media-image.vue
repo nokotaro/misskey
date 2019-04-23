@@ -1,7 +1,7 @@
 <template>
 <div class="qjewsnkgzzxlxtzncydssfbgjibiehcy" v-if="image.isSensitive && hide && !$store.state.device.alwaysShowNsfw" @click="hide = false">
 	<div>
-		<b><fa icon="exclamation-triangle"/> {{ $t('sensitive') }}</b>
+		<b><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('sensitive') }}</b>
 		<span>{{ $t('click-to-show') }}</span>
 	</div>
 </div>
@@ -52,7 +52,7 @@ export default Vue.extend({
 			}
 
 			return {
-				'background-color': this.image.properties.avgColor && this.image.properties.avgColor.length == 3 ? `rgb(${this.image.properties.avgColor.join(',')})` : 'transparent',
+				'background-color': this.image.properties.avgColor && this.image.properties.avgColor.length == 3 ? `rgb(${this.image.properties.avgColor.join(',')}, 0.3)` : 'transparent',
 				'background-image': url
 			};
 		}
@@ -83,8 +83,9 @@ export default Vue.extend({
 		border-radius 6px
 		color var(--secondary)
 		display inline-block
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 		font-size 14px
-		font-weight bold
+		font-weight 600
 		left 12px
 		opacity .5
 		padding 0 6px
@@ -106,5 +107,4 @@ export default Vue.extend({
 
 		> *
 			display block
-
 </style>

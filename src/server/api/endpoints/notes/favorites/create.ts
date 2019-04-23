@@ -1,6 +1,6 @@
 import $ from 'cafy';
 import ID, { transform } from '../../../../../misc/cafy-id';
-import Favorite from '../../../../../models/favorite';
+import Favorite, { pack } from '../../../../../models/favorite';
 import define from '../../../define';
 import { ApiError } from '../../../error';
 import { getNote } from '../../../common/getters';
@@ -63,11 +63,9 @@ export default define(meta, async (ps, user) => {
 	}
 
 	// Create favorite
-	await Favorite.insert({
+	return await pack(await Favorite.insert({
 		createdAt: new Date(),
 		noteId: note._id,
 		userId: user._id
-	});
-
-	return;
+	}), user);
 });

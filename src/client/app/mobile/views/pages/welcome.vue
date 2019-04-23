@@ -20,11 +20,11 @@
 			<mk-tag-cloud/>
 		</div>
 		<div class="photos">
-			<div v-for="photo in photos" :style="`background-image: url(${photo.thumbnailUrl})`"></div>
+			<div v-for="photo in photos" :style="`background-image:url(${photo.thumbnailUrl})`"></div>
 		</div>
 		<div class="stats" v-if="stats">
-			<span><fa icon="user"/> {{ stats.originalUsersCount | number }}</span>
-			<span><fa icon="pencil-alt"/> {{ stats.originalNotesCount | number }}</span>
+			<span><fa :icon="['fal', 'user']"/> {{ stats.originalUsersCount | number }}</span>
+			<span><fa :icon="['fal', 'pencil-alt']"/> {{ stats.originalNotesCount | number }}</span>
 		</div>
 		<div class="announcements" v-if="announcements && announcements.length > 0">
 			<article v-for="announcement in announcements">
@@ -87,7 +87,7 @@ export default Vue.extend({
 			stats: null,
 			banner: null,
 			host: toUnicode(host),
-			name: 'Misskey',
+			name: 'twista',
 			description: '',
 			photos: [],
 			announcements: []
@@ -171,7 +171,8 @@ export default Vue.extend({
 			text-align center
 			padding 6px 12px
 			line-height 32px
-			font-weight bold
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+			font-weight 600
 			color #333
 			background rgba(#000, 0.035)
 			border-radius 6px
@@ -190,7 +191,8 @@ export default Vue.extend({
 				margin 8px
 
 			> .signup
-				font-weight bold
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+				font-weight 600
 
 		> .signin
 			margin 16px 0
@@ -244,7 +246,8 @@ export default Vue.extend({
 				font-size 12px
 
 				> .title
-					font-weight bold
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+					font-weight 600
 
 		> .about-misskey
 			margin 16px 0
@@ -303,5 +306,4 @@ export default Vue.extend({
 				display block
 				margin 16px 0 0 0
 				opacity 0.7
-
 </style>

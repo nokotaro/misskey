@@ -25,6 +25,7 @@ export const mfmLanguage = P.createLanguage({
 	block: r => P.alt(
 		r.title,
 		r.quote,
+		r.bubble,
 		r.search,
 		r.blockCode,
 		r.mathBlock,
@@ -39,11 +40,12 @@ export const mfmLanguage = P.createLanguage({
 	}),
 	title: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
-		const match = text.match(/^([【\[]([^【\[】\]\n]+?)[】\]])(\n|$)/);
+		const match = text.match(/^(\[([^\[\]\n]+?)\])(\n|$)/) || text.match(/^(【([^【】\n]+?)】)(\n|$)/);
 		if (!match) return P.makeFailure(i, 'not a title');
+		const raw = match[0].trim();
 		const q = match[2].trim();
 		const contents = r.inline.atLeast(1).tryParse(q);
-		return P.makeSuccess(i + match[0].length, createTree('title', contents, {}));
+		return P.makeSuccess(i + match[0].length, createTree('title', contents, { raw }));
 	})),
 	quote: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
@@ -53,6 +55,46 @@ export const mfmLanguage = P.createLanguage({
 		if (qInner == '') return P.makeFailure(i, 'not a quote');
 		const contents = r.root.tryParse(qInner);
 		return P.makeSuccess(i + quote.join('\n').length + 1, createTree('quote', contents, {}));
+	})),
+	bubble: r => r.startOfLine.then(P((input, i) => {
+		const text = input.substr(i);
+		const match = [
+			['\'', '\''],
+			['"', '"'],
+			['‘', '’'],
+			['“', '”'],
+			['‚', '‘'],
+			['„', '“'],
+			['‚', '’'],
+			['„', '”'],
+			['‹', '›'],
+			['«', '»'],
+			['›', '‹'],
+			['»', '«'],
+			['｢', '｣'],
+			['「', '」'],
+			['『', '』'],
+			['“', '”'],
+			['‘', '’'],
+			['《', '》'],
+			['〈', '〉'],
+			['〝', '〟'],
+			['〝', '〞'],
+			['“', '„']
+		].map(([s, e]) => [
+			[new RegExp(`^((?::\\w+:)+[^:\\n]*(?::\\w+:)*|(?::\\w+:)*[^:\\n]+(?::\\w+:)*|(?::\\w+:)*[^:\\n]*(?::\\w+:)+): ${s}(.+?)${e}(?:\\n|$)`)],
+			...['：', '―', '—'].map(x => [
+				new RegExp(`^([^${s}${e}\\n]+)${s}(.+?)${e}(?:\\n|$)`),
+				new RegExp(`^([^${x}\\n]+)${x}${s}(.+?)${e}(?:\\n|$)`)
+			])
+		]).reduce((a, c) => [...a, ...c], [])
+			.reduce((a, c) => [...a, ...c], [])
+			.reduce<RegExpMatchArray>((a, c) => a || text.match(c), null);
+		if (!match) return P.makeFailure(i, 'not a bubble');
+		const raw = match[0].trim();
+		const speaker = r.inline.atLeast(1).tryParse(match[1].trim());
+		const contents = r.inline.atLeast(1).tryParse(match[2].trim());
+		return P.makeSuccess(i + match[0].length, createTree('bubble', contents, { speaker, raw }));
 	})),
 	search: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
@@ -71,7 +113,9 @@ export const mfmLanguage = P.createLanguage({
 		r.bold,
 		r.small,
 		r.italic,
+		r.serif,
 		r.strike,
+		r.opentype,
 		r.motion,
 		r.spin,
 		r.jump,
@@ -85,18 +129,27 @@ export const mfmLanguage = P.createLanguage({
 		r.emoji,
 		r.text
 	),
-	big: r => P.regexp(/^\*\*\*([\s\S]+?)\*\*\*/, 1).map(x => createTree('big', r.inline.atLeast(1).tryParse(x), {})),
-	bold: r => {
-		const asterisk = P.regexp(/\*\*([\s\S]+?)\*\*/, 1);
-		const underscore = P.regexp(/__([a-zA-Z0-9\s]+?)__/, 1);
-		return P.alt(asterisk, underscore).map(x => createTree('bold', r.inline.atLeast(1).tryParse(x), {}));
+	big: r => {
+		const xml = P.regexp(/^<big>([\s\S]+?)<\/big>/, 1);
+		const asterisk = P.regexp(/^\*\*\*([\s\S]+?)\*\*\*/, 1);
+		return P.alt(xml, asterisk).map(x => createTree('big', r.inline.atLeast(1).tryParse(x), {}));
 	},
-	small: r => P.regexp(/<small>([\s\S]+?)<\/small>/, 1).map(x => createTree('small', r.inline.atLeast(1).tryParse(x), {})),
+	bold: r => {
+		const xml = P.regexp(/<b>([\s\S]+?)<\/b>/, 1);
+		const asterisk = P.regexp(/\*\*([\s\S]+?)\*\*/, 1);
+		const underscore = P.regexp(/__([\s\S]+?)__/, 1);
+		return P.alt(xml, asterisk, underscore).map(x => createTree('bold', r.inline.atLeast(1).tryParse(x), {}));
+	},
+	small: r => {
+		const xml = P.regexp(/<small>([\s\S]+?)<\/small>/, 1);
+		const underscore = P.regexp(/___([\s\S]+?)___/, 1);
+		return P.alt(xml, underscore).map(x => createTree('small', r.inline.atLeast(1).tryParse(x), {}));
+	},
 	italic: r => {
 		const xml = P.regexp(/<i>([\s\S]+?)<\/i>/, 1);
 		const underscore = P((input, i) => {
 			const text = input.substr(i);
-			const match = text.match(/^(\*|_)([a-zA-Z0-9]+?[\s\S]*?)\1/);
+			const match = text.match(/^(\*|_)([\s\S]+?)\1/);
 			if (!match) return P.makeFailure(i, 'not a italic');
 			if (input[i - 1] != null && input[i - 1].match(/[a-z0-9]/i)) return P.makeFailure(i, 'not a italic');
 			return P.makeSuccess(i + match[0].length, match[2]);
@@ -104,11 +157,30 @@ export const mfmLanguage = P.createLanguage({
 
 		return P.alt(xml, underscore).map(x => createTree('italic', r.inline.atLeast(1).tryParse(x), {}));
 	},
-	strike: r => P.regexp(/~~(.+?)~~/, 1).map(x => createTree('strike', r.inline.atLeast(1).tryParse(x), {})),
+	serif: r => {
+		const xml = P.regexp(/<m>([\s\S]+?)<\/m>/, 1);
+		const backslash = P.regexp(/\\([^([][\s\S]*?)\\(?![\)\]])/, 1);
+		return P.alt(xml, backslash).map(x => createTree('serif', r.inline.atLeast(1).tryParse(x), {}));
+	},
+	strike: r => {
+		const xml = P.regexp(/<s>([\s\S]+?)<\/s>/, 1);
+		const tilde = P.regexp(/~~(.+?)~~/, 1);
+		return P.alt(xml, tilde).map(x => createTree('strike', r.inline.atLeast(1).tryParse(x), {}));
+	},
+	opentype: r => {
+		return P((input, i) => {
+			const text = input.substr(i);
+			const match = text.match(/^<(opentype|ot?)((?:\s(?:liga|[csphn]alt|dlig|smcp|c2sc|swsh|[lopt]num|frac|ordn|ss(?:0[1-9]|1\d|20)|[pfhtq]wid|[phv]kna|jp(?:78|83|90|04)|trad|ruby|nlck|ital|vkrn|vert|v[ph]al|kern|ccmp|locl|su[pb]s)(?:-(?:\d+|on|off))?)+)>(.+?)<\/\1>/i);
+			if (!match) return P.makeFailure(i, 'not an opentype');
+			return P.makeSuccess(i + match[0].length, {
+				content: match[3], attr: match[2] ? match[2].split(' ').filter(x => x.length).join(' ') : null
+			});
+		}).map(x => createTree('opentype', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
+	},
 	motion: r => {
+		const xml = P.regexp(/<(m(?:otion)?)>(.+?)<\/\1>/, 2);
 		const paren = P.regexp(/\(\(\(([\s\S]+?)\)\)\)/, 1);
-		const xml = P.regexp(/<motion>(.+?)<\/motion>/, 1);
-		return P.alt(paren, xml).map(x => createTree('motion', r.inline.atLeast(1).tryParse(x), {}));
+		return P.alt(xml, paren).map(x => createTree('motion', r.inline.atLeast(1).tryParse(x), {}));
 	},
 	spin: r => {
 		return P((input, i) => {
@@ -120,9 +192,9 @@ export const mfmLanguage = P.createLanguage({
 			});
 		}).map(x => createTree('spin', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
 	},
-	jump: r => P.regexp(/<jump>(.+?)<\/jump>/, 1).map(x => createTree('jump', r.inline.atLeast(1).tryParse(x), {})),
-	flip: r => P.regexp(/<flip>(.+?)<\/flip>/, 1).map(x => createTree('flip', r.inline.atLeast(1).tryParse(x), {})),
-	center: r => r.startOfLine.then(P.regexp(/<center>([\s\S]+?)<\/center>/, 1).map(x => createTree('center', r.inline.atLeast(1).tryParse(x), {}))),
+	jump: r => P.regexp(/<(j(?:ump)?)>(.+?)<\/\1>/, 2).map(x => createTree('jump', r.inline.atLeast(1).tryParse(x), {})),
+	flip: r => P.regexp(/<(f(?:lip)?)>(.+?)<\/\1>/, 2).map(x => createTree('flip', r.inline.atLeast(1).tryParse(x), {})),
+	center: r => r.startOfLine.then(P.regexp(/<(c(?:enter)?)>([\s\S]+?)<\/\1>/, 2).map(x => createTree('center', r.inline.atLeast(1).tryParse(x), {}))),
 	inlineCode: () => P.regexp(/`([^´\n]+?)`/, 1).map(x => createLeaf('inlineCode', { code: x })),
 	mathBlock: r => r.startOfLine.then(P.regexp(/\\\[([\s\S]+?)\\\]/, 1).map(x => createLeaf('mathBlock', { formula: x.trim() }))),
 	mathInline: () => P.regexp(/\\\((.+?)\\\)/, 1).map(x => createLeaf('mathInline', { formula: x })),
@@ -157,12 +229,12 @@ export const mfmLanguage = P.createLanguage({
 			let url: string;
 			if (!match) {
 				const match = text.match(/^<(https?:\/\/.*?)>/);
-				if (!match)
+				if (!match) {
 					return P.makeFailure(i, 'not a url');
-				url = match[1];
-				i += 2;
-			} else
+				}
+			} else {
 				url = match[0];
+			}
 			url = removeOrphanedBrackets(url);
 			if (url.endsWith('.')) url = url.substr(0, url.lastIndexOf('.'));
 			if (url.endsWith(',')) url = url.substr(0, url.lastIndexOf(','));
@@ -170,19 +242,31 @@ export const mfmLanguage = P.createLanguage({
 		}).map(x => createLeaf('url', { url: x }));
 	},
 	link: r => {
-		return P.seqObj(
+		const general = P.seqObj(
 			['silent', P.string('?').fallback(null).map(x => x != null)] as any,
 			P.string('['), ['text', P.regexp(/[^\n\[\]]+/)] as any, P.string(']'),
 			P.string('('), ['url', r.url] as any, P.string(')'),
-		).map((x: any) => {
-			return createTree('link', r.inline.atLeast(1).tryParse(x.text), {
-				silent: x.silent,
-				url: x.url.node.props.url
-			});
+		);
+		const nico = P((input, i) => {
+			const text = input.substr(i);
+			const nico =
+				text.match(/^((?:lv|s[mo])\d+)(?:#((?:\d+:)?(?:[0-5]?\d:)?[0-5]\d|\d+))?/) || // videos
+				text.match(/^(?:a[prz]|c[ho]|dw|gm|kn|im|jps|mylist\/|n[cqw]|user\/(?:illust\/)?)\d+/); // non-videos
+			return nico ? P.makeSuccess(i + nico[0].length, {
+				text: nico[0],
+				nico: true,
+				silent: false,
+				url: `https://nico.ms/${nico[1]}${nico[2] ? `?from=${nico[2].split(':').reverse().reduce((a, c, i) => a + ~~c * (60 ** i), 0)}` : ''}`
+			}) : P.makeFailure(i, 'not a nicolink');
 		});
+		return P.alt(general, nico).map((x: any) => createTree('link', (x.nico ? r.text : r.inline).atLeast(1).tryParse(x.text), {
+			nico: x.nico,
+			silent: x.silent,
+			url: typeof x.url === 'string' ? x.url : x.url.node.props.url
+		}));
 	},
 	emoji: () => {
-		const name = P.regexp(/:([a-z0-9_+-]+):/i, 1).map(x => createLeaf('emoji', { name: x }));
+		const name = P.regexp(/:(@?[\w-]+(?:@[\w.-]+)?):/i, 1).map(x => createLeaf('emoji', { name: x }));
 		const code = P.regexp(emojiRegex).map(x => createLeaf('emoji', { emoji: x }));
 		return P.alt(name, code);
 	},

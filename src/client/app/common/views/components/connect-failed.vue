@@ -1,6 +1,6 @@
 <template>
 <div class="mk-connect-failed">
-	<img src="https://raw.githubusercontent.com/syuilo/misskey/develop/src/client/assets/error.jpg" alt=""/>
+	<img src="https://raw.githubusercontent.com/346design/twista.283.cloud/develop/src/client/assets/error.jpg" alt=""/>
 	<h1>{{ $t('title') }}</h1>
 	<p class="text">
 		<span>{{ this.$t('description').substr(0, this.$t('description').indexOf('{')) }}</span>
@@ -41,8 +41,6 @@ export default Vue.extend({
 </script>
 
 <style lang="stylus" scoped>
-
-
 .mk-connect-failed
 	width 100%
 	padding 32px 18px
@@ -100,6 +98,5 @@ export default Vue.extend({
 
 		> img
 			height 150px
-
 </style>
 

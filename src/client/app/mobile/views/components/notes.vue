@@ -15,8 +15,8 @@
 		<template v-for="(note, i) in _notes">
 			<mk-note :note="note" :key="note.id" @update:note="onNoteUpdated(i, $event)"/>
 			<p class="date" :key="note.id + '_date'" v-if="i != notes.length - 1 && note._date != _notes[i + 1]._date">
-				<span><fa icon="angle-up"/>{{ note._datetext }}</span>
-				<span><fa icon="angle-down"/>{{ _notes[i + 1]._datetext }}</span>
+				<span><fa :icon="['fal', 'angle-up']"/>{{ note._datetext }}</span>
+				<span><fa :icon="['fal', 'angle-down']"/>{{ _notes[i + 1]._datetext }}</span>
 			</p>
 		</template>
 	</component>
@@ -24,7 +24,7 @@
 	<footer v-if="cursor != null">
 		<button @click="more" :disabled="moreFetching" :style="{ cursor: moreFetching ? 'wait' : 'pointer' }">
 			<template v-if="!moreFetching">{{ $t('@.load-more') }}</template>
-			<template v-if="moreFetching"><fa icon="spinner" pulse fixed-width/></template>
+			<template v-if="moreFetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/></template>
 		</button>
 	</footer>
 </div>
@@ -139,11 +139,6 @@ export default Vue.extend({
 			// 弾く
 			if (shouldMuteNote(this.$store.state.i, this.$store.state.settings, note)) return;
 
-			// タブが非表示またはスクロール位置が最上部ではないならタイトルで通知
-			if (document.hidden || !this.isScrollTop()) {
-				this.$store.commit('pushBehindNote', note);
-			}
-
 			if (this.isScrollTop()) {
 				// Prepend the note
 				this.notes.unshift(note);
@@ -177,7 +172,7 @@ export default Vue.extend({
 
 			if (this.$store.state.settings.fetchOnScroll !== false) {
 				// 親要素が display none だったら弾く
-				// https://github.com/syuilo/misskey/issues/1569
+				// https://github.com/346design/twista.283.cloud/issues/1569
 				// http://d.hatena.ne.jp/favril/20091105/1257403319
 				if (this.$el.offsetHeight == 0) return;
 
@@ -265,5 +260,4 @@ export default Vue.extend({
 
 			&:disabled
 				opacity 0.7
-
 </style>

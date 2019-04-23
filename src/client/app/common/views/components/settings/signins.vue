@@ -3,8 +3,8 @@
 <div class="signins" v-if="signins.length != 0">
 	<div v-for="signin in signins">
 		<header @click="signin._show = !signin._show">
-			<template v-if="signin.success"><fa icon="check"/></template>
-			<template v-else><fa icon="times"/></template>
+			<template v-if="signin.success"><fa :icon="['fal', 'check']"/></template>
+			<template v-else><fa :icon="['fal', 'times']"/></template>
 			<span class="ip">{{ signin.ip }}</span>
 			<mk-time :time="signin.createdAt"/>
 		</header>
@@ -94,5 +94,4 @@ export default Vue.extend({
 				max-height 100px
 				white-space pre-wrap
 				word-break break-all
-
 </style>

@@ -1,8 +1,8 @@
 <template>
 <div class="mk-admin" :class="{ isMobile }">
 	<header v-show="isMobile">
-		<button class="nav" @click="navOpend = true"><fa icon="bars"/></button>
-		<span>MisskeyMyAdmin</span>
+		<button class="nav" @click="navOpend = true"><fa :icon="['fal', 'bars']"/></button>
+		<span>President Tsutomu's Office</span>
 	</header>
 	<div class="nav-backdrop"
 		v-if="navOpend && isMobile"
@@ -18,24 +18,24 @@
 			<p class="name"><mk-user-name :user="$store.state.i"/></p>
 		</div>
 		<ul>
-			<li @click="nav('dashboard')" :class="{ active: page == 'dashboard' }"><fa icon="home" fixed-width/>{{ $t('dashboard') }}</li>
-			<li @click="nav('instance')" :class="{ active: page == 'instance' }"><fa icon="cog" fixed-width/>{{ $t('instance') }}</li>
+			<li @click="nav('dashboard')" :class="{ active: page == 'dashboard' }"><fa :icon="['fal', 'home']" fixed-width/>{{ $t('dashboard') }}</li>
+			<li @click="nav('instance')" :class="{ active: page == 'instance' }"><fa :icon="['fal', 'cog']" fixed-width/>{{ $t('instance') }}</li>
 			<li @click="nav('queue')" :class="{ active: page == 'queue' }"><fa :icon="faTasks" fixed-width/>{{ $t('queue') }}</li>
 			<li @click="nav('logs')" :class="{ active: page == 'logs' }"><fa :icon="faStream" fixed-width/>{{ $t('logs') }}</li>
 			<li @click="nav('moderators')" :class="{ active: page == 'moderators' }"><fa :icon="faHeadset" fixed-width/>{{ $t('moderators') }}</li>
-			<li @click="nav('users')" :class="{ active: page == 'users' }"><fa icon="users" fixed-width/>{{ $t('users') }}</li>
-			<li @click="nav('drive')" :class="{ active: page == 'drive' }"><fa icon="cloud" fixed-width/>{{ $t('@.drive') }}</li>
+			<li @click="nav('users')" :class="{ active: page == 'users' }"><fa :icon="['fal', 'users']" fixed-width/>{{ $t('users') }}</li>
+			<li @click="nav('drive')" :class="{ active: page == 'drive' }"><fa :icon="['fal', 'cloud']" fixed-width/>{{ $t('@.drive') }}</li>
 			<li @click="nav('federation')" :class="{ active: page == 'federation' }"><fa :icon="faGlobe" fixed-width/>{{ $t('federation') }}</li>
 			<li @click="nav('emoji')" :class="{ active: page == 'emoji' }"><fa :icon="faGrin" fixed-width/>{{ $t('emoji') }}</li>
-			<li @click="nav('announcements')" :class="{ active: page == 'announcements' }"><fa icon="broadcast-tower" fixed-width/>{{ $t('announcements') }}</li>
-			<li @click="nav('hashtags')" :class="{ active: page == 'hashtags' }"><fa icon="hashtag" fixed-width/>{{ $t('hashtags') }}</li>
+			<li @click="nav('announcements')" :class="{ active: page == 'announcements' }"><fa :icon="['fal', 'broadcast-tower']" fixed-width/>{{ $t('announcements') }}</li>
+			<li @click="nav('hashtags')" :class="{ active: page == 'hashtags' }"><fa :icon="['fal', 'hashtag']" fixed-width/>{{ $t('hashtags') }}</li>
 			<li @click="nav('abuse')" :class="{ active: page == 'abuse' }"><fa :icon="faExclamationCircle" fixed-width/>{{ $t('abuse') }}</li>
 		</ul>
 		<div class="back-to-misskey">
 			<a href="/"><fa :icon="faArrowLeft"/> {{ $t('back-to-misskey') }}</a>
 		</div>
 		<div class="version">
-			<small>Misskey {{ version }}</small>
+			<small>twista {{ version }}</small>
 		</div>
 	</nav>
 	<main>
@@ -74,8 +74,7 @@ import XDrive from "./drive.vue";
 import XAbuse from "./abuse.vue";
 import XFederation from "./federation.vue";
 
-import { faHeadset, faArrowLeft, faGlobe, faExclamationCircle, faTasks, faStream } from '@fortawesome/free-solid-svg-icons';
-import { faGrin } from '@fortawesome/free-regular-svg-icons';
+import { faHeadset, faArrowLeft, faGlobe, faExclamationCircle, faTasks, faStream, faGrin } from '@fortawesome/pro-light-svg-icons';
 
 // Detect the user agent
 const ua = navigator.userAgent.toLowerCase();
@@ -294,5 +293,4 @@ export default Vue.extend({
 	&.isMobile
 		> main
 			padding $headerHeight 0 0 0
-
 </style>

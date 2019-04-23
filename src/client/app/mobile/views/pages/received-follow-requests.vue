@@ -1,6 +1,6 @@
 <template>
 <mk-ui>
-	<template #header><fa :icon="['far', 'envelope']"/>{{ $t('title') }}</template>
+	<template #header><fa :icon="['fal', 'envelope']"/>{{ $t('title') }}</template>
 
 	<main>
 		<div v-for="req in requests">
@@ -65,5 +65,4 @@ main
 
 		> span
 			margin 0 0 0 auto
-
 </style>

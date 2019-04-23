@@ -6,45 +6,69 @@
 	@drop.stop="onDrop"
 >
 	<div class="content">
-		<div v-if="visibility == 'specified'" class="visibleUsers">
-			<span v-for="u in visibleUsers">
-				<mk-user-name :user="u"/><a @click="removeVisibleUser(u)">[x]</a>
+		<div v-if="visibility == 'specified'" class="visible-users">
+			<span class="title">
+				<fa :icon="['fal', 'user-friends']" class="ako"/>
+				<span>{{ $t('@.send-to') }}</span>
 			</span>
-			<a @click="addVisibleUser">{{ $t('add-visible-user') }}</a>
+			<a class="visible-user" @click="removeVisibleUser(u)" v-for="u in visibleUsers">
+				<div><fa :icon="['fal', 'user-minus']" fixed-width/></div>
+				<span>
+					<mk-avatar :user="u"/>
+					<mk-user-name :user="u"/>
+				</span>
+			</a>
+			<a @click="addVisibleUser">
+				<fa :icon="['fal', 'user-plus']" class="ako"/>
+			</a>
 		</div>
-		<div class="hashtags" v-if="recentHashtags.length > 0 && $store.state.settings.suggestRecentHashtags">
+		<div class="hashtags" v-if="recentHashtags.length && $store.state.settings.suggestRecentHashtags">
 			<b>{{ $t('recent-tags') }}:</b>
 			<a v-for="tag in recentHashtags.slice(0, 5)" @click="addTag(tag)" :title="$t('click-to-tagging')">#{{ tag }}</a>
 		</div>
 		<div class="local-only" v-if="localOnly == true">{{ $t('local-only-message') }}</div>
 		<input v-show="useCw" ref="cw" v-model="cw" :placeholder="$t('annotations')" v-autocomplete="{ model: 'cw' }">
 		<div class="textarea">
-			<textarea :class="{ with: (files.length != 0 || poll) }"
+			<textarea :class="{ with: (files.length || poll) }"
 				ref="text" v-model="text" :disabled="posting"
 				@keydown="onKeydown" @paste="onPaste" :placeholder="placeholder"
 				v-autocomplete="{ model: 'text' }"
 			></textarea>
 			<button class="emoji" @click="emoji" ref="emoji">
-				<fa :icon="['far', 'laugh']"/>
+				<fa :icon="['fal', 'laugh']"/>
 			</button>
 			<x-post-form-attaches class="files" :files="files" :detachMediaFn="detachMedia"/>
 			<mk-poll-editor v-if="poll" ref="poll" @destroyed="poll = false" @updated="onPollUpdate()"/>
 		</div>
+		<input v-show="useBroadcast" ref="broadcast" v-model="broadcast" :placeholder="$t('broadcast')" v-autocomplete="{ model: 'broadcast' }">
+		<ui-select v-model="postAs" v-if="usePostAs">
+			<template #label>{{ $t('post-as') }}</template>
+			<option value="information">{{ $t('information') }}</option>
+		</ui-select>
 	</div>
 	<mk-uploader ref="uploader" @uploaded="attachMedia" @change="onChangeUploadings"/>
-	<button class="upload" :title="$t('attach-media-from-local')" @click="chooseFile"><fa icon="upload"/></button>
-	<button class="drive" :title="$t('attach-media-from-drive')" @click="chooseFileFromDrive"><fa icon="cloud"/></button>
-	<button class="kao" :title="$t('insert-a-kao')" @click="kao"><fa :icon="['far', 'smile']"/></button>
-	<button class="poll" :title="$t('create-poll')" @click="poll = !poll"><fa icon="chart-pie"/></button>
-	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa :icon="['far', 'eye-slash']"/></button>
-	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()"><fa icon="map-marker-alt"/></button>
-	<button class="visibility" :title="$t('visibility')" @click="setVisibility" ref="visibilityButton">
-		<span v-if="visibility === 'public'"><fa icon="globe"/></span>
-		<span v-if="visibility === 'home'"><fa icon="home"/></span>
-		<span v-if="visibility === 'followers'"><fa icon="unlock"/></span>
-		<span v-if="visibility === 'specified'"><fa icon="envelope"/></span>
+	<button class="upload" :title="$t('attach-media-from-local')" @click="chooseFile"><fa :icon="['fal', 'upload']"/></button>
+	<button class="drive" :title="$t('attach-media-from-drive')" @click="chooseFileFromDrive"><fa :icon="['fal', 'cloud']"/></button>
+	<button class="kao" :title="$t('insert-a-kao')" @click="kao"><fa :icon="['fal', 'cat']"/></button>
+	<button class="poll" :title="$t('create-poll')" @click="poll = !poll"><fa :icon="['fal', 'poll-people']"/></button>
+	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa :icon="['fal', 'eye-slash']"/></button>
+	<button class="broadcast" :title="$t('use-broadcast')" @click="useBroadcast = !useBroadcast"><fa :icon="['fal', 'bullhorn']"/></button>
+	<button class="post-as" :title="$t('post-as')" @click="usePostAs = !usePostAs" v-if="$store.getters.isSignedIn && ($store.state.i.isAdmin || $store.state.i.isModerator)"><fa :icon="['fal', 'user-ninja']"/></button>
+	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa :icon="['fal', 'map-marker-alt']"/></button>
+	<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
+		<span v-if="rating === null"><fa :icon="['fal', 'eye']"/></span>
+		<span v-if="rating === '0'"><fa :icon="['fal', 'baby']"/></span>
+		<span v-if="rating === '12'"><fa :icon="['fal', 'child']"/></span>
+		<span v-if="rating === '15'"><fa :icon="['fal', 'people-carry']"/></span>
+		<span v-if="rating === '18'"><fa :icon="['fal', 'person-booth']"/></span>
 	</button>
-	<p class="text-count" :class="{ over: trimmedLength(text) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(text) }}</p>
+	<button class="visibility" :title="$t('visibility')" @click="setVisibility" ref="visibilityButton">
+		<span v-if="visibility === 'public'"><fa :icon="['fal', 'globe']"/></span>
+		<span v-if="visibility === 'home'"><fa :icon="['fal', 'home']"/></span>
+		<span v-if="visibility === 'followers'"><fa :icon="['fal', 'unlock']"/></span>
+		<span v-if="visibility === 'specified'"><fa :icon="['fal', 'envelope']"/></span>
+	</button>
+	<p class="text-count" :class="{ over: trimmedLength(concatenated) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(concatenated) }}</p>
 	<ui-button primary :wait="posting" class="submit" :disabled="!canPost" @click="post">
 		{{ posting ? $t('posting') : submitText }}<mk-ellipsis v-if="posting"/>
 	</ui-button>
@@ -59,6 +83,7 @@ import i18n from '../../../i18n';
 import insertTextAtCursor from 'insert-text-at-cursor';
 import getFace from '../../../common/scripts/get-face';
 import MkVisibilityChooser from '../../../common/views/components/visibility-chooser.vue';
+import MkRatingChooser from '../../../common/views/components/rating-chooser.vue';
 import { parse } from '../../../../../mfm/parse';
 import { host } from '../../../config';
 import { erase, unique } from '../../../../../prelude/array';
@@ -72,6 +97,7 @@ export default Vue.extend({
 
 	components: {
 		MkVisibilityChooser,
+		MkRatingChooser,
 		XPostFormAttaches
 	},
 
@@ -111,10 +137,15 @@ export default Vue.extend({
 			pollExpiration: [],
 			useCw: false,
 			cw: null,
+			useBroadcast: false,
+			broadcast: '',
+			usePostAs: false,
+			postAs: null,
 			geo: null,
 			visibility: 'public',
 			visibleUsers: [],
 			localOnly: false,
+			rating: null,
 			autocomplete: null,
 			draghover: false,
 			recentHashtags: JSON.parse(localStorage.getItem('hashtags') || '[]'),
@@ -163,10 +194,14 @@ export default Vue.extend({
 					: this.$t('submit');
 		},
 
+		concatenated(): string {
+			return [this.text, ...(this.useBroadcast && this.broadcast && this.broadcast.length ? [this.broadcast] : [])].join(' ');
+		},
+
 		canPost(): boolean {
 			return !this.posting &&
-				(1 <= this.text.length || 1 <= this.files.length || this.poll || this.renote) &&
-				(length(this.text.trim()) <= this.maxNoteTextLength) &&
+				(this.text.length || this.files.length || this.poll || this.renote) &&
+				length(this.concatenated.trim()) < this.maxNoteTextLength &&
 				(!this.poll || this.pollChoices.length >= 2);
 		}
 	},
@@ -211,6 +246,8 @@ export default Vue.extend({
 		}
 
 		if (this.reply) {
+			this.rating = this.reply.rating;
+
 			this.$root.api('users/show', { userId: this.reply.userId }).then(user => {
 				this.visibleUsers.push(user);
 			});
@@ -228,6 +265,7 @@ export default Vue.extend({
 				const draft = JSON.parse(localStorage.getItem('drafts') || '{}')[this.draftId];
 				if (draft) {
 					this.text = draft.data.text;
+					this.broadcast = draft.data.broadcast;
 					this.files = draft.data.files;
 					if (draft.data.poll) {
 						this.poll = true;
@@ -362,27 +400,6 @@ export default Vue.extend({
 			//#endregion
 		},
 
-		setGeo() {
-			if (navigator.geolocation == null) {
-				alert(this.$t('geolocation-alert'));
-				return;
-			}
-
-			navigator.geolocation.getCurrentPosition(pos => {
-				this.geo = pos.coords;
-				this.$emit('geo-attached', this.geo);
-			}, err => {
-				alert(`%i18n:@error%: ${err.message}`);
-			}, {
-					enableHighAccuracy: true
-				});
-		},
-
-		removeGeo() {
-			this.geo = null;
-			this.$emit('geo-dettached');
-		},
-
 		setVisibility() {
 			const w = this.$root.new(MkVisibilityChooser, {
 				source: this.$refs.visibilityButton,
@@ -390,6 +407,16 @@ export default Vue.extend({
 			});
 			w.$once('chosen', v => {
 				this.applyVisibility(v);
+			});
+		},
+
+		setRating() {
+			const w = this.$root.new(MkRatingChooser, {
+				source: this.$refs.ratingButton,
+				currentRating: this.rating
+			});
+			w.$once('chosen', v => {
+				this.applyRating(v);
 			});
 		},
 
@@ -404,9 +431,13 @@ export default Vue.extend({
 			}
 		},
 
+		applyRating(v :string) {
+			this.rating = v;
+		},
+
 		addVisibleUser() {
 			this.$root.dialog({
-				title: this.$t('enter-username'),
+				title: this.$t('@.enter-username'),
 				user: true
 			}).then(({ canceled, result: user }) => {
 				if (canceled) return;
@@ -435,23 +466,25 @@ export default Vue.extend({
 			this.posting = true;
 
 			this.$root.api('notes/create', {
-				text: this.text == '' ? undefined : this.text,
-				fileIds: this.files.length > 0 ? this.files.map(f => f.id) : undefined,
+				text: this.concatenated.length ? this.concatenated : undefined,
+				fileIds: this.files.length ? this.files.map(f => f.id) : undefined,
 				replyId: this.reply ? this.reply.id : undefined,
 				renoteId: this.renote ? this.renote.id : undefined,
 				poll: this.poll ? (this.$refs.poll as any).get() : undefined,
 				cw: this.useCw ? this.cw || '' : undefined,
+				as: this.usePostAs && this.postAs ? this.postAs : undefined,
 				visibility: this.visibility,
 				visibleUserIds: this.visibility == 'specified' ? this.visibleUsers.map(u => u.id) : undefined,
 				localOnly: this.localOnly,
-				geo: this.geo ? {
+				rating: this.rating,
+				geo: /*this.geo ? {
 					coordinates: [this.geo.longitude, this.geo.latitude],
 					altitude: this.geo.altitude,
 					accuracy: this.geo.accuracy,
 					altitudeAccuracy: this.geo.altitudeAccuracy,
 					heading: isNaN(this.geo.heading) ? null : this.geo.heading,
 					speed: this.geo.speed,
-				} : null
+				} : */null
 			}).then(data => {
 				this.clear();
 				this.deleteDraft();
@@ -487,6 +520,7 @@ export default Vue.extend({
 				updatedAt: new Date(),
 				data: {
 					text: this.text,
+					broadcast: this.broadcast,
 					files: this.files,
 					poll: this.poll && this.$refs.poll ? (this.$refs.poll as any).get() : undefined
 				}
@@ -551,8 +585,14 @@ export default Vue.extend({
 			&::-webkit-input-placeholder
 				color var(--primaryAlpha03)
 
-		> input
+		> input:first-of-type
 			margin-bottom 8px
+
+		> input:last-of-type
+			margin-top 8px
+
+		> .ui-select
+			margin 24px 8px 0
 
 		> .textarea
 			> .emoji
@@ -654,13 +694,68 @@ export default Vue.extend({
 				border-radius 0 0 4px 4px
 				transition border-color .3s ease
 
-		> .visibleUsers
-			margin-bottom 8px
-			font-size 14px
+		> .visible-users
+			align-items center
+			display flex
+			flex-flow wrap
+			gap 8px
+			margin 0 8px 8px
 
-			> span
-				margin-right 16px
-				color var(--primary)
+			.ako
+				height 32px
+				margin 0 6px
+				padding 6px 0
+				vertical-align bottom
+
+			> .title
+				color var(--text)
+				padding 0 6px 0 0
+
+				> span
+					vertical-align 4px
+
+			> .visible-user
+				align-items center
+				border solid 1px
+				border-radius 16px
+				display flex
+				height 32px
+				overflow hidden
+
+				&:hover
+					> *:first-child
+						padding 0 0 0 2px
+						width 32px
+
+					> *:last-child
+						padding 0 2px 0 0
+
+				> *
+					align-items center
+					display flex
+					justify-content center
+					transition all .2s ease
+
+					&:first-child
+						align-items center
+						background currentColor
+						display flex
+						height 100%
+						justify-content center
+						width 0
+
+						> svg
+							color var(--secondary)
+					
+					&:last-child
+						flex 1 0 auto
+						gap 4px
+						margin 0 8px
+						padding 0 18px 0 16px
+
+						> .mk-avatar
+							height 24px
+							width 24px
 
 		> .hashtags
 			margin 0 0 8px 0
@@ -714,7 +809,10 @@ export default Vue.extend({
 	> .kao
 	> .poll
 	> .cw
+	> .broadcast
+	> .post-as
 	> .geo
+	> .rating
 	> .visibility
 		display inline-block
 		cursor pointer
@@ -759,5 +857,4 @@ export default Vue.extend({
 		height 100%
 		border dashed 2px var(--primaryAlpha05)
 		pointer-events none
-
 </style>

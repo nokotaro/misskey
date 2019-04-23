@@ -26,7 +26,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import anime from 'animejs';
-import { faTimesCircle, faQuestionCircle } from '@fortawesome/free-regular-svg-icons';
+import { faTimesCircle, faQuestionCircle } from '@fortawesome/pro-light-svg-icons';
 import parseAcct from "../../../../../misc/acct/parse";
 import i18n from '../../../i18n';
 
@@ -233,7 +233,8 @@ export default Vue.extend({
 
 		> header
 			margin 0 0 8px 0
-			font-weight bold
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+			font-weight 600
 			font-size 20px
 
 			& + .body
@@ -244,5 +245,4 @@ export default Vue.extend({
 
 		> .buttons
 			margin-top 16px
-
 </style>

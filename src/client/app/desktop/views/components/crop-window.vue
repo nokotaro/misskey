@@ -1,6 +1,6 @@
 <template>
 	<mk-window ref="window" is-modal width="800px" :can-close="false">
-		<template #header><fa icon="crop"/>{{ title }}</template>
+		<template #header><fa :icon="['fal', 'crop']"/>{{ title }}</template>
 		<div class="body">
 			<vue-cropper ref="cropper"
 				:src="imageUrl"
@@ -71,8 +71,6 @@ export default Vue.extend({
 </script>
 
 <style lang="stylus" module>
-
-
 .header
 	> [data-icon]
 		margin-right 4px
@@ -126,7 +124,8 @@ export default Vue.extend({
 	border solid 1px var(--primaryLighten15)
 
 	&:not(:disabled)
-		font-weight bold
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+		font-weight 600
 
 	&:hover:not(:disabled)
 		background linear-gradient(to bottom, var(--primaryLighten8) 0%, var(--primaryDarken8) 100%)
@@ -156,7 +155,6 @@ export default Vue.extend({
 .skip
 	left 16px
 	width 150px
-
 </style>
 
 <style lang="stylus">

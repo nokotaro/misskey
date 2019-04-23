@@ -1,6 +1,6 @@
 <template>
 <div class="note">
-	<button @click="post" :title="$t('post')"><fa icon="pencil-alt"/></button>
+	<button @click="post" :title="$t('post')"><fa :icon="['fal', 'pencil-alt']"/></button>
 </div>
 </template>
 
@@ -31,7 +31,7 @@ export default Vue.extend({
 		padding 0 10px
 		height 100%
 		font-size 1.2em
-		font-weight normal
+		font-weight 300
 		text-decoration none
 		color var(--primaryForeground)
 		background var(--primary) !important
@@ -50,5 +50,4 @@ export default Vue.extend({
 		&:active
 			background var(--primaryDarken10) !important
 			transition background 0s ease
-
 </style>

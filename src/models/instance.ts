@@ -19,7 +19,7 @@ export interface IInstance {
 	caughtAt: Date;
 
 	/**
-	 * このインスタンスのシステム (MastodonとかMisskeyとかPleromaとか)
+	 * このインスタンスのシステム (MastodonとかtwistaとかPleromaとか)
 	 */
 	system: string;
 

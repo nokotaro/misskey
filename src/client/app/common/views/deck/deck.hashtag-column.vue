@@ -1,7 +1,7 @@
 <template>
 <x-column>
 	<template #header>
-		<fa icon="hashtag"/><span>{{ tag }}</span>
+		<fa :icon="['fal', 'hashtag']"/><span>{{ tag }}</span>
 	</template>
 
 	<div class="xroyrflcmhhtmlwmyiwpfqiirqokfueb">
@@ -115,5 +115,4 @@ export default Vue.extend({
 
 	> .tl
 		background var(--face)
-
 </style>

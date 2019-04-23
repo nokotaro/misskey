@@ -1,7 +1,7 @@
 <template>
 <div class="icozogqfvdetwohsdglrbswgrejoxbdj" v-if="video.isSensitive && hide && !$store.state.device.alwaysShowNsfw" @click="hide = false">
 	<div>
-		<b><fa icon="exclamation-triangle"/> {{ $t('sensitive') }}</b>
+		<b><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('sensitive') }}</b>
 		<span>{{ $t('click-to-show') }}</span>
 	</div>
 </div>
@@ -11,7 +11,7 @@
 	:style="imageStyle"
 	:title="video.name"
 >
-	<fa :icon="['far', 'play-circle']"/>
+	<fa :icon="['fal', 'play-circle']"/>
 </a>
 </template>
 
@@ -69,5 +69,4 @@ export default Vue.extend({
 
 		> b
 			display block
-
 </style>

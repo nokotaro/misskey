@@ -49,7 +49,7 @@ export function validateNote(object: any, uri: string) {
 /**
  * Noteをフェッチします。
  *
- * Misskeyに対象のNoteが登録されていればそれを返します。
+ * twistaに対象のNoteが登録されていればそれを返します。
  */
 export async function fetchNote(value: string | IObject, resolver?: Resolver): Promise<INote> {
 	const uri = typeof value == 'string' ? value : value.id;
@@ -99,7 +99,22 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 	logger.info(`Creating the Note: ${note.id}`);
 
 	// 投稿者をフェッチ
-	const actor = await resolvePerson(note.attributedTo, null, resolver) as IRemoteUser;
+	const actorOrActors = Array.isArray(note.attributedTo) ?
+		await Promise.all(note.attributedTo.map(x => resolvePerson(x, null, resolver).catch(() => null) as Promise<IRemoteUser>))
+			.then(x => x.filter(x => x)) :
+		await resolvePerson(note.attributedTo, null, resolver) as IRemoteUser;
+
+	const [actor] = Array.isArray(actorOrActors) ?
+		actorOrActors.filter(x => x.host === new URL(note.url).host) :
+		[actorOrActors];
+
+	const [author] = Array.isArray(actorOrActors) ?
+		actorOrActors.filter(x => x.uri !== actor.uri) :
+		[undefined];
+
+	if (!actor) {
+		return null;
+	}
 
 	// 投稿者が凍結されていたらスキップ
 	if (actor.isSuspended) {
@@ -121,8 +136,14 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 			visibility = 'specified';
 			visibleUsers = await Promise.all(note.to.map(uri => resolvePerson(uri, null, resolver)));
 		}
-}
+	}
 	//#endergion
+
+	const guard = (head: string, base: string[]) => base.includes(head) ? head : null;
+
+	const rating = guard(note._misskey_rating, ['0', '12', '15', '18']);
+
+	const qa = guard(note._misskey_qa, ['question', 'resolvedQuestion', 'answer', 'bestAnswer']);
 
 	const apMentions = await extractMentionedUsers(actor, note.to, note.cc, resolver);
 
@@ -215,11 +236,16 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 
 	// ユーザーの情報が古かったらついでに更新しておく
 	if (actor.lastFetchedAt == null || Date.now() - actor.lastFetchedAt.getTime() > 1000 * 60 * 60 * 24) {
-		updatePerson(note.attributedTo);
+		if (Array.isArray(note.attributedTo))
+			for (const attributedTo of note.attributedTo)
+				updatePerson(attributedTo);
+		else
+			updatePerson(note.attributedTo);
 	}
 
 	return await post(actor, {
 		createdAt: new Date(note.published),
+		author,
 		files,
 		reply,
 		renote: quote,
@@ -231,6 +257,8 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 		geo: undefined,
 		visibility,
 		visibleUsers,
+		rating,
+		qa,
 		apMentions,
 		apHashtags,
 		apEmojis,
@@ -243,10 +271,10 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 /**
  * Noteを解決します。
  *
- * Misskeyに対象のNoteが登録されていればそれを返し、そうでなければ
- * リモートサーバーからフェッチしてMisskeyに登録しそれを返します。
+ * twistaに対象のNoteが登録されていればそれを返し、そうでなければ
+ * リモートサーバーからフェッチしてtwistaに登録しそれを返します。
  */
-export async function resolveNote(value: string | IObject, resolver?: Resolver): Promise<INote> {
+export async function resolveNote(value: string | IObject, resolver?: Resolver, silent = false): Promise<INote> {
 	const uri = typeof value == 'string' ? value : value.id;
 
 	// ブロックしてたら中断
@@ -265,7 +293,7 @@ export async function resolveNote(value: string | IObject, resolver?: Resolver):
 	// リモートサーバーからフェッチしてきて登録
 	// ここでuriの代わりに添付されてきたNote Objectが指定されていると、サーバーフェッチを経ずにノートが生成されるが
 	// 添付されてきたNote Objectは偽装されている可能性があるため、常にuriを指定してサーバーフェッチを行う。
-	return await createNote(uri, resolver);
+	return await createNote(uri, resolver, silent);
 }
 
 export async function extractEmojis(tags: ITag[], host_: string) {

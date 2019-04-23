@@ -4,8 +4,8 @@
 	<div class="main" ref="main">
 		<div class="backdrop"></div>
 		<div class="content" ref="mainContainer">
-			<button class="nav" @click="$parent.isDrawerOpening = true"><fa icon="bars"/></button>
-			<i v-if="$parent.indicate" class="circle"><fa icon="circle"/></i>
+			<button class="nav" @click="$parent.isDrawerOpening = true"><fa :icon="['fal', 'bars']"/></button>
+			<i v-if="$parent.indicate" class="circle"><fa :icon="['fas', 'circle']"/></i>
 			<h1>
 				<slot>{{ $root.instanceName }}</slot>
 			</h1>
@@ -91,7 +91,7 @@ export default Vue.extend({
 				max-width calc(100% - 112px)
 				text-align center
 				font-size 1.1em
-				font-weight normal
+				font-weight 300
 				line-height $height
 				white-space nowrap
 				overflow hidden
@@ -139,5 +139,4 @@ export default Vue.extend({
 				color inherit
 				line-height $height
 				border-left solid 1px rgba(#000, 0.1)
-
 </style>

@@ -13,12 +13,11 @@ import Vue from 'vue'
 export default Vue.extend({
 	data() {
 		return {
-			repositoryUrl: 'https://github.com/syuilo/misskey'
+			repositoryUrl: 'https://github.com/346design/twista.283.cloud'
 		};
 	}
 });
 </script>
-
 
 <style lang="stylus" scoped>
 .a
@@ -45,5 +44,4 @@ export default Vue.extend({
 			transform rotate(-25deg)
 		40%, 80%
 			transform rotate(10deg)
-
 </style>

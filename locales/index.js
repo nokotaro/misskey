@@ -36,7 +36,7 @@ const primaries = {
 
 const locales = languages.reduce((a, c) => (a[c] = yaml.safeLoad(fs.readFileSync(`${__dirname}/${c}.yml`, 'utf-8')) || {}, a), {});
 
-module.exports = Object.entries(locales)
+module.exports.default = Object.entries(locales)
 	.reduce((a, [k ,v]) => (a[k] = (() => {
 		const [lang] = k.split('-');
 		switch (k) {

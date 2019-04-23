@@ -30,7 +30,7 @@ export const meta = {
 		disableLocalTimeline: {
 			validator: $.optional.nullable.bool,
 			desc: {
-				'ja-JP': 'ローカルタイムライン(とソーシャルタイムライン)を無効にするか否か'
+				'ja-JP': 'ローカルタイムライン(とホーム+ローカルタイムライン)を無効にするか否か'
 			}
 		},
 
@@ -158,7 +158,21 @@ export const meta = {
 		proxyAccount: {
 			validator: $.optional.nullable.str,
 			desc: {
-				'ja-JP': 'プロキシアカウントのユーザー名'
+				'ja-JP': 'プロキシプロデューサーのユーザー名'
+			}
+		},
+
+		informationAccount: {
+			validator: $.optional.nullable.str,
+			desc: {
+				'ja-JP': 'インフォメーションプロデューサーのユーザー名'
+			}
+		},
+
+		futabaAnzuBotAccount: {
+			validator: $.optional.nullable.str,
+			desc: {
+				'ja-JP': '双葉杏botプロデューサーのユーザー名'
 			}
 		},
 
@@ -429,6 +443,14 @@ export default define(meta, async (ps) => {
 		set.proxyAccount = ps.proxyAccount;
 	}
 
+	if (ps.informationAccount !== undefined) {
+		set.informationAccount = ps.informationAccount;
+	}
+
+	if (ps.futabaAnzuBotAccount !== undefined) {
+		set.futabaAnzuBotAccount = ps.futabaAnzuBotAccount;
+	}
+
 	if (ps.maintainerName !== undefined) {
 		set['maintainer.name'] = ps.maintainerName;
 	}
@@ -537,9 +559,7 @@ export default define(meta, async (ps) => {
 		set.swPrivateKey = ps.swPrivateKey;
 	}
 
-	await Meta.update({}, {
+	return await Meta.findOneAndUpdate({}, {
 		$set: set
-	}, { upsert: true });
-
-	return;
+	}, { upsert: true, returnNewDocument: true });
 });

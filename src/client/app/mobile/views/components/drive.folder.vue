@@ -1,7 +1,7 @@
 <template>
-<a class="jvwxssxsytqlqvrpiymarjlzlsxskqsr" @click.prevent="onClick" :href="`/i/drive/folder/${ folder.id }`">
+<a class="jvwxssxsytqlqvrpiymarjlzlsxskqsr" @click.prevent="onClick" :href="`/i/drive/folder/${folder.id}`">
 	<div class="container">
-		<p class="name"><fa icon="folder"/>{{ folder.name }}</p><fa icon="angle-right"/>
+		<p class="name"><fa :icon="['fal', 'folder']"/>{{ folder.name }}</p><fa :icon="['fal', 'angle-right']"/>
 	</div>
 </a>
 </template>
@@ -52,5 +52,4 @@ export default Vue.extend({
 			bottom 0
 			right 20px
 			height 100%
-
 </style>

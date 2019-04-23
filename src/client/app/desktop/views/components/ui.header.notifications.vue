@@ -1,8 +1,8 @@
 <template>
 <div class="notifications" v-hotkey.global="keymap">
 	<button :data-active="isOpen" @click="toggle" :title="$t('title')">
-		<i class="bell"><fa :icon="['far', 'bell']"/></i>
-		<i class="circle" v-if="hasUnreadNotification"><fa icon="circle"/></i>
+		<i class="bell"><fa :icon="['fal', 'bell']"/></i>
+		<i class="circle" v-if="hasUnreadNotification"><fa :icon="['fas', 'circle']"/></i>
 	</button>
 	<div class="pop" v-if="isOpen">
 		<mk-notifications/>
@@ -132,5 +132,4 @@ export default Vue.extend({
 			max-height 350px
 			font-size 1rem
 			overflow auto
-
 </style>

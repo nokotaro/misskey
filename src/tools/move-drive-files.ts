@@ -38,7 +38,7 @@ async function job(file: IDriveFile): Promise<any> {
 	const thumbnailKey = `${thumbnailKeyDir}/${name}.thumbnail.jpg`;
 
 	const baseUrl = config.drive.baseUrl
-		|| `${ config.drive.config.useSSL ? 'https' : 'http' }://${ config.drive.config.endPoint }${ config.drive.config.port ? `:${config.drive.config.port}` : '' }/${ config.drive.bucket }`;
+		|| `${config.drive.config.useSSL ? 'https' : 'http'}://${config.drive.config.endPoint}${config.drive.config.port ? `:${config.drive.config.port}` : ''}/${config.drive.bucket}`;
 
 	const bucket = await getDriveFileBucket();
 	const readable = bucket.openDownloadStream(file._id);
@@ -56,7 +56,7 @@ async function job(file: IDriveFile): Promise<any> {
 				key: key,
 				thumbnailKey: thumbnailKey
 			},
-			'metadata.url': `${ baseUrl }/${ keyDir }/${ encodeURIComponent(name) }`,
+			'metadata.url': `${baseUrl}/${keyDir}/${encodeURIComponent(name)}`,
 		}
 	});
 

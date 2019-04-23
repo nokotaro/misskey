@@ -1,24 +1,26 @@
 <template>
 <div class="mkw-polls">
 	<ui-container :show-header="!props.compact">
-		<template #header><fa icon="chart-pie"/>{{ $t('title') }}</template>
+		<template #header><fa :icon="['fal', 'poll-people']"/>{{ $t('title') }}</template>
 		<template #func>
 			<button :title="$t('title')" @click="fetch">
-				<fa v-if="!fetching && more" icon="arrow-right"/>
-				<fa v-if="!fetching && !more" icon="sync"/>
+				<fa v-if="!fetching && more" :icon="['fal', 'arrow-right']"/>
+				<fa v-if="!fetching && !more" :icon="['fal', 'sync']"/>
 			</button>
 		</template>
 
 		<div class="mkw-polls--body">
-			<div class="poll" v-if="!fetching && poll != null">
-				<p v-if="poll.text"><router-link :to="poll | notePage">
-					<mfm :text="poll.text" :author="poll.user" :custom-emojis="poll.emojis"/>
-				</router-link></p>
-				<p v-if="!poll.text"><router-link :to="poll | notePage"><fa icon="link"/></router-link></p>
+			<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+			<div class="poll" v-else-if="poll">
+				<p>
+					<router-link :to="poll | notePage">
+						<misskey-flavored-markdown :text="poll.text" :author="poll.user" :custom-emojis="poll.emojis" v-if="poll.text"/>
+						<fa :icon="['fal', 'link']" v-else/>
+					</router-link>
+				</p>
 				<mk-poll :note="poll"/>
 			</div>
-			<p class="empty" v-if="!fetching && poll == null">{{ $t('nothing') }}</p>
-			<p class="fetching" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+			<p class="empty" v-else>{{ $t('nothing') }}</p>
 		</div>
 	</ui-container>
 </div>
@@ -106,5 +108,4 @@ export default define({
 
 		> [data-icon]
 			margin-right 4px
-
 </style>

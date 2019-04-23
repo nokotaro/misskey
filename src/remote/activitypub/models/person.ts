@@ -6,7 +6,7 @@ import config from '../../../config';
 import User, { validateUsername, isValidName, IUser, IRemoteUser, isRemoteUser } from '../../../models/user';
 import Resolver from '../resolver';
 import { resolveImage } from './image';
-import { isCollectionOrOrderedCollection, isCollection, IPerson, validActor } from '../type';
+import { isCollectionOrOrderedCollection, isCollection, IActor, IObject, validActor, actorIsBot, isOrderedCollection } from '../type';
 import { IDriveFile } from '../../../models/drive-file';
 import Meta from '../../../models/meta';
 import { fromHtml } from '../../../mfm/fromHtml';
@@ -27,7 +27,7 @@ import { updateHashtag } from '../../../services/update-hashtag';
 const logger = apLogger;
 
 /**
- * Validate Person object
+ * Validate actor object
  * @param x Fetched person object
  * @param uri Fetch target URI
  */
@@ -39,7 +39,7 @@ function validatePerson(x: any, uri: string) {
 	}
 
 	if (!validActor.includes(x.type)) {
-		return new Error(`invalid person: object is not a person or service '${x.type}'`);
+		return new Error(`invalid actor: '${x.type}' is not a valid actor`);
 	}
 
 	if (typeof x.preferredUsername !== 'string') {
@@ -82,7 +82,7 @@ function validatePerson(x: any, uri: string) {
 /**
  * Personをフェッチします。
  *
- * Misskeyに対象のPersonが登録されていればそれを返します。
+ * twistaに対象のPersonが登録されていればそれを返します。
  */
 export async function fetchPerson(uri: string, resolver?: Resolver): Promise<IUser> {
 	if (typeof uri !== 'string') throw 'uri is not string';
@@ -110,19 +110,23 @@ export async function fetchPerson(uri: string, resolver?: Resolver): Promise<IUs
 export async function createPerson(uri: string, resolver?: Resolver): Promise<IUser> {
 	if (typeof uri !== 'string') throw 'uri is not string';
 
-	if (resolver == null) resolver = new Resolver();
+	if (!resolver) resolver = new Resolver();
 
-	const object = await resolver.resolve(uri) as any;
+	return await createPersonFromObject(uri, await resolver.resolve(uri), resolver);
+}
 
+export async function createPersonFromObject(uri: string, object: IObject, resolver?: Resolver) {
 	const err = validatePerson(object, uri);
 
 	if (err) {
 		throw err;
 	}
 
-	const person: IPerson = object;
+	if (!resolver) resolver = new Resolver();
 
-	logger.info(`Creating the Person: ${person.id}`);
+	const person = object as IActor;
+
+	logger.info(`Creating the actor: ${person.id}`);
 
 	const [followersCount = 0, followingCount = 0, notesCount = 0] = await Promise.all([
 		resolver.resolve(person.followers).then(
@@ -139,13 +143,13 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 		)
 	]);
 
-	const host = toUnicode(new URL(object.id).hostname.toLowerCase());
+	const host = toUnicode(new URL(person.id).hostname.toLowerCase());
 
 	const { fields, services } = analyzeAttachments(person.attachment);
 
 	const tags = extractHashtags(person.tag).map(tag => tag.toLowerCase());
 
-	const isBot = object.type == 'Service';
+	const is = validActor.reduce<Record<string, boolean>>((a, c) => (a[`is${c}`] = person.type == c, a), {});
 
 	// Create user
 	let user: IRemoteUser;
@@ -153,7 +157,7 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 		user = await User.insert({
 			avatarId: null,
 			bannerId: null,
-			createdAt: Date.parse(person.published) || null,
+			createdAt: new Date(),
 			lastFetchedAt: new Date(),
 			description: fromHtml(person.summary),
 			followersCount,
@@ -170,6 +174,7 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 			},
 			inbox: person.inbox,
 			sharedInbox: person.sharedInbox || (person.endpoints ? person.endpoints.sharedInbox : undefined),
+			outbox: person.outbox,
 			featured: person.featured,
 			endpoints: person.endpoints,
 			uri: person.id,
@@ -177,8 +182,11 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 			fields,
 			...services,
 			tags,
-			isBot,
-			isCat: (person as any).isCat === true
+			...is,
+			isBot: actorIsBot[person.type],
+			isCat: (person as any).isCat === true,
+			isKaho: (person as any).isKaho === true,
+			avatarAngle: (person as any).avatarAngle
 		}) as IRemoteUser;
 	} catch (e) {
 		// duplicate key error
@@ -273,10 +281,10 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 
 /**
  * Personの情報を更新します。
- * Misskeyに対象のPersonが登録されていなければ無視します。
- * @param uri URI of Person
+ * twistaに対象のPersonが登録されていなければ無視します。
+ * @param uri URI of IActor
  * @param resolver Resolver
- * @param hint Hint of Person object (この値が正当なPersonの場合、Remote resolveをせずに更新に利用します)
+ * @param hint Hint of IActor object (この値が正当なPersonの場合、Remote resolveをせずに更新に利用します)
  */
 export async function updatePerson(uri: string, resolver?: Resolver, hint?: object): Promise<void> {
 	if (typeof uri !== 'string') throw 'uri is not string';
@@ -304,9 +312,9 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: obje
 		throw err;
 	}
 
-	const person: IPerson = object;
+	const person: IActor = object;
 
-	logger.info(`Updating the Person: ${person.id}`);
+	logger.info(`Updating the IActor: ${person.id}`);
 
 	const [followersCount = 0, followingCount = 0, notesCount = 0] = await Promise.all([
 		resolver.resolve(person.followers).then(
@@ -349,6 +357,7 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: obje
 		lastFetchedAt: new Date(),
 		inbox: person.inbox,
 		sharedInbox: person.sharedInbox || (person.endpoints ? person.endpoints.sharedInbox : undefined),
+		outbox: person.outbox,
 		featured: person.featured,
 		emojis: emojiNames,
 		description: fromHtml(person.summary),
@@ -361,10 +370,10 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: obje
 		fields,
 		...services,
 		tags,
-		isBot: object.type == 'Service',
+		isBot: actorIsBot[person.type],
 		isCat: (person as any).isCat === true,
+		isKaho: (person as any).isKaho === true,
 		isLocked: person.manuallyApprovesFollowers,
-		createdAt: Date.parse(person.published) || null,
 		publicKey: {
 			id: person.publicKey.id,
 			publicKeyPem: person.publicKey.publicKeyPem
@@ -404,13 +413,15 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: obje
 	});
 
 	await updateFeatured(exist._id).catch(err => logger.error(err));
+
+	fetchOutbox(exist._id).catch(err => logger.warn(err));
 }
 
 /**
  * Personを解決します。
  *
- * Misskeyに対象のPersonが登録されていればそれを返し、そうでなければ
- * リモートサーバーからフェッチしてMisskeyに登録しそれを返します。
+ * twistaに対象のPersonが登録されていればそれを返し、そうでなければ
+ * リモートサーバーからフェッチしてtwistaに登録しそれを返します。
  */
 export async function resolvePerson(uri: string, verifier?: string, resolver?: Resolver): Promise<IUser> {
 	if (typeof uri !== 'string') throw 'uri is not string';
@@ -508,11 +519,72 @@ export async function updateFeatured(userId: mongo.ObjectID) {
 	const featuredNotes = await Promise.all(items
 		.filter(item => item.type === 'Note')
 		.slice(0, 5)
-		.map(item => limit(() => resolveNote(item, resolver)) as Promise<INote>));
+		.map(item => limit(() => resolveNote(item, resolver, true)) as Promise<INote>));
 
 	await User.update({ _id: user._id }, {
 		$set: {
 			pinnedNoteIds: featuredNotes.filter(note => note != null).map(note => note._id)
 		}
 	});
+}
+
+export async function fetchOutbox(userId: mongo.ObjectID, force = false) {
+	const user = await User.findOne({ _id: userId });
+	if (!isRemoteUser(user)) return;
+	if (!user.outbox) {
+		logger.debug(`no outbox: ${userId}`);
+		return;
+	}
+
+	if (!force) {
+		// フォロワーがいない場合はfetchしない
+		const followerExists = await Following.findOne({
+			followeeId: userId
+		});
+
+		if (followerExists === null) {
+			logger.debug(`no follower: ${userId}`);
+			return;
+		}
+	}
+
+	logger.info(`Updating the outbox: ${user.outbox}`);
+
+	const resolver = new Resolver();
+
+	// Resolve to OrderedCollection Object
+	const collection = await resolver.resolveCollection(user.outbox);
+	if (!isOrderedCollection(collection)) throw new Error(`Object is not OrderedCollection`);
+
+	// Get first page items
+	let unresolvedItems;
+
+	if (collection.orderedItems) {
+		unresolvedItems = collection.orderedItems;
+	} else if (collection.first) {
+		const page = await resolver.resolveCollection(collection.first);
+		unresolvedItems = page.orderedItems;
+	} else {
+		throw new Error('');
+	}
+
+	// Resolve to Activity arrays
+	const items = await resolver.resolve(unresolvedItems);
+	if (!Array.isArray(items)) throw new Error(`Collection items is not an array`);
+
+	for (const activity of items.reverse()) {	// なるべく古い順に登録する
+		if (activity.type === 'Create' && activity.object && activity.object.type === 'Note') {
+			// Note
+			if (activity.object.inReplyTo) {
+				// Note[Replay]
+			} else {
+				// Note[Original]
+				await resolveNote(activity.object, resolver, true);
+			}
+		} else if (activity.type === 'Announce') {
+			// Renote
+			// Renoteを追うと終わらないので・・・
+			// await resolveNote(activity.object, resolver);
+		}
+	}
 }

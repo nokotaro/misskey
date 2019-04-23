@@ -11,27 +11,27 @@
 				<mk-time :time="notification.createdAt"/>
 			</header>
 			<router-link class="note-ref" :to="notification.note | notePage" :title="getNoteSummary(notification.note)">
-				<fa icon="quote-left"/>
+				<fa :icon="['fal', 'quote-left']"/>
 					<mfm :text="getNoteSummary(notification.note)" :should-break="false" :plain-text="true" :custom-emojis="notification.note.emojis"/>
-				<fa icon="quote-right"/>
+				<fa :icon="['fal', 'quote-right']"/>
 			</router-link>
 		</div>
 	</div>
 
-	<div class="notification renote" v-if="notification.type == 'renote'">
+	<div class="notification renote" v-if="notification.type == 'renote' && notification.note">
 		<mk-avatar class="avatar" :user="notification.user"/>
 		<div>
 			<header>
-				<fa icon="retweet"/>
+				<fa :icon="['fal', 'retweet']"/>
 				<router-link :to="notification.user | userPage">
 					<mk-user-name :user="notification.user"/>
 				</router-link>
 				<mk-time :time="notification.createdAt"/>
 			</header>
-			<router-link class="note-ref" :to="notification.note | notePage" :title="getNoteSummary(notification.note.renote)">
-				<fa icon="quote-left"/>
+			<router-link v-if="notification.note.renote" class="note-ref" :to="notification.note | notePage" :title="getNoteSummary(notification.note.renote)">
+				<fa :icon="['fal', 'quote-left']"/>
 					<mfm :text="getNoteSummary(notification.note.renote)" :should-break="false" :plain-text="true" :custom-emojis="notification.note.renote.emojis"/>
-				<fa icon="quote-right"/>
+				<fa :icon="['fal', 'quote-right']"/>
 			</router-link>
 		</div>
 	</div>
@@ -40,7 +40,7 @@
 		<mk-avatar class="avatar" :user="notification.user"/>
 		<div>
 			<header>
-				<fa icon="user-plus"/>
+				<fa :icon="['fal', 'user-plus']"/>
 				<router-link :to="notification.user | userPage">
 					<mk-user-name :user="notification.user"/>
 				</router-link>
@@ -53,7 +53,7 @@
 		<mk-avatar class="avatar" :user="notification.user"/>
 		<div>
 			<header>
-				<fa icon="user-clock"/>
+				<fa :icon="['fal', 'user-clock']"/>
 				<router-link :to="notification.user | userPage">
 					<mk-user-name :user="notification.user"/>
 				</router-link>
@@ -66,16 +66,16 @@
 		<mk-avatar class="avatar" :user="notification.user"/>
 		<div>
 			<header>
-				<fa icon="chart-pie"/>
+				<fa :icon="['fal', 'poll-people']"/>
 				<router-link :to="notification.user | userPage">
 					<mk-user-name :user="notification.user"/>
 				</router-link>
 				<mk-time :time="notification.createdAt"/>
 			</header>
 			<router-link class="note-ref" :to="notification.note | notePage" :title="getNoteSummary(notification.note)">
-				<fa icon="quote-left"/>
+				<fa :icon="['fal', 'quote-left']"/>
 					<mfm :text="getNoteSummary(notification.note)" :should-break="false" :plain-text="true" :custom-emojis="notification.note.emojis"/>
-				<fa icon="quote-right"/>
+				<fa :icon="['fal', 'quote-right']"/>
 			</router-link>
 		</div>
 	</div>
@@ -169,7 +169,7 @@ export default Vue.extend({
 
 				[data-icon]
 					font-size 1em
-					font-weight normal
+					font-weight 300
 					font-style normal
 					display inline-block
 					margin-right 3px
@@ -185,5 +185,4 @@ export default Vue.extend({
 		&.receiveFollowRequest
 			> div > header [data-icon]
 				color #888
-
 </style>

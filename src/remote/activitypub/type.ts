@@ -8,7 +8,7 @@ export interface IObject {
 	published?: string;
 	cc?: string[];
 	to?: string[];
-	attributedTo: string;
+	attributedTo: string | string[];
 	attachment?: any[];
 	inReplyTo?: any;
 	replies?: ICollection;
@@ -33,13 +33,43 @@ export interface IActivity extends IObject {
 export interface ICollection extends IObject {
 	type: 'Collection';
 	totalItems: number;
-	items: IObject | string | IObject[] | string[];
+	items?: IObject | string | IObject[] | string[];
+	current?: ICollectionPage;
+	first?: ICollectionPage;
+	last?: ICollectionPage;
+}
+
+export interface ICollectionPage extends IObject {
+	type: 'CollectionPage';
+	totalItems: number;
+	items?: IObject | string | IObject[] | string[];
+	current?: ICollectionPage;
+	first?: ICollectionPage;
+	last?: ICollectionPage;	partOf: string;
+	next?: ICollectionPage;
+	prev?: ICollectionPage;
 }
 
 export interface IOrderedCollection extends IObject {
 	type: 'OrderedCollection';
 	totalItems: number;
-	orderedItems: IObject | string | IObject[] | string[];
+	orderedItems?: IObject | string | IObject[] | string[];
+	current?: IOrderedCollectionPage;
+	first?: IOrderedCollectionPage;
+	last?: IOrderedCollectionPage;
+}
+
+export interface IOrderedCollectionPage extends IObject {
+	type: 'OrderedCollectionPage';
+	totalItems: number;
+	orderedItems?: IObject | string | IObject[] | string[];
+	current?: IOrderedCollectionPage;
+	first?: IOrderedCollectionPage;
+	last?: IOrderedCollectionPage;
+	partOf: string;
+	next?: IOrderedCollectionPage;
+	prev?: IOrderedCollectionPage;
+	startIndex?: number;
 }
 
 export interface INote extends IObject {
@@ -47,6 +77,8 @@ export interface INote extends IObject {
 	_misskey_content: string;
 	_misskey_quote: string;
 	_misskey_question: string;
+	_misskey_rating: string;
+	_misskey_qa: string;
 }
 
 export interface IQuestion extends IObject {
@@ -54,6 +86,8 @@ export interface IQuestion extends IObject {
 	_misskey_content: string;
 	_misskey_quote: string;
 	_misskey_question: string;
+	_misskey_rating: string;
+	_misskey_qa: string;
 	oneOf?: IQuestionChoice[];
 	anyOf?: IQuestionChoice[];
 	endTime?: Date;
@@ -65,10 +99,20 @@ interface IQuestionChoice {
 	_misskey_votes?: number;
 }
 
-export const validActor = ['Person', 'Service'];
+export const actorMap = {
+	// 'Application': false,
+	// 'Group': false,
+	'Organization': false,
+	'Person': false,
+	'Service': true
+};
 
-export interface IPerson extends IObject {
-	type: 'Person';
+export const actorIsBot: Record<keyof typeof actorMap, boolean> = actorMap;
+
+export const validActor = Object.keys(actorMap);
+
+export interface IActor extends IObject {
+	type: keyof typeof actorMap;
 	name: string;
 	preferredUsername: string;
 	manuallyApprovesFollowers: boolean;
@@ -143,6 +187,8 @@ export interface IBlock extends IActivity {
 export type Object =
 	ICollection |
 	IOrderedCollection |
+	ICollectionPage |
+	IOrderedCollectionPage |
 	ICreate |
 	IDelete |
 	IUpdate |

@@ -9,7 +9,7 @@ import authenticate from './authenticate';
 import { EventEmitter } from 'events';
 import config from '../../config';
 
-module.exports = (server: http.Server) => {
+export default (server: http.Server) => {
 	// Init websocket server
 	const ws = new websocket.server({
 		httpServer: server
@@ -68,6 +68,8 @@ module.exports = (server: http.Server) => {
 				request.resourceURL.pathname === '/' ? 'homeTimeline' :
 				request.resourceURL.pathname === '/local-timeline' ? 'localTimeline' :
 				request.resourceURL.pathname === '/hybrid-timeline' ? 'hybridTimeline' :
+				request.resourceURL.pathname === '/imas-timeline' ? 'imasTimeline' :
+				request.resourceURL.pathname === '/imas-hybrid-timeline' ? 'imasHybridTimeline' :
 				request.resourceURL.pathname === '/global-timeline' ? 'globalTimeline' : null);
 
 			if (request.resourceURL.pathname === '/') {

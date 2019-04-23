@@ -2,7 +2,7 @@
 <div class="pyvicwrksnfyhpfgkjwqknuururpaztw">
 	<div class="preview">
 		<x-file-thumbnail class="preview" :file="file" :detail="true"/>
-		<template v-if="kind != 'image'"><fa icon="file"/></template>
+		<template v-if="kind != 'image'"><fa :icon="['fal', 'file']"/></template>
 		<footer v-if="kind == 'image' && file.properties && file.properties.width && file.properties.height">
 			<span class="size">
 				<span class="width">{{ file.properties.width }}</span>
@@ -24,28 +24,28 @@
 			<span class="separator"></span>
 			<span class="data-size">{{ file.datasize | bytes }}</span>
 			<span class="separator"></span>
-			<span class="created-at" @click="showCreatedAt"><fa :icon="['far', 'clock']"/><mk-time :time="file.createdAt"/></span>
+			<span class="created-at" @click="showCreatedAt"><fa :icon="['fal', 'clock']"/><mk-time :time="file.createdAt"/></span>
 			<template v-if="file.isSensitive">
 				<span class="separator"></span>
-				<span class="nsfw"><fa :icon="['far', 'eye-slash']"/> {{ $t('nsfw') }}</span>
+				<span class="nsfw"><fa :icon="['fal', 'eye-slash']"/> {{ $t('nsfw') }}</span>
 			</template>
 		</div>
 	</div>
 	<div class="menu">
 		<div>
 			<ui-input readonly :value="file.url">URL</ui-input>
-			<ui-button link :href="dlUrl" :download="file.name"><fa icon="download"/> {{ $t('download') }}</ui-button>
-			<ui-button @click="rename"><fa icon="pencil-alt"/> {{ $t('rename') }}</ui-button>
-			<ui-button @click="move"><fa :icon="['far', 'folder-open']"/> {{ $t('move') }}</ui-button>
-			<ui-button @click="toggleSensitive" v-if="file.isSensitive"><fa :icon="['far', 'eye']"/> {{ $t('unmark-as-sensitive') }}</ui-button>
-			<ui-button @click="toggleSensitive" v-else><fa :icon="['far', 'eye-slash']"/> {{ $t('mark-as-sensitive') }}</ui-button>
-			<ui-button @click="del"><fa :icon="['far', 'trash-alt']"/> {{ $t('delete') }}</ui-button>
+			<ui-button link :href="dlUrl" :download="file.name"><fa :icon="['fal', 'download']"/> {{ $t('download') }}</ui-button>
+			<ui-button @click="rename"><fa :icon="['fal', 'pencil-alt']"/> {{ $t('rename') }}</ui-button>
+			<ui-button @click="move"><fa :icon="['fal', 'folder-open']"/> {{ $t('move') }}</ui-button>
+			<ui-button @click="toggleSensitive" v-if="file.isSensitive"><fa :icon="['fal', 'eye']"/> {{ $t('unmark-as-sensitive') }}</ui-button>
+			<ui-button @click="toggleSensitive" v-else><fa :icon="['fal', 'eye-slash']"/> {{ $t('mark-as-sensitive') }}</ui-button>
+			<ui-button @click="del"><fa :icon="['fal', 'trash-alt']"/> {{ $t('delete') }}</ui-button>
 		</div>
 	</div>
 	<div class="hash">
 		<div>
 			<p>
-				<fa icon="hashtag"/>{{ $t('hash') }}
+				<fa :icon="['fal', 'hashtag']"/>{{ $t('hash') }}
 			</p>
 			<code>{{ file.md5 }}</code>
 		</div>
@@ -86,7 +86,7 @@ export default Vue.extend({
 
 		style(): any {
 			return this.file.properties.avgColor && this.file.properties.avgColor.length == 3 ? {
-				'background-color': `rgb(${ this.file.properties.avgColor.join(',') })`
+				'background-color': `rgb(${this.file.properties.avgColor.join(',')})`
 			} : {};
 		},
 
@@ -245,5 +245,4 @@ export default Vue.extend({
 				border solid 1px #dfdfdf
 				border-radius 2px
 				background #f5f5f5
-
 </style>

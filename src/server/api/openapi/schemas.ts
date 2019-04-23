@@ -39,29 +39,29 @@ export const schemas = {
 			username: {
 				type: 'string',
 				description: 'The screen name, handle, or alias that this user identifies themselves with.',
-				example: 'ai'
+				example: 'natsuha'
 			},
 			name: {
 				type: 'string',
 				nullable: true,
 				description: 'The name of the user, as they’ve defined it.',
-				example: '藍'
+				example: '夏葉'
 			},
 			host: {
 				type: 'string',
 				nullable: true,
-				example: 'misskey.example.com'
+				example: 'natsuha.example.com'
 			},
 			description: {
 				type: 'string',
 				nullable: true,
 				description: 'The user-defined UTF-8 string describing their account.',
-				example: 'Hi masters, I am Ai!'
+				example: 'Hi producer, I am Natsuha!'
 			},
 			createdAt: {
 				type: 'string',
 				format: 'date-time',
-				description: 'The date that the user account was created on Misskey.'
+				description: 'The date that the user account was created on twista.'
 			},
 			followersCount: {
 				type: 'number',
@@ -82,6 +82,10 @@ export const schemas = {
 			isCat: {
 				type: 'boolean',
 				description: 'Whether this account is a cat.'
+			},
+			isKaho: {
+				type: 'boolean',
+				description: 'Whether this account is kaho.'
 			},
 			isAdmin: {
 				type: 'boolean',
@@ -164,7 +168,7 @@ export const schemas = {
 			createdAt: {
 				type: 'string',
 				format: 'date-time',
-				description: 'The date that the Note was created on Misskey.'
+				description: 'The date that the Note was created on twista.'
 			},
 			text: {
 				type: 'string'
@@ -198,7 +202,13 @@ export const schemas = {
 			viaMobile: {
 				type: 'boolean'
 			},
+			qa: {
+				type: 'string'
+			},
 			visibility: {
+				type: 'string'
+			},
+			rating: {
 				type: 'string'
 			},
 		},
@@ -240,7 +250,7 @@ export const schemas = {
 			createdAt: {
 				type: 'string',
 				format: 'date-time',
-				description: 'The date that the Drive file was created on Misskey.'
+				description: 'The date that the Drive file was created on twista.'
 			},
 			name: {
 				type: 'string',

@@ -1,12 +1,12 @@
 <template>
-<a class="mk-url" :href="url" :target="target">
-	<span class="schema">{{ schema }}//</span>
+<a class="mk-url" :href="url" :target="target" :title="title">
+	<span class="schema" v-if="!trim">{{ schema }}//</span>
 	<span class="hostname">{{ hostname }}</span>
 	<span class="port" v-if="port != ''">:{{ port }}</span>
 	<span class="pathname" v-if="pathname != ''">{{ pathname }}</span>
 	<span class="query">{{ query }}</span>
 	<span class="hash">{{ hash }}</span>
-	<fa icon="external-link-square-alt"/>
+	<fa :icon="['fal', 'external-link-square-alt']"/>
 </a>
 </template>
 
@@ -15,7 +15,7 @@ import Vue from 'vue';
 import { toUnicode as decodePunycode } from 'punycode';
 
 export default Vue.extend({
-	props: ['url', 'target'],
+	props: ['url', 'target', 'trim'],
 	data() {
 		return {
 			schema: null,
@@ -23,7 +23,8 @@ export default Vue.extend({
 			port: null,
 			pathname: null,
 			query: null,
-			hash: null
+			hash: null,
+			title: null
 		};
 	},
 	created() {
@@ -34,6 +35,23 @@ export default Vue.extend({
 		this.pathname = decodeURIComponent(url.pathname);
 		this.query = decodeURIComponent(url.search);
 		this.hash = decodeURIComponent(url.hash);
+
+		this.title = this.schema + '//'
+			+ this.hostname
+			+ (this.port != '' ? ':' + this.port : '')
+			+ this.pathname
+			+ this.query
+			+ this.hash;
+
+		if (this.trim) {
+			let postfix = this.pathname + this.query + this.hash;
+			if (postfix.length > 20) postfix = postfix.slice(0, 20) + '…';
+			if (postfix == '/') postfix = '';
+
+			this.pathname = postfix;
+			this.query = '';
+			this.hash = '';
+		}
 	}
 });
 </script>
@@ -44,12 +62,13 @@ export default Vue.extend({
 	> [data-icon]
 		padding-left 2px
 		font-size .9em
-		font-weight 400
+		font-weight 300
 		font-style normal
 	> .schema
 		opacity 0.5
 	> .hostname
-		font-weight bold
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+		font-weight 600
 	> .pathname
 		opacity 0.8
 	> .query

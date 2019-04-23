@@ -147,12 +147,14 @@ root(fill)
 			transform scale(1)
 
 		> select
+			-moz-appearance none
+			appearance none
 			display block
 			flex 1
 			width 100%
 			padding 0
 			font inherit
-			font-weight fill ? bold : normal
+			font-weight fill ? 600 : 300
 			font-size 16px
 			height 32px
 			color var(--inputText)
@@ -225,10 +227,18 @@ root(fill)
 		display inline-block
 		margin 0
 
+	&:not(.disabled)::before
+		border-color var(--faceText) transparent
+		border-style solid 
+		border-width 4px 4px 0
+		content ''
+		position absolute
+		right 4px
+		top 14px
+
 	&.disabled
 		opacity 0.7
 
 		&, *
 			cursor not-allowed !important
-
 </style>

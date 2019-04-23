@@ -23,7 +23,7 @@ export default async (user: IUser, note: INote, reaction: string) => {
 	reaction = await toDbReaction(reaction, meta.enableEmojiReaction);
 
 	// Create reaction
-	await NoteReaction.insert({
+	const inserted = await NoteReaction.insert({
 		createdAt: new Date(),
 		noteId: note._id,
 		userId: user._id,
@@ -92,5 +92,5 @@ export default async (user: IUser, note: INote, reaction: string) => {
 	}
 	//#endregion
 
-	return;
+	return inserted;
 };

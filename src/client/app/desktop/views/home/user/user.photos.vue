@@ -2,13 +2,13 @@
 <ui-container :body-togglable="true"
 	:expanded="$store.state.device.expandUsersPhotos"
 	@toggle="expanded => $store.commit('device/set', { key: 'expandUsersPhotos', value: expanded })">
-	<template #header><fa icon="camera"/> {{ $t('title') }}</template>
+	<template #header><fa :icon="['fal', 'camera']"/> {{ $t('title') }}</template>
 
 	<div class="dzsuvbsrrrwobdxifudxuefculdfiaxd">
-		<p class="initializing" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('loading') }}<mk-ellipsis/></p>
+		<p class="initializing" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('loading') }}<mk-ellipsis/></p>
 		<div class="stream" v-if="!fetching && images.length > 0">
 			<router-link v-for="image in images" class="img"
-				:style="`background-image: url(${image.thumbnailUrl})`"
+				:style="`background-image:url(${image.thumbnailUrl})`"
 				:key="`${image.id}:${image._note.id}`"
 				:to="image._note | notePage"
 				:title="`${image.name}\n${(new Date(image.createdAt)).toLocaleString()}`"
@@ -46,7 +46,7 @@ export default Vue.extend({
 			fileType: image,
 			excludeNsfw: !this.$store.state.device.alwaysShowNsfw,
 			limit: 9,
-			untilDate: new Date().getTime() + 1000 * 86400 * 365
+			untilDate: new Date().getTime() + 1000 * 86400 * 30
 		}).then(notes => {
 			for (const note of notes) {
 				for (const file of note.files) {
@@ -93,5 +93,4 @@ export default Vue.extend({
 
 		> i
 			margin-right 4px
-
 </style>

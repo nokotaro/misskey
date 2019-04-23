@@ -2,7 +2,7 @@ import rndstr from 'rndstr';
 import * as crypto from 'crypto';
 import $ from 'cafy';
 import App from '../../../../models/app';
-import AuthSess from '../../../../models/auth-session';
+import AuthSess, { pack } from '../../../../models/auth-session';
 import AccessToken from '../../../../models/access-token';
 import define from '../../define';
 import { ApiError } from '../../error';
@@ -69,11 +69,9 @@ export default define(meta, async (ps, user) => {
 	}
 
 	// Update session
-	await AuthSess.update(session._id, {
+	return await pack(await AuthSess.findOneAndUpdate({ _id: session._id }, {
 		$set: {
 			userId: user._id
 		}
-	});
-
-	return;
+	}, { returnNewDocument: true }), user);
 });

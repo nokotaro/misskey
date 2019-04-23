@@ -1,7 +1,7 @@
 <template>
 <div class="mk-media-banner">
 	<div class="sensitive" v-if="media.isSensitive && hide" @click="hide = false">
-		<span class="icon"><fa icon="exclamation-triangle"/></span>
+		<span class="icon"><fa :icon="['fal', 'exclamation-triangle']"/></span>
 		<b>{{ $t('sensitive') }}</b>
 		<span>{{ $t('click-to-show') }}</span>
 	</div>
@@ -19,7 +19,7 @@
 		:title="media.name"
 		:download="media.name"
 	>
-		<span class="icon"><fa icon="download"/></span>
+		<span class="icon"><fa :icon="['fal', 'download']"/></span>
 		<b>{{ media.name }}</b>
 	</a>
 </div>
@@ -94,5 +94,4 @@ export default Vue.extend({
 		.audio
 			display block
 			width 100%
-
 </style>

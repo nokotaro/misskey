@@ -1,6 +1,6 @@
 <template>
-<div v-if="playerEnabled" class="player" :style="`padding: ${(player.height || 0) / (player.width || 1) * 100}% 0 0`">
-	<button class="disablePlayer" @click="playerEnabled = false" :title="$t('disable-player')"><fa icon="times"/></button>
+<div v-if="playerEnabled" class="player" :style="`padding:${(player.height || 0) / (player.width || 1) * 100}% 0 0`">
+	<button class="disablePlayer" @click="playerEnabled = false" :title="$t('disable-player')"><fa :icon="['fal', 'times']"/></button>
 	<iframe :src="player.url + (player.url.match(/\?/) ? '&autoplay=1&auto_play=1' : '?autoplay=1&auto_play=1')" :width="player.width || '100%'" :heigth="player.height || 250" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen />
 </div>
 <div v-else-if="tweetUrl && detail" class="twitter">
@@ -10,8 +10,8 @@
 </div>
 <div v-else class="mk-url-preview">
 	<a :class="{ mini: narrow, compact }" :href="url" target="_blank" :title="url" v-if="!fetching">
-		<div class="thumbnail" v-if="thumbnail" :style="`background-image: url('${thumbnail}')`">
-			<button v-if="!playerEnabled && player.url" @click.prevent="playerEnabled = true" :title="$t('enable-player')"><fa :icon="['far', 'play-circle']"/></button>
+		<div class="thumbnail" v-if="thumbnail" :style="`background-image:url('${thumbnail}')`">
+			<button v-if="!playerEnabled && player.url" @click.prevent="playerEnabled = true" :title="$t('enable-player')"><fa :icon="['fal', 'play-circle']"/></button>
 		</div>
 		<article>
 			<header>

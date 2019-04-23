@@ -8,7 +8,7 @@
 	<template v-if="!wait">
 		<fa :icon="iconAndText[0]"/> <template v-if="!mini">{{ iconAndText[1] }}</template>
 	</template>
-	<template v-else><fa icon="spinner" pulse fixed-width/></template>
+	<template v-else><fa :icon="['fal', 'spinner']" pulse fixed-width/></template>
 </button>
 </template>
 
@@ -131,8 +131,9 @@ export default Vue.extend({
 	margin 0
 	min-width 100px
 	line-height 36px
+	font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 	font-size 14px
-	font-weight bold
+	font-weight 600
 	color var(--primary)
 	background transparent
 	outline none
@@ -197,5 +198,4 @@ export default Vue.extend({
 
 	*
 		pointer-events none
-
 </style>

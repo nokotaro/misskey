@@ -11,7 +11,7 @@
 			:multiple="false"
 		/>
 		<div class="footer">
-			<ui-button inline @click="cancel" style="margin-right:16px;">{{ $t('cancel') }}</ui-button>
+			<ui-button inline @click="cancel" style="margin-right:16px">{{ $t('cancel') }}</ui-button>
 			<ui-button inline @click="ok" primary>{{ $t('ok') }}</ui-button>
 		</div>
 	</div>
@@ -52,5 +52,4 @@ export default Vue.extend({
 		padding 16px
 		background var(--desktopPostFormBg)
 		text-align right
-
 </style>

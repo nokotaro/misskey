@@ -1,6 +1,6 @@
 <template>
 <mk-ui>
-	<template #header><span style="margin-right:4px;"><fa icon="cog"/></span>{{ $t('@.settings') }}</template>
+	<template #header><span style="margin-right:4px"><fa :icon="['fal', 'cog']"/></span>{{ $t('@.settings') }}</template>
 	<main>
 		<div class="signed-in-as" :class="{ shadow: $store.state.device.useShadow, round: $store.state.device.roundedCorners }">
 			<mfm :text="$t('signed-in-as').replace('{}', name)" :should-break="false" :plain-text="true" :custom-emojis="$store.state.i.emojis"/>
@@ -56,7 +56,8 @@ main
 		text-align center
 		color var(--mobileSignedInAsFg)
 		background var(--mobileSignedInAsBg)
-		font-weight bold
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+		font-weight 600
 
 		&.round
 			border-radius 6px
@@ -82,5 +83,4 @@ main
 		text-align center
 		color var(--text)
 		opacity 0.7
-
 </style>

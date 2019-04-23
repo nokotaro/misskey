@@ -85,4 +85,8 @@ export default Vue.extend({
 					padding 0
 					color var(--subNoteText)
 
+					&.scroll
+						max-height 180px
+						overflow hidden auto
+						padding 0.5em 0em 0.5em 0.5em
 </style>

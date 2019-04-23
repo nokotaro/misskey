@@ -44,5 +44,4 @@ export default Vue.extend({
 
 		&:hover
 			background #4968ce
-
 </style>

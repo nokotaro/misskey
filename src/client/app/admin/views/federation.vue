@@ -21,21 +21,21 @@
 					</ui-input>
 				</ui-horizon-group>
 				<ui-horizon-group inputs>
-					<ui-input :value="instance.notesCount | number" type="text" readonly>
+					<ui-input :value="instance.notesCount | zero | number" type="text" readonly>
 						<span>{{ $t('notes') }}</span>
 						<template #prefix><fa :icon="faEnvelopeOpenText"/></template>
 					</ui-input>
-					<ui-input :value="instance.usersCount | number" type="text" readonly>
+					<ui-input :value="instance.usersCount | zero | number" type="text" readonly>
 						<span>{{ $t('users') }}</span>
 						<template #prefix><fa :icon="faUsers"/></template>
 					</ui-input>
 				</ui-horizon-group>
 				<ui-horizon-group inputs>
-					<ui-input :value="instance.followingCount | number" type="text" readonly>
+					<ui-input :value="instance.followingCount | zero | number" type="text" readonly>
 						<span>{{ $t('following') }}</span>
 						<template #prefix><fa :icon="faCaretDown"/></template>
 					</ui-input>
-					<ui-input :value="instance.followersCount | number" type="text" readonly>
+					<ui-input :value="instance.followersCount | zero | number" type="text" readonly>
 						<span>{{ $t('followers') }}</span>
 						<template #prefix><fa :icon="faCaretUp"/></template>
 					</ui-input>
@@ -81,7 +81,7 @@
 				</details>
 				<details>
 					<summary>{{ $t('remove-all-following') }}</summary>
-					<ui-button @click="removeAllFollowing()" style="margin-top: 16px;"><fa :icon="faMinusCircle"/> {{ $t('remove-all-following') }}</ui-button>
+					<ui-button @click="removeAllFollowing()" style="margin-top:16px"><fa :icon="faMinusCircle"/> {{ $t('remove-all-following') }}</ui-button>
 					<ui-info warn>{{ $t('remove-all-following-info', { host: instance.host }) }}</ui-info>
 				</details>
 			</div>
@@ -131,10 +131,10 @@
 				</header>
 				<div v-for="instance in instances" :style="{ opacity: instance.isNotResponding ? 0.5 : 1 }">
 					<a @click.prevent="showInstance(instance.host)" target="_blank" :href="`https://${instance.host}`" :style="{ textDecoration: instance.isMarkedAsClosed ? 'line-through' : 'none' }">{{ instance.host }}</a>
-					<span>{{ instance.notesCount | number }}</span>
-					<span>{{ instance.usersCount | number }}</span>
-					<span>{{ instance.followingCount | number }}</span>
-					<span>{{ instance.followersCount | number }}</span>
+					<span>{{ instance.notesCount | zero | number }}</span>
+					<span>{{ instance.usersCount | zero | number }}</span>
+					<span>{{ instance.followingCount | zero | number }}</span>
+					<span>{{ instance.followersCount | zero | number }}</span>
 					<span>{{ instance.latestStatus }}</span>
 				</div>
 			</div>
@@ -148,8 +148,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../i18n';
-import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { faGlobe, faTerminal, faSearch, faMinusCircle, faServer, faCrosshairs, faEnvelopeOpenText, faUsers, faCaretDown, faCaretUp, faTrafficLight, faInbox } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane } from '@fortawesome/pro-light-svg-icons';
+import { faGlobe, faTerminal, faSearch, faMinusCircle, faServer, faCrosshairs, faEnvelopeOpenText, faUsers, faCaretDown, faCaretUp, faTrafficLight, faInbox } from '@fortawesome/pro-light-svg-icons';
 import ApexCharts from 'apexcharts';
 import * as tinycolor from 'tinycolor2';
 
@@ -161,6 +161,7 @@ export default Vue.extend({
 	i18n: i18n('admin/views/federation.vue'),
 
 	filters: {
+		zero: v => v || 0,
 		date: v => v ? new Date(v).toLocaleString() : 'N/A'
 	},
 
@@ -493,7 +494,8 @@ export default Vue.extend({
 
 		> *
 			color var(--text)
-			font-weight bold
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+			font-weight 600
 
 	> div
 		display flex
@@ -504,5 +506,4 @@ export default Vue.extend({
 
 		&:first-child
 			min-width 200px
-
 </style>

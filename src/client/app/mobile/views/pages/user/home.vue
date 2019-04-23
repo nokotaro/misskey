@@ -2,25 +2,25 @@
 <div class="wojmldye">
 	<mk-note-detail class="note" v-for="n in user.pinnedNotes" :key="n.id" :note="n" :compact="true"/>
 	<ui-container :body-togglable="true">
-		<template #header><fa :icon="['far', 'comments']"/>{{ $t('recent-notes') }}</template>
+		<template #header><fa :icon="['fal', 'comments']"/>{{ $t('recent-notes') }}</template>
 		<div>
 			<x-notes :user="user"/>
 		</div>
 	</ui-container>
 	<ui-container :body-togglable="true">
-		<template #header><fa icon="image"/>{{ $t('images') }}</template>
+		<template #header><fa :icon="['fal', 'image']"/>{{ $t('images') }}</template>
 		<div>
 			<x-photos :user="user"/>
 		</div>
 	</ui-container>
 	<ui-container :body-togglable="true">
-		<template #header><fa icon="chart-bar"/>{{ $t('activity') }}</template>
-		<div style="padding:8px;">
+		<template #header><fa :icon="['fal', 'chart-bar']"/>{{ $t('activity') }}</template>
+		<div style="padding:8px">
 			<x-activity :user="user"/>
 		</div>
 	</ui-container>
-	<mk-user-list :make-promise="makeFrequentlyRepliedUsersPromise" :icon-only="true"><fa icon="users"/> {{ $t('frequently-replied-users') }}</mk-user-list>
-	<mk-user-list v-if="$store.getters.isSignedIn && $store.state.i.id !== user.id" :make-promise="makeFollowersYouKnowPromise" :icon-only="true"><fa icon="users"/> {{ $t('followers-you-know') }}</mk-user-list>
+	<mk-user-list :make-promise="makeFrequentlyRepliedUsersPromise" :icon-only="true"><fa :icon="['fal', 'users']"/> {{ $t('frequently-replied-users') }}</mk-user-list>
+	<mk-user-list v-if="$store.getters.isSignedIn && $store.state.i.id !== user.id" :make-promise="makeFollowersYouKnowPromise" :icon-only="true"><fa :icon="['fal', 'users']"/> {{ $t('followers-you-know') }}</mk-user-list>
 </div>
 </template>
 
@@ -60,5 +60,4 @@ export default Vue.extend({
 
 		@media (min-width 500px)
 			margin 0 0 16px 0
-
 </style>

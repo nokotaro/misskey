@@ -76,7 +76,7 @@ export function inbox(activity: any, signature: httpSignature.IParsedSignature) 
 		attempts: 8,
 		backoff: {
 			type: 'exponential',
-			delay: 1000
+			delay: 60 * 1000
 		},
 		removeOnComplete: true,
 		removeOnFail: true
@@ -168,8 +168,8 @@ export function createImportUserListsJob(user: ILocalUser, fileId: IDriveFile['_
 
 export default function() {
 	if (!program.onlyServer) {
-		deliverQueue.process(128, processDeliver);
-		inboxQueue.process(128, processInbox);
+		deliverQueue.process(config.deliverJobConcurrency || 32, processDeliver);
+		inboxQueue.process(config.inboxJobConcurrency || 32, processInbox);
 		processDb(dbQueue);
 	}
 }

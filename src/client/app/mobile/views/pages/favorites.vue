@@ -1,6 +1,6 @@
 <template>
 <mk-ui>
-	<template #header><span style="margin-right:4px;"><fa icon="star"/></span>{{ $t('@.favorites') }}</template>
+	<template #header><span style="margin-right:4px"><fa :icon="['fal', 'star']"/></span>{{ $t('@.favorites') }}</template>
 
 	<main>
 		<sequential-entrance animation="entranceFromTop" delay="25">
@@ -82,5 +82,4 @@ main
 	@media (min-width 500px)
 		> * > .post
 			margin-bottom 16px
-
 </style>

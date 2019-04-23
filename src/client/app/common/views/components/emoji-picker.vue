@@ -36,8 +36,8 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import { lib } from 'emojilib';
-import { faAsterisk, faLeaf, faUtensils, faFutbol, faCity, faDice } from '@fortawesome/free-solid-svg-icons';
-import { faHeart, faFlag } from '@fortawesome/free-regular-svg-icons';
+import { faAsterisk, faLeaf, faUtensils, faFutbol, faCity, faDice } from '@fortawesome/pro-light-svg-icons';
+import { faHeart, faFlag } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/emoji-picker.vue'),
@@ -53,7 +53,7 @@ export default Vue.extend({
 			}, {
 				name: 'people',
 				text: this.$t('people'),
-				icon: ['far', 'laugh'],
+				icon: ['fal', 'laugh'],
 				isActive: false
 			}, {
 				name: 'animals_and_nature',
@@ -152,8 +152,8 @@ export default Vue.extend({
 
 		> div
 			display grid
-			grid-template-columns 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr
-			gap 4px
+			grid-template-columns repeat(8, 1fr)
+			gap 8px
 			padding 8px
 
 			> button
@@ -181,5 +181,4 @@ export default Vue.extend({
 					font-size 28px
 					transition transform 0.2s ease
 					pointer-events none
-
 </style>

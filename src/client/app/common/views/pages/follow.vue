@@ -22,13 +22,13 @@
 			@click="onClick"
 			:disabled="followWait">
 		<template v-if="!followWait">
-			<template v-if="user.hasPendingFollowRequestFromYou && user.isLocked"><fa icon="hourglass-half"/> {{ $t('request-pending') }}</template>
-			<template v-else-if="user.hasPendingFollowRequestFromYou && !user.isLocked"><fa icon="spinner"/> {{ $t('follow-processing') }}</template>
-			<template v-else-if="user.isFollowing"><fa icon="minus"/> {{ $t('following') }}</template>
-			<template v-else-if="!user.isFollowing && user.isLocked"><fa icon="plus"/> {{ $t('follow-request') }}</template>
-			<template v-else-if="!user.isFollowing && !user.isLocked"><fa icon="plus"/> {{ $t('follow') }}</template>
+			<template v-if="user.hasPendingFollowRequestFromYou && user.isLocked"><fa :icon="['fal', 'hourglass-half']"/> {{ $t('request-pending') }}</template>
+			<template v-else-if="user.hasPendingFollowRequestFromYou && !user.isLocked"><fa :icon="['fal', 'spinner']"/> {{ $t('follow-processing') }}</template>
+			<template v-else-if="user.isFollowing"><fa :icon="['fal', 'minus']"/> {{ $t('following') }}</template>
+			<template v-else-if="!user.isFollowing && user.isLocked"><fa :icon="['fal', 'plus']"/> {{ $t('follow-request') }}</template>
+			<template v-else-if="!user.isFollowing && !user.isLocked"><fa :icon="['fal', 'plus']"/> {{ $t('follow') }}</template>
 		</template>
-		<template v-else><fa icon="spinner" pulse fixed-width/></template>
+		<template v-else><fa :icon="['fal', 'spinner']" pulse fixed-width/></template>
 	</button>
 </div>
 </template>
@@ -57,8 +57,8 @@ export default Vue.extend({
 		bannerStyle(): any {
 			if (this.user.bannerUrl == null) return {};
 			return {
-				backgroundColor: this.user.bannerColor && this.user.bannerColor.length == 3 ? `rgb(${ this.user.bannerColor.join(',') })` : null,
-				backgroundImage: `url(${ this.user.bannerUrl })`
+				backgroundColor: this.user.bannerColor && this.user.bannerColor.length == 3 ? `rgb(${this.user.bannerColor.join(',')})` : null,
+				backgroundImage: `url(${this.user.bannerUrl})`
 			};
 		}
 	},
@@ -127,8 +127,9 @@ export default Vue.extend({
 
 	> .signed-in-as
 		margin-bottom 16px
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 		font-size 14px
-		font-weight bold
+		font-weight 600
 
 	> main
 		margin-bottom 16px
@@ -157,8 +158,9 @@ export default Vue.extend({
 				padding 4px 16px 16px 16px
 
 			> .name
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 				font-size 20px
-				font-weight bold
+				font-weight 600
 
 			> .username
 				display block
@@ -175,8 +177,9 @@ export default Vue.extend({
 		margin 0
 		width 100%
 		min-width 150px
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 		font-size 14px
-		font-weight bold
+		font-weight 600
 		color var(--primary)
 		background transparent
 		outline none
@@ -207,5 +210,4 @@ export default Vue.extend({
 
 		*
 			pointer-events none
-
 </style>

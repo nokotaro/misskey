@@ -2,7 +2,7 @@
 <div class="mk-messaging" :data-compact="compact">
 	<div class="search" v-if="!compact" :style="{ top: headerTop + 'px' }">
 		<div class="form">
-			<label for="search-input"><i><fa icon="search"/></i></label>
+			<label for="search-input"><i><fa :icon="['fal', 'search']"/></i></label>
 			<input v-model="q" type="search" @input="search" @keydown="onSearchKeydown" :placeholder="$t('search-user')"/>
 		</div>
 		<div class="result">
@@ -45,7 +45,7 @@
 		</template>
 	</div>
 	<p class="no-history" v-if="!fetching && messages.length == 0">{{ $t('no-history') }}</p>
-	<p class="fetching" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+	<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
 </div>
 </template>
 
@@ -302,12 +302,13 @@ export default Vue.extend({
 
 					.name
 						margin 0 8px 0 0
-						/*font-weight bold*/
-						font-weight normal
+						//font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+						//font-weight 600
+						font-weight 300
 						color rgba(#000, 0.8)
 
 					.username
-						font-weight normal
+						font-weight 300
 						color rgba(#000, 0.3)
 
 	> .history
@@ -370,7 +371,8 @@ export default Vue.extend({
 						text-overflow ellipsis
 						font-size 1em
 						color var(--noteHeaderName)
-						font-weight bold
+						font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+						font-weight 600
 						transition all 0.1s ease
 
 					> .username
@@ -414,7 +416,8 @@ export default Vue.extend({
 		padding 2em 1em
 		text-align center
 		color #999
-		font-weight 500
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+		font-weight 600
 
 	> .fetching
 		margin 0
@@ -446,5 +449,4 @@ export default Vue.extend({
 
 					> .avatar
 						margin 0 12px 0 0
-
 </style>

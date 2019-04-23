@@ -4,8 +4,8 @@
 		<div class="title"><slot name="header"></slot></div>
 		<slot name="func"></slot>
 		<button v-if="bodyTogglable" @click="toggleContent(!showBody)">
-			<template v-if="showBody"><fa icon="angle-up"/></template>
-			<template v-else><fa icon="angle-down"/></template>
+			<template v-if="showBody"><fa :icon="['fal', 'angle-up']"/></template>
+			<template v-else><fa :icon="['fal', 'angle-down']"/></template>
 		</button>
 	</header>
 	<div v-show="showBody">
@@ -82,8 +82,9 @@ export default Vue.extend({
 				margin 0
 				padding 0 16px
 				line-height 42px
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 				font-size 0.9em
-				font-weight bold
+				font-weight 600
 				color var(--faceHeaderText)
 				box-shadow 0 var(--lineWidth) rgba(#000, 0.07)
 
@@ -127,5 +128,4 @@ export default Vue.extend({
 				padding 8px 6px
 				font-size 14px
 				color var(--text)
-
 </style>

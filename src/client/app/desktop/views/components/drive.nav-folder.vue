@@ -7,7 +7,7 @@
 	@dragleave="onDragleave"
 	@drop.stop="onDrop"
 >
-	<i v-if="folder == null" class="cloud"><fa icon="cloud"/></i>
+	<i v-if="folder == null" class="cloud"><fa :icon="['fal', 'cloud']"/></i>
 	<span>{{ folder == null ? $t('@.drive') : folder.name }}</span>
 </div>
 </template>
@@ -114,5 +114,4 @@ export default Vue.extend({
 
 	i.cloud
 		margin-right 4px
-
 </style>

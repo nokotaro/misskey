@@ -1,25 +1,25 @@
 <template>
 <x-column>
 	<template #header>
-		<fa icon="user"/><mk-user-name :user="user" v-if="user" :key="user.id"/>
+		<fa :icon="['fal', 'user']"/><mk-user-name :user="user" v-if="user" :key="user.id"/>
 	</template>
 
 	<div class="zubukjlciycdsyynicqrnlsmdwmymzqu" v-if="user">
 		<div class="is-remote" v-if="user.host != null">
 			<details>
-				<summary><fa icon="exclamation-triangle"/> {{ $t('@.is-remote-user') }}</summary>
+				<summary><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.is-remote-user') }}</summary>
 				<a :href="user.url || user.uri" target="_blank">{{ $t('@.view-on-remote') }}</a>
 			</details>
 		</div>
 		<header :style="bannerStyle">
 			<div>
-				<button class="menu" @click="menu" ref="menu"><fa icon="ellipsis-h"/></button>
-				<mk-follow-button v-if="$store.getters.isSignedIn && user.id != $store.state.i.id" :user="user" class="follow" mini/>
+				<button class="menu" @click="menu" ref="menu"><fa :icon="['fal', 'ellipsis-h']"/></button>
+				<mk-follow-button v-if="$store.getters.isSignedIn && user.id != $store.state.i.id" :user="user" :key="user.id" class="follow" mini/>
 				<mk-avatar class="avatar" :user="user" :disable-preview="true" :key="user.id"/>
 				<router-link class="name" :to="user | userPage()">
 					<mk-user-name :user="user" :key="user.id"/>
 				</router-link>
-				<span class="acct">@{{ user | acct }} <fa v-if="user.isLocked == true" class="locked" icon="lock" fixed-width/></span>
+				<span class="acct">@{{ user | acct }} <fa v-if="user.isLocked == true" class="locked" :icon="['fal', 'lock']" fixed-width/></span>
 				<span class="followed" v-if="user.isFollowed">{{ $t('follows-you') }}</span>
 			</div>
 		</header>
@@ -88,8 +88,8 @@ export default Vue.extend({
 			if (this.user == null) return {};
 			if (this.user.bannerUrl == null) return {};
 			return {
-				backgroundColor: this.user.bannerColor && this.user.bannerColor.length == 3 ? `rgb(${ this.user.bannerColor.join(',') })` : null,
-				backgroundImage: `url(${ this.user.bannerUrl })`
+				backgroundColor: this.user.bannerColor && this.user.bannerColor.length == 3 ? `rgb(${this.user.bannerColor.join(',')})` : null,
+				backgroundImage: `url(${this.user.bannerUrl})`
 			};
 		},
 	},
@@ -134,7 +134,8 @@ export default Vue.extend({
 			background var(--remoteInfoBg)
 
 		> a
-			font-weight bold
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+			font-weight 600
 
 	> header
 		overflow hidden
@@ -169,7 +170,8 @@ export default Vue.extend({
 			> .name
 				display block
 				margin-top 8px
-				font-weight bold
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+				font-weight 600
 				text-shadow 0 0 8px #000
 				color #fff
 
@@ -228,7 +230,8 @@ export default Vue.extend({
 					overflow hidden
 					white-space nowrap
 					text-overflow ellipsis
-					font-weight bold
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+					font-weight 600
 
 				> .value
 					padding 4px
@@ -259,5 +262,4 @@ export default Vue.extend({
 						display block
 						font-size 80%
 						opacity 0.7
-
 </style>

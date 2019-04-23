@@ -9,12 +9,12 @@
 			</p>
 			<div>
 				<span class="username"><mk-acct :user="user" :detail="true" /></span>
-				<span v-if="user.isBot" :title="$t('is-bot')"><fa icon="robot"/></span>
+				<span v-if="user.isBot" :title="$t('is-bot')"><fa :icon="['fal', 'robot']"/></span>
 			</div>
 		</div>
 		<span class="followed" v-if="$store.getters.isSignedIn && $store.state.i.id != user.id && user.isFollowed">{{ $t('follows-you') }}</span>
 		<div class="actions" v-if="$store.getters.isSignedIn">
-			<button @click="menu" class="menu" ref="menu"><fa icon="ellipsis-h"/></button>
+			<button @click="menu" class="menu" ref="menu"><fa :icon="['fal', 'ellipsis-h']"/></button>
 			<mk-follow-button v-if="$store.state.i.id != user.id" :user="user" :inline="true" :transparent="false" class="follow"/>
 		</div>
 	</div>
@@ -23,7 +23,7 @@
 		<div class="description">
 			<mfm v-if="user.description" :text="user.description" :is-note="false" :author="user" :i="$store.state.i" :custom-emojis="user.emojis"/>
 			<p v-else class="empty">{{ $t('no-description') }}</p>
-			<x-integrations :user="user" style="margin-top:16px;"/>
+			<x-integrations :user="user" style="margin-top:16px"/>
 		</div>
 		<div class="fields" v-if="user.fields">
 			<dl class="field" v-for="(field, i) in user.fields" :key="i">
@@ -36,8 +36,8 @@
 			</dl>
 		</div>
 		<div class="info">
-			<span class="location" v-if="user.host === null && user.profile.location"><fa icon="map-marker"/> {{ user.profile.location }}</span>
-			<span class="birthday" v-if="user.host === null && user.profile.birthday"><fa icon="birthday-cake"/> {{ user.profile.birthday.replace('-', $t('year')).replace('-', $t('month')) + $t('day') }} ({{ $t('years-old', { age }) }})</span>
+			<span class="location" v-if="user.host === null && user.profile.location"><fa :icon="['fal', 'map-marker']"/> {{ user.profile.location }}</span>
+			<span class="birthday" v-if="user.host === null && user.profile.birthday"><fa :icon="['fal', 'birthday-cake']"/> {{ user.profile.birthday.replace('-', $t('year')).replace('-', $t('month')) + $t('day') }} ({{ $t('years-old', { age }) }})</span>
 		</div>
 		<div class="status">
 			<router-link :to="user | userPage()" class="notes-count"><b>{{ user.notesCount | number }}</b>{{ $t('posts') }}</router-link>
@@ -65,8 +65,8 @@ export default Vue.extend({
 		style(): any {
 			if (this.user.bannerUrl == null) return {};
 			return {
-				backgroundColor: this.user.bannerColor && this.user.bannerColor.length == 3 ? `rgb(${ this.user.bannerColor.join(',') })` : null,
-				backgroundImage: `url(${ this.user.bannerUrl })`
+				backgroundColor: this.user.bannerColor && this.user.bannerColor.length == 3 ? `rgb(${this.user.bannerColor.join(',')})` : null,
+				backgroundImage: `url(${this.user.bannerUrl})`
 			};
 		},
 
@@ -191,7 +191,8 @@ export default Vue.extend({
 				display block
 				margin 0
 				line-height 32px
-				font-weight bold
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+				font-weight 600
 				font-size 1.8em
 				text-shadow 0 0 8px #000
 
@@ -203,7 +204,8 @@ export default Vue.extend({
 					opacity 0.8
 
 					&.username
-						font-weight bold
+						font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+						font-weight 600
 
 	> .avatar
 		display block
@@ -247,7 +249,8 @@ export default Vue.extend({
 					overflow hidden
 					white-space nowrap
 					text-overflow ellipsis
-					font-weight bold
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+					font-weight 600
 					text-align center
 
 				> .value
@@ -293,8 +296,8 @@ export default Vue.extend({
 
 				> b
 					margin-right 4px
+					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 					font-size 1rem
-					font-weight bold
+					font-weight 600
 					color var(--primary)
-
 </style>

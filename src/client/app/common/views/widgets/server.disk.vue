@@ -2,7 +2,7 @@
 <div class="disk">
 	<x-pie class="pie" :value="usage"/>
 	<div>
-		<p><fa :icon="['far', 'hdd']"/>Storage</p>
+		<p><fa :icon="['fal', 'hdd']"/>Storage</p>
 		<p>Total: {{ total | bytes(1) }}</p>
 		<p>Free: {{ available | bytes(1) }}</p>
 		<p>Used: {{ used | bytes(1) }}</p>
@@ -63,7 +63,8 @@ export default Vue.extend({
 			color var(--chartCaption)
 
 			&:first-child
-				font-weight bold
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+				font-weight 600
 
 				> [data-icon]
 					margin-right 4px
@@ -72,5 +73,4 @@ export default Vue.extend({
 		content ""
 		display block
 		clear both
-
 </style>

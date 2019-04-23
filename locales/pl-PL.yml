@@ -4,22 +4,20 @@ meta:
 common:
   misskey: "⭐ Fediwersum"
   about-title: "⭐ Fediwersum"
-  about: "Dziękujemy za znalezienie Misskey. Misskey jest <b>zdecentralizowaną platformą mikroblogową</b> powstałą na Ziemi. Ponieważ działa ona w Fediwersum (uniwersum, w którego skład wchodzi wiele sieci społecznościowych), jest ona połączona z innymi platformami społecznościowymi. Spróbujesz odpocząć od zatłoczoneo miasta i zanurzyć się w nowym Internecie?"
+  about: "Dziękujemy za znalezienie twista. twista jest <b>zdecentralizowaną platformą mikroblogową</b> powstałą na Ziemi. Ponieważ działa ona w Fediwersum (uniwersum, w którego skład wchodzi wiele sieci społecznościowych), jest ona połączona z innymi platformami społecznościowymi. Spróbujesz odpocząć od zatłoczoneo miasta i zanurzyć się w nowym Internecie?"
   intro:
     title: "Czym jest Misskey?"
     features: "Funkcje"
     rich-contents: "Wpis"
-    rich-contents-desc: "Po prostu opublikuj swój pomysł, gorące tematy i wszystko, co chcesz udostępnić. Możesz ozdobić swoje słowa, dołączyć swoje ulubione zdjęcia, wysłać pliki, w tym filmy i utworzyć ankietę - to są rzeczy, które możesz zrobić w Misskey!"
+    rich-contents-desc: "Po prostu opublikuj swój pomysł, gorące tematy i wszystko, co chcesz udostępnić. Możesz ozdobić swoje słowa, dołączyć swoje ulubione zdjęcia, wysłać pliki, w tym filmy i utworzyć ankietę - to są rzeczy, które możesz zrobić w twista!"
     reaction: "Reakcja"
     ui: "Interfejs"
     drive: "Dysk"
     drive-desc: "Chcesz opublikować zdjęcie, które już przesłałeś? Chcesz uporządkować, nazwać i utworzyć folder dla przesłanych plików? Dysk Misskey to najlepsze rozwiązanie dla Ciebie. Bardzo łatwo udostępniać swoje pliki online."
-  adblock:
-    detected: "Spróbuj wyłączyć blokadę reklam."
-    warning: "<strong>Misskey nie zawiera reklam</strong>, ale część funkcji może nie działać prawidłowo z włączonym blokowaniem reklam."
-  application-authorization: "Współpraca aplikacji"
+  application-authorization: "Współpraca twista"
   close: "Zamknij"
   load-more: "Załaduj więcej"
+  enter-username: "Wprowadź nazwę użytkownika"
   enter-password: "Wprowadź Hasło"
   2fa: "Uwierzytelnienie dwuetapowe"
   customize-home: "Dostosuj stronę główną"
@@ -158,7 +156,7 @@ common:
   ok: "Możesz OK"
   cancel: "Anuluj"
   update-available-title: "Aktualizacja jest dostępna"
-  update-available: "Nowa wersja Misskey jest dostępna ({newer}, obecna to {current}). Odśwież stronę, aby zastosować aktualizację."
+  update-available: "Nowa wersja twista jest dostępna ({newer}, obecna to {current}). Odśwież stronę, aby zastosować aktualizację."
   my-token-regenerated: "Twój token został wygenerowany. Zostaniesz wylogowany."
   verified-user: "Zweryfikowane konto"
   hide-password: "Ukryj hasło"
@@ -214,11 +212,11 @@ auth/views/form.vue:
   accept: "Przyznaj dostęp."
 auth/views/index.vue:
   loading: "Ładowanie"
-  denied: "Odrzucono uwierzytelnianie aplikacji."
+  denied: "Odrzucono uwierzytelnianie twista."
   denied-paragraph: "Ta aplikacja nie uzyska dostępu do Twojego konta."
   already-authorized: "Ta aplikacja została już uwierzytelniona."
-  callback-url: "Powracam do aplikacji."
-  please-go-back: "Wróć do aplikacji."
+  callback-url: "Powracam do twista."
+  please-go-back: "Wróć do twista."
   error: "Sesja nie istnieje."
   sign-in: "Proszę zalogować się."
 common/views/pages/explore.vue:
@@ -231,7 +229,7 @@ common/views/components/games/reversi/reversi.game.vue:
   surrender: "Poddaj się"
   surrendered: "Przez poddanie się"
 common/views/components/games/reversi/reversi.index.vue:
-  title: "Misskey Reversi"
+  title: "twista Reversi"
   sub-title: "Zagraj w Reversi ze znajomymi!"
   invite: "Zaproś"
   rule: "Jak grać"
@@ -240,7 +238,6 @@ common/views/components/games/reversi/reversi.index.vue:
   invitations: "Otrzymałeś(-aś) zaproszenie!"
   my-games: "Moje gry"
   all-games: "Wszystkie gry"
-  enter-username: "Wprowadź nazwę użytkownika"
   game-state:
     ended: "Zakończono"
     playing: "W trakcie"
@@ -259,7 +256,7 @@ common/views/components/games/reversi/reversi.room.vue:
 common/views/components/connect-failed.vue:
   title: "Nie udało się połączyć z serwerem"
   description: "Wystąpił problem z Twoim połączeniem z Internetem, lub z serwerem. {Spróbuj ponownie} wkrótce."
-  thanks: "Dziękujemy za korzystanie z Misskey."
+  thanks: "Dziękujemy za korzystanie z twista."
   troubleshoot: "Rozwiązywanie problemów"
 common/views/components/connect-failed.troubleshooter.vue:
   title: "Rozwiązywanie problemów"
@@ -275,8 +272,8 @@ common/views/components/connect-failed.troubleshooter.vue:
   no-internet: "Brak połączenia z Internetem"
   no-internet-desc: "Upewnij się, że jesteś połączony z Internetem."
   no-server: "Nie udało się połączyć z serwerem"
-  no-server-desc: "Połączenie sieciowe działa, ale nie udało się połączyć z serwerem Misskey. Możliwe że serwer nie działa lub trwają prace konserwacyjne, spróbuj ponownie później."
-  success: "Pomyślnie połączono z serwerem Misskey"
+  no-server-desc: "Połączenie sieciowe działa, ale nie udało się połączyć z serwerem twista. Możliwe że serwer nie działa lub trwają prace konserwacyjne, spróbuj ponownie później."
+  success: "Pomyślnie połączono z serwerem twista"
   success-desc: "Wygląda na to, że udało się połączyć. Odśwież stronę."
   flush: "Wyczyść pamięć podręczną"
   set-version: "Określ wersję"
@@ -561,7 +558,7 @@ common/views/widgets/tips.vue:
   tips-line17: "Oznaczenie tekstu **w ten sposób** wyróżni go."
   tips-line19: "Część okien może zostać odłączona z przeglądarki."
   tips-line21: "Możesz też używać API, aby tworzyć boty."
-  tips-line24: "Misskey zaczął działać w 2014."
+  tips-line24: "Misskey zaczął działać w 2019."
   tips-line25: "Możesz otrzymywać powiadomienia nawet jeżeli Misskey nie jest otwarty w obsługiwanej przeglądarce."
 common/views/pages/not-found.vue:
   page-not-found: "Strona nie została znaleziona"
@@ -624,7 +621,7 @@ desktop/views/components/drive.file.vue:
     else-files: "Inne"
     set-as-avatar: "Ustaw jako awatar"
     set-as-banner: "Ustaw jako baner"
-    open-in-app: "Otwórz w aplikacji"
+    open-in-app: "Otwórz w twista"
     add-app: "Dodaj aplikację"
     rename-file: "Zmień nazwę pliku"
     input-new-file-name: "Wprowadź nową nazwę"
@@ -724,7 +721,6 @@ desktop/views/components/post-form.vue:
   visibility: "Widoczność"
   geolocation-alert: "Twoje urządzenie nie obsługuje geolokalizacji."
   error: "Bład"
-  enter-username: "Wprowadź nazwę użytkownika…"
   annotations: "Treść ostrzeżenia (opcjonalnie)"
 desktop/views/components/post-form-window.vue:
   note: "Nowy wpis"
@@ -746,7 +742,7 @@ desktop/views/components/settings.2fa.vue:
   intro: "Jeżeli skonfigurujesz uwierzytelnianie dwuetapowe, aby zablokować się będziesz potrzebować (oprócz hasła) kodu ze skonfigurowanego urządzenia (np. smartfonu), co zwiększy bezpieczeństwo."
   detail: "Zobacz szczegóły…"
   url: "https://www.google.com/landing/2step/"
-  caution: "Jeżeli stracisz dostęp do urządzenia, nie będziesz mógł logować się do Misskey!"
+  caution: "Jeżeli stracisz dostęp do urządzenia, nie będziesz mógł logować się do twista!"
   register: "Zarejestruj urządzenie"
   already-registered: "Urządzenie jest już zarejestrowane"
   unregister: "Wyłącz"
@@ -760,7 +756,7 @@ desktop/views/components/settings.2fa.vue:
   submit: "Wyślij"
   success: "Pomyślnie ukończono konfigurację!"
   failed: "Nie udało się skonfigurować uwierzytelniania dwuetapowego, upewnij się że wprowadziłeś prawidłowy token."
-  info: "Od teraz, wprowadzaj token wyświetlany na urządzeniu przy każdym logowaniu do Misskey."
+  info: "Od teraz, wprowadzaj token wyświetlany na urządzeniu przy każdym logowaniu do twista."
 common/views/components/media-image.vue:
   sensitive: "To jest zawartość NSFW"
   click-to-show: "Naciśnij aby wyświetlić"
@@ -776,7 +772,7 @@ common/views/components/api-settings.vue:
     parameter: "Parametry"
     send: "Wyślij"
 desktop/views/components/settings.apps.vue:
-  no-apps: "Brak zautoryzowanych aplikacji"
+  no-apps: "Brak zautoryzowanych twista"
 common/views/components/drive-settings.vue:
   max: "Max"
   in-use: "użyto"
@@ -964,10 +960,10 @@ desktop/views/pages/welcome.vue:
   timeline: "Oś czasu"
   announcements: "Ogłoszenia"
   photos: "Ostatnie obrazy"
-  powered-by-misskey: "Oparto o <b>Misskey</b>."
+  powered-by-misskey: "Oparto o <b>twista</b>."
   info: "Informacje"
 desktop/views/pages/drive.vue:
-  title: "Dysk Misskey"
+  title: "Dysk twista"
 desktop/views/pages/note.vue:
   prev: "Poprzedni wpis"
   next: "Następny wpis"
@@ -1220,7 +1216,7 @@ dev/views/index.vue:
   manage-apps: "Zarządzaj aplikacjami"
 dev/views/apps.vue:
   manage-apps: "Zarządzaj aplikacjami"
-  app-missing: "Brak aplikacji"
+  app-missing: "Brak twista"
 dev/views/new-app.vue:
   app-name: "Nazwa Aplikacji"
   authority: "Uprawnienia"

@@ -1,10 +1,10 @@
 <template>
 <div class="root photos">
-	<p class="initializing" v-if="fetching"><fa icon="spinner" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
+	<p class="initializing" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
 	<div class="stream" v-if="!fetching && images.length > 0">
 		<a v-for="(image, i) in images" :key="i"
 			class="img"
-			:style="`background-image: url(${thumbnail(image.media)})`"
+			:style="`background-image:url(${thumbnail(image.media)})`"
 			:href="image.note | notePage"
 		></a>
 	</div>
@@ -37,7 +37,7 @@ export default Vue.extend({
 			fileType: image,
 			excludeNsfw: !this.$store.state.device.alwaysShowNsfw,
 			limit: 9,
-			untilDate: new Date().getTime() + 1000 * 86400 * 365
+			untilDate: new Date().getTime() + 1000 * 86400 * 30
 		}).then(notes => {
 			for (const note of notes) {
 				for (const media of note.media) {
@@ -93,6 +93,5 @@ export default Vue.extend({
 
 		> i
 			margin-right 4px
-
 </style>
 

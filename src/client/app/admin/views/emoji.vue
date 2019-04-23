@@ -1,7 +1,7 @@
 <template>
 <div>
 	<ui-card>
-		<template #title><fa icon="plus"/> {{ $t('add-emoji.title') }}</template>
+		<template #title><fa :icon="['fal', 'plus']"/> {{ $t('add-emoji.title') }}</template>
 		<section class="fit-top">
 			<ui-horizon-group inputs>
 				<ui-input v-model="name">
@@ -12,9 +12,13 @@
 					<span>{{ $t('add-emoji.aliases') }}</span>
 					<template #desc>{{ $t('add-emoji.aliases-desc') }}</template>
 				</ui-input>
+				<ui-input v-model="contentType">
+					<span>{{ $t('add-emoji.contentType') }}</span>
+					<template #desc>{{ $t('add-emoji.contentType-desc') }}</template>
+				</ui-input>
 			</ui-horizon-group>
 			<ui-input v-model="url">
-				<template #icon><fa icon="link"/></template>
+				<template #icon><fa :icon="['fal', 'link']"/></template>
 				<span>{{ $t('add-emoji.url') }}</span>
 			</ui-input>
 			<ui-info>{{ $t('add-emoji.info') }}</ui-info>
@@ -26,7 +30,7 @@
 		<template #title><fa :icon="faGrin"/> {{ $t('emojis.title') }}</template>
 		<section v-for="emoji in emojis" class="oryfrbft">
 			<div>
-				<img :src="emoji.url" :alt="emoji.name" style="width: 64px;"/>
+				<img :src="emoji.url" :alt="emoji.name" style="width:64px"/>
 			</div>
 			<div>
 				<ui-horizon-group>
@@ -36,14 +40,17 @@
 					<ui-input v-model="emoji.aliases">
 						<span>{{ $t('add-emoji.aliases') }}</span>
 					</ui-input>
+					<ui-input v-model="emoji.contentType">
+						<span>{{ $t('add-emoji.contentType') }}</span>
+					</ui-input>
 				</ui-horizon-group>
 				<ui-input v-model="emoji.url">
-					<template #icon><fa icon="link"/></template>
+					<template #icon><fa :icon="['fal', 'link']"/></template>
 					<span>{{ $t('add-emoji.url') }}</span>
 				</ui-input>
 				<ui-horizon-group class="fit-bottom">
-					<ui-button @click="updateEmoji(emoji)"><fa :icon="['far', 'save']"/> {{ $t('emojis.update') }}</ui-button>
-					<ui-button @click="removeEmoji(emoji)"><fa :icon="['far', 'trash-alt']"/> {{ $t('emojis.remove') }}</ui-button>
+					<ui-button @click="updateEmoji(emoji)"><fa :icon="['fal', 'save']"/> {{ $t('emojis.update') }}</ui-button>
+					<ui-button @click="removeEmoji(emoji)"><fa :icon="['fal', 'trash-alt']"/> {{ $t('emojis.remove') }}</ui-button>
 				</ui-horizon-group>
 			</div>
 		</section>
@@ -54,7 +61,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../i18n';
-import { faGrin } from '@fortawesome/free-regular-svg-icons';
+import { faGrin } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('admin/views/emoji.vue'),
@@ -63,6 +70,7 @@ export default Vue.extend({
 			name: '',
 			url: '',
 			aliases: '',
+			contentType: 'image/png',
 			emojis: [],
 			faGrin
 		};
@@ -77,7 +85,8 @@ export default Vue.extend({
 			this.$root.api('admin/emoji/add', {
 				name: this.name,
 				url: this.url,
-				aliases: this.aliases.split(' ').filter(x => x.length > 0)
+				aliases: this.aliases.split(' ').filter(x => x.length > 0),
+				contentType: this.contentType
 			}).then(() => {
 				this.$root.dialog({
 					type: 'success',
@@ -107,7 +116,8 @@ export default Vue.extend({
 				id: emoji.id,
 				name: emoji.name,
 				url: emoji.url,
-				aliases: emoji.aliases.split(' ').filter(x => x.length > 0)
+				aliases: emoji.aliases.split(' ').filter(x => x.length > 0),
+				contentType: emoji.contentType
 			}).then(() => {
 				this.$root.dialog({
 					type: 'success',
@@ -166,5 +176,4 @@ export default Vue.extend({
 
 		@media (min-width 500px)
 			padding-left 16px
-
 </style>

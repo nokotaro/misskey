@@ -2,40 +2,63 @@
 <div class="mk-post-form">
 	<div class="form">
 		<header>
-			<button class="cancel" @click="cancel"><fa icon="times"/></button>
+			<button class="cancel" @click="cancel"><fa :icon="['fal', 'times']"/></button>
 			<div>
 				<span class="text-count" :class="{ over: trimmedLength(text) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(text) }}</span>
-				<span class="geo" v-if="geo"><fa icon="map-marker-alt"/></span>
+				<span class="geo" v-if="geo"><fa :icon="['fal', 'map-marker-alt']"/></span>
 				<button class="submit" :disabled="!canPost" @click="post">{{ submitText }}</button>
 			</div>
 		</header>
 		<div class="form">
 			<mk-note-preview class="preview" v-if="reply" :note="reply"/>
 			<mk-note-preview class="preview" v-if="renote" :note="renote"/>
-			<div v-if="visibility == 'specified'" class="visibleUsers">
-				<span v-for="u in visibleUsers">
-					<mk-user-name :user="u"/>
-					<a @click="removeVisibleUser(u)">[x]</a>
+			<div v-if="visibility == 'specified'" class="visible-users">
+				<span class="title">
+					<fa :icon="['fal', 'user-friends']" class="ako"/>
+					<span>{{ $t('@.send-to') }}</span>
 				</span>
-				<a @click="addVisibleUser">+{{ $t('add-visible-user') }}</a>
+				<a class="visible-user" @click="removeVisibleUser(u)" v-for="u in visibleUsers">
+					<div><fa :icon="['fal', 'user-minus']" fixed-width/></div>
+					<span>
+						<mk-avatar :user="u"/>
+						<mk-user-name :user="u"/>
+					</span>
+				</a>
+				<a @click="addVisibleUser">
+					<fa :icon="['fal', 'user-plus']" class="ako"/>
+				</a>
 			</div>
-			<input v-show="useCw" ref="cw" v-model="cw" :placeholder="$t('annotations')" v-autocomplete="{ model: 'cw' }">
+			<input v-show="useCw" ref="cw" v-model="cw" :placeholder="$t('cw-placeholder')" v-autocomplete="{ model: 'cw' }">
 			<textarea v-model="text" ref="text" :disabled="posting" :placeholder="placeholder" v-autocomplete="{ model: 'text' }"></textarea>
+			<input v-show="useBroadcast" ref="broadcast" v-model="broadcast" :placeholder="$t('broadcast-placeholder')" v-autocomplete="{ model: 'broadcast' }">
+			<ui-select v-model="postAs" v-if="usePostAs">
+				<template #label>{{ $t('post-as') }}</template>
+				<option value="information">{{ $t('information') }}</option>
+			</ui-select>
 			<x-post-form-attaches class="attaches" :files="files"/>
 			<mk-poll-editor v-if="poll" ref="poll" @destroyed="poll = false" @updated="onPollUpdate()"/>
 			<mk-uploader ref="uploader" @uploaded="attachMedia" @change="onChangeUploadings"/>
 			<footer>
-				<button class="upload" @click="chooseFile"><fa icon="upload"/></button>
-				<button class="drive" @click="chooseFileFromDrive"><fa icon="cloud"/></button>
-				<button class="kao" @click="kao"><fa :icon="['far', 'smile']"/></button>
-				<button class="poll" @click="poll = true"><fa icon="chart-pie"/></button>
-				<button class="poll" @click="useCw = !useCw"><fa :icon="['far', 'eye-slash']"/></button>
-				<button class="geo" @click="geo ? removeGeo() : setGeo()"><fa icon="map-marker-alt"/></button>
+				<button class="upload" @click="chooseFile"><fa :icon="['fal', 'upload']"/></button>
+				<button class="drive" @click="chooseFileFromDrive"><fa :icon="['fal', 'cloud']"/></button>
+				<button class="kao" @click="kao"><fa :icon="['fal', 'cat']"/></button>
+				<button class="poll" @click="poll = true"><fa :icon="['fal', 'poll-people']"/></button>
+				<button class="cw" @click="useCw = !useCw"><fa :icon="['fal', 'eye-slash']"/></button>
+				<button class="broadcast" @click="useBroadcast = !useBroadcast"><fa :icon="['fal', 'bullhorn']"/></button>
+				<button class="post-as" @click="usePostAs = !usePostAs" v-if="$store.getters.isSignedIn && ($store.state.i.isAdmin || $store.state.i.isModerator)"><fa :icon="['fal', 'user-ninja']"/></button>
+				<button class="geo" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa :icon="['fal', 'map-marker-alt']"/></button>
+				<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
+					<span v-if="rating === null"><fa :icon="['fal', 'eye']"/></span>
+					<span v-if="rating === '0'"><fa :icon="['fal', 'baby']"/></span>
+					<span v-if="rating === '12'"><fa :icon="['fal', 'child']"/></span>
+					<span v-if="rating === '15'"><fa :icon="['fal', 'people-carry']"/></span>
+					<span v-if="rating === '18'"><fa :icon="['fal', 'person-booth']"/></span>
+				</button>
 				<button class="visibility" @click="setVisibility" ref="visibilityButton">
-					<span v-if="visibility === 'public'"><fa icon="globe"/></span>
-					<span v-if="visibility === 'home'"><fa icon="home"/></span>
-					<span v-if="visibility === 'followers'"><fa icon="unlock"/></span>
-					<span v-if="visibility === 'specified'"><fa icon="envelope"/></span>
+					<span v-if="visibility === 'public'"><fa :icon="['fal', 'globe']"/></span>
+					<span v-if="visibility === 'home'"><fa :icon="['fal', 'home']"/></span>
+					<span v-if="visibility === 'followers'"><fa :icon="['fal', 'unlock']"/></span>
+					<span v-if="visibility === 'specified'"><fa :icon="['fal', 'envelope']"/></span>
 				</button>
 			</footer>
 			<input ref="file" class="file" type="file" multiple="multiple" @change="onChangeFile"/>
@@ -52,6 +75,7 @@ import Vue from 'vue';
 import i18n from '../../../i18n';
 import insertTextAtCursor from 'insert-text-at-cursor';
 import MkVisibilityChooser from '../../../common/views/components/visibility-chooser.vue';
+import MkRatingChooser from '../../../common/views/components/rating-chooser.vue';
 import getFace from '../../../common/scripts/get-face';
 import { parse } from '../../../../../mfm/parse';
 import { host } from '../../../config';
@@ -100,12 +124,17 @@ export default Vue.extend({
 			poll: false,
 			pollChoices: [],
 			pollMultiple: false,
+			useBroadcast: false,
+			broadcast: '',
 			geo: null,
 			visibility: 'public',
 			visibleUsers: [],
 			localOnly: false,
+			rating: null,
 			useCw: false,
 			cw: null,
+			usePostAs: false,
+			postAs: null,
 			recentHashtags: JSON.parse(localStorage.getItem('hashtags') || '[]'),
 			maxNoteTextLength: 1000
 		};
@@ -152,10 +181,14 @@ export default Vue.extend({
 					: this.$t('submit');
 		},
 
+		concatenated(): string {
+			return [this.text, ...(this.useBroadcast && this.broadcast && this.broadcast.length ? [this.broadcast] : [])].join(' ');
+		},
+
 		canPost(): boolean {
 			return !this.posting &&
-				(1 <= this.text.length || 1 <= this.files.length || this.poll || this.renote) &&
-				(this.text.trim().length <= this.maxNoteTextLength) &&
+				(this.text.length || this.files.length || this.poll || this.renote) &&
+				length(this.concatenated.trim()) < this.maxNoteTextLength &&
 				(!this.poll || this.pollChoices.length >= 2);
 		}
 	},
@@ -200,6 +233,8 @@ export default Vue.extend({
 		}
 
 		if (this.reply) {
+			this.rating = this.reply.rating;
+
 			this.$root.api('users/show', { userId: this.reply.userId }).then(user => {
 				this.visibleUsers.push(user);
 			});
@@ -233,7 +268,7 @@ export default Vue.extend({
 
 		addVisibleUser() {
 			this.$root.dialog({
-				title: this.$t('enter-username'),
+				title: this.$t('@.enter-username'),
 				user: true
 			}).then(({ canceled, result: user }) => {
 				if (canceled) return;
@@ -281,25 +316,6 @@ export default Vue.extend({
 			this.$emit('change-uploadings', uploads);
 		},
 
-		setGeo() {
-			if (navigator.geolocation == null) {
-				alert(this.$t('location-alert'));
-				return;
-			}
-
-			navigator.geolocation.getCurrentPosition(pos => {
-				this.geo = pos.coords;
-			}, err => {
-				alert(`%i18n:@error%: ${err.message}`);
-			}, {
-					enableHighAccuracy: true
-				});
-		},
-
-		removeGeo() {
-			this.geo = null;
-		},
-
 		setVisibility() {
 			const w = this.$root.new(MkVisibilityChooser, {
 				source: this.$refs.visibilityButton,
@@ -307,6 +323,16 @@ export default Vue.extend({
 			});
 			w.$once('chosen', v => {
 				this.applyVisibility(v);
+			});
+		},
+
+		setRating() {
+			const w = this.$root.new(MkRatingChooser, {
+				source: this.$refs.ratingButton,
+				currentRating: this.rating
+			});
+			w.$once('chosen', v => {
+				this.applyRating(v);
 			});
 		},
 
@@ -319,6 +345,10 @@ export default Vue.extend({
 				this.localOnly = false;
 				this.visibility = v;
 			}
+		},
+
+		applyRating(v :string) {
+			this.rating = v;
 		},
 
 		removeVisibleUser(user) {
@@ -336,23 +366,25 @@ export default Vue.extend({
 			this.posting = true;
 			const viaMobile = this.$store.state.settings.disableViaMobile !== true;
 			this.$root.api('notes/create', {
-				text: this.text == '' ? undefined : this.text,
-				fileIds: this.files.length > 0 ? this.files.map(f => f.id) : undefined,
+				text: this.concatenated.length ? this.concatenated : undefined,
+				fileIds: this.files.length ? this.files.map(f => f.id) : undefined,
 				replyId: this.reply ? this.reply.id : undefined,
 				renoteId: this.renote ? this.renote.id : undefined,
 				poll: this.poll ? (this.$refs.poll as any).get() : undefined,
 				cw: this.useCw ? this.cw || '' : undefined,
-				geo: this.geo ? {
+				as: this.usePostAs && this.postAs ? this.postAs : undefined,
+				geo: /*this.geo ? {
 					coordinates: [this.geo.longitude, this.geo.latitude],
 					altitude: this.geo.altitude,
 					accuracy: this.geo.accuracy,
 					altitudeAccuracy: this.geo.altitudeAccuracy,
 					heading: isNaN(this.geo.heading) ? null : this.geo.heading,
 					speed: this.geo.speed,
-				} : null,
+				} : */null,
 				visibility: this.visibility,
 				visibleUserIds: this.visibility == 'specified' ? this.visibleUsers.map(u => u.id) : undefined,
 				localOnly: this.localOnly,
+				rating: this.rating,
 				viaMobile: viaMobile
 			}).then(data => {
 				this.$emit('posted');
@@ -443,13 +475,68 @@ export default Vue.extend({
 			> .preview
 				padding 16px
 
-			> .visibleUsers
-				margin 5px
-				font-size 14px
+			> .visible-users
+				align-items center
+				display flex
+				flex-flow wrap
+				gap 8px
+				margin 8px
 
-				> span
-					margin-right 16px
+				.ako
+					height 32px
+					margin 0 6px
+					padding 6px 0
+					vertical-align bottom
+
+				> .title
 					color var(--text)
+					padding 0 6px 0 0
+
+					> span
+						vertical-align 4px
+
+				> .visible-user
+					align-items center
+					border solid 1px
+					border-radius 16px
+					display flex
+					height 32px
+					overflow hidden
+
+					&:hover
+						> *:first-child
+							padding 0 0 0 2px
+							width 32px
+
+						> *:last-child
+							padding 0 2px 0 0
+
+					> *
+						align-items center
+						display flex
+						justify-content center
+						transition all .2s ease
+
+						&:first-child
+							align-items center
+							background currentColor
+							display flex
+							height 100%
+							justify-content center
+							width 0
+
+							> svg
+								color var(--secondary)
+						
+						&:last-child
+							flex 1 0 auto
+							gap 4px
+							margin 0 8px
+							padding 0 18px 0 16px
+
+							> .mk-avatar
+								height 24px
+								width 24px
 
 			> input
 				z-index 1
@@ -474,6 +561,9 @@ export default Vue.extend({
 				max-width 100%
 				min-width 100%
 				min-height 80px
+
+			> .ui-select
+				margin 24px 8px 0
 
 			> .mk-uploader
 				margin 8px 0 0 0
@@ -507,5 +597,4 @@ export default Vue.extend({
 
 		> *
 			margin-right 8px
-
 </style>

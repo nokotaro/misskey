@@ -1,7 +1,7 @@
 <template>
 <div class="mk-google">
 	<input type="search" v-model="query" :placeholder="q">
-	<button @click="search"><fa icon="search"/> {{ $t('@.search') }}</button>
+	<button @click="search"><fa :icon="['fal', 'search']"/> {{ $t('@.search') }}</button>
 </div>
 </template>
 
@@ -63,5 +63,4 @@ export default Vue.extend({
 
 		&:active
 			box-shadow 0 2px 4px rgba(#000, 0.15) inset
-
 </style>

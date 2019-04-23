@@ -204,13 +204,6 @@ describe('MFM', () => {
 				]);
 			});
 
-			it('with underscores (ensure it allows alphabet only)', () => {
-				const tokens = parse('(=^・__________・^=)');
-				assert.deepStrictEqual(tokens, [
-					text('(=^・__________・^=)')
-				]);
-			});
-
 			it('mixed syntax', () => {
 				const tokens = parse('**foo__');
 				assert.deepStrictEqual(tokens, [
@@ -776,6 +769,20 @@ describe('MFM', () => {
 			});
 		});
 
+		describe('bubble', () => {
+			it('basic', () => {
+				const tokens = parse('話者「台詞」');
+				assert.deepStrictEqual(tokens, [
+					tree('bubble', [
+						text('台詞')
+					], {
+						speaker: '話者',
+						raw: '話者「台詞」'
+					})
+				]);
+			});
+		});
+
 		describe('url', () => {
 			it('simple', () => {
 				const tokens = parse('https://example.com');
@@ -1131,13 +1138,6 @@ describe('MFM', () => {
 					tree('italic', [
 						text('foo')
 					], {}),
-				]);
-			});
-
-			it('exlude emotes', () => {
-				const tokens = parse('*.*');
-				assert.deepStrictEqual(tokens, [
-					text("*.*"),
 				]);
 			});
 

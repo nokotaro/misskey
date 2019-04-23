@@ -10,7 +10,7 @@
 			<x-column-core v-else :ref="ids[0]" :key="ids[0]" :column="columns.find(c => c.id == ids[0])" @parentFocus="moveFocus(ids[0], $event)"/>
 		</template>
 		<router-view></router-view>
-		<button ref="add" @click="add" :title="$t('@deck.add-column')"><fa icon="plus"/></button>
+		<button ref="add" @click="add" :title="$t('@deck.add-column')"><fa :icon="['fal', 'plus']"/></button>
 	</div>
 </mk-ui>
 </template>
@@ -136,7 +136,7 @@ export default Vue.extend({
 			this.$root.new(Menu, {
 				source: this.$refs.add,
 				items: [{
-					icon: 'home',
+					icon: ['fal', 'home'],
 					text: this.$t('@deck.home'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -145,7 +145,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: ['far', 'comments'],
+					icon: ['fal', 'comments'],
 					text: this.$t('@deck.local'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -154,7 +154,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'share-alt',
+					icon: ['fal', 'share-alt'],
 					text: this.$t('@deck.hybrid'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -163,7 +163,25 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'globe',
+					icon: ['fal', 'building'],
+					text: this.$t('@deck.imas'),
+					action: () => {
+						this.$store.commit('device/addDeckColumn', {
+							id: uuid(),
+							type: 'imas'
+						});
+					}
+				}, {
+					icon: ['fal', 'city'],
+					text: this.$t('@deck.imasHybrid'),
+					action: () => {
+						this.$store.commit('device/addDeckColumn', {
+							id: uuid(),
+							type: 'imasHybrid'
+						});
+					}
+				}, {
+					icon: ['fal', 'globe'],
 					text: this.$t('@deck.global'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -172,7 +190,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'at',
+					icon: ['fal', 'at'],
 					text: this.$t('@deck.mentions'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -181,7 +199,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: ['far', 'envelope'],
+					icon: ['fal', 'envelope'],
 					text: this.$t('@deck.direct'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -190,7 +208,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'list',
+					icon: ['fal', 'list'],
 					text: this.$t('@deck.list'),
 					action: async () => {
 						const lists = await this.$root.api('users/lists/list');
@@ -212,7 +230,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'hashtag',
+					icon: ['fal', 'hashtag'],
 					text: this.$t('@deck.hashtag'),
 					action: () => {
 						this.$root.dialog({
@@ -228,7 +246,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: ['far', 'bell'],
+					icon: ['fal', 'bell'],
 					text: this.$t('@deck.notifications'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -237,7 +255,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: 'calculator',
+					icon: ['fal', 'calculator'],
 					text: this.$t('@deck.widgets'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {
@@ -312,7 +330,7 @@ export default Vue.extend({
 
 		isTlColumn(id) {
 			const column = this.columns.find(c => c.id === id);
-			return ['home', 'local', 'hybrid', 'global', 'list', 'hashtag', 'mentions', 'direct'].includes(column.type);
+			return ['home', 'local', 'hybrid', 'imas', 'imasHybrid', 'global', 'list', 'hashtag', 'mentions', 'direct'].includes(column.type);
 		}
 	}
 });
@@ -398,5 +416,4 @@ export default Vue.extend({
 
 		&:active
 			color var(--faceTextButtonActive)
-
 </style>

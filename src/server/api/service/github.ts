@@ -14,25 +14,10 @@ function getUserToken(ctx: Koa.BaseContext) {
 	return ((ctx.headers['cookie'] || '').match(/i=(!\w+)/) || [null, null])[1];
 }
 
-function compareOrigin(ctx: Koa.BaseContext) {
-	function normalizeUrl(url: string) {
-		return url ? url.endsWith('/') ? url.substr(0, url.length - 1) : url : '';
-	}
-
-	const referer = ctx.headers['referer'];
-
-	return (normalizeUrl(referer) == normalizeUrl(config.url));
-}
-
 // Init router
 const router = new Router();
 
 router.get('/disconnect/github', async ctx => {
-	if (!compareOrigin(ctx)) {
-		ctx.throw(400, 'invalid origin');
-		return;
-	}
-
 	const userToken = getUserToken(ctx);
 	if (!userToken) {
 		ctx.throw(400, 'signin required');
@@ -73,11 +58,6 @@ async function getOath2() {
 }
 
 router.get('/connect/github', async ctx => {
-	if (!compareOrigin(ctx)) {
-		ctx.throw(400, 'invalid origin');
-		return;
-	}
-
 	const userToken = getUserToken(ctx);
 	if (!userToken) {
 		ctx.throw(400, 'signin required');
@@ -191,7 +171,7 @@ router.get('/gh/cb', async ctx => {
 		}) as ILocalUser;
 
 		if (!user) {
-			ctx.throw(404, `@${login}と連携しているMisskeyアカウントはありませんでした...`);
+			ctx.throw(404, `@${login}と連携しているtwistaプロデューサーはありませんでした...`);
 			return;
 		}
 
@@ -261,7 +241,7 @@ router.get('/gh/cb', async ctx => {
 			}
 		});
 
-		ctx.body = `GitHub: @${login} を、Misskey: @${user.username} に接続しました！`;
+		ctx.body = `GitHub: @${login} を、twista: @${user.username} に接続しました！`;
 
 		// Publish i updated event
 		publishMainStream(user._id, 'meUpdated', await pack(user, user, {

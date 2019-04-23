@@ -1,5 +1,5 @@
 <template>
-<svg :viewBox="`0 0 ${ viewBoxX } ${ viewBoxY }`" @mousedown.prevent="onMousedown">
+<svg :viewBox="`0 0 ${viewBoxX} ${viewBoxY}`" @mousedown.prevent="onMousedown">
 	<title>{{ $t('total') }}<br/>{{ $t('notes') }}<br/>{{ $t('replies') }}<br/>{{ $t('renotes') }}</title>
 	<polyline
 		:points="pointsNote"
@@ -104,5 +104,4 @@ svg
 	padding 10px
 	width 100%
 	cursor all-scroll
-
 </style>

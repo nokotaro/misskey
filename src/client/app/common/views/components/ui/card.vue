@@ -34,7 +34,8 @@ export default Vue.extend({
 
 	> header
 		padding 16px
-		font-weight bold
+		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+		font-weight 600
 		font-size 20px
 		color var(--faceText)
 
@@ -56,14 +57,15 @@ export default Vue.extend({
 
 		> header
 			margin-bottom 16px
-			font-weight bold
+			font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+			font-weight 600
 			color var(--faceText)
 
 		> section
 			margin 16px 0
 
 			> header
-				font-weight bold
+				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+				font-weight 600
 				color var(--text)
-
 </style>

@@ -16,8 +16,8 @@
 			@change-selection="onChangeSelection"
 		/>
 		<div class="footer">
-			<button class="upload" :title="$t('title')" @click="upload"><fa icon="upload"/></button>
-			<ui-button inline @click="cancel" style="margin-right:16px;">{{ $t('cancel') }}</ui-button>
+			<button class="upload" :title="$t('title')" @click="upload"><fa :icon="['fal', 'upload']"/></button>
+			<ui-button inline @click="cancel" style="margin-right:16px">{{ $t('cancel') }}</ui-button>
 			<ui-button inline primary :disabled="multiple && files.length == 0" @click="ok">{{ $t('ok') }}</ui-button>
 		</div>
 	</div>
@@ -126,5 +126,4 @@ export default Vue.extend({
 				left -5px
 				border 2px solid var(--primaryAlpha03)
 				border-radius 8px
-
 </style>

@@ -1,6 +1,6 @@
 <template>
 <mk-window ref="window" is-modal width="450px" height="500px" @closed="destroyDom">
-	<template #header><fa :icon="['far', 'envelope']"/> {{ $t('title') }}</template>
+	<template #header><fa :icon="['fal', 'envelope']"/> {{ $t('title') }}</template>
 
 	<div class="slpqaxdoxhvglersgjukmvizkqbmbokc">
 		<div v-for="req in requests">
@@ -66,5 +66,4 @@ export default Vue.extend({
 
 		> span
 			margin 0 0 0 auto
-
 </style>
