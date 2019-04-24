@@ -1,5 +1,6 @@
 import * as mongo from 'mongodb';
 import * as deepcopy from 'deepcopy';
+import { JSDOM } from 'jsdom';
 import rap from '@prezzemolo/rap';
 import db from '../db/mongodb';
 import isObjectId from '../misc/is-objectid';
@@ -52,6 +53,7 @@ export type INote = {
 	cw: string;
 	userId: mongo.ObjectID;
 	appId: mongo.ObjectID;
+	viaTwitter: string;
 	viaMobile: boolean;
 	localOnly: boolean;
 	renoteCount: number;
@@ -301,6 +303,40 @@ export const pack = async (
 	// Populate app
 	if (_note.appId) {
 		_note.app = packApp(_note.appId);
+	}
+
+	if (typeof _note.viaTwitter === 'string') {
+		const viaTwitter: string = _note.viaTwitter;
+		const match = viaTwitter.match(/^<a (?:[^<>]* )*href="([^<>"]+)"(?: [^<>]*)*>(.+)<\/a>$/i);
+		if (match) {
+			const name = new JSDOM(`<!DOCTYPE html><a id="a">${match[2]}</a>`).window.document.getElementById('a').textContent;
+			const url = match[1];
+
+			_note.viaMobile = [
+				'iOS',
+				'Twitter for Android',
+				'Twitter for iPhone',
+				'Twitter for iPad',
+				'Twitter for Windows Phone',
+				'Twitter for Android Sign-Up',
+				'Tweetbot for iOS',
+				'HootSuite',
+				'ShootingStar',
+				'ShootingStarPro',
+				'twicca',
+				'Twitcle',
+				'Echofon',
+				'TheWorld',
+				'TheWorld iOS',
+				'from TheWorld'
+			].includes(name);
+
+			_note.app = {
+				name,
+				url,
+				twitter: true
+			};
+		}
 	}
 
 	// Populate files

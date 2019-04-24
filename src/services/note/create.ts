@@ -36,6 +36,7 @@ import extractMentions from '../../misc/extract-mentions';
 import extractEmojis from '../../misc/extract-emojis';
 import extractHashtags from '../../misc/extract-hashtags';
 import { resolveNote } from '../../remote/activitypub/models/note';
+import Resolver from '../../remote/activitypub/resolver';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
@@ -102,6 +103,7 @@ type Option = {
 	geo?: any;
 	poll?: any;
 	viaMobile?: boolean;
+	viaTwitter?: string;
 	qa?: string;
 	localOnly?: boolean;
 	cw?: string;
@@ -165,6 +167,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	if (data.rating == null) data.rating = null;
 	if (data.qa == null) data.qa = null;
 	if (data.viaMobile == null) data.viaMobile = false;
+	if (data.viaTwitter == null) data.viaTwitter = null;
 	if (data.localOnly == null) data.localOnly = false;
 
 	//#region Auto Quote
@@ -172,7 +175,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	const uri = split && split[split.length - 1];
 
 	if (uri) {
-		const note = await resolveNote(uri, null, true).catch(() => null);
+		const note = await resolveNote(uri, new Resolver({ twitter: (user as ILocalUser).twitter }), true).catch(() => null);
 
 		if (note) {
 			data.renote = note;
@@ -578,6 +581,7 @@ async function insertNote(user: IUser, data: Option, tags: string[], emojis: str
 		emojis,
 		userId: user._id,
 		viaMobile: data.viaMobile,
+		viaTwitter: data.viaTwitter,
 		localOnly: data.localOnly,
 		geo: data.geo || null,
 		appId: data.app ? data.app._id : null,
