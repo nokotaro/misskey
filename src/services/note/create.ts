@@ -35,6 +35,7 @@ import { toASCII } from 'punycode';
 import extractMentions from '../../misc/extract-mentions';
 import extractEmojis from '../../misc/extract-emojis';
 import extractHashtags from '../../misc/extract-hashtags';
+import { genId } from '../../misc/gen-id';
 import { resolveNote } from '../../remote/activitypub/models/note';
 import Resolver from '../../remote/activitypub/resolver';
 
@@ -567,6 +568,7 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 
 async function insertNote(user: IUser, data: Option, tags: string[], emojis: string[], mentionedUsers: IUser[]) {
 	const insert: any = {
+		_id: genId(data.createdAt),
 		createdAt: data.createdAt,
 		authorId: data.author ? data.author._id : null,
 		fileIds: data.files ? data.files.map(file => file._id) : [],
