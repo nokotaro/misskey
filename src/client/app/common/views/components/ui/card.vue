@@ -22,7 +22,6 @@ export default Vue.extend({
 <style lang="stylus" scoped>
 .ui-card
 	margin 16px
-	max-width 850px
 	color var(--faceText)
 	background var(--face)
 
