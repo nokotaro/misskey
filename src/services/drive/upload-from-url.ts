@@ -10,7 +10,7 @@ import { downloadUrl } from '../../misc/donwload-url';
 
 const logger = driveLogger.createSubLogger('downloader');
 
-export default async (
+export default async function uploadFromUrl(
 	url: string,
 	user: IUser,
 	folderId: mongodb.ObjectID = null,
@@ -18,7 +18,7 @@ export default async (
 	sensitive = false,
 	force = false,
 	link = false
-): Promise<IDriveFile> => {
+): Promise<IDriveFile> {
 	let name = URL.parse(url).pathname.split('/').pop();
 	if (!validateFileName(name)) {
 		name = null;
@@ -52,4 +52,4 @@ export default async (
 	} else {
 		return driveFile;
 	}
-};
+}
