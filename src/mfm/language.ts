@@ -232,6 +232,8 @@ export const mfmLanguage = P.createLanguage({
 				if (!match) {
 					return P.makeFailure(i, 'not a url');
 				}
+				url = match[1];
+				i += 2;
 			} else {
 				url = match[0];
 			}
