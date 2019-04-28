@@ -13,7 +13,7 @@ import DriveFile, { IMetadata, getDriveFileBucket, IDriveFile } from '../../mode
 import DriveFolder from '../../models/drive-folder';
 import { pack } from '../../models/drive-file';
 import { publishMainStream, publishDriveStream } from '../stream';
-import { isLocalUser, IUser, IRemoteUser, isRemoteUser } from '../../models/user';
+import { isLocalUser, IUser, IRemoteUser, isRemoteUser, ITwitterUser } from '../../models/user';
 import delFile from './delete-file';
 import config from '../../config';
 import { getDriveFileWebpublicBucket } from '../../models/drive-file-webpublic';
@@ -357,7 +357,7 @@ export async function storeAlts(bucket: mongodb.GridFSBucket, name: string, data
 	});
 }
 
-async function deleteOldFile(user: IRemoteUser) {
+async function deleteOldFile(user: IRemoteUser | ITwitterUser) {
 	const oldFile = await DriveFile.findOne({
 		_id: {
 			$nin: [user.avatarId, user.bannerId]
@@ -389,7 +389,7 @@ async function deleteOldFile(user: IRemoteUser) {
  * @param sensitive Mark file as sensitive
  * @return Created drive file
  */
-export default async function(
+export default async function addFile(
 	user: IUser,
 	path: string,
 	name: string = null,

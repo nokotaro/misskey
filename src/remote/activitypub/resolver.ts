@@ -1,13 +1,36 @@
+import * as Twitter from 'twit';
 import * as request from 'request-promise-native';
 import { IObject } from './type';
 import config from '../../config';
+import fetchMeta from '../../misc/fetch-meta';
+
+export interface IResolverOptions {
+	twitter?: {
+		accessToken: string;
+		accessTokenSecret: string;
+	};
+}
 
 export default class Resolver {
 	private history: Set<string>;
 	private timeout = 10 * 1000;
+	public twitter?: Twitter;
+	public twitterPromise: Promise<Twitter>;
 
-	constructor() {
+	constructor(options?: IResolverOptions) {
 		this.history = new Set();
+
+		this.twitterPromise = fetchMeta().then(meta => this.twitter = new Twitter({
+			consumer_key: meta.twitterConsumerKey,
+			consumer_secret: meta.twitterConsumerSecret,
+			strictSSL: true,
+			...(options && typeof options === 'object' && options.twitter ? {
+				access_token: options.twitter.accessToken,
+				access_token_secret: options.twitter.accessTokenSecret
+			} : {
+				app_only_auth: true
+			})
+		}));
 	}
 
 	public getHistory(): string[] {

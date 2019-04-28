@@ -21,6 +21,7 @@ import { IDriveFile } from '../../../models/drive-file';
 import { deliverQuestionUpdate } from '../../../services/note/polls/update';
 import Instance from '../../../models/instance';
 import { extractDbHost, extractApHost } from '../../../misc/convert-host';
+import { createNoteFromTwitter } from '../../external/twitter';
 
 const logger = apLogger;
 
@@ -76,6 +77,11 @@ export async function fetchNote(value: string | IObject, resolver?: Resolver): P
  */
 export async function createNote(value: any, resolver?: Resolver, silent = false): Promise<INote> {
 	if (resolver == null) resolver = new Resolver();
+
+	const tweet = await createNoteFromTwitter(value, resolver, silent);
+
+	if (tweet)
+		return tweet;
 
 	const object: any = await resolver.resolve(value);
 

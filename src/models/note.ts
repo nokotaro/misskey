@@ -57,7 +57,9 @@ export type INote = {
 	viaMobile: boolean;
 	localOnly: boolean;
 	renoteCount: number;
+	retweetCount: number;
 	repliesCount: number;
+	replyCount: number;
 	reactionCounts: Record<string, number>;
 	mentions: mongo.ObjectID[];
 	mentionedRemoteUsers: {
@@ -252,9 +254,12 @@ export const pack = async (
 	const id = _note._id;
 
 	// Some counts
-	_note.renoteCount = _note.renoteCount || 0;
-	_note.repliesCount = _note.repliesCount || 0;
+	_note.renoteCount = (_note.renoteCount || 0) + (_note.retweetCount || 0);
+	_note.repliesCount = (_note.repliesCount || 0) + (_note.replyCount || 0);
 	_note.reactionCounts = _note.reactionCounts || {};
+
+	delete _note.retweetCount;
+	delete _note.replyCount;
 
 	// _note._userを消す前か、_note.userを解決した後でないとホストがわからない
 	if (_note._user) {

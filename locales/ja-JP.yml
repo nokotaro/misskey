@@ -331,6 +331,10 @@ common:
 
   you: "あなた"
 
+  twitter:
+    note-from-twitter: "この投稿情報は Twitter API を経由して引用されており、その著作権等は引用元の著作者に帰属します。"
+    user-from-twitter: "このユーザー情報は Twitter API を経由して引用されており、その著作権等は引用元の著作者に帰属します。"
+
 auth/views/form.vue:
   share-access: "<i>{name}</i>があなたにアクセスすることを許可しますか？"
   permission-ask: "このアプリは次の権限を要求しています:"

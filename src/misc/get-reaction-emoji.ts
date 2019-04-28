@@ -11,6 +11,7 @@ export default function(reaction: string): string {
 		case 'rip': return '😇';
 		case 'pudding': return '🍮';
 		case 'star': return '⭐';
+		case 'twitter_favorite': return '❤️';
 		default: return reaction;
 	}
 }

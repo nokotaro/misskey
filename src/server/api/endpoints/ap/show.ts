@@ -2,7 +2,7 @@ import $ from 'cafy';
 import define from '../../define';
 import config from '../../../../config';
 import * as mongo from 'mongodb';
-import User, { pack as packUser, IUser } from '../../../../models/user';
+import User, { pack as packUser, IUser, ILocalUser } from '../../../../models/user';
 import { createPerson } from '../../../../remote/activitypub/models/person';
 import Note, { pack as packNote, INote } from '../../../../models/note';
 import { createNote } from '../../../../remote/activitypub/models/note';
@@ -11,6 +11,7 @@ import { ApiError } from '../../error';
 import Instance from '../../../../models/instance';
 import { extractDbHost } from '../../../../misc/convert-host';
 import { validActor } from '../../../../remote/activitypub/type';
+import { createNoteFromTwitter, createUserFromTwitter } from '../../../../remote/external/twitter';
 
 export const meta = {
 	tags: ['federation'],
@@ -39,8 +40,8 @@ export const meta = {
 	}
 };
 
-export default define(meta, async (ps) => {
-	const object = await fetchAny(ps.uri);
+export default define(meta, async (ps, user) => {
+	const object = await fetchAny(ps.uri, user);
 	if (object) {
 		return object;
 	} else {
@@ -51,7 +52,7 @@ export default define(meta, async (ps) => {
 /***
  * URIからUserかNoteを解決する
  */
-export async function fetchAny(uri: string) {
+export async function fetchAny(uri: string, user: ILocalUser) {
 	// URIがこのサーバーを指しているなら、ローカルユーザーIDとしてDBからフェッチ
 	if (uri.startsWith(config.url + '/')) {
 		const id = new mongo.ObjectID(uri.split('/').pop());
@@ -80,47 +81,67 @@ export async function fetchAny(uri: string) {
 	}
 
 	// リモートから一旦オブジェクトフェッチ
-	const resolver = new Resolver();
-	const object = await resolver.resolve(uri) as any;
+	const resolver = new Resolver({ twitter: user.twitter });
+	const object = await resolver.resolve(uri).catch(() => null);
 
-	// /@user のような正規id以外で取得できるURIが指定されていた場合、ここで初めて正規URIが確定する
-	// これはDBに存在する可能性があるため再度DB検索
-	if (uri !== object.id) {
-		if (object.id.startsWith(config.url + '/')) {
-			const id = new mongo.ObjectID(object.id.split('/').pop());
+	if (object) {
+		// /@user のような正規id以外で取得できるURIが指定されていた場合、ここで初めて正規URIが確定する
+		// これはDBに存在する可能性があるため再度DB検索
+		if (uri !== object.id) {
+			if (object.id.startsWith(config.url + '/')) {
+				const id = new mongo.ObjectID(object.id.split('/').pop());
+				const [user, note] = await Promise.all([
+					User.findOne({ _id: id }),
+					Note.findOne({ _id: id })
+				]);
+
+				const packed = await mergePack(user, note);
+				if (packed !== null) return packed;
+			}
+
 			const [user, note] = await Promise.all([
-				User.findOne({ _id: id }),
-				Note.findOne({ _id: id })
+				User.findOne({ uri: object.id }),
+				Note.findOne({ uri: object.id })
 			]);
 
 			const packed = await mergePack(user, note);
 			if (packed !== null) return packed;
 		}
 
-		const [user, note] = await Promise.all([
-			User.findOne({ uri: object.id }),
-			Note.findOne({ uri: object.id })
-		]);
+		// それでもみつからなければ新規であるため登録
+		if (validActor.includes(object.type)) {
+			const user = await createPerson(object.id);
+			return {
+				type: 'User',
+				object: await packUser(user, null, { detail: true })
+			};
+		}
 
-		const packed = await mergePack(user, note);
-		if (packed !== null) return packed;
-	}
+		if (['Note', 'Question', 'Article'].includes(object.type)) {
+			const note = await createNote(object.id, null, true);
+			return {
+				type: 'Note',
+				object: await packNote(note, null, { detail: true })
+			};
+		}
+	} else if (`.${new URL(uri).host}`.endsWith('.twitter.com')) {
+		const note = await createNoteFromTwitter(uri, resolver, true);
 
-	// それでもみつからなければ新規であるため登録
-	if (validActor.includes(object.type)) {
-		const user = await createPerson(object.id);
-		return {
-			type: 'User',
-			object: await packUser(user, null, { detail: true })
-		};
-	}
+		if (note) {
+			return {
+				type: 'Note',
+				object: await packNote(note, null, { detail: true })
+			};
+		}
 
-	if (['Note', 'Question', 'Article'].includes(object.type)) {
-		const note = await createNote(object.id, null, true);
-		return {
-			type: 'Note',
-			object: await packNote(note, null, { detail: true })
-		};
+		const user = await createUserFromTwitter(uri, resolver);
+
+		if (user) {
+			return {
+				type: 'User',
+				object: await packUser(user, null, { detail: true })
+			};
+		}
 	}
 
 	return null;

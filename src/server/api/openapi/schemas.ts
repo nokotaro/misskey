@@ -202,6 +202,9 @@ export const schemas = {
 			viaMobile: {
 				type: 'boolean'
 			},
+			viaTwitter: {
+				type: 'string'
+			},
 			qa: {
 				type: 'string'
 			},

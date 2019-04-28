@@ -29,6 +29,7 @@ User.createIndex(['username', 'host'], { unique: true });
 User.createIndex(['usernameLower', 'host'], { unique: true });
 User.createIndex('token', { sparse: true, unique: true });
 User.createIndex('uri', { sparse: true, unique: true });
+User.createIndex('twitterId', { sparse: true, unique: true });
 
 export default User;
 
@@ -152,21 +153,36 @@ export interface ILocalUser extends IUserBase {
 	hasUnreadMessagingMessage: boolean;
 }
 
-export interface IRemoteUser extends IUserBase {
+interface INotLocalUser extends IUserBase {
+	uri: string;
+	isKaho: false;
+	isCat: false;
+	isAdmin: false;
+	isModerator: false;
+	lastFetchedAt: Date;
+}
+
+export interface ITwitterUser extends INotLocalUser {
+	host: 'twitter.com';
+	twitterId: string;
+	originalFollowersCount: number;
+	friendsCount: number;
+	profile: {
+		location: string;
+	};
+}
+
+export interface IRemoteUser extends INotLocalUser {
 	inbox: string;
 	sharedInbox?: string;
 	outbox?: string;
 	featured?: string;
 	endpoints: string[];
-	uri: string;
 	url?: string;
 	publicKey: {
 		id: string;
 		publicKeyPem: string;
 	};
-	lastFetchedAt: Date;
-	isAdmin: false;
-	isModerator: false;
 	// isApplication?: boolean;
 	// isGroup?: boolean;
 	isOrganization?: boolean;
@@ -174,13 +190,16 @@ export interface IRemoteUser extends IUserBase {
 	isService?: boolean;
 }
 
-export type IUser = ILocalUser | IRemoteUser;
+export type IUser = ILocalUser | ITwitterUser | IRemoteUser;
 
 export const isLocalUser = (user: any): user is ILocalUser =>
 	user.host === null;
 
+export const isTwitterUser = (user: any): user is ITwitterUser =>
+	user.host === 'twitter.com';
+
 export const isRemoteUser = (user: any): user is IRemoteUser =>
-	!isLocalUser(user);
+	![null, 'twitter.com'].includes(user.host);
 
 //#region Validators
 export function validateUsername(username: string, remote = false): boolean {
@@ -363,6 +382,12 @@ export const pack = (
 		if (!opts.detail) {
 			delete _user.twoFactorEnabled;
 		}
+	} else if (_user.host === 'twitter.com') {
+		_user.followersCount += _user.originalFollowersCount;
+		_user.followingCount += _user.friendsCount;
+
+		delete _user.originalFollowersCount;
+		delete _user.friendsCount;
 	} else {
 		delete _user.publicKey;
 	}

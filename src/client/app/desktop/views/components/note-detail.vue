@@ -62,7 +62,7 @@
 			</div>
 		</div>
 		<footer>
-			<span class="app" v-if="note.app && $store.state.settings.showVia">via <b>{{ note.app.name }}</b></span>
+			<span class="app" v-if="note.app && $store.state.settings.showVia">via <b>{{ note.app.name }}</b> <a :href="appearNote.uri" :title="$t('@.twitter.note-from-twitter')" v-if="appearNote.app.twitter"><fa :icon="['fab', 'twitter']"></a></span>
 			<mk-reactions-viewer :note="appearNote"/>
 			<button class="replyButton" @click="reply()" :title="$t('reply')">
 				<template v-if="appearNote.reply"><fa :icon="['fal', 'reply-all']"/></template>

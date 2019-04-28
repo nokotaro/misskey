@@ -10,6 +10,7 @@
 	<span class="is-kaho" v-if="note.user.isKaho">ｺﾐﾔｶﾎ</span>
 	<span class="username"><mk-acct :user="note.user"/></span>
 	<span class="is-verified" v-if="note.user.isVerified" :title="$t('@.verified-user')"><fa :icon="faBadgeCheck"/></span>
+	<span class="via-twitter" v-if="note.user.host === 'twitter.com'" :title="$t('@.twitter.user-from-twitter')"><fa :icon="['fab', 'twitter']"/></span>
 	<div class="info">
 		<span class="mobile" v-if="note.viaMobile"><fa :icon="['fal', 'mobile-alt']"/></span>
 		<router-link class="created-at" :to="note | notePage">
@@ -104,6 +105,7 @@ export default Vue.extend({
 		flex-shrink 2147483647
 
 	> .is-verified
+	> .via-twitter
 		margin 0 .5em 0 0
 		color #4dabf7
 

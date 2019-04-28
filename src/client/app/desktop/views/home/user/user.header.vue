@@ -10,6 +10,7 @@
 			<div>
 				<span class="username"><mk-acct :user="user" :detail="true" /></span>
 				<span v-if="user.isBot" :title="$t('is-bot')"><fa :icon="['fal', 'robot']"/></span>
+				<span v-if="user.host === 'twitter.com'" :title="$t('@.twitter.user-from-twitter')"><fa :icon="['fab', 'twitter']"/></span>
 			</div>
 		</div>
 		<span class="followed" v-if="$store.getters.isSignedIn && $store.state.i.id != user.id && user.isFollowed">{{ $t('follows-you') }}</span>

@@ -1,3 +1,4 @@
+import { ObjectID } from 'mongodb';
 import { IUser, isLocalUser, isRemoteUser } from '../models/user';
 import Hashtag from '../models/hashtag';
 import hashtagChart from './chart/hashtag';
@@ -10,9 +11,9 @@ export async function updateHashtag(user: IUser, tag: string, isUserAttached = f
 	if (index == null && !inc) return;
 
 	if (index != null) {
-		const $push = {} as any;
-		const $pull = {} as any;
-		const $inc = {} as any;
+		const $push: Record<string, ObjectID> = {};
+		const $pull: Record<string, ObjectID> = {};
+		const $inc: Record<string, number> = {};
 
 		if (isUserAttached) {
 			if (inc) {
@@ -60,7 +61,7 @@ export async function updateHashtag(user: IUser, tag: string, isUserAttached = f
 			}
 		}
 
-		const q = {} as any;
+		const q: Record<string, Record<string, ObjectID | number>> = {};
 		if (Object.keys($push).length > 0) q.$push = $push;
 		if (Object.keys($pull).length > 0) q.$pull = $pull;
 		if (Object.keys($inc).length > 0) q.$inc = $inc;

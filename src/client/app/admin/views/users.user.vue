@@ -14,6 +14,7 @@
 			<span class="is-verified" v-if="user.isVerified" :title="$t('@.verified-user')"><fa :icon="faBadgeCheck"/></span>
 			<span class="is-silenced" v-if="user.isSilenced" :title="$t('@.silenced-user')"><fa :icon="faMicrophoneSlash"/></span>
 			<span class="is-suspended" v-if="user.isSuspended" :title="$t('@.suspended-user')"><fa :icon="faSnowflake"/></span>
+			<span class="via-twitter" v-if="user.host === 'twitter.com'" :title="$t('@.twitter.user-from-twitter')"><fa :icon="['fab', 'twitter']"/></span>
 		</header>
 		<div>
 			<span>{{ $t('users.updatedAt') }}: <mk-time :time="user.updatedAt" mode="detail"/></span>
@@ -81,6 +82,7 @@ export default Vue.extend({
 			> .is-verified
 			> .is-silenced
 			> .is-suspended
+			> .via-twitter
 				margin 0 0 0 .5em
 				color #4dabf7
 </style>

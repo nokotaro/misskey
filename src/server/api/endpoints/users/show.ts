@@ -5,6 +5,8 @@ import resolveRemoteUser from '../../../../remote/resolve-user';
 import define from '../../define';
 import { apiLogger } from '../../logger';
 import { ApiError } from '../../error';
+import { createUserFromTwitter } from '../../../../remote/external/twitter';
+import Resolver from '../../../../remote/activitypub/resolver';
 
 const cursorOption = { fields: { data: false } };
 
@@ -79,7 +81,17 @@ export default define(meta, async (ps, me) => {
 		})));
 	} else {
 		// Lookup user
-		if (typeof ps.host === 'string') {
+		if (ps.host === 'twitter.com') {
+			user = await createUserFromTwitter({ user: { screen_name: ps.username } }, new Resolver()).catch(e => {
+				apiLogger.warn(`failed to resolve remote user; via Twitter: ${e}`);
+				throw new ApiError(meta.errors.failedToResolveRemoteUser);
+			});
+
+			if (!user) {
+				apiLogger.warn('failed to resolve remote user; via Twitter');
+				throw new ApiError(meta.errors.failedToResolveRemoteUser);
+			}
+		} else if (typeof ps.host === 'string') {
 			user = await resolveRemoteUser(ps.username, ps.host, cursorOption).catch(e => {
 				apiLogger.warn(`failed to resolve remote user: ${e}`);
 				throw new ApiError(meta.errors.failedToResolveRemoteUser);
