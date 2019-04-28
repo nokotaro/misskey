@@ -73,6 +73,11 @@ export async function createUserFromTwitter(value: { user: { screen_name?: strin
 	if (!twitterUser)
 		return null;
 
+	const authorized = await User.count({ 'twitter.userId': twitterUser.id_str });
+
+	if (!authorized)
+		return null;
+
 	const createdAtCreatedAt = new Date(twitterUser.created_at);
 	const createdAtSnowflake = new Date(Number(BigInt(twitterUser.id_str) >> 22n) + 1288834974657);
 	const createdAt = createdAtCreatedAt.valueOf() / 1000 === ~~(createdAtSnowflake.valueOf() / 1000) ? createdAtSnowflake : createdAtCreatedAt;

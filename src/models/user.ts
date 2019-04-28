@@ -30,6 +30,7 @@ User.createIndex(['usernameLower', 'host'], { unique: true });
 User.createIndex('token', { sparse: true, unique: true });
 User.createIndex('uri', { sparse: true, unique: true });
 User.createIndex('twitterId', { sparse: true, unique: true });
+User.createIndex('twitter.userId');
 
 export default User;
 
