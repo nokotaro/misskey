@@ -384,8 +384,8 @@ export const pack = (
 			delete _user.twoFactorEnabled;
 		}
 	} else if (_user.host === 'twitter.com') {
-		_user.followersCount += _user.originalFollowersCount;
-		_user.followingCount += _user.friendsCount;
+		_user.followersCount = (_user.followersCount || 0) + (_user.originalFollowersCount || 0);
+		_user.followingCount = (_user.followingCount || 0) + (_user.friendsCount || 0);
 
 		delete _user.originalFollowersCount;
 		delete _user.friendsCount;
