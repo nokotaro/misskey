@@ -196,7 +196,7 @@
 		mobileHeaderFg: '$text',
 		mobileNavBackdrop: 'rgba(0, 0, 0, 0.2)',
 		mobilePostFormDivider: 'rgba(0, 0, 0, 0.1)',
-		mobilePostFormTextareaBg: '#fff',
+		mobilePostFormTextareaBg: 'rgba(255, 255, 255, 0.3)',
 		mobilePostFormButton: '$text',
 		mobileDriveNavBg: ':alpha<0.75<$secondary',
 		mobileHomeTlItemHover: 'rgba(0, 0, 0, 0.05)',
