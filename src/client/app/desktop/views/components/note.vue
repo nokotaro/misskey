@@ -161,7 +161,6 @@ export default Vue.extend({
 	margin 0
 	padding 0
 	overflow hidden
-	background var(--face)
 	border-bottom solid var(--lineWidth) var(--faceDivider)
 
 	&.mini

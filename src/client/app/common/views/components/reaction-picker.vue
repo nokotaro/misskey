@@ -54,7 +54,7 @@ export default Vue.extend({
 	data() {
 		return {
 			title: this.$t('choose-reaction'),
-			enableEmojiReaction: false,
+			enableEmojiReaction: true,
 		};
 	},
 
