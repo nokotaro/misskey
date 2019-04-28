@@ -47,6 +47,7 @@
 				<ui-switch v-model="disableAnimatedMfm">{{ $t('@._settings.disable-animated-mfm') }}</ui-switch>
 				<ui-switch v-model="disableShowingAnimatedImages">{{ $t('@._settings.disable-showing-animated-images') }}</ui-switch>
 				<ui-switch v-model="remainDeletedNote">{{ $t('@._settings.remain-deleted-note') }}</ui-switch>
+				<ui-switch v-model="dynamicView">{{ $t('@._settings.dynamic-view') }}</ui-switch>
 			</section>
 			<section>
 				<header>{{ $t('@._settings.line-width') }}</header>
@@ -506,6 +507,11 @@ export default Vue.extend({
 		remainDeletedNote: {
 			get() { return this.$store.state.settings.remainDeletedNote; },
 			set(value) { this.$store.dispatch('settings/set', { key: 'remainDeletedNote', value }); }
+		},
+
+		dynamicView: {
+			get() { return this.$store.state.settings.dynamicView; },
+			set(value) { this.$store.dispatch('settings/set', { key: 'dynamicView', value }); }
 		},
 
 		mobileNotificationPosition: {

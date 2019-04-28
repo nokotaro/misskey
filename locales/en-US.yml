@@ -191,6 +191,7 @@ common:
     delete-wallpaper: "Remove background"
     post-form-on-timeline: "Display the posting form at the top of the timeline"
     show-clock-on-header: "Show clock on the upper-right"
+    dynamic-view: "Dynamic View"
     show-reply-target: "Show reply target"
     timeline: "Timeline"
     show-my-renotes: "Show my renotes in the timeline"

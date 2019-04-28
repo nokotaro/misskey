@@ -11,7 +11,7 @@
 	:title="image.name"
 	@click.prevent="onClick"
 >
-	<img class="cover" :src="src" ref="cover">
+	<img class="cover" :src="src" ref="cover" v-if="$store.state.settings.dynamicView">
 	<img class="contain" :src="src" ref="contain">
 	<div>
 		<div class="gif" v-if="image.type === 'image/gif'">GIF</div>
@@ -51,8 +51,10 @@ export default Vue.extend({
 	mounted() {
 		const rect = (this.$refs.container as HTMLAnchorElement).getBoundingClientRect();
 
-		(this.$refs.cover as HTMLImageElement).style.filter = `drop-shadow(0 0 ${Math.max(rect.width, rect.height)} rgba(0,0,0,.5))`;
-		(this.$refs.contain as HTMLImageElement).style.filter = `blur(${Math.max(rect.width, rect.height)})contrast(50%)opacity(50%)`;
+		if (this.$store.state.settings.dynamicView)
+			(this.$refs.cover as HTMLImageElement).style.filter = `blur(${Math.max(rect.width, rect.height)})contrast(50%)opacity(50%)`;
+
+		(this.$refs.contain as HTMLImageElement).style.filter = `drop-shadow(0 0 ${Math.max(rect.width, rect.height)} rgba(0,0,0,.5))`;
 	},
 	methods: {
 		onClick() {
