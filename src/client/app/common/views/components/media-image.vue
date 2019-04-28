@@ -11,8 +11,8 @@
 	:title="image.name"
 	@click.prevent="onClick"
 >
-	<img class="cover" :src="src" ref="cover" v-if="$store.state.settings.dynamicView">
-	<img class="contain" :src="src" ref="contain">
+	<img class="cover" :class="{ dynamic: $store.state.settings.dynamicView }" :src="src" ref="cover" v-if="$store.state.settings.dynamicView">
+	<img class="contain" :class="{ dynamic: $store.state.settings.dynamicView }" :src="src" ref="contain">
 	<div>
 		<div class="gif" v-if="image.type === 'image/gif'">GIF</div>
 	</div>
@@ -49,12 +49,12 @@ export default Vue.extend({
 		}
 	},
 	mounted() {
-		const rect = (this.$refs.container as HTMLAnchorElement).getBoundingClientRect();
-
-		if (this.$store.state.settings.dynamicView)
+		if (this.$store.state.settings.dynamicView) {
+			const rect = (this.$refs.container as HTMLAnchorElement).getBoundingClientRect();
+			
 			(this.$refs.cover as HTMLImageElement).style.filter = `blur(${Math.max(rect.width, rect.height)})contrast(50%)opacity(50%)`;
-
-		(this.$refs.contain as HTMLImageElement).style.filter = `drop-shadow(0 0 ${Math.max(rect.width, rect.height)} rgba(0,0,0,.5))`;
+			(this.$refs.contain as HTMLImageElement).style.filter = `drop-shadow(0 0 ${Math.max(rect.width, rect.height)} rgba(0,0,0,.5))`;
+		}
 	},
 	methods: {
 		onClick() {
@@ -84,13 +84,17 @@ export default Vue.extend({
 		width 100%
 
 		&.contain
-			filter drop-shadow(0px 0px 100vmax #0008)
 			object-fit contain
 
+			&.dynamic
+				filter drop-shadow(0px 0px 100vmax #0008)
+
 		&.cover
-			filter blur(100vmax) contrast(50%) opacity(50%)
 			object-fit cover
-			transition filter .2s ease
+
+			&.dynamic
+				filter blur(100vmax) contrast(50%) opacity(50%)
+				transition filter .2s ease
 
 		> .gif
 			background-color var(--text)
