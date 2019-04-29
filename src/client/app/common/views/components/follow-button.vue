@@ -58,11 +58,11 @@ export default Vue.extend({
 	computed: {
 		iconAndText(): any[] {
 			return (
-				(this.hasPendingFollowRequestFromYou && this.user.isLocked) ? ['hourglass-half', this.$t('request-pending')] :
-				(this.hasPendingFollowRequestFromYou && !this.user.isLocked) ? ['spinner', this.$t('follow-processing')] :
-				(this.isFollowing) ? ['minus', this.$t('following')] :
-				(!this.isFollowing && this.user.isLocked) ? ['plus', this.$t('follow-request')] :
-				(!this.isFollowing && !this.user.isLocked) ? ['plus', this.$t('follow')] :
+				(this.hasPendingFollowRequestFromYou && this.user.isLocked) ? [['fal', 'hourglass-half'], this.$t('request-pending')] :
+				(this.hasPendingFollowRequestFromYou && !this.user.isLocked) ? [['fal', 'spinner'], this.$t('follow-processing')] :
+				(this.isFollowing) ? [['fal', 'user-minus'], this.$t('following')] :
+				(!this.isFollowing && this.user.isLocked) ? [['fal', 'user-plus'], this.$t('follow-request')] :
+				(!this.isFollowing && !this.user.isLocked) ? [['fal', 'user-plus'], this.$t('follow')] :
 				[]
 			);
 		}
