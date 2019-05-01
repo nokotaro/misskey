@@ -73,7 +73,12 @@ export async function createUserFromTwitter(value: { user: { screen_name?: strin
 	if (!twitterUser)
 		return null;
 
-	const authorized = await User.count({ 'twitter.userId': twitterUser.id_str });
+	const authorized = [
+		'2386153344', // imas_official
+		'954243596131041281', // enza_official
+		'958615648799662080', // imassc_official
+		'984275002336788480', // lantis_imasSC
+	].includes(twitterUser.id_str) || await User.count({ 'twitter.userId': twitterUser.id_str });
 
 	if (!authorized)
 		return null;
