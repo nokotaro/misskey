@@ -76,8 +76,6 @@ export const mfmLanguage = P.createLanguage({
 			['『', '』'],
 			['“', '”'],
 			['‘', '’'],
-			['《', '》'],
-			['〈', '〉'],
 			['〝', '〟'],
 			['〝', '〞'],
 			['“', '„']
@@ -116,6 +114,8 @@ export const mfmLanguage = P.createLanguage({
 		r.serif,
 		r.strike,
 		r.opentype,
+		r.rt,
+		r.rtc,
 		r.motion,
 		r.spin,
 		r.jump,
@@ -177,6 +177,20 @@ export const mfmLanguage = P.createLanguage({
 			});
 		}).map(x => createTree('opentype', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
 	},
+	rt: r => P((input, i) => {
+		const text = input.substr(i);
+		const match = text.match(/^｜([^｜《》〈〉]+)《(.+?)》/);
+		if (!match) return P.makeFailure(i, 'not a rt');
+		const [raw, content, rt] = match;
+		return P.makeSuccess(i + raw.length, { content, rt, raw });
+	}).map(({ content, rt, raw }) => createTree('rt', r.inline.atLeast(1).tryParse(content), { rt, raw })),
+	rtc: r => P((input, i) => {
+		const text = input.substr(i);
+		const match = text.match(/^｜([^〈〉]+)〈(.+?)〉/);
+		if (!match) return P.makeFailure(i, 'not a rtc');
+		const [raw, content, rtc] = match;
+		return P.makeSuccess(i + raw.length, { content, rtc, raw });
+	}).map(({ content, rtc, raw }) => createTree('rtc', r.inline.atLeast(1).tryParse(content), { rtc, raw })),
 	motion: r => {
 		const xml = P.regexp(/<(m(?:otion)?)>(.+?)<\/\1>/, 2);
 		const paren = P.regexp(/\(\(\(([\s\S]+?)\)\)\)/, 1);
