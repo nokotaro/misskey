@@ -3,11 +3,11 @@
 	<template v-for="media in mediaList.filter(media => !previewable(media))">
 		<x-banner :media="media" :key="media.id"/>
 	</template>
-	<div v-if="mediaList.filter(media => previewable(media)).length > 0" class="gird-container">
-		<div :data-count="mediaList.filter(media => previewable(media)).length" ref="grid">
+	<div v-if="count" class="gird-container">
+		<div :data-count="count" ref="grid">
 			<template v-for="media in mediaList">
 				<mk-media-video :video="media" :key="media.id" v-if="media.type.startsWith('video')"/>
-				<x-image :image="media" :key="media.id" v-else-if="media.type.startsWith('image')" :raw="raw"/>
+				<x-image :image="media" :key="media.id" v-else-if="media.type.startsWith('image')" :raw="raw" :count="count"/>
 			</template>
 		</div>
 	</div>
@@ -32,12 +32,21 @@ export default Vue.extend({
 			default: false
 		}
 	},
+	computed: {
+		count(): number {
+			return this.mediaList.filter(this.previewable).length;
+		}
+	},
 	mounted() {
 		//#region for Safari bug
 		if (this.$refs.grid) {
+			const half = navigator.vendor === 'Apple Computer, Inc.' && [3, 4].includes(this.count);
+
 			this.$refs.grid.style.height =
-				this.$refs.grid.clientHeight ? `${this.$refs.grid.clientHeight}px` :
-				'netscape' in window ? '' : '400px';
+				`${half ? 'calc(' : ''}${
+					this.$refs.grid.clientHeight ? `${this.$refs.grid.clientHeight}px` :
+					'netscape' in window ? '' : '400px'
+				}${half ? '/2)' : ''}`;
 		}
 		//#endregion
 	},
