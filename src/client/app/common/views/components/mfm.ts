@@ -160,7 +160,7 @@ export default Vue.component('misskey-flavored-markdown', {
 					return [createElement('ruby', [
 						createElement('rb', genEl(token.children)),
 						createElement('rp', '《'),
-						createElement('rt', genEl(token.node.props.rt)),
+						createElement('rt', token.node.props.rt),
 						createElement('rp', '》')
 					])];
 				}
@@ -169,7 +169,7 @@ export default Vue.component('misskey-flavored-markdown', {
 					return [createElement('ruby', [
 						createElement('rbc', genEl(token.children)),
 						createElement('rp', '〈'),
-						createElement('rtc', genEl(token.node.props.rtc)),
+						createElement('rtc', token.node.props.rtc),
 						createElement('rp', '〉')
 					])];
 				}
