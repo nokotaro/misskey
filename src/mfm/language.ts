@@ -268,7 +268,7 @@ export const mfmLanguage = P.createLanguage({
 			const nico =
 				text.match(/^((?:lv|s[mo])\d+)(?:#((?:\d+:)?(?:[0-5]?\d:)?[0-5]\d|\d+))?/) || // videos
 				text.match(/^(?:a[prz]|c[ho]|dw|gm|kn|im|jps|mylist\/|n[cqw]|user\/(?:illust\/)?)\d+/); // non-videos
-			return nico ? P.makeSuccess(i + nico[0].length, {
+			return nico && (input[i - 1] || ' ').match(/\W/) ? P.makeSuccess(i + nico[0].length, {
 				text: nico[0],
 				nico: true,
 				silent: false,
