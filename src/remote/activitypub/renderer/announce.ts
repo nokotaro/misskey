@@ -2,6 +2,10 @@ import config from '../../../config';
 import { INote } from '../../../models/note';
 
 export default (object: any, note: INote) => {
+	if (typeof object === 'string' && object.startsWith('https://twitter.com/i/web/status/')) {
+		return null;
+	}
+
 	const attributedTo = `${config.url}/users/${note.userId}`;
 
 	let to: string[] = [];
