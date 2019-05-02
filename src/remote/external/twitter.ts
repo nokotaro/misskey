@@ -242,9 +242,7 @@ export async function createNoteFromTwitter(value: any, resolver: Resolver, sile
 			visibility: user.isLocked ? 'followers' : 'public',
 			retweetCount: tweet.retweet_count,
 			replyCount: (tweet as any as Record<string, number>).reply_count,
-			reactionCounts: {
-				twitter_favorite: tweet.favorite_count
-			}
+			favoriteCount: tweet.favorite_count
 		}
 	}, {
 		returnNewDocument: true

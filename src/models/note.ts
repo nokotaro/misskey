@@ -61,6 +61,7 @@ export type INote = {
 	repliesCount: number;
 	replyCount: number;
 	reactionCounts: Record<string, number>;
+	favoriteCount: number;
 	mentions: mongo.ObjectID[];
 	mentionedRemoteUsers: {
 		uri: string;
@@ -256,10 +257,14 @@ export const pack = async (
 	// Some counts
 	_note.renoteCount = (_note.renoteCount || 0) + (_note.retweetCount || 0);
 	_note.repliesCount = (_note.repliesCount || 0) + (_note.replyCount || 0);
-	_note.reactionCounts = _note.reactionCounts || {};
+	_note.reactionCounts = {
+		...(_note.reactionCounts || {}),
+		...(_note.favoriteCount ? { twitter_favorite: _note.favoriteCount } : {})
+	};
 
 	delete _note.retweetCount;
 	delete _note.replyCount;
+	delete _note.favoriteCount;
 
 	// _note._userを消す前か、_note.userを解決した後でないとホストがわからない
 	if (_note._user) {
