@@ -19,3 +19,4 @@ api-docs.json
 *.code-workspace
 .DS_Store
 /files
+report.*.json
