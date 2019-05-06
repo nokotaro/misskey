@@ -10,7 +10,13 @@
 		<li class="explore" :class="{ active: $route.name == 'explore' || $route.name == 'explore-tag' }">
 			<router-link to="/explore"><fa :icon="faHashtag"/><p>{{ $t('@.explore') }}</p></router-link>
 		</li>
-		<li class="game">
+		<li class="wiki" :class="{ active: $route.name == 'wiki' }">
+			<a><fa :icon="['fal', 'books']"/><p>{{ $t('@.wiki') }}<small> (coming soon)</small></p></a>
+			<!--
+			<router-link to="/wiki"><fa :icon="['fal', 'books']"/><p>{{ $t('@.wiki') }}</p></router-link>
+			-->
+		</li>
+		<li class="game" v-if="false">
 			<a @click="game">
 				<fa :icon="['fal', 'gamepad']"/>
 				<p>{{ $t('game') }}</p>

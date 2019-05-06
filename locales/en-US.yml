@@ -65,6 +65,7 @@ common:
   deck: "Deck"
   timeline: "Timeline"
   explore: "Explore"
+  wiki: "Wiki"
   following: "Following"
   followers: "Followers"
   favorites: "Favorites"

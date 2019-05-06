@@ -68,6 +68,7 @@ common:
   deck: "デッキ"
   timeline: "タイムライン"
   explore: "みつける"
+  wiki: "Wiki"
   following: "フォロー中"
   followers: "フォロワー"
   favorites: "お気に入り"
