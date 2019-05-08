@@ -43,7 +43,7 @@ const nodeinfo2 = async () => {
 		},
 		protocols: ['activitypub'],
 		services: {
-			inbound: [] as string[],
+			inbound: ['twitter'],
 			outbound: ['atom1.0', 'rss2.0']
 		},
 		openRegistrations: !disableRegistration,
