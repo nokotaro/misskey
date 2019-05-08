@@ -1,8 +1,9 @@
 import autobind from 'autobind-decorator';
 import Mute from '../../../../models/mute';
 import { pack } from '../../../../models/note';
-import shouldMuteThisNote from '../../../../misc/should-mute-this-note';
+import shouldIgnoreThisNote from '../../../../misc/should-ignore-this-note';
 import Channel from '../channel';
+import Blocking from '../../../../models/blocking';
 
 export default class extends Channel {
 	public readonly chName = 'hashtag';
@@ -11,8 +12,12 @@ export default class extends Channel {
 
 	@autobind
 	public async init(params: any) {
-		const mute = this.user ? await Mute.find({ muterId: this.user._id }) : null;
-		const mutedUserIds = mute ? mute.map(m => m.muteeId.toString()) : [];
+		const mute = this.user ? await Mute.find({ muterId: this.user._id }) : [];
+		const blocking = this.user ? await Blocking.find({ blockerId: this.user._id }) : [];
+		const ignoredUserIds = [
+			...mute.map(x => x.muteeId.toHexString()),
+			...blocking.map(x => x.blockeeId.toHexString())
+		];
 
 		const q: string[][] = params.q;
 
@@ -32,7 +37,7 @@ export default class extends Channel {
 			}
 
 			// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
-			if (shouldMuteThisNote(note, mutedUserIds)) return;
+			if (await shouldIgnoreThisNote(note, ignoredUserIds)) return;
 
 			this.send('note', note);
 		});

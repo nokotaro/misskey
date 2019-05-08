@@ -30,7 +30,7 @@ export const meta = {
 		properties: {
 			version: {
 				type: 'string',
-				description: 'The version of Misskey of this instance.',
+				description: 'The version of twista of this instance.',
 				example: pkg.version
 			},
 			name: {

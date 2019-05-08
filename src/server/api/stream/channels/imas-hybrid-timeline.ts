@@ -1,16 +1,17 @@
 import autobind from 'autobind-decorator';
 import Mute from '../../../../models/mute';
 import { pack } from '../../../../models/note';
-import shouldMuteThisNote from '../../../../misc/should-mute-this-note';
+import shouldIgnoreThisNote from '../../../../misc/should-ignore-this-note';
 import Channel from '../channel';
 import fetchMeta from '../../../../misc/fetch-meta';
+import Blocking from '../../../../models/blocking';
 
 export default class extends Channel {
 	public readonly chName = 'imasHybridTimeline';
 	public static shouldShare = true;
 	public static requireCredential = true;
 
-	private mutedUserIds: string[] = [];
+	private ignoredUserIds: string[] = [];
 
 	@autobind
 	public async init(params: any) {
@@ -22,7 +23,11 @@ export default class extends Channel {
 		this.subscriber.on(`imasHybridTimeline:${this.user._id}`, this.onNewNote);
 
 		const mute = await Mute.find({ muterId: this.user._id });
-		this.mutedUserIds = mute.map(m => m.muteeId.toString());
+		const blocking = await Blocking.find({ blockerId: this.user._id });
+		this.ignoredUserIds = [
+			...mute.map(x => x.muteeId.toHexString()),
+			...blocking.map(x => x.blockeeId.toHexString())
+		];
 	}
 
 	@autobind
@@ -41,7 +46,7 @@ export default class extends Channel {
 		}
 
 		// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
-		if (shouldMuteThisNote(note, this.mutedUserIds)) return;
+		if (await shouldIgnoreThisNote(note, this.ignoredUserIds)) return;
 
 		this.send('note', note);
 	}

@@ -2,6 +2,7 @@ import $ from 'cafy';
 import Mute from '../../../../models/mute';
 import Message, { pack, IMessagingMessage } from '../../../../models/messaging-message';
 import define from '../../define';
+import Blocking from '../../../../models/blocking';
 
 export const meta = {
 	desc: {
@@ -32,9 +33,17 @@ export const meta = {
 
 export default define(meta, async (ps, user) => {
 	const mute = await Mute.find({
-		muterId: user._id,
-		deletedAt: { $exists: false }
+		muterId: user._id
 	});
+
+	const blocking = await Blocking.find({
+		blockerId: user._id
+	});
+
+	const $nin = [
+		...mute.map(x => x.muteeId),
+		...blocking.map(x => x.blockeeId)
+	];
 
 	const history: IMessagingMessage[] = [];
 
@@ -51,8 +60,8 @@ export default define(meta, async (ps, user) => {
 				userId: { $nin: found },
 				recipientId: { $nin: found }
 			}, {
-				userId: { $nin: mute.map(m => m.muteeId) },
-				recipientId: { $nin: mute.map(m => m.muteeId) }
+				userId: { $nin },
+				recipientId: { $nin }
 			}]
 		}, {
 			sort: {

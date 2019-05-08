@@ -38,6 +38,7 @@ import extractHashtags from '../../misc/extract-hashtags';
 import { genId } from '../../misc/gen-id';
 import { resolveNote } from '../../remote/activitypub/models/note';
 import Resolver from '../../remote/activitypub/resolver';
+import Blocking from '../../models/blocking';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
@@ -77,14 +78,19 @@ class NotificationManager {
 	public async deliver() {
 		for (const x of this.queue) {
 			// ミュート情報を取得
-			const mentioneeMutes = await Mute.find({
+			const mute = await Mute.find({
 				muterId: x.target
 			});
-
-			const mentioneesMutedUserIds = mentioneeMutes.map(m => m.muteeId.toString());
+			const blocking = await Blocking.find({
+				blockerId: x.target
+			});
+			const ignoredUserIds = [
+				...mute.map(x => x.muteeId.toHexString()),
+				...blocking.map(x => x.blockeeId.toHexString())
+			];
 
 			// 通知される側のユーザーが通知する側のユーザーをミュートしていない限りは通知する
-			if (!mentioneesMutedUserIds.includes(this.notifier._id.toString())) {
+			if (!ignoredUserIds.includes(this.notifier._id.toHexString())) {
 				notify(x.target, this.notifier._id, x.reason, {
 					noteId: this.note._id
 				});

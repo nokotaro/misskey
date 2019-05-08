@@ -3,14 +3,21 @@ import User, { IUser } from '../../models/user';
 import { INote } from '../../models/note';
 import Mute from '../../models/mute';
 import { publishMainStream } from '../stream';
+import Blocking from '../../models/blocking';
 
 export default async function(user: IUser, note: INote, isSpecified = false) {
 	//#region ミュートしているなら無視
 	const mute = await Mute.find({
 		muterId: user._id
 	});
-	const mutedUserIds = mute.map(m => m.muteeId.toString());
-	if (mutedUserIds.includes(note.userId.toString())) return;
+	const blocking = await Blocking.find({
+		blockerId: user._id
+	});
+	const ignoredUserIds = [
+		...mute.map(x => x.muteeId.toHexString()),
+		...blocking.map(x => x.blockeeId.toHexString())
+	];
+	if (ignoredUserIds.includes(note.userId.toHexString())) return;
 	//#endregion
 
 	const unread = await NoteUnread.insert({

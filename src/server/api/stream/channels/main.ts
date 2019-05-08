@@ -1,6 +1,7 @@
 import autobind from 'autobind-decorator';
 import Mute from '../../../../models/mute';
 import Channel from '../channel';
+import Blocking from '../../../../models/blocking';
 
 export default class extends Channel {
 	public readonly chName = 'main';
@@ -10,7 +11,11 @@ export default class extends Channel {
 	@autobind
 	public async init(params: any) {
 		const mute = await Mute.find({ muterId: this.user._id });
-		const mutedUserIds = mute.map(m => m.muteeId.toString());
+		const blocking = await Blocking.find({ blockerId: this.user._id });
+		const ignoredUserIds = [
+			...mute.map(x => x.muteeId.toHexString()),
+			...blocking.map(x => x.blockeeId.toHexString())
+		];
 
 		// Subscribe main stream channel
 		this.subscriber.on(`mainStream:${this.user._id}`, async data => {
@@ -18,12 +23,12 @@ export default class extends Channel {
 
 			switch (type) {
 				case 'notification': {
-					if (mutedUserIds.includes(body.userId)) return;
+					if (ignoredUserIds.includes(body.userId)) return;
 					if (body.note && body.note.isHidden) return;
 					break;
 				}
 				case 'mention': {
-					if (mutedUserIds.includes(body.userId)) return;
+					if (ignoredUserIds.includes(body.userId)) return;
 					if (body.isHidden) return;
 					break;
 				}

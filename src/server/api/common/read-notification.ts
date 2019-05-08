@@ -4,6 +4,7 @@ import { default as Notification, INotification } from '../../../models/notifica
 import { publishMainStream } from '../../../services/stream';
 import Mute from '../../../models/mute';
 import User from '../../../models/user';
+import Blocking from '../../../models/blocking';
 
 /**
  * Mark notifications as read
@@ -34,6 +35,11 @@ export default (
 	});
 	const mutedUserIds = mute.map(m => m.muteeId);
 
+	const blocking = await Blocking.find({
+		blockerId: userId
+	});
+	const blockedUserIds = blocking.map(x => x.blockeeId);
+
 	// Update documents
 	await Notification.update({
 		_id: { $in: ids },
@@ -51,7 +57,10 @@ export default (
 		.count({
 			notifieeId: userId,
 			notifierId: {
-				$nin: mutedUserIds
+				$nin: [
+					...mutedUserIds,
+					...blockedUserIds
+				]
 			},
 			isRead: false
 		}, {

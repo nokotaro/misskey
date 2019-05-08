@@ -1,14 +1,15 @@
 import * as mongo from 'mongodb';
-import Mute from '../../../models/mute';
+import Mute, { IMute } from '../../../models/mute';
 import User, { IUser } from '../../../models/user';
 import { unique } from '../../../prelude/array';
+import Blocking, { IBlocking } from '../../../models/blocking';
 
-export async function getHideUserIds(me: IUser) {
-	return await getHideUserIdsById(me ? me._id : null);
+export async function getHideUserIds(me?: IUser) {
+	return await getHideUserIdsById(me && me._id);
 }
 
 export async function getHideUserIdsById(meId?: mongo.ObjectID) {
-	const [suspended, muted] = await Promise.all([
+	const [suspended, muted, blocking, blocked] = await Promise.all([
 		User.find({
 			isSuspended: true
 		}, {
@@ -18,8 +19,19 @@ export async function getHideUserIdsById(meId?: mongo.ObjectID) {
 		}),
 		meId ? Mute.find({
 			muterId: meId
-		}) : Promise.resolve([])
+		}) : Promise.resolve<IMute[]>([]),
+		meId ? Blocking.find({
+			blockerId: meId
+		}) : Promise.resolve<IBlocking[]>([]),
+		meId ? Blocking.find({
+			blockeeId: meId
+		}) : Promise.resolve<IBlocking[]>([])
 	]);
 
-	return unique(suspended.map(user => user._id).concat(muted.map(mute => mute.muteeId)));
+	return unique([
+		...suspended.map(x => x._id),
+		...muted.map(x => x.muteeId),
+		...blocking.map(x => x.blockeeId),
+		...blocked.map(x => x.blockerId)
+	]);
 }

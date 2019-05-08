@@ -12,6 +12,7 @@ import pushSw from '../../../../../services/push-notification';
 import define from '../../../define';
 import { ApiError } from '../../../error';
 import { getUser } from '../../../common/getters';
+import Blocking from '../../../../../models/blocking';
 
 export const meta = {
 	desc: {
@@ -140,11 +141,16 @@ export default define(meta, async (ps, user) => {
 		if (!freshMessage.isRead) {
 			//#region ただしミュートされているなら発行しない
 			const mute = await Mute.find({
-				muterId: recipient._id,
-				deletedAt: { $exists: false }
+				muterId: recipient._id
 			});
-			const mutedUserIds = mute.map(m => m.muteeId.toString());
-			if (mutedUserIds.indexOf(user._id.toString()) != -1) {
+			const blocking = await Blocking.find({
+				blockerId: recipient._id
+			});
+			const nin = [
+				...mute.map(x => x.muteeId.toHexString()),
+				...blocking.map(x => x.blockeeId.toHexString())
+			];
+			if (nin.includes(user._id.toHexString())) {
 				return;
 			}
 			//#endregion

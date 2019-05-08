@@ -5,6 +5,7 @@ import { pack } from '../models/notification';
 import { publishMainStream } from './stream';
 import User from '../models/user';
 import pushSw from './push-notification';
+import Blocking from '../models/blocking';
 
 export default (
 	notifiee: mongo.ObjectID,
@@ -45,11 +46,16 @@ export default (
 		if (!fresh.isRead) {
 			//#region ただしミュートしているユーザーからの通知なら無視
 			const mute = await Mute.find({
-				muterId: notifiee,
-				deletedAt: { $exists: false }
+				muterId: notifiee
 			});
-			const mutedUserIds = mute.map(m => m.muteeId.toString());
-			if (mutedUserIds.indexOf(notifier.toString()) != -1) {
+			const blocking = await Blocking.find({
+				blockerId: notifiee
+			});
+			const ignoredUserIds = [
+				...mute.map(x => x.muteeId.toHexString()),
+				...blocking.map(x => x.blockeeId.toHexString())
+			];
+			if (ignoredUserIds.includes(notifier.toString())) {
 				return;
 			}
 			//#endregion
