@@ -118,7 +118,7 @@
 		"bcryptjs": "2.4.3",
 		"bootstrap-vue": "2.0.0-rc.19",
 		"bull": "3.9.1",
-		"cafy": "15.1.0",
+		"cafy": "15.1.1",
 		"chai": "4.2.0",
 		"chai-http": "4.3.0",
 		"chalk": "2.4.2",
