@@ -67,6 +67,7 @@
 		<span v-if="visibility === 'home'"><fa :icon="['fal', 'home']"/></span>
 		<span v-if="visibility === 'followers'"><fa :icon="['fal', 'unlock']"/></span>
 		<span v-if="visibility === 'specified'"><fa :icon="['fal', 'envelope']"/></span>
+		<span v-if="localOnly" class="localOnly"><fa :icon="['fal', 'heart']"/></span>
 	</button>
 	<p class="text-count" :class="{ over: trimmedLength(concatenated) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(concatenated) }}</p>
 	<ui-button primary :wait="posting" class="submit" :disabled="!canPost" @click="post">
@@ -821,21 +822,16 @@ export default Vue.extend({
 		width 40px
 		height 40px
 		font-size 1em
-		color var(--desktopPostFormTransparentButtonFg)
+		color var(--text)
 		background transparent
 		outline none
 		border solid 1px transparent
 		border-radius 4px
+		opacity 0.7
 
 		&:hover
-			background transparent
-			border-color var(--primaryAlpha03)
-
-		&:active
-			color var(--primaryAlpha06)
-			background linear-gradient(to bottom, var(--desktopPostFormTransparentButtonActiveGradientStart) 0%, var(--desktopPostFormTransparentButtonActiveGradientEnd) 100%)
-			border-color var(--primaryAlpha05)
-			box-shadow 0 2px 4px rgba(#000, 0.15) inset
+			color var(--textHighlighted)
+			opacity 1.0
 
 		&:focus
 			&:after
@@ -848,6 +844,13 @@ export default Vue.extend({
 				left -5px
 				border 2px solid var(--primaryAlpha03)
 				border-radius 8px
+
+	> .visibility > .localOnly
+		color var(--primary)
+		position absolute
+		top 0
+		right 0.2em
+		transform scale(.8)
 
 	> .dropzone
 		position absolute

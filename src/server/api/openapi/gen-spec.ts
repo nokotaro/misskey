@@ -118,7 +118,7 @@ export function genOpenapiSpec(lang = 'ja-JP') {
 			description: desc,
 			externalDocs: {
 				description: 'Source code',
-				url: `https://github.com/346design/twista.283.cloud/blob/develop/src/server/api/endpoints/${endpoint.name}.ts`
+				url: `https://github.com/346design/twista.283.cloud/blob/twista/src/server/api/endpoints/${endpoint.name}.ts`
 			},
 			...(endpoint.meta.tags ? {
 				tags: endpoint.meta.tags

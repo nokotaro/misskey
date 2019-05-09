@@ -21,7 +21,8 @@ export default async (ctx: Koa.BaseContext) => {
 			qs: {
 				url: ctx.query.url
 			},
-			json: true
+			json: true,
+			forever: true,
 		}) : await summaly(ctx.query.url, {
 			followRedirects: false
 		});

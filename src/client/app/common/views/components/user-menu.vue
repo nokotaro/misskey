@@ -17,7 +17,7 @@ export default Vue.extend({
 	props: ['user', 'source'],
 
 	data() {
-		let menu = [{
+		let menu: any[] = [{
 			icon: ['fal', 'at'],
 			text: this.$t('mention'),
 			action: () => {
@@ -27,19 +27,23 @@ export default Vue.extend({
 			icon: ['fal', 'list'],
 			text: this.$t('push-to-list'),
 			action: this.pushList
-		}, null, {
-			icon: this.user.isMuted ? ['fal', 'eye'] : ['fal', 'eye-slash'],
-			text: this.user.isMuted ? this.$t('unmute') : this.$t('mute'),
-			action: this.toggleMute
-		}, {
-			icon: ['fal', 'ban'],
-			text: this.user.isBlocking ? this.$t('unblock') : this.$t('block'),
-			action: this.toggleBlock
-		}, null, {
-			icon: faExclamationCircle,
-			text: this.$t('report-abuse'),
-			action: this.reportAbuse
 		}];
+		
+		if (this.$store.getters.isSignedIn && this.$store.state.i.id != this.user.id) {
+			menu = menu.concat([null, {
+				icon: this.user.isMuted ? ['fal', 'eye'] : ['fal', 'eye-slash'],
+				text: this.user.isMuted ? this.$t('unmute') : this.$t('mute'),
+				action: this.toggleMute
+			}, {
+				icon: ['fal', 'ban'],
+				text: this.user.isBlocking ? this.$t('unblock') : this.$t('block'),
+				action: this.toggleBlock
+			}, null, {
+				icon: faExclamationCircle,
+				text: this.$t('report-abuse'),
+				action: this.reportAbuse
+			}]);
+		}
 
 		if (this.$store.getters.isSignedIn && (this.$store.state.i.isAdmin || this.$store.state.i.isModerator)) {
 			menu = menu.concat([null, {

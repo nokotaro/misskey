@@ -21,6 +21,8 @@ common:
   application-authorization: "Application authorizations"
   close: "Close"
   do-not-copy-paste: "Please do not enter or paste the code here. Producer may be compromised."
+  newest: "Newest"
+  next-page: "Next page"
   load-more: "Read more"
   send-to: "To"
   enter-username: "Please enter username"
@@ -134,6 +136,7 @@ common:
     apps: "Apps"
     tags: "Hashtag"
     mute-and-block: "Mute / Block"
+    extended-notification: "Extra notification"
     blocking: "Block"
     security: "Security"
     signin: "Login History"
@@ -997,6 +1000,11 @@ common/views/components/mute-and-block.vue:
   word-mute: "Word mute"
   muted-words: "Muted keywords"
   muted-words-description: "Separating with spaces results in AND specifications, and delimiting with line breaks results in OR specifications"
+  save: "Save"
+common/views/components/settings/extended-notification.vue:
+  extended-notification: "Extra notification"
+  highlighted-words: "Hightlighted words"
+  highlighted-words-description: "Enter the words you want to notify, one per line"
   save: "Save"
 common/views/components/password-settings.vue:
   reset: "Change password"

@@ -22,6 +22,7 @@ import { deliverQuestionUpdate } from '../../../services/note/polls/update';
 import Instance from '../../../models/instance';
 import { extractDbHost, extractApHost } from '../../../misc/convert-host';
 import { createNoteFromTwitter } from '../../external/twitter';
+import { getApLock } from '../../../misc/app-lock';
 
 const logger = apLogger;
 
@@ -288,18 +289,24 @@ export async function resolveNote(value: string | IObject, resolver?: Resolver, 
 	const instance = await Instance.findOne({ host: extractDbHost(uri) });
 	if (instance && instance.isBlocked) throw { statusCode: 451 };
 
-	//#region このサーバーに既に登録されていたらそれを返す
-	const exist = await fetchNote(uri);
+	const unlock = await getApLock(uri);
 
-	if (exist) {
-		return exist;
+	try {
+		//#region このサーバーに既に登録されていたらそれを返す
+		const exist = await fetchNote(uri);
+
+		if (exist) {
+			return exist;
+		}
+		//#endregion
+
+		// リモートサーバーからフェッチしてきて登録
+		// ここでuriの代わりに添付されてきたNote Objectが指定されていると、サーバーフェッチを経ずにノートが生成されるが
+		// 添付されてきたNote Objectは偽装されている可能性があるため、常にuriを指定してサーバーフェッチを行う。
+		return await createNote(uri, resolver, silent);
+	} finally {
+		unlock();
 	}
-	//#endregion
-
-	// リモートサーバーからフェッチしてきて登録
-	// ここでuriの代わりに添付されてきたNote Objectが指定されていると、サーバーフェッチを経ずにノートが生成されるが
-	// 添付されてきたNote Objectは偽装されている可能性があるため、常にuriを指定してサーバーフェッチを行う。
-	return await createNote(uri, resolver, silent);
 }
 
 export async function extractEmojis(tags: ITag[], host_: string) {

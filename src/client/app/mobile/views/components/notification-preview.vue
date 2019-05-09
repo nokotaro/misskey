@@ -61,6 +61,14 @@
 			<p class="note-ref"><fa :icon="['fal', 'quote-left']"/>{{ getNoteSummary(notification.note) }}<fa :icon="['fal', 'quote-right']"/></p>
 		</div>
 	</template>
+
+	<template v-if="notification.type == 'highlight'">
+		<mk-avatar class="avatar" :user="notification.note.user"/>
+		<div class="text">
+			<p><fa :icon="['fal', 'lightbulb']"/><mk-user-name :user="notification.note.user"/></p>
+			<p class="note-preview">{{ getNoteSummary(notification.note) }}</p>
+		</div>
+	</template>
 </div>
 </template>
 

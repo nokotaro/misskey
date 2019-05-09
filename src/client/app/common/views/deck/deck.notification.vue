@@ -80,6 +80,22 @@
 		</div>
 	</div>
 
+	<div class="notification highlight" v-if="notification.type == 'highlight'">
+		<mk-avatar class="avatar" :user="notification.user"/>
+		<div>
+			<header>
+				<fa :icon="['fal', 'lightbulb']"/>
+				<router-link :to="notification.user | userPage">
+					<mk-user-name :user="notification.user"/>
+				</router-link>
+				<mk-time :time="notification.createdAt"/>
+			</header>
+			<router-link class="note-ref" :to="notification.note | notePage" :title="getNoteSummary(notification.note)">
+				<mfm :text="getNoteSummary(notification.note)" :should-break="false" :plain-text="true" :custom-emojis="notification.note.emojis"/>
+			</router-link>
+		</div>
+	</div>
+
 	<template v-if="notification.type == 'quote'">
 		<mk-note :note="notification.note" @update:note="onNoteUpdated"/>
 	</template>
@@ -185,4 +201,8 @@ export default Vue.extend({
 		&.receiveFollowRequest
 			> div > header [data-icon]
 				color #888
+
+		&.reply, &.mention, &.poll_vote, &.highlight
+			> div > header [data-icon]
+				color #555
 </style>

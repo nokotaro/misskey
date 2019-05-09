@@ -22,6 +22,8 @@ common:
   application-authorization: "アプリの連携"
   close: "閉じる"
   do-not-copy-paste: "ここにコードを入力したり張り付けたりしないでください。プロデューサーが不正利用される可能性があります。"
+  newest: "最新"
+  next-page: "次のページ"
   load-more: "もっと読み込む"
   send-to: "宛先"
   enter-username: "ユーザー名を入力してください"
@@ -145,6 +147,7 @@ common:
     apps: "アプリ"
     tags: "ハッシュタグ"
     mute-and-block: "ミュート/ブロック"
+    extended-notification: "拡張通知"
     blocking: "ブロック"
     security: "セキュリティ"
     signin: "ログイン履歴"
@@ -1131,6 +1134,12 @@ common/views/components/mute-and-block.vue:
   word-mute: "ワードミュート"
   muted-words: "ミュートされたキーワード"
   muted-words-description: "スペースで区切るとAND指定になり、改行で区切るとOR指定になります"
+  save: "保存"
+
+common/views/components/settings/extended-notification.vue:
+  extended-notification: "拡張通知"
+  highlighted-words: "ハイライトワード"
+  highlighted-words-description: "通知したいワードを1行に1つずつ入力します"
   save: "保存"
 
 common/views/components/password-settings.vue:

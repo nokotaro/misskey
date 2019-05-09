@@ -283,15 +283,17 @@ export default define({
 
 		> button:not(.post)
 			color var(--text)
+			opacity 0.7
 
 			&:hover
 				color var(--textHighlighted)
+				opacity 1.0
 
 		> button > .localOnly
 			color var(--primary)
 			position absolute
 			top 0
-			right 2px
+			right 0.2em
 			transform scale(.8)
 
 		> .post

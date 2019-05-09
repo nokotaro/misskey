@@ -8,6 +8,7 @@
 		<p :class="{ active: page == 'drive' }" @mousedown="page = 'drive'"><fa :icon="['fal', 'cloud']" fixed-width/>{{ $t('@.drive') }}</p>
 		<p :class="{ active: page == 'hashtags' }" @mousedown="page = 'hashtags'"><fa :icon="['fal', 'hashtag']" fixed-width/>{{ $t('@._settings.tags') }}</p>
 		<p :class="{ active: page == 'muteAndBlock' }" @mousedown="page = 'muteAndBlock'"><fa :icon="['fal', 'ban']" fixed-width/>{{ $t('@._settings.mute-and-block') }}</p>
+		<p :class="{ active: page == 'extendedNotification' }" @mousedown="page = 'extendedNotification'"><fa :icon="['fal', 'lightbulb']" fixed-width/>{{ $t('@._settings.extended-notification') }}</p>
 		<p :class="{ active: page == 'apps' }" @mousedown="page = 'apps'"><fa :icon="['fal', 'puzzle-piece']" fixed-width/>{{ $t('@._settings.apps') }}</p>
 		<p :class="{ active: page == 'security' }" @mousedown="page = 'security'"><fa :icon="['fal', 'unlock-alt']" fixed-width/>{{ $t('@._settings.security') }}</p>
 		<p :class="{ active: page == 'api' }" @mousedown="page = 'api'"><fa :icon="['fal', 'key']" fixed-width/>API</p>
@@ -42,7 +43,7 @@ export default Vue.extend({
 	},
 	data() {
 		return {
-			page: this.initialPage || 'profile',
+			page: this.initialPage || 'profile'
 		};
 	},
 });

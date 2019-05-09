@@ -100,8 +100,8 @@ export default Vue.component('misskey-flavored-markdown', {
 
 				case 'big': {
 					bigCount++;
-					const isLong = sumTextsLength(token.children) > 15 || countNodesF(token.children) > 5;
-					const isMany = bigCount > 3;
+					const isLong = sumTextsLength(token.children) > 100 || countNodesF(token.children) > 20;
+					const isMany = bigCount > 50;
 					return (createElement as any)('strong', {
 						attrs: {
 							style: `display:inline-block;font-size:${isMany ? '100%' : '150%'}`
@@ -131,8 +131,8 @@ export default Vue.component('misskey-flavored-markdown', {
 
 				case 'motion': {
 					motionCount++;
-					const isLong = sumTextsLength(token.children) > 15 || countNodesF(token.children) > 5;
-					const isMany = motionCount > 5;
+					const isLong = sumTextsLength(token.children) > 100 || countNodesF(token.children) > 20;
+					const isMany = motionCount > 50;
 					return (createElement as any)('span', {
 						attrs: {
 							style: 'display:inline-block'
@@ -176,8 +176,8 @@ export default Vue.component('misskey-flavored-markdown', {
 
 				case 'spin': {
 					motionCount++;
-					const isLong = sumTextsLength(token.children) > 10 || countNodesF(token.children) > 5;
-					const isMany = motionCount > 5;
+					const isLong = sumTextsLength(token.children) > 100 || countNodesF(token.children) > 20;
+					const isMany = motionCount > 50;
 					const direction =
 						token.node.props.attr == 'left' ? 'reverse' :
 						token.node.props.attr == 'alternate' ? 'alternate' :
@@ -194,8 +194,8 @@ export default Vue.component('misskey-flavored-markdown', {
 
 				case 'jump': {
 					motionCount++;
-					const isLong = sumTextsLength(token.children) > 30 || countNodesF(token.children) > 5;
-					const isMany = motionCount > 5;
+					const isLong = sumTextsLength(token.children) > 100 || countNodesF(token.children) > 20;
+					const isMany = motionCount > 50;
 					return (createElement as any)('span', {
 						attrs: {
 							style: (this.$store.state.settings.disableAnimatedMfm || isLong || isMany) ?
