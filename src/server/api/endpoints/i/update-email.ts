@@ -9,6 +9,8 @@ import config from '../../../../config';
 import * as ms from 'ms';
 import * as bcrypt from 'bcryptjs';
 import { apiLogger } from '../../logger';
+import smime from '../../../../misc/smime';
+import email from '../../../../misc/email';
 
 export const meta = {
 	requireCredential: true,
@@ -55,8 +57,8 @@ export default define(meta, async (ps, user) => {
 	// Publish meUpdated event
 	publishMainStream(user._id, 'meUpdated', iObj);
 
-	if (ps.email != null) {
-		const code = rndstr('a-z0-9', 16);
+	if (ps.email) {
+		const code = rndstr('a-z0-9', 64);
 
 		await User.update(user._id, {
 			$set: {
@@ -64,9 +66,11 @@ export default define(meta, async (ps, user) => {
 			}
 		});
 
+		const link = `${config.url}/verify-email/${code}`;
+
 		const meta = await fetchMeta();
 
-		const enableAuth = meta.smtpUser != null && meta.smtpUser !== '';
+		const enableAuth = meta.smtpUser && meta.smtpUser.length;
 
 		const transporter = nodemailer.createTransport({
 			host: meta.smtpHost,
@@ -79,13 +83,13 @@ export default define(meta, async (ps, user) => {
 			} : undefined
 		});
 
-		const link = `${config.url}/verify-email/${code}`;
+		transporter.use('stream', smime);
 
 		transporter.sendMail({
 			from: meta.email,
 			to: ps.email,
 			subject: meta.name,
-			text: `To verify email, please click this link: ${link}`
+			html: email('verify', user.username, link)
 		}, (error, info) => {
 			if (error) {
 				apiLogger.error(error);
