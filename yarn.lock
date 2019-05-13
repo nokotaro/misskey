@@ -4323,14 +4323,14 @@ filed@0.2.1:
   resolved "https://registry.yarnpkg.com/filed/-/filed-0.2.1.tgz#20f2a29bff45178fb367af4c1a2fdbbc70a5040c"
   integrity sha512-U0bUGCWngm8d1gZ82/DRJyHgCRppoJqNEE8gx8Pdu42qXMmtU2dJ/wivXdDyI1LVijEExCMCCwORnFLDsmbngg==
   dependencies:
-    mime "^1.6.0"
+    mime "1.2.6"
 
 filed@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/filed/-/filed-0.1.0.tgz#b0f626472a2366dc1194537a4eea7e7a89f3c735"
   integrity sha1-sPYmRyojZtwRlFN6Tup+eonzxzU=
   dependencies:
-    mime "^1.6.0"
+    mime ">= 1.2.6"
 
 filename-reserved-regex@^2.0.0:
   version "2.0.0"
@@ -7084,15 +7084,15 @@ mime@2.4.2:
   resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.2.tgz#ce5229a5e99ffc313abac806b482c10e7ba6ac78"
   integrity sha512-zJBfZDkwRu+j3Pdd2aHsR5GfH2jIWhmL1ZzBoc+X+3JEti2hbArWcyJ+1laC1D2/U/W1a/+Cegj0/OnEU2ybjg==
 
-"mime@>= 1.2.6", mime@^2.0.3, mime@^2.4.0:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.1.tgz#19eb7357bebbda37df585b14038347721558c715"
-  integrity sha512-VRUfmQO0rCd3hKwBymAn3kxYzBHr3I/wdVMywgG3HhXOwrCQgN84ZagpdTm2tZ4TNtwsSmyJWYO88mb5XvzGqQ==
-
 mime@^1.3.4, mime@^1.4.1, mime@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
+
+mime@^2.0.3, mime@^2.4.0:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.1.tgz#19eb7357bebbda37df585b14038347721558c715"
+  integrity sha512-VRUfmQO0rCd3hKwBymAn3kxYzBHr3I/wdVMywgG3HhXOwrCQgN84ZagpdTm2tZ4TNtwsSmyJWYO88mb5XvzGqQ==
 
 mimic-fn@^1.0.0:
   version "1.2.0"
@@ -7505,6 +7505,11 @@ node-fetch@^2.3.0:
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.3.0.tgz#1a1d940bbfb916a1d3e0219f037e89e71f8c5fa5"
   integrity sha512-MOd8pV3fxENbryESLgVIeaGKrdl+uaYhCSSVkjeOb/31/njTpcis5aWfdqgNlHIrKOLRbMnfPINPOML2CIFeXA==
 
+node-forge@^0.7.5:
+  version "0.7.6"
+  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.7.6.tgz#fdf3b418aee1f94f0ef642cd63486c77ca9724ac"
+  integrity sha512-sol30LUpz1jQFBjOKwbjxijiE3b6pjd74YwfD0fJOKPjF+fONKb2Yg8rYgS6+bK6VDl+/wfr4IYpC7jDzLUIfw==
+
 node-libs-browser@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/node-libs-browser/-/node-libs-browser-2.2.0.tgz#c72f60d9d46de08a940dedbb25f3ffa2f9bbaa77"
@@ -7570,6 +7575,13 @@ node-schedule@1.3.2:
     cron-parser "^2.7.3"
     long-timeout "0.1.1"
     sorted-array-functions "^1.0.0"
+
+nodemailer-smime@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/nodemailer-smime/-/nodemailer-smime-1.1.0.tgz#67479b9c1796150cf8a5b4a14d22d4bb466c677c"
+  integrity sha512-xl31FYBwqLXJ8Cj2NvoNgipwv0Kmpwvxsw9WcLH2R0f4jkSGNzhDbnQgTwmar+DTp5qqech7yv+EVGC9+E86sA==
+  dependencies:
+    node-forge "^0.7.5"
 
 nodemailer@6.1.1:
   version "6.1.1"
@@ -9275,6 +9287,11 @@ redis-errors@^1.0.0, redis-errors@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/redis-errors/-/redis-errors-1.2.0.tgz#eb62d2adb15e4eaf4610c04afe1529384250abad"
   integrity sha1-62LSrbFeTq9GEMBK/hUpOEJQq60=
+
+redis-lock@0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/redis-lock/-/redis-lock-0.1.4.tgz#e83590bee22b5f01cdb65bfbd88d988045356272"
+  integrity sha512-7/+zu86XVQfJVx1nHTzux5reglDiyUCDwmW7TSlvVezfhH2YLc/Rc8NE0ejQG+8/0lwKzm29/u/4+ogKeLosiA==
 
 redis-parser@^2.6.0:
   version "2.6.0"
@@ -11375,7 +11392,7 @@ video-thumbnail-generator@1.1.3:
     bluebird "3.5.0"
     del "2.2.2"
     fluent-ffmpeg "2.1.0"
-    lodash "4.17.11"
+    lodash "4.17.4"
     moment "2.22.2"
 
 vinyl-fs@^3.0.0, vinyl-fs@^3.0.3:
