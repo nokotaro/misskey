@@ -94,7 +94,7 @@
 		"@types/rimraf": "2.0.2",
 		"@types/seedrandom": "2.4.28",
 		"@types/sharp": "0.22.1",
-		"@types/showdown": "1.9.2",
+		"@types/showdown": "1.9.3",
 		"@types/speakeasy": "2.0.4",
 		"@types/systeminformation": "3.23.1",
 		"@types/through2": "2.0.34",
