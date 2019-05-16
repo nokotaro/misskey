@@ -156,7 +156,8 @@ router.get('/@:user', async (ctx, next) => {
 		const meta = await fetchMeta();
 		await ctx.render('user', {
 			user,
-			instanceName: meta.name
+			instanceName: meta.name,
+			instanceDescription: meta.description
 		});
 		ctx.set('Cache-Control', 'public, max-age=180');
 	} else {
