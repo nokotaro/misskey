@@ -12,7 +12,9 @@
 		@click.prevent="onClick"
 		:title="video.name"
 	>
-		<fa :icon="['fal', 'play-circle']"/>
+		<div>
+			<fa :icon="['fal', 'play-circle']"/>
+		</div>
 	</a>
 </div>
 </template>
@@ -81,6 +83,15 @@ export default Vue.extend({
 		background-size cover
 		width 100%
 		height 100%
+
+		> .div
+			align-items center
+			background var(--modalBackdrop)
+			border-radius 6px
+			display flex
+			height 96px
+			justify-content center
+			width 96px
 
 .uofhebxjdgksfmltszlxurtjnjjsvioh
 	display flex
