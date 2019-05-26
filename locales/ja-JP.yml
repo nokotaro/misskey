@@ -858,7 +858,7 @@ common/views/widgets/tips.vue:
 common/views/pages/not-found.vue:
   page-not-found: "ページが見つかりませんでした"
 
-common/views/pages/follow.vue:
+common/views/pages/reset-password.vue:
   signed-in-as: "{}としてサインイン中"
   following: "フォロー中"
   follow: "フォロー"

@@ -477,7 +477,7 @@ common/views/widgets/tips.vue:
   tips-line21: "También puedes usar la API para desarrollar tus propios bots."
   tips-line24: "twista inició en 2019."
   tips-line25: "Puedes recibir notificaciones incluso si twista no está abierto en un navegador compatible."
-common/views/pages/follow.vue:
+common/views/pages/reset-password.vue:
   signed-in-as: "Autenticado como {}"
   following: "Siguiendo"
   follow: "Seguir"

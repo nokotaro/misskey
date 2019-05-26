@@ -213,7 +213,7 @@ common/views/widgets/posts-monitor.vue:
 common/views/widgets/server.vue:
   title: "Serverinformatie"
   toggle: "Schakelen tussen weergaven"
-common/views/pages/follow.vue:
+common/views/pages/reset-password.vue:
   signed-in-as: "Ingelogd als {}"
   follow: "Volgend"
 desktop:

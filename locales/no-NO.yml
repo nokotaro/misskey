@@ -203,7 +203,7 @@ common/views/widgets/calendar.vue:
 common/views/widgets/memo.vue:
   title: "Notis"
   save: "Lagre"
-common/views/pages/follow.vue:
+common/views/pages/reset-password.vue:
   follow: "Følg"
 desktop:
   banner: "Banner"

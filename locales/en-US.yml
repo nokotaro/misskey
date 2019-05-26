@@ -759,7 +759,7 @@ common/views/widgets/tips.vue:
   tips-line25: "In a browser compatible with notification features, you can receive notifications in case twista is not open"
 common/views/pages/not-found.vue:
   page-not-found: "The page has not been found"
-common/views/pages/follow.vue:
+common/views/pages/reset-password.vue:
   signed-in-as: "Signed in as {}"
   following: "Following"
   follow: "Follow"

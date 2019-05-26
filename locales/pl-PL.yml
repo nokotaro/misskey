@@ -562,7 +562,7 @@ common/views/widgets/tips.vue:
   tips-line25: "Możesz otrzymywać powiadomienia nawet jeżeli Misskey nie jest otwarty w obsługiwanej przeglądarce."
 common/views/pages/not-found.vue:
   page-not-found: "Strona nie została znaleziona"
-common/views/pages/follow.vue:
+common/views/pages/reset-password.vue:
   signed-in-as: "Zalogowany jako {}"
   following: "Śledzisz"
   follow: "Śledź"

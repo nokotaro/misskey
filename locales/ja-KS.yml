@@ -532,7 +532,7 @@ common/views/widgets/tips.vue:
   tips-line21: "APIをつこてbotの開発なども行えるで"
   tips-line24: "twistaは2019年にサービスを開始したんよ"
   tips-line25: "対応ブラウザやったらtwistaを開いとらんでも通知を受け取れんで"
-common/views/pages/follow.vue:
+common/views/pages/reset-password.vue:
   signed-in-as: "{}としてサインイン中"
   following: "フォローしとる"
   follow: "フォロー"

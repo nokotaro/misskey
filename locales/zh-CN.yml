@@ -718,7 +718,7 @@ common/views/widgets/tips.vue:
   tips-line25: "在与通知功能兼容的浏览器中，您可以在twista未打开的情况下接收通知"
 common/views/pages/not-found.vue:
   page-not-found: "您要找的网页不存在。"
-common/views/pages/follow.vue:
+common/views/pages/reset-password.vue:
   signed-in-as: "用 {}登录"
   following: "正在关注"
   follow: "关注"

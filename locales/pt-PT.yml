@@ -167,7 +167,7 @@ common/views/widgets/posts-monitor.vue:
   title: "Gráfico de publicações"
 common/views/widgets/memo.vue:
   title: "Nota adesiva"
-common/views/pages/follow.vue:
+common/views/pages/reset-password.vue:
   follow: "Seguindo"
 desktop/views/components/choose-file-from-drive-window.vue:
   upload: "Envie arquivos do seu dispositivo"
