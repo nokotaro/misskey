@@ -55,7 +55,6 @@ type IUserBase = {
 	wallpaperUrl?: string;
 	data: any;
 	description: string;
-	lang?: string;
 	pinnedNoteIds: mongo.ObjectID[];
 	emojis?: string[];
 	tags?: string[];
@@ -350,6 +349,8 @@ export const pack = (
 
 	delete _user.usernameLower;
 	delete _user.emailVerifyCode;
+
+	delete _user.lang;	// 廃止のため
 
 	if (_user.host == null) {
 		// Remove private properties

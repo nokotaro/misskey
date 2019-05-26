@@ -75,7 +75,7 @@
 				<p class="count" v-if="appearNote.renoteCount">{{ appearNote.renoteCount }}</p>
 			</button>
 			-->
-			<button v-if="['public', 'home'].includes(appearNote.visibility)" class="renoteButton" @click="renote()" :title="$t('renote')">
+			<button v-if="['public', 'home', 'followers'].includes(appearNote.visibility)" class="renoteButton" @click="renote()" :title="$t('renote')">
 				<fa :icon="['fal', 'retweet']"/>
 				<p class="count" v-if="appearNote.renoteCount">{{ appearNote.renoteCount }}</p>
 			</button>

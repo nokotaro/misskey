@@ -29,33 +29,34 @@
 				<ui-radio v-model="navbar" value="right">{{ $t('@._settings.navbar-position-right') }}</ui-radio>
 			</section>
 			<section>
-				<ui-switch v-model="useShadow">{{ $t('@._settings.use-shadow') }}</ui-switch>
-				<ui-switch v-model="roundedCorners">{{ $t('@._settings.rounded-corners') }}</ui-switch>
+				<ui-switch v-model="useShadow" v-if="isAdvanced">{{ $t('@._settings.use-shadow') }}</ui-switch>
+				<ui-switch v-model="roundedCorners" v-if="isAdvanced">{{ $t('@._settings.rounded-corners') }}</ui-switch>
 				<ui-switch v-model="circleIcons">{{ $t('@._settings.circle-icons') }}</ui-switch>
 				<ui-switch v-model="reduceMotion">{{ $t('@._settings.reduce-motion') }}</ui-switch>
-				<ui-switch v-model="contrastedAcct">{{ $t('@._settings.contrasted-acct') }}</ui-switch>
-				<ui-switch v-model="showFullAcct">{{ $t('@._settings.show-full-acct') }}</ui-switch>
+				<ui-switch v-model="contrastedAcct" v-if="isAdvanced">{{ $t('@._settings.contrasted-acct') }}</ui-switch>
+				<ui-switch v-model="showFullAcct" v-if="isAdvanced">{{ $t('@._settings.show-full-acct') }}</ui-switch>
 				<ui-switch v-model="showVia">{{ $t('@._settings.show-via') }}</ui-switch>
-				<ui-switch v-model="useOsDefaultEmojis">{{ $t('@._settings.use-os-default-emojis') }}</ui-switch>
+				<ui-switch v-model="useOsDefaultEmojis" v-if="isAdvanced">{{ $t('@._settings.use-os-default-emojis') }}</ui-switch>
 				<ui-switch v-model="iLikeSushi">{{ $t('@._settings.i-like-sushi') }}</ui-switch>
 			</section>
 			<section>
-				<ui-switch v-model="suggestRecentHashtags">{{ $t('@._settings.suggest-recent-hashtags') }}</ui-switch>
+				<ui-switch v-model="suggestRecentHashtags" v-if="isAdvanced">{{ $t('@._settings.suggest-recent-hashtags') }}</ui-switch>
 				<ui-switch v-model="showClockOnHeader" v-if="!$root.isMobile">{{ $t('@._settings.show-clock-on-header') }}</ui-switch>
 				<ui-switch v-model="alwaysShowNsfw">{{ $t('@._settings.always-show-nsfw') }}</ui-switch>
+				<ui-switch v-model="loadRawImages" v-if="isAdvanced">{{ $t('@.load-raw-images') }}</ui-switch>
 				<ui-switch v-model="showReplyTarget">{{ $t('@._settings.show-reply-target') }}</ui-switch>
 				<ui-switch v-model="disableAnimatedMfm">{{ $t('@._settings.disable-animated-mfm') }}</ui-switch>
 				<ui-switch v-model="disableShowingAnimatedImages">{{ $t('@._settings.disable-showing-animated-images') }}</ui-switch>
-				<ui-switch v-model="remainDeletedNote">{{ $t('@._settings.remain-deleted-note') }}</ui-switch>
-				<ui-switch v-model="dynamicView">{{ $t('@._settings.dynamic-view') }}</ui-switch>
+				<ui-switch v-model="remainDeletedNote" v-if="isAdvanced">{{ $t('@._settings.remain-deleted-note') }}</ui-switch>
+				<ui-switch v-model="dynamicView" v-if="isAdvanced">{{ $t('@._settings.dynamic-view') }}</ui-switch>
 			</section>
-			<section>
+			<section v-if="isAdvanced">
 				<header>{{ $t('@._settings.line-width') }}</header>
 				<ui-radio v-model="lineWidth" :value="0.5">{{ $t('@._settings.line-width-thin') }}</ui-radio>
 				<ui-radio v-model="lineWidth" :value="1">{{ $t('@._settings.line-width-normal') }}</ui-radio>
 				<ui-radio v-model="lineWidth" :value="2">{{ $t('@._settings.line-width-thick') }}</ui-radio>
 			</section>
-			<section>
+			<section v-if="isAdvanced">
 				<header>{{ $t('@._settings.font-size') }}</header>
 				<ui-radio v-model="fontSize" :value="-2">{{ $t('@._settings.font-size-x-small') }}</ui-radio>
 				<ui-radio v-model="fontSize" :value="-1">{{ $t('@._settings.font-size-small') }}</ui-radio>
@@ -79,7 +80,7 @@
 				<ui-radio v-model="deckColumnAlign" value="left">{{ $t('@._settings.deck-column-align-left') }}</ui-radio>
 				<ui-radio v-model="deckColumnAlign" value="flexible">{{ $t('@._settings.deck-column-align-flexible') }}</ui-radio>
 			</section>
-			<section>
+			<section v-if="isAdvanced">
 				<header>{{ $t('@._settings.deck-column-width') }}</header>
 				<ui-radio v-model="deckColumnWidth" value="narrow">{{ $t('@._settings.deck-column-width-narrow') }}</ui-radio>
 				<ui-radio v-model="deckColumnWidth" value="narrower">{{ $t('@._settings.deck-column-width-narrower') }}</ui-radio>
@@ -87,7 +88,7 @@
 				<ui-radio v-model="deckColumnWidth" value="wider">{{ $t('@._settings.deck-column-width-wider') }}</ui-radio>
 				<ui-radio v-model="deckColumnWidth" value="wide">{{ $t('@._settings.deck-column-width-wide') }}</ui-radio>
 			</section>
-			<section>
+			<section v-if="isAdvanced">
 				<ui-switch v-model="games_reversi_showBoardLabels">{{ $t('@._settings.show-reversi-board-labels') }}</ui-switch>
 				<ui-switch v-model="games_reversi_useAvatarStones">{{ $t('@._settings.use-avatar-reversi-stones') }}</ui-switch>
 			</section>
@@ -102,13 +103,13 @@
 				<ui-switch v-model="fetchOnScroll">{{ $t('@._settings.fetch-on-scroll') }}
 					<template #desc>{{ $t('@._settings.fetch-on-scroll-desc') }}</template>
 				</ui-switch>
-				<ui-switch v-model="keepCw">{{ $t('@._settings.keep-cw') }}
+				<ui-switch v-model="keepCw" v-if="isAdvanced">{{ $t('@._settings.keep-cw') }}
 					<template #desc>{{ $t('@._settings.keep-cw-desc') }}</template>
 				</ui-switch>
 				<ui-switch v-if="$root.isMobile" v-model="disableViaMobile">{{ $t('@._settings.disable-via-mobile') }}</ui-switch>
 			</section>
 
-			<section>
+			<section v-if="isAdvanced">
 				<header>{{ $t('@._settings.timeline') }}</header>
 				<ui-switch v-model="showMyRenotes">{{ $t('@._settings.show-my-renotes') }}</ui-switch>
 				<ui-switch v-model="showRenotedMyNotes">{{ $t('@._settings.show-renoted-my-notes') }}</ui-switch>
@@ -130,9 +131,22 @@
 						<option value="local-followers">{{ $t('@.note-visibility.local-followers') }}</option>
 					</ui-select>
 				</section>
+				<section>
+					<header>{{ $t('@._settings.secondary-note-visibility') }}</header>
+					<ui-select v-model="secondaryNoteVisibility">
+						<option value="none">None</option>
+						<option value="public">{{ $t('@.note-visibility.public') }}</option>
+						<option value="home">{{ $t('@.note-visibility.home') }}</option>
+						<option value="followers">{{ $t('@.note-visibility.followers') }}</option>
+						<option value="specified">{{ $t('@.note-visibility.specified') }}</option>
+						<option value="local-public">{{ $t('@.note-visibility.local-public') }}</option>
+						<option value="local-home">{{ $t('@.note-visibility.local-home') }}</option>
+						<option value="local-followers">{{ $t('@.note-visibility.local-followers') }}</option>
+					</ui-select>
+				</section>
 			</section>
 
-			<section>
+			<section v-if="isAdvanced">
 				<header>{{ $t('@._settings.web-search-engine') }}</header>
 				<ui-input v-model="webSearchEngine">{{ $t('@._settings.web-search-engine') }}<template #desc>{{ $t('@._settings.web-search-engine-desc') }}</template></ui-input>
 			</section>
@@ -145,9 +159,9 @@
 				<ui-switch v-model="enableSounds">{{ $t('@._settings.enable-sounds') }}
 					<template #desc>{{ $t('@._settings.enable-sounds-desc') }}</template>
 				</ui-switch>
-				<ui-switch :disabled="!enableSounds" v-model="enableSoundsInTimeline">{{ 'Timeline' }}
+				<ui-switch style="margin-left: 2em" :disabled="!enableSounds" v-model="enableSoundsInTimeline">{{ 'Timeline' }}
 				</ui-switch>
-				<ui-switch :disabled="!enableSounds" v-model="enableSoundsInNotifications">{{ 'Notifications' }}
+				<ui-switch style="margin-left: 2em" :disabled="!enableSounds" v-model="enableSoundsInNotifications">{{ 'Notifications' }}
 				</ui-switch>
 				<label>{{ $t('@._settings.volume') }}</label>
 				<input type="range"
@@ -247,8 +261,11 @@
 		<ui-card>
 			<template #title><fa :icon="['fal', 'cogs']"/> {{ $t('@._settings.advanced-settings') }}</template>
 			<section>
-				<ui-switch v-model="debug">
+				<ui-switch v-model="debug" v-if="isAdvanced">
 					{{ $t('@._settings.debug-mode') }}<template #desc>{{ $t('@._settings.debug-mode-desc') }}</template>
+				</ui-switch>
+				<ui-switch v-model="showAdvancedSettings">
+					Show advanced settings
 				</ui-switch>
 			</section>
 		</ui-card>
@@ -311,6 +328,10 @@ export default Vue.extend({
 		};
 	},
 	computed: {
+		isAdvanced(): boolean {
+			return this.$store.state.device.showAdvancedSettings;
+		}
+
 		useOsDefaultEmojis: {
 			get() { return this.$store.state.device.useOsDefaultEmojis; },
 			set(value) { this.$store.commit('device/set', { key: 'useOsDefaultEmojis', value }); }
@@ -366,9 +387,19 @@ export default Vue.extend({
 			set(value) { this.$store.commit('device/set', { key: 'debug', value }); }
 		},
 
+		showAdvancedSettings: {
+			get() { return this.$store.state.device.showAdvancedSettings; },
+			set(value) { this.$store.commit('device/set', { key: 'showAdvancedSettings', value }); }
+		},
+
 		alwaysShowNsfw: {
 			get() { return this.$store.state.device.alwaysShowNsfw; },
 			set(value) { this.$store.commit('device/set', { key: 'alwaysShowNsfw', value }); }
+		},
+
+		loadRawImages: {
+			get() { return this.$store.state.device.loadRawImages; },
+			set(value) { this.$store.commit('device/set', { key: 'loadRawImages', value }); }
 		},
 
 		postStyle: {
@@ -414,6 +445,11 @@ export default Vue.extend({
 		defaultNoteVisibility: {
 			get() { return this.$store.state.settings.defaultNoteVisibility; },
 			set(value) { this.$store.dispatch('settings/set', { key: 'defaultNoteVisibility', value }); }
+		},
+
+		secondaryNoteVisibility: {
+			get() { return this.$store.state.settings.secondaryNoteVisibility || 'none'; },
+			set(value) { this.$store.dispatch('settings/set', { key: 'secondaryNoteVisibility', value }); }
 		},
 
 		webSearchEngine: {

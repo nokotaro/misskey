@@ -17,6 +17,8 @@ export default (object: any, note: INote) => {
 	} else if (note.visibility == 'home') {
 		to = [`${attributedTo}/followers`];
 		cc = ['https://www.w3.org/ns/activitystreams#Public'];
+	} else if (note.visibility == 'followers') {
+		to = [`${attributedTo}/followers`];
 	} else {
 		return null;
 	}

@@ -55,11 +55,7 @@
 					<span v-if="rating === '18'"><fa :icon="['fal', 'person-booth']"/></span>
 				</button>
 				<button class="visibility" @click="setVisibility" ref="visibilityButton">
-					<span v-if="visibility === 'public'"><fa :icon="['fal', 'globe']"/></span>
-					<span v-if="visibility === 'home'"><fa :icon="['fal', 'home']"/></span>
-					<span v-if="visibility === 'followers'"><fa :icon="['fal', 'unlock']"/></span>
-					<span v-if="visibility === 'specified'"><fa :icon="['fal', 'envelope']"/></span>
-					<span v-if="localOnly" class="localOnly"><fa :icon="['fal', 'heart']"/></span>
+					<x-visibility-icon :v="visibility" :localOnly="localOnly"/>
 				</button>
 			</footer>
 			<input ref="file" class="file" type="file" multiple="multiple" @change="onChangeFile"/>
@@ -85,11 +81,13 @@ import { length } from 'stringz';
 import { toASCII } from 'punycode';
 import extractMentions from '../../../../../misc/extract-mentions';
 import XPostFormAttaches from '../../../common/views/components/post-form-attaches.vue';
+import XVisibilityIcon from '../../../common/views/components/visibility-icon.vue';
 
 export default Vue.extend({
 	i18n: i18n('mobile/views/components/post-form.vue'),
 	components: {
-		XPostFormAttaches
+		XPostFormAttaches,
+		XVisibilityIcon,
 	},
 
 	props: {
@@ -132,6 +130,7 @@ export default Vue.extend({
 			visibleUsers: [],
 			localOnly: false,
 			rating: null,
+			secondaryNoteVisibility: 'none',
 			useCw: false,
 			cw: null,
 			usePostAs: false,
@@ -228,6 +227,8 @@ export default Vue.extend({
 		// デフォルト公開範囲
 		this.applyVisibility(this.$store.state.settings.rememberNoteVisibility ? (this.$store.state.device.visibility || this.$store.state.settings.defaultNoteVisibility) : this.$store.state.settings.defaultNoteVisibility);
 
+		this.secondaryNoteVisibility = this.$store.state.settings.secondaryNoteVisibility;
+
 		// 公開以外へのリプライ時は元の公開範囲を引き継ぐ
 		if (this.reply && ['home', 'followers', 'specified'].includes(this.reply.visibility)) {
 			this.visibility = this.reply.visibility;
@@ -290,6 +291,10 @@ export default Vue.extend({
 		},
 
 		attachMedia(driveFile) {
+			if (driveFile.error) {
+				this.$notify(driveFile.error.message);
+				return;
+			}
 			this.files.push(driveFile);
 			this.$emit('change-attached-files', this.files);
 		},
@@ -363,7 +368,21 @@ export default Vue.extend({
 			this.$emit('change-attached-files');
 		},
 
-		post() {
+		post(v: any) {
+			let visibility = this.visibility;
+			let localOnly = this.localOnly;
+
+			if (typeof v == 'string') {
+				const m = v.match(/^local-(.+)/);
+				if (m) {
+					localOnly = true;
+					visibility = m[1];
+				} else {
+					localOnly = false;
+					visibility = v;
+				}
+			}
+
 			this.posting = true;
 			const viaMobile = this.$store.state.settings.disableViaMobile !== true;
 			this.$root.api('notes/create', {
@@ -382,9 +401,9 @@ export default Vue.extend({
 					heading: isNaN(this.geo.heading) ? null : this.geo.heading,
 					speed: this.geo.speed,
 				} : */null,
-				visibility: this.visibility,
+				visibility,
 				visibleUserIds: this.visibility == 'specified' ? this.visibleUsers.map(u => u.id) : undefined,
-				localOnly: this.localOnly,
+				localOnly,
 				rating: this.rating,
 				viaMobile: viaMobile
 			}).then(data => {
@@ -457,8 +476,20 @@ export default Vue.extend({
 					margin 0 8px
 					line-height 50px
 
+				> .secondary
+					margin 8px 6px
+					padding 0 16px
+					line-height 34px
+					vertical-align bottom
+					color var(--text)
+					background var(--buttonBg)
+					border-radius 4px
+
+					&:disabled
+						opacity 0.7
+
 				> .submit
-					margin 8px
+					margin 8px 6px
 					padding 0 16px
 					line-height 34px
 					vertical-align bottom

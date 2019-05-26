@@ -33,6 +33,7 @@ const defaultSettings = {
 	disableAnimatedMfm: false,
 	rememberNoteVisibility: false,
 	defaultNoteVisibility: 'public',
+	secondaryNoteVisibility: null,
 	webSearchEngine: 'https://www.google.com/?#q={{query}}',
 	mutedWords: [],
 	games: {
@@ -64,6 +65,7 @@ const defaultDeviceSettings = {
 	mediaVolume: 0.5,
 	lang: null,
 	debug: false,
+	showAdvancedSettings: false,
 	lightmode: false,
 	loadRawImages: false,
 	alwaysShowNsfw: false,

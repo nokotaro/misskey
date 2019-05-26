@@ -118,8 +118,12 @@ export const mfmLanguage = P.createLanguage({
 		r.rtc,
 		r.motion,
 		r.spin,
+		r.xspin,
+		r.yspin,
 		r.jump,
 		r.flip,
+		r.vflip,
+		r.rotate,
 		r.inlineCode,
 		r.mathInline,
 		r.mention,
@@ -215,8 +219,24 @@ export const mfmLanguage = P.createLanguage({
 			}
 		}).map(x => createTree('spin', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
 	},
+	xspin: r => P.regexp(/<(x(?:spin))>(.+?)<\/\1>/, 2).map(x => createTree('xspin', r.inline.atLeast(1).tryParse(x), {})),
+	yspin: r => P.regexp(/<(y(?:spin))>(.+?)<\/\1>/, 2).map(x => createTree('yspin', r.inline.atLeast(1).tryParse(x), {})),
 	jump: r => P.alt(P.regexp(/<(j(?:ump)?)>(.+?)<\/\1>/, 2), P.regexp(/\{{3}([\s\S]+?)\}{3}/, 1)).map(x => createTree('jump', r.inline.atLeast(1).tryParse(x), {})),
 	flip: r => P.regexp(/<(f(?:lip)?)>(.+?)<\/\1>/, 2).map(x => createTree('flip', r.inline.atLeast(1).tryParse(x), {})),
+	vflip: r => P.regexp(/<(v(?:flip))>(.+?)<\/\1>/, 2).map(x => createTree('vflip', r.inline.atLeast(1).tryParse(x), {})),
+	rotate: r => {
+		return P((input, i) => {
+			const text = input.substr(i);
+			const match = text.match(/^<(r(?:otate))\s+([+-]?\d+)>(.+?)<\/\1>/i);
+
+			return match ?
+				P.makeSuccess(i + match[0].length, {
+					content: match[3],
+					attr: match[2]
+				}) :
+				P.makeFailure(i, 'not a rotate');
+		}).map(x => createTree('rotate', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
+	},
 	center: r => r.startOfLine.then(P.regexp(/<(c(?:enter)?)>([\s\S]+?)<\/\1>/, 2).map(x => createTree('center', r.inline.atLeast(1).tryParse(x), {}))),
 	inlineCode: () => P.regexp(/`([^´\n]+?)`/, 1).map(x => createLeaf('inlineCode', { code: x })),
 	mathBlock: r => r.startOfLine.then(P.regexp(/\\\[([\s\S]+?)\\\]/, 1).map(x => createLeaf('mathBlock', { formula: x.trim() }))),

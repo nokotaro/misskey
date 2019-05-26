@@ -159,6 +159,7 @@ common:
     fetch-on-scroll-desc: "ページを下までスクロールしたときに自動で追加のコンテンツを読み込みます。"
     note-visibility: "投稿の公開範囲"
     default-note-visibility: "デフォルトの公開範囲"
+    secondary-note-visibility: "セカンダリ投稿ボタンの公開範囲"
     remember-note-visibility: "投稿の公開範囲を記憶する"
     web-search-engine: "ウェブ検索エンジン"
     web-search-engine-desc: "例: https://www.google.com/?#q={{query}}"
@@ -368,6 +369,7 @@ auth/views/index.vue:
 
 common/views/pages/explore.vue:
   verified-users: "公式プロデューサー"
+  recommended-users: "おすすめユーザー"
   popular-users: "人気のユーザー"
   recently-updated-users: "最近投稿したユーザー"
   recently-registered-users: "新規ユーザー"
@@ -541,6 +543,8 @@ common/views/components/nav.vue:
 common/views/components/note-menu.vue:
   mention: "メンション"
   detail: "詳細"
+  go-timeline: "タイムラインへ"
+  up-timeline: "タイムラインへ (逆順)"
   copy-content: "内容をコピー"
   copy-link: "リンクをコピー"
   favorite: "お気に入り"
@@ -1198,6 +1202,7 @@ desktop/views/components/ui.header.nav.vue:
 
 desktop/views/components/ui.header.notifications.vue:
   title: "通知"
+  mark-all-as-read: "全て既読にする"
 
 desktop/views/components/ui.header.post.vue:
   post: "新規投稿"
@@ -1366,6 +1371,8 @@ admin/views/charts.vue:
     notes: "投稿の増減 (統合)"
     local-notes: "投稿の増減 (ローカル)"
     remote-notes: "投稿の増減 (リモート)"
+    notes-inc: "投稿の増加数"
+    notes-dec: "投稿の減少数"
     notes-total: "投稿の積算"
     users: "ユーザーの増減"
     users-total: "ユーザーの積算"
@@ -1754,6 +1761,7 @@ mobile/views/components/ui.nav.vue:
   game: "ゲーム"
   admin: "管理"
   about: "twistaについて"
+  mark-all-as-read: "全て既読にする"
 
 mobile/views/pages/drive.vue:
   contextmenu:

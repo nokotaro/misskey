@@ -63,15 +63,12 @@
 		<span v-if="rating === '18'"><fa :icon="['fal', 'person-booth']"/></span>
 	</button>
 	<button class="visibility" :title="$t('visibility')" @click="setVisibility" ref="visibilityButton">
-		<span v-if="visibility === 'public'"><fa :icon="['fal', 'globe']"/></span>
-		<span v-if="visibility === 'home'"><fa :icon="['fal', 'home']"/></span>
-		<span v-if="visibility === 'followers'"><fa :icon="['fal', 'unlock']"/></span>
-		<span v-if="visibility === 'specified'"><fa :icon="['fal', 'envelope']"/></span>
-		<span v-if="localOnly" class="localOnly"><fa :icon="['fal', 'heart']"/></span>
+		<x-visibility-icon :v="visibility" :localOnly="localOnly"/>
 	</button>
 	<p class="text-count" :class="{ over: trimmedLength(concatenated) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(concatenated) }}</p>
 	<ui-button primary :wait="posting" class="submit" :disabled="!canPost" @click="post">
-		{{ posting ? $t('posting') : submitText }}<mk-ellipsis v-if="posting"/>
+		{{ posting ? $t('posting') : submitText }}
+		<mk-ellipsis v-if="posting"/>
 	</ui-button>
 	<input ref="file" type="file" multiple="multiple" tabindex="-1" @change="onChangeFile"/>
 	<div class="dropzone" v-if="draghover"></div>
@@ -92,6 +89,7 @@ import { length } from 'stringz';
 import { toASCII } from 'punycode';
 import extractMentions from '../../../../../misc/extract-mentions';
 import XPostFormAttaches from '../../../common/views/components/post-form-attaches.vue';
+import XVisibilityIcon from '../../../common/views/components/visibility-icon.vue';
 
 export default Vue.extend({
 	i18n: i18n('desktop/views/components/post-form.vue'),
@@ -99,7 +97,8 @@ export default Vue.extend({
 	components: {
 		MkVisibilityChooser,
 		MkRatingChooser,
-		XPostFormAttaches
+		XPostFormAttaches,
+		XVisibilityIcon,
 	},
 
 	props: {
@@ -147,6 +146,7 @@ export default Vue.extend({
 			visibleUsers: [],
 			localOnly: false,
 			rating: null,
+			secondaryNoteVisibility: 'none',
 			autocomplete: null,
 			draghover: false,
 			recentHashtags: JSON.parse(localStorage.getItem('hashtags') || '[]'),
@@ -241,6 +241,8 @@ export default Vue.extend({
 		// デフォルト公開範囲
 		this.applyVisibility(this.$store.state.settings.rememberNoteVisibility ? (this.$store.state.device.visibility || this.$store.state.settings.defaultNoteVisibility) : this.$store.state.settings.defaultNoteVisibility);
 
+		this.secondaryNoteVisibility = this.$store.state.settings.secondaryNoteVisibility;
+
 		// 公開以外へのリプライ時は元の公開範囲を引き継ぐ
 		if (this.reply && ['home', 'followers', 'specified'].includes(this.reply.visibility)) {
 			this.visibility = this.reply.visibility;
@@ -314,6 +316,10 @@ export default Vue.extend({
 		},
 
 		attachMedia(driveFile) {
+			if (driveFile.error) {
+				this.$notify(driveFile.error.message);
+				return;
+			}
 			this.files.push(driveFile);
 			this.$emit('change-attached-files', this.files);
 		},
@@ -352,6 +358,8 @@ export default Vue.extend({
 
 		onKeydown(e) {
 			if ((e.which == 10 || e.which == 13) && (e.ctrlKey || e.metaKey) && this.canPost) this.post();
+			if ((e.which == 10 || e.which == 13) && (e.altKey) && this.canPost
+				&& this.secondaryNoteVisibility != null && this.secondaryNoteVisibility != 'none') this.post(this.secondaryNoteVisibility);
 		},
 
 		onPaste(e) {
@@ -463,7 +471,21 @@ export default Vue.extend({
 			});
 		},
 
-		post() {
+		post(v: any) {
+			let visibility = this.visibility;
+			let localOnly = this.localOnly;
+
+			if (typeof v == 'string') {
+				const m = v.match(/^local-(.+)/);
+				if (m) {
+					localOnly = true;
+					visibility = m[1];
+				} else {
+					localOnly = false;
+					visibility = v;
+				}
+			}
+
 			this.posting = true;
 
 			this.$root.api('notes/create', {
@@ -474,9 +496,9 @@ export default Vue.extend({
 				poll: this.poll ? (this.$refs.poll as any).get() : undefined,
 				cw: this.useCw ? this.cw || '' : undefined,
 				as: this.usePostAs && this.postAs ? this.postAs : undefined,
-				visibility: this.visibility,
-				visibleUserIds: this.visibility == 'specified' ? this.visibleUsers.map(u => u.id) : undefined,
-				localOnly: this.localOnly,
+				visibility,
+				visibleUserIds: visibility == 'specified' ? this.visibleUsers.map(u => u.id) : undefined,
+				localOnly,
 				rating: this.rating,
 				geo: /*this.geo ? {
 					coordinates: [this.geo.longitude, this.geo.latitude],
@@ -784,14 +806,15 @@ export default Vue.extend({
 	input[type='file']
 		display none
 
-	.submit
-		display block
-		position absolute
-		bottom 16px
-		right 16px
-		width 110px
-		height 40px
+	footer
+		display flex
+		align-items: center;
+		margin-top: 6px
 
+		> .submit
+			display block
+			margin 4px
+			
 	> .text-count
 		pointer-events none
 		display block
@@ -829,28 +852,54 @@ export default Vue.extend({
 		border-radius 4px
 		opacity 0.7
 
-		&:hover
-			color var(--textHighlighted)
-			opacity 1.0
+		> .secondary
+			display block
+			margin 4px
+			min-width 50px !important
 
-		&:focus
-			&:after
-				content ""
-				pointer-events none
-				position absolute
-				top -5px
-				right -5px
-				bottom -5px
-				left -5px
-				border 2px solid var(--primaryAlpha03)
-				border-radius 8px
+		> .text-count
+			pointer-events none
+			line-height 40px
+			color var(--primaryAlpha05)
+			margin 4px 4px 4px auto
 
-	> .visibility > .localOnly
-		color var(--primary)
-		position absolute
-		top 0
-		right 0.2em
-		transform scale(.8)
+			&.over
+				color #ec3828
+
+		> .upload
+		> .drive
+		> .kao
+		> .poll
+		> .cw
+		> .geo
+		> .visibility
+			display block
+			cursor pointer
+			width 40px
+			height 40px
+			font-size 1em
+			color var(--text)
+			background transparent
+			outline none
+			border solid 1px transparent
+			border-radius 4px
+			opacity 0.7
+
+			&:hover
+				color var(--textHighlighted)
+				opacity 1.0
+
+			&:focus
+				&:after
+					content ""
+					pointer-events none
+					position absolute
+					top -5px
+					right -5px
+					bottom -5px
+					left -5px
+					border 2px solid var(--primaryAlpha03)
+					border-radius 8px
 
 	> .dropzone
 		position absolute

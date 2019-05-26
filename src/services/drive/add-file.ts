@@ -28,6 +28,8 @@ import { IImage, ConvertToJpeg, ConvertToWebp, ConvertToPng } from './image-proc
 import Instance from '../../models/instance';
 import { contentDisposition } from '../../misc/content-disposition';
 import { detectMine } from '../../misc/detect-mine';
+import { DriveConfig } from '../../config/types';
+import { getDriveConfig } from '../../misc/get-drive-config';
 
 const logger = driveLogger.createSubLogger('register', 'yellow');
 
@@ -40,11 +42,11 @@ const logger = driveLogger.createSubLogger('register', 'yellow');
  * @param size Size for original
  * @param metadata
  */
-async function save(path: string, name: string, type: string, hash: string, size: number, metadata: IMetadata): Promise<IDriveFile> {
+async function save(path: string, name: string, type: string, hash: string, size: number, metadata: IMetadata, drive: DriveConfig): Promise<IDriveFile> {
 	// thunbnail, webpublic を必要なら生成
 	const alts = await generateAlts(path, type, !metadata.uri);
 
-	if (config.drive && config.drive.storage == 'minio') {
+	if (drive.storage == 'minio') {
 		//#region ObjectStorage params
 		let [ext] = (name.match(/\.(\w+)$/) || ['']);
 
@@ -54,11 +56,11 @@ async function save(path: string, name: string, type: string, hash: string, size
 			if (type === 'image/webp') ext = '.webp';
 		}
 
-		const baseUrl = config.drive.baseUrl
-			|| `${config.drive.config.useSSL ? 'https' : 'http'}://${config.drive.config.endPoint}${config.drive.config.port ? `:${config.drive.config.port}` : ''}/${config.drive.bucket}`;
+		const baseUrl = drive.baseUrl
+			|| `${drive.config.useSSL ? 'https' : 'http'}://${drive.config.endPoint}${drive.config.port ? `:${drive.config.port}` : ''}/${drive.bucket}`;
 
 		// for original
-		const key = `${config.drive.prefix}/${uuid.v4()}${ext}`;
+		const key = `${drive.prefix}/${uuid.v4()}${ext}`;
 		const url = `${baseUrl}/${key}`;
 
 		// for alts
@@ -71,23 +73,23 @@ async function save(path: string, name: string, type: string, hash: string, size
 		//#region Uploads
 		logger.info(`uploading original: ${key}`);
 		const uploads = [
-			uploadMinio(key, fs.createReadStream(path), type, name)
+			uploadMinio(key, fs.createReadStream(path), type, name, drive)
 		];
 
 		if (alts.webpublic) {
-			webpublicKey = `${config.drive.prefix}/${uuid.v4()}.${alts.webpublic.ext}`;
+			webpublicKey = `${drive.prefix}/${uuid.v4()}.${alts.webpublic.ext}`;
 			webpublicUrl = `${baseUrl}/${webpublicKey}`;
 
 			logger.info(`uploading webpublic: ${webpublicKey}`);
-			uploads.push(uploadMinio(webpublicKey, alts.webpublic.data, alts.webpublic.type, name));
+			uploads.push(uploadMinio(webpublicKey, alts.webpublic.data, alts.webpublic.type, name, drive));
 		}
 
 		if (alts.thumbnail) {
-			thumbnailKey = `${config.drive.prefix}/${uuid.v4()}.${alts.thumbnail.ext}`;
+			thumbnailKey = `${drive.prefix}/${uuid.v4()}.${alts.thumbnail.ext}`;
 			thumbnailUrl = `${baseUrl}/${thumbnailKey}`;
 
 			logger.info(`uploading thumbnail: ${thumbnailKey}`);
-			uploads.push(uploadMinio(thumbnailKey, alts.thumbnail.data, alts.thumbnail.type));
+			uploads.push(uploadMinio(thumbnailKey, alts.thumbnail.data, alts.thumbnail.type, null, drive));
 		}
 
 		await Promise.all(uploads);
@@ -118,7 +120,7 @@ async function save(path: string, name: string, type: string, hash: string, size
 		//#endregion
 
 		return file;
-	} else if (config.drive && config.drive.storage == 'swift') {
+	} else if (drive && drive.storage == 'swift') {
 		let [ext] = (name.match(/\.([a-zA-Z0-9_-]+)$/) || ['']);
 
 		if (ext === '') {
@@ -128,7 +130,7 @@ async function save(path: string, name: string, type: string, hash: string, size
 		}
 
 		const key = `${uuid.v4()}${ext}`;
-		const url = `${config.driveUrl}/swift/${config.drive.container}/${key}`;
+		const url = `${config.driveUrl}/swift/${drive.container}/${key}`;
 
 		let webpublicKey = null as string;
 		let webpublicUrl = null as string;
@@ -139,23 +141,23 @@ async function save(path: string, name: string, type: string, hash: string, size
 		logger.info(`uploading original: ${key}`);
 
 		const uploads = [
-			uploadSwift(key, fs.createReadStream(path), type)
+			uploadSwift(key, fs.createReadStream(path), type, name, drive)
 		];
 
 		if (alts.webpublic) {
 			webpublicKey = `${uuid.v4()}.${alts.webpublic.ext}`;
-			webpublicUrl = `${config.driveUrl}/swift/${config.drive.container}/${webpublicKey}`;
+			webpublicUrl = `${config.driveUrl}/swift/${drive.container}/${webpublicKey}`;
 
 			logger.info(`uploading webpublic: ${webpublicKey}`);
-			uploads.push(uploadSwift(webpublicKey, alts.webpublic.data, alts.webpublic.type));
+			uploads.push(uploadSwift(webpublicKey, alts.webpublic.data, alts.webpublic.type, name, drive));
 		}
 
 		if (alts.thumbnail) {
 			thumbnailKey = `${uuid.v4()}.${alts.thumbnail.ext}`;
-			thumbnailUrl = `${config.driveUrl}/swift/${config.drive.container}/${thumbnailKey}`;
+			thumbnailUrl = `${config.driveUrl}/swift/${drive.container}/${thumbnailKey}`;
 
 			logger.info(`uploading thumbnail: ${thumbnailKey}`);
-			uploads.push(uploadSwift(thumbnailKey, alts.thumbnail.data, alts.thumbnail.type));
+			uploads.push(uploadSwift(thumbnailKey, alts.thumbnail.data, alts.thumbnail.type, null, drive));
 		}
 
 		await Promise.all(uploads);
@@ -265,8 +267,8 @@ export async function generateAlts(path: string, type: string, generateWeb: bool
 /**
  * Upload to ObjectStorage
  */
-async function uploadMinio(key: string, stream: fs.ReadStream | Buffer, type: string, filename?: string) {
-	const minio = new Minio.Client(config.drive.config);
+async function uploadMinio(key: string, stream: fs.ReadStream | Buffer, type: string, filename: string, drive: DriveConfig) {
+	const minio = new Minio.Client(drive.config);
 
 	const metadata = {
 		'Content-Type': type,
@@ -275,17 +277,17 @@ async function uploadMinio(key: string, stream: fs.ReadStream | Buffer, type: st
 
 	if (filename) metadata['Content-Disposition'] = contentDisposition('inline', filename);
 
-	await minio.putObject(config.drive.bucket, key, stream, null, metadata);
+	await minio.putObject(drive.bucket, key, stream, null, metadata);
 }
 
-function uploadSwift(key: string, streamOrBuffer: fs.ReadStream | Buffer, type: string, filename?: string) {
+function uploadSwift(key: string, streamOrBuffer: fs.ReadStream | Buffer, type: string, filename: string, drive: DriveConfig) {
 	return new Promise<void>(async (s, j) => {
 		try {
-			const swift = storage.createClient(config.drive.config);
+			const swift = storage.createClient(drive.config);
 
 			logger.debug('swift client created');
 
-			const container = config.drive.container || 'twista';
+			const container = drive.container || 'twista';
 
 			const containerResponse =
 				await new Promise<storage.Container>(x => swift.getContainer(container, (err, container) => x(err ? null : container))) ||
@@ -604,7 +606,8 @@ export default async function addFile(
 			}
 		}
 	} else {
-		driveFile = await (save(path, detectedName, mime, hash, size, metadata));
+		const drive = getDriveConfig(uri != null);
+		driveFile = await (save(path, detectedName, mime, hash, size, metadata, drive));
 	}
 
 	logger.succ(`drive file has been created ${driveFile._id}`);
@@ -627,6 +630,5 @@ export default async function addFile(
 			}
 		});
 	}
-
 	return driveFile;
 }

@@ -148,6 +148,7 @@ common:
     fetch-on-scroll-desc: "When you scroll down the page, it automatically fetches additional content."
     note-visibility: "Post visibility"
     default-note-visibility: "Default visibility"
+    secondary-note-visibility: "Visibility of secondary post button"
     remember-note-visibility: "Remember post visibility"
     web-search-engine: "Web search engine"
     web-search-engine-desc: "Example: https://www.google.com/?#q={{query}}"
@@ -319,6 +320,7 @@ auth/views/index.vue:
   sign-in: "Please sign in."
 common/views/pages/explore.vue:
   verified-users: "Official accounts"
+  recommended-users: "Recommended users"
   popular-users: "Popular users"
   recently-updated-users: "Recently active users"
   recently-registered-users: "Users who joined recently"
@@ -475,6 +477,8 @@ common/views/components/nav.vue:
 common/views/components/note-menu.vue:
   mention: "Mention"
   detail: "Details"
+  go-timeline: "Go timeline"
+  up-timeline: "Go timeline (reversed)"
   copy-content: "Copy the contents"
   copy-link: "Copy link"
   favorite: "Favorite this note"
@@ -1054,6 +1058,7 @@ desktop/views/components/ui.header.nav.vue:
   game: "Games"
 desktop/views/components/ui.header.notifications.vue:
   title: "Notifications"
+  mark-all-as-read: "Mark all as read"
 desktop/views/components/ui.header.post.vue:
   post: "Compose new Post"
 desktop/views/components/ui.header.search.vue:
@@ -1208,6 +1213,8 @@ admin/views/charts.vue:
     notes: "The number of posts: increase/decrease (Combined)"
     local-notes: "The number of posts: increase/decrease (Local)"
     remote-notes: "The number of posts: increase/decrease (Remote)"
+    notes-inc: "The number of posts: increase"
+    notes-dec: "The number of posts: decrease"
     notes-total: "Total posts"
     users: "The number of users: increase/decrease"
     users-total: "Total users"
@@ -1556,6 +1563,7 @@ mobile/views/components/ui.nav.vue:
   game: "Games"
   admin: "Admin"
   about: "About twista"
+  mark-all-as-read: "Mark all as read"
 mobile/views/pages/drive.vue:
   contextmenu:
     upload: "Upload a file"

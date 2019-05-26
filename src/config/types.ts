@@ -28,14 +28,8 @@ export type Source = {
 		port: number;
 		pass: string;
 	};
-	drive?: {
-		storage: string;
-		bucket?: string;
-		container?: string;
-		prefix?: string;
-		baseUrl?: string;
-		config?: any;
-	};
+	drive?: DriveConfig;
+	remoteDrive?: DriveConfig;
 
 	autoAdmin?: boolean;
 
@@ -51,6 +45,15 @@ export type Source = {
 
 	deliverJobConcurrency?: number;
 	inboxJobConcurrency?: number;
+};
+
+export type DriveConfig = {
+	storage: string;
+	bucket?: string;
+	container?: string;
+	prefix?: string;
+	baseUrl?: string;
+	config?: any;
 };
 
 /**

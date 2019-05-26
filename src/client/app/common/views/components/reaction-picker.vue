@@ -55,6 +55,7 @@ export default Vue.extend({
 		return {
 			title: this.$t('choose-reaction'),
 			enableEmojiReaction: true,
+			recentReaction: null,
 		};
 	},
 
@@ -70,9 +71,11 @@ export default Vue.extend({
 		this.$root.getMeta().then(meta => {
 			this.enableEmojiReaction = meta.enableEmojiReaction;
 			this.$nextTick(() => {
-				if (this.$refs.text) this.$refs.text.focus();
+				if (!this.$root.isMobile && this.$refs.text) this.$refs.text.focus();
 			});
 		});
+
+		this.recentReaction = localStorage.getItem('recentReaction');
 
 		this.$nextTick(() => {
 			const popover = this.$refs.popover as any;

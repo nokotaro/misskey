@@ -84,6 +84,18 @@ export function toHtml(tokens: MfmForest, mentionedRemoteUsers: INote['mentioned
 			return el;
 		},
 
+		xspin(token) {
+			const el = doc.createElement('i');
+			appendChildren(token.children, el);
+			return el;
+		},
+
+		yspin(token) {
+			const el = doc.createElement('i');
+			appendChildren(token.children, el);
+			return el;
+		},
+
 		jump(token) {
 			const el = doc.createElement('i');
 			appendChildren(token.children, el);
@@ -91,6 +103,18 @@ export function toHtml(tokens: MfmForest, mentionedRemoteUsers: INote['mentioned
 		},
 
 		flip(token) {
+			const el = doc.createElement('span');
+			appendChildren(token.children, el);
+			return el;
+		},
+
+		vflip(token) {
+			const el = doc.createElement('span');
+			appendChildren(token.children, el);
+			return el;
+		},
+
+		rotate(token) {
 			const el = doc.createElement('span');
 			appendChildren(token.children, el);
 			return el;
