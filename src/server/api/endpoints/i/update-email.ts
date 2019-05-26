@@ -9,7 +9,7 @@ import config from '../../../../config';
 import * as ms from 'ms';
 import * as bcrypt from 'bcryptjs';
 import { apiLogger } from '../../logger';
-import smime from '../../../../misc/smime';
+// import smime from '../../../../misc/smime';
 import email from '../../../../misc/email';
 
 export const meta = {
