@@ -6,8 +6,9 @@
 	<div v-if="count" class="gird-container">
 		<div :data-count="count" ref="grid">
 			<template v-for="media in mediaList">
-				<mk-media-video :video="media" :key="media.id" v-if="media.type.startsWith('video')"/>
-				<x-image :image="media" :key="media.id" v-else-if="media.type.startsWith('image')" :raw="raw" :count="count"/>
+				<mk-media-video v-if="media.type.startsWith('video')" :video="media" :key="media.id"/>
+				<x-image v-else-if="media.type.startsWith('image') && $store.state.settings.dynamicView" :image="media" :key="media.id" :raw="raw" :count="count"/>
+				<x-image-legacy v-else-if="media.type.startsWith('image')" :image="media" :key="media.id" :raw="raw" :count="count"/>
 			</template>
 		</div>
 	</div>
@@ -18,11 +19,13 @@
 import Vue from 'vue';
 import XBanner from './media-banner.vue';
 import XImage from './media-image.vue';
+import XImageLegacy from './media-image-legacy.vue';
 
 export default Vue.extend({
 	components: {
 		XBanner,
-		XImage
+		XImage,
+		XImageLegacy
 	},
 	props: {
 		mediaList: {
