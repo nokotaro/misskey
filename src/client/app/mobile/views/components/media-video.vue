@@ -58,7 +58,7 @@ export default Vue.extend({
 	width 100%
 	height 100%
 
-	> .div
+	> div
 		align-items center
 		background var(--modalBackdrop)
 		border-radius 6px
