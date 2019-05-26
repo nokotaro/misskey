@@ -88,7 +88,7 @@ common:
   note-visibility:
     public: "公開"
     home: "ホーム"
-    home-desc: "ホームタイムライン以外に見せんとって"
+    home-desc: "ローカルタイムラインに見せんとって"
     followers: "フォロワー"
     followers-desc: "自分のフォロワー以外に見せんとって"
     specified: "ダイレクト"

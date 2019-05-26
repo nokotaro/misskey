@@ -112,7 +112,7 @@ common:
   note-visibility:
     public: "公開"
     home: "ホーム"
-    home-desc: "ホームタイムラインにのみ公開"
+    home-desc: "ローカルタイムラインに対しては非公開"
     followers: "フォロワー"
     followers-desc: "自分のフォロワーにのみ公開"
     specified: "ダイレクト"
