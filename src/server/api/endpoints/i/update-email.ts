@@ -83,7 +83,7 @@ export default define(meta, async (ps, user) => {
 			} : undefined
 		});
 
-		transporter.use('stream', smime);
+		// transporter.use('stream', smime);
 
 		transporter.sendMail({
 			from: meta.email,
