@@ -26,10 +26,7 @@
 					<ui-button class="button ok" inline primary :disabled="wait" grow="1" @click="ok">{{ this.$t(wait ? 'reposting' : 'renote') }}</ui-button>
 					<div ref="visibilityButton">
 						<ui-button class="button ok" inline primary :disabled="wait" shrink="1" @click="setVisibility">
-							<span v-if="visibility === 'public'"><fa :icon="['fal', 'globe']" fixed-width/></span>
-							<span v-if="visibility === 'home'"><fa :icon="['fal', 'home']" fixed-width/></span>
-							<span v-if="visibility === 'followers'"><fa :icon="['fal', 'unlock']" fixed-width/></span>
-							<span v-if="visibility === 'specified'"><fa :icon="['fal', 'envelope']" fixed-width/></span>
+							<x-visibility-icon class="inline" :v="visibility" :localOnly="localOnly" :fixedWidth="true"/>
 							<fa :icon="['fal', 'angle-down']" fixed-width/>
 						</ui-button>
 					</div>
@@ -47,13 +44,15 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import MkVisibilityChooser from '../../../common/views/components/visibility-chooser.vue';
+import XVisibilityIcon from '../../../common/views/components/visibility-icon.vue';
 import { erase } from '../../../../../prelude/array';
 
 export default Vue.extend({
 	i18n: i18n('desktop/views/components/renote-form.vue'),
 
 	components: {
-		MkVisibilityChooser
+		MkVisibilityChooser,
+		XVisibilityIcon
 	},
 
 	props: {
@@ -72,12 +71,6 @@ export default Vue.extend({
 			localOnly: false
 		};
 	},
-
-	computed: {
-		currentVisibility() {
-			return this.localOnly ? `local-${this.visibility}` : this.visibility;
-		}
-	}
 
 	methods: {
 		ok() {
@@ -99,7 +92,8 @@ export default Vue.extend({
 		setVisibility() {
 			const w = this.$root.new(MkVisibilityChooser, {
 				source: this.$refs.visibilityButton,
-				currentVisibility: this.currentVisibility,
+				currentVisibility: this.visibility,
+				currentLocalOnly: this.localOnly,
 				dialog: true
 			});
 			w.$once('chosen', this.applyVisibility);
@@ -226,6 +220,9 @@ export default Vue.extend({
 			display flex
 			padding 12px
 			align-items center
+
+			.inline
+				display inline
 
 			> .quote
 				display block

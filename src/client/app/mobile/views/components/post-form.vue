@@ -325,7 +325,8 @@ export default Vue.extend({
 		setVisibility() {
 			const w = this.$root.new(MkVisibilityChooser, {
 				source: this.$refs.visibilityButton,
-				currentVisibility: this.visibility
+				currentVisibility: this.visibility,
+				currentLocalOnly: this.localOnly
 			});
 			w.$once('chosen', v => {
 				this.applyVisibility(v);

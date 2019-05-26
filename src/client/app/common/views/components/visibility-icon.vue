@@ -1,28 +1,28 @@
 <template>
 	<div>
 		<div class="wrap" v-if="visibility == 'public'">
-			<fa :icon="['fal', 'globe']"/>
+			<fa :icon="['fal', 'globe']" :fixed-width="fixedWidth"/>
 		</div>
 		<div class="wrap" v-else-if="visibility == 'home'">
-			<fa :icon="['fal', 'home']"/>
+			<fa :icon="['fal', 'home']" :fixed-width="fixedWidth"/>
 		</div>
 		<div class="wrap" v-else-if="visibility == 'followers'">
-			<fa :icon="['fal', 'unlock']"/>
+			<fa :icon="['fal', 'unlock']" :fixed-width="fixedWidth"/>
 		</div>
 		<div class="wrap" v-else-if="visibility == 'specified'">
-			<fa :icon="['fal', 'envelope']"/>
+			<fa :icon="['fal', 'envelope']" :fixed-width="fixedWidth"/>
 		</div>
 		<div class="wrap" v-else-if="visibility == 'local-public'">
-			<div><fa :icon="['fal', 'globe']"/></div>
-			<div class="localOnly"><fa :icon="['fal', 'heart']"/></div>
+			<div><fa :icon="['fal', 'globe']" :fixed-width="fixedWidth"/></div>
+			<div class="localOnly"><fa :icon="['fal', 'heart']" :fixed-width="fixedWidth"/></div>
 		</div>
 		<div class="wrap" v-else-if="visibility == 'local-home'">
-			<div><fa :icon="['fal', 'home']"/></div>
-			<div class="localOnly"><fa :icon="['fal', 'heart']"/></div>
+			<div><fa :icon="['fal', 'home']" :fixed-width="fixedWidth"/></div>
+			<div class="localOnly"><fa :icon="['fal', 'heart']" :fixed-width="fixedWidth"/></div>
 		</div>
 		<div class="wrap" v-else-if="visibility == 'local-followers'">
-			<div><fa :icon="['fal', 'unlock']"/></div>
-			<div class="localOnly"><fa :icon="['fal', 'heart']"/></div>
+			<div><fa :icon="['fal', 'unlock']" :fixed-width="fixedWidth"/></div>
+			<div class="localOnly"><fa :icon="['fal', 'heart']" :fixed-width="fixedWidth"/></div>
 		</div>
 	</div>
 </template>
@@ -37,6 +37,11 @@ export default Vue.extend({
 			required: true
 		},
 		localOnly: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		fixedWidth: {
 			type: Boolean,
 			required: false,
 			default: false

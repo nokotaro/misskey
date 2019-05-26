@@ -47,29 +47,39 @@
 		</ui-select>
 	</div>
 	<mk-uploader ref="uploader" @uploaded="attachMedia" @change="onChangeUploadings"/>
-	<button class="upload" :title="$t('attach-media-from-local')" @click="chooseFile"><fa :icon="['fal', 'upload']"/></button>
-	<button class="drive" :title="$t('attach-media-from-drive')" @click="chooseFileFromDrive"><fa :icon="['fal', 'cloud']"/></button>
-	<button class="kao" :title="$t('insert-a-kao')" @click="kao"><fa :icon="['fal', 'cat']"/></button>
-	<button class="poll" :title="$t('create-poll')" @click="poll = !poll"><fa :icon="['fal', 'poll-people']"/></button>
-	<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa :icon="['fal', 'eye-slash']"/></button>
-	<button class="broadcast" :title="$t('use-broadcast')" @click="useBroadcast = !useBroadcast"><fa :icon="['fal', 'bullhorn']"/></button>
-	<button class="post-as" :title="$t('post-as')" @click="usePostAs = !usePostAs" v-if="$store.getters.isSignedIn && ($store.state.i.isAdmin || $store.state.i.isModerator)"><fa :icon="['fal', 'user-ninja']"/></button>
-	<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa :icon="['fal', 'map-marker-alt']"/></button>
-	<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
-		<span v-if="rating === null"><fa :icon="['fal', 'eye']"/></span>
-		<span v-if="rating === '0'"><fa :icon="['fal', 'baby']"/></span>
-		<span v-if="rating === '12'"><fa :icon="['fal', 'child']"/></span>
-		<span v-if="rating === '15'"><fa :icon="['fal', 'people-carry']"/></span>
-		<span v-if="rating === '18'"><fa :icon="['fal', 'person-booth']"/></span>
-	</button>
-	<button class="visibility" :title="$t('visibility')" @click="setVisibility" ref="visibilityButton">
-		<x-visibility-icon :v="visibility" :localOnly="localOnly"/>
-	</button>
-	<p class="text-count" :class="{ over: trimmedLength(concatenated) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(concatenated) }}</p>
-	<ui-button primary :wait="posting" class="submit" :disabled="!canPost" @click="post">
-		{{ posting ? $t('posting') : submitText }}
-		<mk-ellipsis v-if="posting"/>
-	</ui-button>
+
+	<footer>
+		<button class="upload" :title="$t('attach-media-from-local')" @click="chooseFile"><fa :icon="['fal', 'upload']"/></button>
+		<button class="drive" :title="$t('attach-media-from-drive')" @click="chooseFileFromDrive"><fa :icon="['fal', 'cloud']"/></button>
+		<button class="kao" :title="$t('insert-a-kao')" @click="kao"><fa :icon="['fal', 'cat']"/></button>
+		<button class="poll" :title="$t('create-poll')" @click="poll = !poll"><fa :icon="['fal', 'poll-people']"/></button>
+		<button class="cw" :title="$t('hide-contents')" @click="useCw = !useCw"><fa :icon="['fal', 'eye-slash']"/></button>
+		<button class="broadcast" :title="$t('use-broadcast')" @click="useBroadcast = !useBroadcast"><fa :icon="['fal', 'bullhorn']"/></button>
+		<button class="post-as" :title="$t('post-as')" @click="usePostAs = !usePostAs" v-if="$store.getters.isSignedIn && ($store.state.i.isAdmin || $store.state.i.isModerator)"><fa :icon="['fal', 'user-ninja']"/></button>
+		<button class="geo" :title="$t('attach-location-information')" @click="geo ? removeGeo() : setGeo()" v-if="false"><fa :icon="['fal', 'map-marker-alt']"/></button>
+		<button class="rating" :title="$t('rating')" @click="setRating" ref="ratingButton">
+			<span v-if="rating === null"><fa :icon="['fal', 'eye']"/></span>
+			<span v-if="rating === '0'"><fa :icon="['fal', 'baby']"/></span>
+			<span v-if="rating === '12'"><fa :icon="['fal', 'child']"/></span>
+			<span v-if="rating === '15'"><fa :icon="['fal', 'people-carry']"/></span>
+			<span v-if="rating === '18'"><fa :icon="['fal', 'person-booth']"/></span>
+		</button>
+		<p class="text-count" :class="{ over: trimmedLength(concatenated) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(concatenated) }}</p>
+		<ui-buttons class="submit">
+			<ui-button class="button ok" inline primary :wait="posting" :disabled="!canPost" grow="1" @click="post">
+				<fa :icon="['fal', 'paper-plane']"/>
+				<mk-ellipsis v-if="posting"/>
+			</ui-button>
+			<div ref="visibilityButton" :title="$t('visibility')">
+				<ui-button class="button ok" inline primary :disabled="posting" shrink="1" @click="setVisibility">
+					<x-visibility-icon class="inline" :v="visibility" :localOnly="localOnly" :fixedWidth="true"/>
+					<fa :icon="['fal', 'angle-down']" fixed-width/>
+					<mk-ellipsis v-if="posting"/>
+				</ui-button>
+			</div>
+		</ui-buttons>
+	</footer>
+
 	<input ref="file" type="file" multiple="multiple" tabindex="-1" @change="onChangeFile"/>
 	<div class="dropzone" v-if="draghover"></div>
 </div>
@@ -412,7 +422,8 @@ export default Vue.extend({
 		setVisibility() {
 			const w = this.$root.new(MkVisibilityChooser, {
 				source: this.$refs.visibilityButton,
-				currentVisibility: this.visibility
+				currentVisibility: this.visibility,
+				currentLocalOnly: this.localOnly
 			});
 			w.$once('chosen', v => {
 				this.applyVisibility(v);
@@ -808,60 +819,23 @@ export default Vue.extend({
 
 	footer
 		display flex
-		align-items: center;
-		margin-top: 6px
+		align-items center
+		margin-top 6px
 
 		> .submit
-			display block
+			flex 0 0 auto
 			margin 4px
+
+			.button
+				width 60px
+
+			.inline
+				display inline
 			
-	> .text-count
-		pointer-events none
-		display block
-		position absolute
-		bottom 16px
-		right 138px
-		margin 0
-		line-height 40px
-		color var(--primaryAlpha05)
-
-		&.over
-			color #ec3828
-
-	> .upload
-	> .drive
-	> .kao
-	> .poll
-	> .cw
-	> .broadcast
-	> .post-as
-	> .geo
-	> .rating
-	> .visibility
-		display inline-block
-		cursor pointer
-		padding 0
-		margin 8px 4px 0 0
-		width 40px
-		height 40px
-		font-size 1em
-		color var(--text)
-		background transparent
-		outline none
-		border solid 1px transparent
-		border-radius 4px
-		opacity 0.7
-
-		> .secondary
-			display block
-			margin 4px
-			min-width 50px !important
-
 		> .text-count
 			pointer-events none
-			line-height 40px
-			color var(--primaryAlpha05)
 			margin 4px 4px 4px auto
+			color var(--primaryAlpha05)
 
 			&.over
 				color #ec3828
@@ -871,12 +845,14 @@ export default Vue.extend({
 		> .kao
 		> .poll
 		> .cw
+		> .broadcast
+		> .post-as
 		> .geo
+		> .rating
 		> .visibility
 			display block
 			cursor pointer
-			width 40px
-			height 40px
+			flex 0 0 40px
 			font-size 1em
 			color var(--text)
 			background transparent

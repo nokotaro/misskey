@@ -71,6 +71,10 @@ export default Vue.extend({
 			type: String,
 			required: false
 		},
+		currentLocalOnly: {
+			type: Boolean,
+			required: false
+		},
 		dialog: {
 			type: Boolean,
 			required: false
@@ -78,7 +82,7 @@ export default Vue.extend({
 	},
 	data() {
 		return {
-			v: this.$store.state.settings.rememberNoteVisibility ? (this.$store.state.device.visibility || this.$store.state.settings.defaultNoteVisibility) : (this.currentVisibility || this.$store.state.settings.defaultNoteVisibility)
+			v: this.$store.state.settings.rememberNoteVisibility ? (this.$store.state.device.visibility || this.$store.state.settings.defaultNoteVisibility) : ((this.currentLocalOnly ? `local-${this.currentVisibility}` : this.currentVisibility) || this.$store.state.settings.defaultNoteVisibility)
 		}
 	},
 	mounted() {
