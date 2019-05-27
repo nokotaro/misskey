@@ -64,6 +64,10 @@ export default Vue.extend({
 			margin-right 4px
 
 	> div
+		display grid
+		grid repeat(5, 1fr) / auto
+		height 100%
+
 		.chart-move
 			transition transform 1s ease
 
