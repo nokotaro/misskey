@@ -75,9 +75,7 @@
 				</div>
 
 				<div class="trends block">
-					<div>
-						<mk-trends/>
-					</div>
+					<mk-trends/>
 				</div>
 
 				<div class="info block">
@@ -85,7 +83,7 @@
 					<div>
 						<div v-if="meta" class="body">
 							<p><fa :icon="['fal', 'code-commit']" fixed-width/><b> {{ meta.version }}</b></p>
-							<p><fa :icon="['fal', 'user-tie']" fixed-width/><b><a :href="'mailto:' + meta.maintainer.email" target="_blank"> {{ meta.maintainer.name }}</a></b></p>
+							<p><fa :icon="['fal', 'user-tie']" fixed-width/><b><span> </span><a :href="'mailto:' + meta.maintainer.email" target="_blank">{{ meta.maintainer.name }}</a></b></p>
 						</div>
 					</div>
 				</div>
@@ -471,6 +469,9 @@ export default Vue.extend({
 
 				> .trends
 					padding 8px
+
+					> div
+						height 100%
 
 				> .info
 
