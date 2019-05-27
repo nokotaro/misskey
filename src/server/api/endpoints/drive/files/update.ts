@@ -22,7 +22,7 @@ export const meta = {
 	params: {
 		fileId: {
 			validator: $.type(ID),
-			transform: transform,
+			transform,
 			desc: {
 				'ja-JP': '対象のファイルID'
 			}
@@ -30,7 +30,7 @@ export const meta = {
 
 		folderId: {
 			validator: $.optional.nullable.type(ID),
-			transform: transform,
+			transform,
 			default: undefined as any,
 			desc: {
 				'ja-JP': 'フォルダID'
@@ -52,6 +52,16 @@ export const meta = {
 			desc: {
 				'ja-JP': 'このメディアが「閲覧注意」(NSFW)かどうか',
 				'en-US': 'Whether this media is NSFW'
+			}
+		},
+
+		thumbnailId: {
+			validator: $.optional.nullable.type(ID),
+			transform: transform,
+			default: undefined as any,
+			desc: {
+				'ja-JP': 'サムネイルファイルID',
+				'en-US': 'ID of the thumbnail file'
 			}
 		}
 	},
@@ -115,11 +125,29 @@ export default define(meta, async (ps, user) => {
 		}
 	}
 
+	if (ps.thumbnailId !== undefined && file.contentType.startsWith('video/')) {
+		const thumbnail = await DriveFile.findOne({
+			_id: ps.thumbnailId,
+			'metadata.userId': user._id,
+			'metadata.deletedAt': { $exists: false }
+		});
+
+		if (!file.metadata.generatedThumbnailUrl) {
+			file.metadata.generatedThumbnailUrl = file.metadata.thumbnailUrl;
+		}
+
+		file.metadata.thumbnailUrl = typeof thumbnail.contentType === 'string' && thumbnail.contentType.startsWith('image/') ?
+			thumbnail.metadata.thumbnailUrl || thumbnail.metadata.webpublicUrl || thumbnail.metadata.url :
+			file.metadata.generatedThumbnailUrl;
+	}
+
 	await DriveFile.update(file._id, {
 		$set: {
 			filename: file.filename,
 			'metadata.folderId': file.metadata.folderId,
-			'metadata.isSensitive': file.metadata.isSensitive
+			'metadata.isSensitive': file.metadata.isSensitive,
+			'metadata.thumbnailUrl': file.metadata.thumbnailUrl,
+			'metadata.generatedThumbnailUrl': file.metadata.generatedThumbnailUrl
 		}
 	});
 

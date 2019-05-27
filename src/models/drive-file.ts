@@ -49,6 +49,8 @@ export type IMetadata = {
 	 */
 	thumbnailUrl?: string;
 
+	generatedThumbnailUrl?: string;
+
 	/**
 	 * URL for original (web用が生成されてない場合はurlがoriginalを指す)
 	 * * オブジェクトストレージを利用している or リモートサーバーへの直リンクである 場合のみ
@@ -192,6 +194,8 @@ export const pack = (
 	_target.url = getDriveFileUrl(_file);
 	_target.thumbnailUrl = getDriveFileUrl(_file, true);
 	_target.isRemote = _file.metadata.isRemote;
+
+	if (_target.generatedThumbnailUrl) delete _target.generatedThumbnailUrl;
 
 	if (_target.properties == null) _target.properties = {};
 

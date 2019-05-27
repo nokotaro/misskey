@@ -39,6 +39,7 @@ import updateAvatar from '../../api/update-avatar';
 import updateBanner from '../../api/update-banner';
 import { appendQuery } from '../../../../../prelude/url';
 import XFileThumbnail from '../../../common/views/components/drive-file-thumbnail.vue';
+import { ObjectID } from 'mongodb';
 
 export default Vue.extend({
 	i18n: i18n('desktop/views/components/drive.file.vue'),
@@ -58,6 +59,12 @@ export default Vue.extend({
 		},
 		isSelected(): boolean {
 			return this.browser.selectedFiles.some(f => f.id == this.file.id);
+		},
+		isImage(): boolean {
+			return this.file && typeof this.file.type === 'string' && (this.file.type as string).startsWith('image/')
+		},
+		isVideo(): boolean {
+			return this.file && typeof this.file.type === 'string' && (this.file.type as string).startsWith('video/')
 		},
 		title(): string {
 			return `${this.file.name}\n${this.file.type} ${Vue.filter('bytes')(this.file.datasize)}`;
@@ -99,7 +106,7 @@ export default Vue.extend({
 			}, null, {
 				type: 'nest',
 				text: this.$t('contextmenu.else-files'),
-				menu: [{
+				menu: this.isImage() ? [{
 					type: 'item',
 					text: this.$t('contextmenu.set-as-avatar'),
 					action: this.setAsAvatar
@@ -107,7 +114,11 @@ export default Vue.extend({
 					type: 'item',
 					text: this.$t('contextmenu.set-as-banner'),
 					action: this.setAsBanner
-				}]
+				}] : this.isVideo() ? [{
+					type: 'item',
+					text: this.$t('contextmenu.set-thumbnail'),
+					action: this.setThumbnail
+				}] : []
 			}], {
 				closed: () => {
 					this.isContextmenuShowing = false;
@@ -179,6 +190,15 @@ export default Vue.extend({
 
 		setAsBanner() {
 			updateBanner(this.$root)(this.file);
+		},
+
+		setThumbnail() {
+			(this.$chooseDriveFile({
+				multiple: false
+			}) as Promise<{ id: ObjectID }>).then(({ id }) => this.$root.api('drive/files/update', {
+				fileId: this.file.id,
+				thumbnailId: id
+			}))
 		},
 
 		deleteFile() {
