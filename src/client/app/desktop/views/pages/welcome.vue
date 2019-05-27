@@ -13,29 +13,27 @@
 		<div class="body">
 			<div class="main block">
 				<div>
-					<h1 v-if="name != 'twista'">{{ name }}</h1>
-					<h1 v-else><img svg-inline src="../../../../assets/title.svg" :alt="name"></h1>
-
-					<div class="info">
-						<span><b>{{ host }}</b> - <span v-html="$t('powered-by-misskey')"></span></span>
-						<span class="stats" v-if="stats">
-							<span><fa :icon="['fal', 'user']"/> {{ stats.originalUsersCount | number }}</span>
-							<span><fa :icon="['fal', 'pencil-alt']"/> {{ stats.originalNotesCount | number }}</span>
-						</span>
-					</div>
+					<img svg-inline src="../../../../assets/title.svg" :alt="name">
 
 					<div class="desc">
-						<span class="desc" v-html="description || $t('@.about')"></span>
-						<a class="about" @click="about">{{ $t('about') }}</a>
+						<div>
+							<span class="desc" v-html="description || $t('@.about')"></span>
+							<a class="about" @click="about">{{ $t('about') }}</a>
+						</div>
 					</div>
 
-					<p class="sign">
+					<div class="info">
+						<div class="stats" v-if="stats">
+							<div><fa :icon="['fal', 'user']" fixed-width/> {{ stats.originalUsersCount | number }}</div>
+							<div><fa :icon="['fal', 'pencil-alt']" fixed-width/> {{ stats.originalNotesCount | number }}</div>
+						</div>
+					</div>
+
+					<div class="sign">
 						<span class="signup" @click="signup">{{ $t('@.signup') }}</span>
 						<span class="divider">|</span>
 						<span class="signin" @click="signin">{{ $t('@.signin') }}</span>
-					</p>
-
-					<img v-if="meta" :src="meta.mascotImageUrl" alt="" title="藍" class="char">
+					</div>
 				</div>
 			</div>
 
@@ -69,12 +67,6 @@
 			</div>
 
 			<div class="side">
-				<div class="trends block">
-					<div>
-						<mk-trends/>
-					</div>
-				</div>
-
 				<div class="tl block">
 					<header><fa :icon="['fal', 'comment-alt']"/> {{ $t('timeline') }}</header>
 					<div>
@@ -82,12 +74,18 @@
 					</div>
 				</div>
 
+				<div class="trends block">
+					<div>
+						<mk-trends/>
+					</div>
+				</div>
+
 				<div class="info block">
 					<header><fa :icon="['fal', 'info-circle']"/> {{ $t('info') }}</header>
 					<div>
 						<div v-if="meta" class="body">
-							<p>Version: <b>{{ meta.version }}</b></p>
-							<p>Maintainer: <b><a :href="'mailto:' + meta.maintainer.email" target="_blank">{{ meta.maintainer.name }}</a></b></p>
+							<p><fa :icon="['fal', 'code-commit']" fixed-width/><b> {{ meta.version }}</b></p>
+							<p><fa :icon="['fal', 'user-tie']" fixed-width/><b><a :href="'mailto:' + meta.maintainer.email" target="_blank"> {{ meta.maintainer.name }}</a></b></p>
 						</div>
 					</div>
 				</div>
@@ -231,11 +229,11 @@ export default Vue.extend({
 
 .modal
 	.form
-		padding 24px 48px 48px 48px
+		padding 24px 48px 48px
 
 	.formHeader
 		text-align center
-		padding 48px 0 12px 0
+		padding 48px 0 12px
 		margin 0 48px
 		font-size 1.5em
 
@@ -265,9 +263,8 @@ export default Vue.extend({
 
 		> section
 			display grid
-			grid-template-rows 1fr
-			grid-template-columns 180px 1fr
 			gap 32px
+			grid 1fr / 192px 1fr
 			margin-bottom 32px
 			padding-bottom 32px
 			border-bottom 1px solid var(--faceDivider)
@@ -336,14 +333,16 @@ export default Vue.extend({
 		color var(--text)
 
 	> main
+		align-items center
+		display flex
+		justify-content center
 		margin 0 auto
 		padding 64px
 		width 100%
-		max-width 1200px
 
 		.block
-			color var(--text)
 			background var(--face)
+			color var(--text)
 			overflow auto
 
 			> header
@@ -351,7 +350,7 @@ export default Vue.extend({
 				padding 0 16px
 				line-height 48px
 				background var(--faceHeader)
-				box-shadow 0 1px 0px rgba(0, 0, 0, 0.1)
+				box-shadow 0 1px 0 rgba(0, 0, 0, 0.1)
 
 				& + div
 					max-height calc(100% - 48px)
@@ -361,43 +360,33 @@ export default Vue.extend({
 
 		> .body
 			display grid
-			grid-template-rows 390px 1fr 256px 64px
-			grid-template-columns 1fr 1fr 350px
 			gap 16px
-			height 1150px
+			grid auto 1fr 256px 64px / 1fr 1fr 384px
+			max-height 1080px
+			max-width 1080px
 
 			> .main
 				grid-row 1
 				grid-column 1 / 3
 
 				> div
+					display grid
+					gap 32px
+					grid auto 1fr / auto 1fr
 					padding 32px
-					min-height 100%
 
-					> h1
-						margin 0
-
-						> svg
-							margin -8px 0 0 -16px
-							width 280px
-							height 100px
-							fill currentColor
+					> svg
+						fill currentColor
+						height 128px
+						width 128px
 
 					> .info
-						margin 0 auto 16px auto
-						width $width
+						margin 0 auto
 						font-size 14px
 
-						> .stats
-							margin-left 16px
-							padding-left 16px
-							border-left solid 1px var(--faceDivider)
-
-							> *
-								margin-right 16px
-
 					> .desc
-						max-width calc(100% - 150px)
+						align-items center
+						display flex
 
 					> .sign
 						font-size 120%
@@ -429,12 +418,13 @@ export default Vue.extend({
 				grid-column 1
 
 				> div
-					padding 32px
+					padding 0 16px
 
 					> div
-						padding 0 0 16px 0
-						margin 0 0 16px 0
-						border-bottom 1px solid var(--faceDivider)
+						padding 16px
+
+						&:not(:last-child)
+							border-bottom 1px solid var(--faceDivider)
 
 						> h1
 							margin 0
@@ -446,9 +436,8 @@ export default Vue.extend({
 
 				> div
 					display grid
-					grid-template-rows 1fr 1fr 1fr
-					grid-template-columns 1fr 1fr
 					gap 8px
+					grid repeat(3, 1fr) \/ repeat(2, 1fr)
 					height 100%
 					padding 16px
 
@@ -475,25 +464,15 @@ export default Vue.extend({
 
 			> .side
 				display grid
-				grid-row 1 / 5
-				grid-column 3
-				grid-template-rows 1fr 350px
-				grid-template-columns 1fr
 				gap 16px
-
-				> .tl
-					grid-row 1
-					grid-column 1
-					overflow auto
+				grid 1fr 384px auto / auto
+				grid-column 3
+				grid-row 1 / -1
 
 				> .trends
-					grid-row 2
-					grid-column 1
 					padding 8px
 
 				> .info
-					grid-row 3
-					grid-column 1
 
 					> div
 						padding 16px
