@@ -416,7 +416,7 @@ export default Vue.component('misskey-flavored-markdown', {
 					return [createElement(MkGoogle, {
 						key: Math.random(),
 						props: {
-							q: token.node.props.query
+							q: encodeURIComponent(token.node.props.query)
 						}
 					})];
 				}
