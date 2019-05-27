@@ -57,7 +57,7 @@ router.get('/assets/*', async ctx => {
 
 // Apple touch icon
 router.get('/apple-touch-icon.png', async ctx => {
-	await send(ctx as any, '/assets/apple-touch-icon.png', {
+	await send(ctx as any, '/assets/twista_icon_v1.0.png', {
 		root: client
 	});
 });
