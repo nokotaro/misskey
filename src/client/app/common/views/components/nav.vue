@@ -1,11 +1,11 @@
 <template>
 <span class="mk-nav">
 	<a :href="aboutUrl">{{ $t('about') }}</a>
-	<i>・</i>
+	<i>·</i>
 	<a :href="repositoryUrl" rel="noopener" target="_blank">{{ $t('repository') }}</a>
-	<i>・</i>
+	<i>·</i>
 	<a :href="feedbackUrl" rel="noopener" target="_blank">{{ $t('feedback') }}</a>
-	<i>・</i>
+	<i>·</i>
 	<a href="/dev">{{ $t('develop') }}</a>
 </span>
 </template>
@@ -29,6 +29,9 @@ export default Vue.extend({
 
 <style lang="stylus" scoped>
 .mk-nav
-	a
+	> a
 		color inherit
+	
+	> i 
+		margin 0 4px
 </style>
