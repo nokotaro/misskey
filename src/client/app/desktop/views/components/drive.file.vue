@@ -108,15 +108,7 @@ export default Vue.extend({
 					text: this.$t('contextmenu.set-as-banner'),
 					action: this.setAsBanner
 				}]
-			}, /*{
-				type: 'nest',
-				text: this.$t('contextmenu.open-in-app'),
-				menu: [{
-					type: 'item',
-					text: '%i18n:@contextmenu.add-app%...',
-					action: this.addApp
-				}]
-			}*/], {
+			}], {
 				closed: () => {
 					this.isContextmenuShowing = false;
 				}
@@ -187,10 +179,6 @@ export default Vue.extend({
 
 		setAsBanner() {
 			updateBanner(this.$root)(this.file);
-		},
-
-		addApp() {
-			alert('not implemented yet');
 		},
 
 		deleteFile() {
