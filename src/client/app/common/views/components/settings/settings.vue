@@ -131,6 +131,7 @@
 						<option value="local-followers">{{ $t('@.note-visibility.local-followers') }}</option>
 					</ui-select>
 				</section>
+				<!--
 				<section>
 					<header>{{ $t('@._settings.secondary-note-visibility') }}</header>
 					<ui-select v-model="secondaryNoteVisibility">
@@ -157,6 +158,7 @@
 						<option value="local-followers">{{ $t('@.note-visibility.local-followers') }}</option>
 					</ui-select>
 				</section>
+				-->
 			</section>
 		</ui-card>
 
@@ -455,6 +457,7 @@ export default Vue.extend({
 			set(value) { this.$store.dispatch('settings/set', { key: 'defaultNoteVisibility', value }); }
 		},
 
+		/*
 		secondaryNoteVisibility: {
 			get() { return this.$store.state.settings.secondaryNoteVisibility || 'none'; },
 			set(value) { this.$store.dispatch('settings/set', { key: 'secondaryNoteVisibility', value }); }
@@ -464,6 +467,7 @@ export default Vue.extend({
 			get() { return this.$store.state.settings.tertiaryNoteVisibility || 'none'; },
 			set(value) { this.$store.dispatch('settings/set', { key: 'tertiaryNoteVisibility', value }); }
 		},
+		*/
 
 		showReplyTarget: {
 			get() { return this.$store.state.settings.showReplyTarget; },
