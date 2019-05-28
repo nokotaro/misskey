@@ -141,7 +141,7 @@ export default Vue.extend({
 	> .popover
 		position absolute
 		z-index 10001
-		overflow hidden
+		padding 8px 0
 		background $bg-color
 		border-radius 4px
 		box-shadow 0 3px 12px rgba(27, 31, 35, 0.15)
