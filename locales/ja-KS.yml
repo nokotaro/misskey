@@ -428,7 +428,7 @@ common/views/components/uploader.vue:
 common/views/components/visibility-chooser.vue:
   public: "公開"
   home: "ホーム"
-  home-desc: "ホームタイムライン以外に見せんとって"
+  home-desc: "ローカルタイムラインに見せんとって"
   followers: "フォロワー"
   followers-desc: "自分のフォロワー以外に見せんとって"
   specified: "ダイレクト"
@@ -437,6 +437,7 @@ common/views/components/visibility-chooser.vue:
   local-public-desc: "リモートには見せへん"
   local-home: "ホーム (ローカルだけ)"
   local-followers: "フォロワー (ローカルだけ)"
+  remote-post: "他球団からの投稿"
 common/views/components/trends.vue:
   count: "{}人が投稿"
   empty: "流行は自分で作るんや"

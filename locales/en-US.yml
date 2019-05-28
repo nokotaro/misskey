@@ -113,6 +113,7 @@ common:
     local-home: "Home (Only local)"
     local-followers: "Followers (Only local)"
     local-only: "Only local"
+    remote-post: "Remote post"
   note-rating:
     unset: "(unset)"
     G: "G"

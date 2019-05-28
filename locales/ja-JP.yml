@@ -121,6 +121,7 @@ common:
     local-home: "ホーム (ローカルのみ)"
     local-followers: "フォロワー (ローカルのみ)"
     local-only: "ローカルのみ"
+    remote-post: "外部の投稿"
 
   note-rating:
     unset: "(未設定)"
@@ -712,7 +713,7 @@ common/views/components/uploader.vue:
 common/views/components/visibility-chooser.vue:
   public: "公開"
   home: "ホーム"
-  home-desc: "ホームタイムラインにのみ公開"
+  home-desc: "ローカルタイムラインに対しては非公開"
   followers: "フォロワー"
   followers-desc: "自分のフォロワーにのみ公開"
   specified: "ダイレクト"
