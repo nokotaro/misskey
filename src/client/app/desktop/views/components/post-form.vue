@@ -67,11 +67,11 @@
 		<p class="text-count" :class="{ over: trimmedLength(concatenated) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(concatenated) }}</p>
 		<ui-buttons class="submit">
 			<ui-button class="button ok" inline primary :wait="posting" :disabled="!canPost" grow="1" @click="post">
-				<fa :icon="['fal', 'paper-plane']"/>
+				<x-visibility-icon class="inline" :v="visibility" :localOnly="localOnly" :fixedWidth="true"/>
+				{{ $t('submit') }}
 			</ui-button>
 			<div ref="visibilityButton" :title="$t('visibility')">
 				<ui-button class="button ok" inline primary :disabled="posting" shrink="1" @click="setVisibility">
-					<x-visibility-icon class="inline" :v="visibility" :localOnly="localOnly" :fixedWidth="true"/>
 					<fa :icon="['fal', 'angle-down']" fixed-width/>
 				</ui-button>
 			</div>
@@ -823,9 +823,6 @@ export default Vue.extend({
 		> .submit
 			flex 0 0 auto
 			margin 4px
-
-			.button
-				width 60px
 
 			.inline
 				display inline

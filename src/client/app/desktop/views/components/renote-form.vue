@@ -23,10 +23,12 @@
 				<a class="quote" v-if="!quote" @click="onQuote">{{ $t('quote') }}</a>
 				<ui-button class="button cancel" inline @click="cancel">{{ $t('cancel') }}</ui-button>
 				<ui-buttons>
-					<ui-button class="button ok" inline primary :disabled="wait" grow="1" @click="ok">{{ this.$t(wait ? 'reposting' : 'renote') }}</ui-button>
+					<ui-button class="button ok" inline primary :disabled="wait" grow="1" @click="ok">
+						<x-visibility-icon class="inline" :v="visibility" :localOnly="localOnly" :fixedWidth="true"/>
+						{{ $t('renote') }}
+					</ui-button>
 					<div ref="visibilityButton">
 						<ui-button class="button ok" inline primary :disabled="wait" shrink="1" @click="setVisibility">
-							<x-visibility-icon class="inline" :v="visibility" :localOnly="localOnly" :fixedWidth="true"/>
 							<fa :icon="['fal', 'angle-down']" fixed-width/>
 						</ui-button>
 					</div>
