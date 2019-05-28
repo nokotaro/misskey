@@ -38,7 +38,7 @@
 				</div>
 			</div>
 			<footer v-if="appearNote.deletedAt == null" class="footer">
-				<span class="app" v-if="appearNote.app && narrow && $store.state.settings.showVia">via <b>{{ appearNote.app.name }}</b> <a :href="appearNote.uri" :title="$t('@.twitter.note-from-twitter')" v-if="appearNote.app.twitter"><fa :icon="['fab', 'twitter']"></a></span>
+				<span class="app" v-if="appearNote.app && narrow && $store.state.settings.showVia">via <b>{{ appearNote.app.name }}</b> <a :href="appearNote.uri" :title="$t('@.twitter.note-from-twitter')" v-if="appearNote.app.twitter"><fa :icon="['fab', 'twitter']"/></a></span>
 				<mk-reactions-viewer :note="appearNote" ref="reactionsViewer"/>
 				<button class="replyButton button" @click="reply()" :title="$t('reply')">
 					<template v-if="appearNote.reply"><fa :icon="['fal', 'reply-all']"/></template>

@@ -35,7 +35,7 @@
 					<a class="location" v-if="appearNote.geo" :href="`https://maps.google.com/maps?q=${appearNote.geo.coordinates[1]},${appearNote.geo.coordinates[0]}`" rel="noopener" target="_blank"><fa :icon="['fal', 'map-marker-alt']"/> {{ $t('location') }}</a>
 					<div class="renote" v-if="appearNote.renote"><mk-note-preview :note="appearNote.renote"/></div>
 				</div>
-				<span class="app" v-if="appearNote.app && $store.state.settings.showVia">via <b>{{ appearNote.app.name }}</b> <a :href="appearNote.uri" :title="$t('@.twitter.note-from-twitter')" v-if="appearNote.app.twitter"><fa :icon="['fab', 'twitter']"></a></span>
+				<span class="app" v-if="appearNote.app && $store.state.settings.showVia">via <b>{{ appearNote.app.name }}</b> <a :href="appearNote.uri" :title="$t('@.twitter.note-from-twitter')" v-if="appearNote.app.twitter"><fa :icon="['fab', 'twitter']"/></a></span>
 			</div>
 			<footer v-if="appearNote.deletedAt == null" class="footer">
 				<mk-reactions-viewer :note="appearNote" ref="reactionsViewer"/>
