@@ -1,7 +1,7 @@
 <template>
 <div class="izumiski">
 	<div class="backdrop" ref="backdrop" @click="close"></div>
-	<div class="popover" :class="{ isMobile: $root.isMobile }" ref="popover">
+	<div class="popover" :class="{ isMobile: $root.isMobile, first: v == 'public' }" ref="popover">
 		<div @click="choose(null)" :class="{ active: r == null }">
 			<div><fa :icon="['fal', 'eye']" fixed-width/></div>
 			<div>
@@ -174,6 +174,9 @@ export default Vue.extend({
 				border-left solid $arrow-size transparent
 				border-right solid $arrow-size transparent
 				border-bottom solid $arrow-size $bgcolor
+
+			&.first::before
+				border-bottom solid $arrow-size var(--primary)
 
 		> div
 			display flex

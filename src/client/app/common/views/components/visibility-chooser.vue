@@ -1,7 +1,7 @@
 <template>
 <div class="gqyayizv">
 	<div class="backdrop" ref="backdrop" @click="close"></div>
-	<div class="popover" :class="{ isMobile: $root.isMobile, dialog }" ref="popover">
+	<div class="popover" :class="{ isMobile: $root.isMobile, first: v == 'public', dialog }" ref="popover">
 		<div @click="choose('public')" :class="{ active: v == 'public' }">
 			<x-visibility-icon v="public"/>
 			<div>
@@ -206,6 +206,9 @@ export default Vue.extend({
 				border-left solid $arrow-size transparent
 				border-right solid $arrow-size transparent
 				border-bottom solid $arrow-size $bgcolor
+
+			&.first::before
+				border-bottom solid $arrow-size var(--primary)
 
 		> div
 			display flex
