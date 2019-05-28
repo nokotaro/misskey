@@ -106,7 +106,7 @@ export default Vue.extend({
 			}, null, {
 				type: 'nest',
 				text: this.$t('contextmenu.else-files'),
-				menu: this.isImage() ? [{
+				menu: this.isImage ? [{
 					type: 'item',
 					text: this.$t('contextmenu.set-as-avatar'),
 					action: this.setAsAvatar
@@ -114,7 +114,7 @@ export default Vue.extend({
 					type: 'item',
 					text: this.$t('contextmenu.set-as-banner'),
 					action: this.setAsBanner
-				}] : this.isVideo() ? [{
+				}] : this.isVideo ? [{
 					type: 'item',
 					text: this.$t('contextmenu.set-thumbnail'),
 					action: this.setThumbnail
