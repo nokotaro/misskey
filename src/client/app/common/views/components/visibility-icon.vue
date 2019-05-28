@@ -67,8 +67,8 @@ export default Vue.extend({
 		> .local-only
 			color var(--primary)
 			position absolute
-			top -0.5em
-			right -0.5em
+			top -.375em
+			right -.5em
 			transform scale(0.8)
 
 			&.alt-color
