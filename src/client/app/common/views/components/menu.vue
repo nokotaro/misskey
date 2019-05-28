@@ -141,7 +141,6 @@ export default Vue.extend({
 	> .popover
 		position absolute
 		z-index 10001
-		padding 8px 0
 		background $bg-color
 		border-radius 4px
 		box-shadow 0 3px 12px rgba(27, 31, 35, 0.15)
@@ -184,6 +183,12 @@ export default Vue.extend({
 			&:active
 				color var(--primaryForeground)
 				background var(--primaryDarken10)
+
+				&:first-child
+					border-radius 4px 4px 0 0
+
+				&:last-child
+					border-radius 0 0 4px 4px
 
 			> [data-icon]
 				margin-right 4px
