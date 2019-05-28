@@ -9,7 +9,7 @@ import locales from './locales';
 const { copyright } = require('./src/const.json'); // import { copyright } from './src/const.json';
 const { version, codename } = require('./package.json'); // import { version, codename } from './package.json';
 import { VueLoaderPlugin } from 'vue-loader';
-// import HardSourceWebpackPlugin from 'hard-source-webpack-plugin';
+import * as HardSourceWebpackPlugin from 'hard-source-webpack-plugin';
 const ProgressBarPlugin = require('progress-bar-webpack-plugin'); // import * as ProgressBarPlugin from 'progress-bar-webpack-plugin';
 const TerserPlugin = require('terser-webpack-plugin'); // import * as TerserPlugin from 'terser-webpack-plugin';
 
@@ -112,7 +112,7 @@ module.exports = {
 		}]
 	},
 	plugins: [
-		//new HardSourceWebpackPlugin(),
+		new HardSourceWebpackPlugin(),
 		new ProgressBarPlugin({
 			format: chalk`{cyan.bold Choco is eating a lot} {bold [}:bar{bold ]} {green.bold :percent} {gray (:current/:total)} :elapseds`,
 			complete: '😋',
