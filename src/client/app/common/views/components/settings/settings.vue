@@ -144,11 +144,19 @@
 						<option value="local-followers">{{ $t('@.note-visibility.local-followers') }}</option>
 					</ui-select>
 				</section>
-			</section>
-
-			<section v-if="isAdvanced">
-				<header>{{ $t('@._settings.web-search-engine') }}</header>
-				<ui-input v-model="webSearchEngine">{{ $t('@._settings.web-search-engine') }}<template #desc>{{ $t('@._settings.web-search-engine-desc') }}</template></ui-input>
+				<section>
+					<header>{{ $t('@._settings.tertiary-note-visibility') }}</header>
+					<ui-select v-model="tertiaryNoteVisibility">
+						<option value="none">None</option>
+						<option value="public">{{ $t('@.note-visibility.public') }}</option>
+						<option value="home">{{ $t('@.note-visibility.home') }}</option>
+						<option value="followers">{{ $t('@.note-visibility.followers') }}</option>
+						<option value="specified">{{ $t('@.note-visibility.specified') }}</option>
+						<option value="local-public">{{ $t('@.note-visibility.local-public') }}</option>
+						<option value="local-home">{{ $t('@.note-visibility.local-home') }}</option>
+						<option value="local-followers">{{ $t('@.note-visibility.local-followers') }}</option>
+					</ui-select>
+				</section>
 			</section>
 		</ui-card>
 
@@ -452,9 +460,9 @@ export default Vue.extend({
 			set(value) { this.$store.dispatch('settings/set', { key: 'secondaryNoteVisibility', value }); }
 		},
 
-		webSearchEngine: {
-			get() { return this.$store.state.settings.webSearchEngine; },
-			set(value) { this.$store.dispatch('settings/set', { key: 'webSearchEngine', value }); }
+		tertiaryNoteVisibility: {
+			get() { return this.$store.state.settings.tertiaryNoteVisibility || 'none'; },
+			set(value) { this.$store.dispatch('settings/set', { key: 'tertiaryNoteVisibility', value }); }
 		},
 
 		showReplyTarget: {

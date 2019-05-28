@@ -72,11 +72,12 @@ export default Vue.extend({
 				text: this.$t('watch'),
 				action: () => this.toggleWatch(true)
 			} : undefined,
-			this.note.userId == this.$store.state.i.id ? (this.$store.state.i.pinnedNoteIds || []).includes(this.note.id) ? {
+			this.note.userId == this.$store.state.i.id && (this.$store.state.i.pinnedNoteIds || []).includes(this.note.id) ? {
 				icon: ['fal', 'thumbtack'],
 				text: this.$t('unpin'),
 				action: () => this.togglePin(false)
-			} : {
+			} : undefined,
+			this.pinnable ? {
 				icon: ['fal', 'thumbtack'],
 				text: this.$t('pin'),
 				action: () => this.togglePin(true)
@@ -90,7 +91,14 @@ export default Vue.extend({
 				: []
 			)]
 			.filter(x => x !== undefined)
-		}
+		},
+
+		pinnable(): boolean {
+			return this.note.userId == this.$store.state.i.id
+				&& !(this.$store.state.i.pinnedNoteIds || []).includes(this.note.id)
+				&& (this.note.visibility == 'public' || this.note.visibility == 'home')
+				&& !this.note.localOnly;
+		},
 	},
 
 	created() {

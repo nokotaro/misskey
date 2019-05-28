@@ -222,7 +222,7 @@ export const mfmLanguage = P.createLanguage({
 	xspin: r => P.regexp(/<(x(?:spin))>(.+?)<\/\1>/, 2).map(x => createTree('xspin', r.inline.atLeast(1).tryParse(x), {})),
 	yspin: r => P.regexp(/<(y(?:spin))>(.+?)<\/\1>/, 2).map(x => createTree('yspin', r.inline.atLeast(1).tryParse(x), {})),
 	jump: r => P.alt(P.regexp(/<(j(?:ump)?)>(.+?)<\/\1>/, 2), P.regexp(/\{{3}([\s\S]+?)\}{3}/, 1)).map(x => createTree('jump', r.inline.atLeast(1).tryParse(x), {})),
-	flip: r => P.regexp(/<(f(?:lip)?)>(.+?)<\/\1>/, 2).map(x => createTree('flip', r.inline.atLeast(1).tryParse(x), {})),
+	flip: r => P.alt(P.regexp(/<(f(?:lip)?)>(.+?)<\/\1>/, 2), P.regexp(/＜＜＜(.+?)＞＞＞/, 1)).map(x => createTree('flip', r.inline.atLeast(1).tryParse(x), {})),
 	vflip: r => P.regexp(/<(v(?:flip))>(.+?)<\/\1>/, 2).map(x => createTree('vflip', r.inline.atLeast(1).tryParse(x), {})),
 	rotate: r => {
 		return P((input, i) => {

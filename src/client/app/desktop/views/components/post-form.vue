@@ -155,6 +155,7 @@ export default Vue.extend({
 			localOnly: false,
 			rating: null,
 			secondaryNoteVisibility: 'none',
+			tertiaryNoteVisibility: 'none',
 			autocomplete: null,
 			draghover: false,
 			recentHashtags: JSON.parse(localStorage.getItem('hashtags') || '[]'),
@@ -250,6 +251,7 @@ export default Vue.extend({
 		this.applyVisibility(this.$store.state.settings.rememberNoteVisibility ? (this.$store.state.device.visibility || this.$store.state.settings.defaultNoteVisibility) : this.$store.state.settings.defaultNoteVisibility);
 
 		this.secondaryNoteVisibility = this.$store.state.settings.secondaryNoteVisibility;
+		this.tertiaryNoteVisibility = this.$store.state.settings.tertiaryNoteVisibility;
 
 		// 公開以外へのリプライ時は元の公開範囲を引き継ぐ
 		if (this.reply && ['home', 'followers', 'specified'].includes(this.reply.visibility)) {

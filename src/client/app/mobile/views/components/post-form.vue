@@ -131,6 +131,7 @@ export default Vue.extend({
 			localOnly: false,
 			rating: null,
 			secondaryNoteVisibility: 'none',
+			tertiaryNoteVisibility: 'none',
 			useCw: false,
 			cw: null,
 			usePostAs: false,
@@ -228,6 +229,7 @@ export default Vue.extend({
 		this.applyVisibility(this.$store.state.settings.rememberNoteVisibility ? (this.$store.state.device.visibility || this.$store.state.settings.defaultNoteVisibility) : this.$store.state.settings.defaultNoteVisibility);
 
 		this.secondaryNoteVisibility = this.$store.state.settings.secondaryNoteVisibility;
+		this.tertiaryNoteVisibility = this.$store.state.settings.tertiaryNoteVisibility;
 
 		// 公開以外へのリプライ時は元の公開範囲を引き継ぐ
 		if (this.reply && ['home', 'followers', 'specified'].includes(this.reply.visibility)) {
@@ -472,12 +474,13 @@ export default Vue.extend({
 
 				> .text-count
 					line-height 50px
+					margin-right 6px
 
 				> .geo
 					margin 0 8px
 					line-height 50px
 
-				> .secondary
+				> .secondary, .tertiary
 					margin 8px 6px
 					padding 0 16px
 					line-height 34px

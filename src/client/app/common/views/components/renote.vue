@@ -11,11 +11,11 @@
 		<span class="mobile" v-if="note.viaMobile"><fa :icon="['fal', 'mobile-alt']"/></span>
 		<mk-time :time="note.createdAt"/>
 		<span class="visibility" v-if="note.visibility != 'public'">
-			<fa v-if="note.visibility == 'home'" :icon="['fal', 'home']"/>
-			<fa v-if="note.visibility == 'followers'" :icon="['fal', 'unlock']"/>
-			<fa v-if="note.visibility == 'specified'" :icon="['fal', 'envelope']"/>
+			<fa v-if="note.visibility == 'home'" :title="$t('@.note-visibility.home')" :icon="['fal', 'home']"/>
+			<fa v-if="note.visibility == 'followers'" :title="$t('@.note-visibility.followers')" :icon="['fal', 'unlock']"/>
+			<fa v-if="note.visibility == 'specified'" :title="$t('@.note-visibility.specified')" :icon="['fal', 'envelope']"/>
 		</span>
-		<span class="local-only" v-if="note.localOnly"><fa :icon="['fal', 'shield-alt']"/></span>
+		<span class="local-only" v-if="note.localOnly"><fa :icon="['fal', 'shield-alt']" :title="$t('@.note-visibility.local-only')"/></span>
 	</div>
 </div>
 </template>
@@ -92,12 +92,14 @@ export default Vue.extend({
 
 		> .visibility
 			margin-left 8px
+			color var(--noteActionsReactionHover)
 
 			[data-icon]
 				margin-right 0
 
 		> .localOnly
 			margin-left 4px
+			color var(--primary)
 
 			[data-icon]
 				margin-right 0

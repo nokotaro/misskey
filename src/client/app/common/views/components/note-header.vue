@@ -17,11 +17,12 @@
 			<mk-time :time="note.createdAt"/>
 		</router-link>
 		<span class="visibility" v-if="note.visibility != 'public'">
-			<fa v-if="note.visibility == 'home'" :icon="['fal', 'home']"/>
-			<fa v-if="note.visibility == 'followers'" :icon="['fal', 'unlock']"/>
-			<fa v-if="note.visibility == 'specified'" :icon="['fal', 'envelope']"/>
+			<fa v-if="note.visibility == 'home'" :title="$t('@.note-visibility.home')" :icon="['fal', 'home']"/>
+			<fa v-if="note.visibility == 'followers'" :title="$t('@.note-visibility.followers')" :icon="['fal', 'unlock']"/>
+			<fa v-if="note.visibility == 'specified'" :title="$t('@.note-visibility.specified')" :icon="['fal', 'envelope']"/>
 		</span>
-		<span class="local-only" v-if="note.localOnly"><fa :icon="['fal', 'shield-alt']"/></span>
+		<span class="local-only" v-if="note.localOnly"><fa :icon="['fal', 'shield-alt']" :title="$t('@.note-visibility.local-only')"/></span>
+		<span class="remote" :title="$t('@.note-visibility.remote-post')" v-if="note.user.host"><fa :icon="['fal', 'chart-network']"/></span>
 	</div>
 </header>
 </template>
@@ -121,7 +122,13 @@ export default Vue.extend({
 
 		> .visibility
 			margin-left 8px
+			color var(--noteActionsReactionHover)
 
 		> .local-only
 			margin-left 4px
+			color var(--primary)
+
+		> .remote
+			margin-left 4px
+			color #4dabf7
 </style>

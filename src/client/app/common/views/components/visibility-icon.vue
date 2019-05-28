@@ -7,7 +7,7 @@
 			<fa :icon="['fal', 'home']" :fixed-width="fixedWidth"/>
 		</div>
 		<div class="wrap" v-else-if="visibility == 'followers'">
-			<fa :icon="['fal', 'unlock']" :fixed-width="fixedWidth"/>
+			<fa :icon="['fal', 'lock-alt']" :fixed-width="fixedWidth"/>
 		</div>
 		<div class="wrap" v-else-if="visibility == 'specified'">
 			<fa :icon="['fal', 'envelope']" :fixed-width="fixedWidth"/>
@@ -21,7 +21,7 @@
 			<div class="local-only" :class="{ 'alt-color': altColor }"><fa :icon="['fal', 'shield-alt']" :fixed-width="fixedWidth"/></div>
 		</div>
 		<div class="wrap" v-else-if="visibility == 'local-followers'">
-			<div><fa :icon="['fal', 'unlock']" :fixed-width="fixedWidth"/></div>
+			<div><fa :icon="['fal', 'lock-alt']" :fixed-width="fixedWidth"/></div>
 			<div class="local-only" :class="{ 'alt-color': altColor }"><fa :icon="['fal', 'shield-alt']" :fixed-width="fixedWidth"/></div>
 		</div>
 	</div>

@@ -52,11 +52,12 @@
 		</router-link>
 		<div class="visibility-info">
 			<span class="visibility" v-if="appearNote.visibility != 'public'">
-				<fa v-if="appearNote.visibility == 'home'" :icon="['fal', 'home']"/>
-				<fa v-if="appearNote.visibility == 'followers'" :icon="['fal', 'unlock']"/>
-				<fa v-if="appearNote.visibility == 'specified'" :icon="['fal', 'envelope']"/>
+				<fa v-if="appearNote.visibility == 'home'" :title="$t('@.note-visibility.home')" :icon="['fal', 'home']"/>
+				<fa v-if="appearNote.visibility == 'followers'" :title="$t('@.note-visibility.followers')" :icon="['fal', 'unlock']"/>
+				<fa v-if="appearNote.visibility == 'specified'" :title="$t('@.note-visibility.specified')" :icon="['fal', 'envelope']"/>
 			</span>
 			<span class="local-only" v-if="appearNote.localOnly"><fa :icon="['fal', 'shield-alt']"/></span>
+			<span class="remote" :title="$t('@.note-visibility.remote-post')" v-if="appearNote.user.host"><fa :icon="['fal', 'chart-network']"/></span>
 		</div>
 		<footer>
 			<mk-reactions-viewer :note="appearNote"/>
@@ -129,6 +130,7 @@ export default Vue.extend({
 
 	data() {
 		return {
+			faGlobeAmericas,
 			conversation: [],
 			conversationFetching: false,
 			replies: []
@@ -337,8 +339,16 @@ export default Vue.extend({
 		> .visibility-info
 			color var(--noteHeaderInfo)
 
+			> .visibility 
+				color var(--noteActionsReactionHover)
+
 			> .local-only
 				margin-left 4px
+				color var(--primary)
+
+			> .remote
+				margin-left 4px
+				color #4dabf7
 
 		> footer
 			font-size 1.2em
