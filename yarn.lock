@@ -425,6 +425,13 @@
     "@types/vinyl-fs" "*"
     chokidar "^2.1.2"
 
+"@types/hard-source-webpack-plugin@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/hard-source-webpack-plugin/-/hard-source-webpack-plugin-1.0.1.tgz#4aecca35bafb7939bcf318bbf5a2710c3163cdd4"
+  integrity sha512-5eTPERZQj5RZLADk5o2Ip/XRLwgxOUeKzlIM3+czrhwA9pnVJAUYOm2fovbxkrIEQhuozQwc17fyH1ZXnSR/8g==
+  dependencies:
+    "@types/webpack" "*"
+
 "@types/http-assert@*":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@types/http-assert/-/http-assert-1.4.0.tgz#41d173466e396e99a14d75f7160cc997f2f9ed8b"
