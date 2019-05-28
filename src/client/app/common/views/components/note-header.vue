@@ -21,7 +21,7 @@
 			<fa v-if="note.visibility == 'followers'" :icon="['fal', 'unlock']"/>
 			<fa v-if="note.visibility == 'specified'" :icon="['fal', 'envelope']"/>
 		</span>
-		<span class="localOnly" v-if="note.localOnly == true"><fa :icon="['fal', 'shield-alt']"/></span>
+		<span class="local-only" v-if="note.localOnly"><fa :icon="['fal', 'shield-alt']"/></span>
 	</div>
 </header>
 </template>
@@ -122,6 +122,6 @@ export default Vue.extend({
 		> .visibility
 			margin-left 8px
 
-		> .localOnly
+		> .local-only
 			margin-left 4px
 </style>

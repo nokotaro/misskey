@@ -34,7 +34,7 @@
 						<fa v-if="appearNote.visibility == 'followers'" :icon="['fal', 'unlock']"/>
 						<fa v-if="appearNote.visibility == 'specified'" :icon="['fal', 'envelope']"/>
 					</span>
-					<span class="localOnly" v-if="appearNote.localOnly == true"><fa :icon="['fal', 'shield-alt']"/></span>
+					<span class="local-only" v-if="appearNote.localOnly"><fa :icon="['fal', 'shield-alt']"/></span>
 				</div>
 			</div>
 		</header>
@@ -277,7 +277,7 @@ export default Vue.extend({
 					text-align: right
 					color var(--noteHeaderInfo)
 
-					> .localOnly
+					> .local-only
 						margin-left 4px
 
 		> .body
