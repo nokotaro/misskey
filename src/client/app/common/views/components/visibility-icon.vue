@@ -14,15 +14,15 @@
 		</div>
 		<div class="wrap" v-else-if="visibility == 'local-public'">
 			<div><fa :icon="['fal', 'globe']" :fixed-width="fixedWidth"/></div>
-			<div class="local-only" :class="{ altColor }"><fa :icon="['fal', 'heart']" :fixed-width="fixedWidth"/></div>
+			<div class="local-only" :class="{ altColor }"><fa :icon="['fal', 'shield-alt']" :fixed-width="fixedWidth"/></div>
 		</div>
 		<div class="wrap" v-else-if="visibility == 'local-home'">
 			<div><fa :icon="['fal', 'home']" :fixed-width="fixedWidth"/></div>
-			<div class="local-only" :class="{ altColor }"><fa :icon="['fal', 'heart']" :fixed-width="fixedWidth"/></div>
+			<div class="local-only" :class="{ altColor }"><fa :icon="['fal', 'shield-alt']" :fixed-width="fixedWidth"/></div>
 		</div>
 		<div class="wrap" v-else-if="visibility == 'local-followers'">
 			<div><fa :icon="['fal', 'unlock']" :fixed-width="fixedWidth"/></div>
-			<div class="local-only" :class="{ altColor }"><fa :icon="['fal', 'heart']" :fixed-width="fixedWidth"/></div>
+			<div class="local-only" :class="{ altColor }"><fa :icon="['fal', 'shield-alt']" :fixed-width="fixedWidth"/></div>
 		</div>
 	</div>
 </template>

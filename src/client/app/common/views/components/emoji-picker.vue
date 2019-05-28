@@ -38,8 +38,7 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import { lib } from 'emojilib';
-import { faAsterisk, faLeaf, faUtensils, faFutbol, faCity, faDice } from '@fortawesome/pro-light-svg-icons';
-import { faHeart, faFlag } from '@fortawesome/pro-light-svg-icons';
+import { faAsterisk, faLeaf, faUtensils, faFutbol, faCity, faDice, faShieldAlt, faFlag } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/emoji-picker.vue'),
@@ -85,7 +84,7 @@ export default Vue.extend({
 			}, {
 				name: 'symbols',
 				text: this.$t('symbols'),
-				icon: faHeart,
+				icon: faShieldAlt,
 				isActive: false
 			}, {
 				name: 'flags',

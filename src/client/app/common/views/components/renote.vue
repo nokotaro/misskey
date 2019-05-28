@@ -15,7 +15,7 @@
 			<fa v-if="note.visibility == 'followers'" :icon="['fal', 'unlock']"/>
 			<fa v-if="note.visibility == 'specified'" :icon="['fal', 'envelope']"/>
 		</span>
-		<span class="localOnly" v-if="note.localOnly == true"><fa :icon="['fal', 'heart']"/></span>
+		<span class="localOnly" v-if="note.localOnly == true"><fa :icon="['fal', 'shield-alt']"/></span>
 	</div>
 </div>
 </template>
