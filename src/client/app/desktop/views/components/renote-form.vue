@@ -24,7 +24,7 @@
 				<ui-button class="button cancel" inline @click="cancel">{{ $t('cancel') }}</ui-button>
 				<ui-buttons>
 					<ui-button class="button ok" inline primary :disabled="wait" grow="1" @click="ok">
-						<x-visibility-icon class="inline" :v="visibility" :localOnly="localOnly" :fixedWidth="true"/>
+						<x-visibility-icon class="inline" :v="visibility" :localOnly="localOnly" :fixedWidth="true" :altColor="true"/>
 						{{ $t('renote') }}
 					</ui-button>
 					<div ref="visibilityButton">

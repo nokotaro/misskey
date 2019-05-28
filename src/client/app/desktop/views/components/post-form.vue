@@ -67,7 +67,7 @@
 		<p class="text-count" :class="{ over: trimmedLength(concatenated) > maxNoteTextLength }">{{ maxNoteTextLength - trimmedLength(concatenated) }}</p>
 		<ui-buttons class="submit">
 			<ui-button class="button ok" inline primary :wait="posting" :disabled="!canPost" grow="1" @click="post">
-				<x-visibility-icon class="inline" :v="visibility" :localOnly="localOnly" :fixedWidth="true"/>
+				<x-visibility-icon class="inline" :v="visibility" :localOnly="localOnly" :fixedWidth="true" :altColor="true"/>
 				{{ $t('submit') }}
 			</ui-button>
 			<div ref="visibilityButton" :title="$t('visibility')">
