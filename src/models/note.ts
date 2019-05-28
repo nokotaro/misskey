@@ -615,7 +615,7 @@ export const pack = async (
 					}
 				}
 
-				_note.text += stack[0] && kahomap[head] ? `<opentype palt>${kahomap[head]}</opentype>` : head;
+				_note.text += stack[0] && kahomap[head] ? /* `<opentype palt>${ */ kahomap[head] /* }</opentype>` */ : head;
 			}
 		}
 	}
