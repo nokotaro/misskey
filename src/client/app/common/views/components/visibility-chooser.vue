@@ -181,8 +181,7 @@ export default Vue.extend({
 		$bgcolor = var(--popupBg)
 		position absolute
 		z-index 10001
-		width 240px
-		padding 8px 0
+		overflow hidden
 		background $bgcolor
 		border-radius 4px
 		box-shadow 0 3px 12px rgba(27, 31, 35, 0.15)
