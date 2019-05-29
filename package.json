@@ -251,7 +251,7 @@
 		"tslint": "5.16.0",
 		"tslint-sonarts": "1.9.0",
 		"twit": "2.2.11",
-		"typescript": "3.5.0-dev.20190529",
+		"typescript": "3.5.1",
 		"uglify-es": "3.3.9",
 		"url-join": "4.0.0",
 		"url-loader": "1.1.2",
