@@ -2,6 +2,7 @@
 <div class="mkw-hashtags">
 	<ui-container :show-header="!props.compact">
 		<template #header><fa :icon="['fal', 'hashtag']"/>{{ $t('title') }}</template>
+		<template #func><router-link to="/tags" tag="button"><fa :icon="['fal', 'globe-stand']"/></router-link></template>
 
 		<div class="mkw-hashtags--body" :data-mobile="platform == 'mobile'">
 			<mk-trends/>
