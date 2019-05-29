@@ -43,6 +43,7 @@
 	if (`${url.pathname}/`.startsWith('/admin/')) app = 'admin';
 	if (`${url.pathname}/`.startsWith('/test/')) app = 'test';
 	if (`${url.pathname}/`.startsWith('/calc/')) app = 'calc';
+	if (`${url.pathname}/`.startsWith('/terms/')) app = 'terms';
 	//#endregion
 
 	// Script version

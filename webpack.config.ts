@@ -44,6 +44,7 @@ module.exports = {
 		admin: './src/client/app/admin/script.ts',
 		test: './src/client/app/test/script.ts',
 		calc: './src/client/app/calc/script.ts',
+		terms: './src/client/app/terms/script.ts',
 		sw: './src/client/app/sw.js'
 	},
 	module: {
