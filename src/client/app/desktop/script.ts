@@ -17,6 +17,7 @@ import MkSelectDrive from './views/pages/selectdrive.vue';
 import MkDrive from './views/pages/drive.vue';
 import MkMessagingRoom from './views/pages/messaging-room.vue';
 import MkReversi from './views/pages/games/reversi.vue';
+import MkTagCloud from '../common/views/pages/tag-cloud.vue';
 import MkShare from '../common/views/pages/share.vue';
 import MkNotFound from '../common/views/pages/not-found.vue';
 import MkSettings from './views/pages/settings.vue';
@@ -155,6 +156,7 @@ init(async (launch, os) => {
 					{ path: '/explore/tags/:tag', name: 'explore-tag', props: true, component: () => import('../common/views/pages/explore.vue').then(m => m.default) },
 					{ path: '/i/favorites', component: () => import('./views/home/favorites.vue').then(m => m.default) },
 				]},
+			{ path: '/tags', component: MkTagCloud },
 			{ path: '/i/messaging/:user', component: MkMessagingRoom },
 			{ path: '/i/drive', component: MkDrive },
 			{ path: '/i/drive/folder/:folder', component: MkDrive },

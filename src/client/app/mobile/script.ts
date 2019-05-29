@@ -25,6 +25,7 @@ import MkFavorites from './views/pages/favorites.vue';
 import MkUserLists from './views/pages/user-lists.vue';
 import MkUserList from './views/pages/user-list.vue';
 import MkReversi from './views/pages/games/reversi.vue';
+import MkTagCloud from '../common/views/pages/tag-cloud.vue';
 import MkTag from './views/pages/tag.vue';
 import MkShare from '../common/views/pages/share.vue';
 import MkNotFound from '../common/views/pages/not-found.vue';
@@ -145,6 +146,7 @@ init((launch, os) => {
 			{ path: '/i/drive/file/:file', component: MkDrive },
 			{ path: '/selectdrive', component: MkSelectDrive },
 			{ path: '/search', component: MkSearch },
+			{ path: '/tags', component: MkTagCloud },
 			{ path: '/tags/:tag', component: MkTag },
 			{ path: '/featured', name: 'featured', component: () => import('./views/pages/featured.vue').then(m => m.default) },
 			{ path: '/explore', name: 'explore', component: () => import('./views/pages/explore.vue').then(m => m.default) },
