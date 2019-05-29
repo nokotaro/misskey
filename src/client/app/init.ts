@@ -28,6 +28,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import {
+	faAtlas,
 	faRetweet,
 	faPlus,
 	faUser,
@@ -177,6 +178,7 @@ import {
 import i18n from './i18n';
 
 library.add(
+	faAtlas,
 	faRetweet,
 	faPlus,
 	faUser,
