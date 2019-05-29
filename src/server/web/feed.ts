@@ -5,7 +5,7 @@ import { IUser } from '../../models/user';
 import { getOriginalUrl } from '../../misc/get-drive-file-url';
 
 export default async function(user: IUser) {
-	const author: Author = {
+	const author = {
 		link: `${config.url}/@${user.username}`,
 		name: user.name || user.username
 	};
@@ -34,8 +34,9 @@ export default async function(user: IUser) {
 			json: `${author.link}.json`,
 			atom: `${author.link}.atom`,
 		},
-		author
-	} as FeedOptions);
+		author,
+		copyright: `Copyright (c) 2019- ${user.name} (acct:${user.username}@${config.hostname})`
+	});
 
 	for (const note of notes) {
 		const file = note._files && note._files.find(file => file.contentType.startsWith('image/'));
