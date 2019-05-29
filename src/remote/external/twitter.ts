@@ -6,6 +6,9 @@ import User, { ITwitterUser } from '../../models/user';
 import uploadFromUrl from '../../services/drive/upload-from-url';
 import post from '../../services/note/create';
 import Resolver from '../activitypub/resolver';
+import { JSDOM } from 'jsdom';
+
+const unescape = (source: string) => new JSDOM(`<!DOCTYPE html><meta charset="utf-8"><body>${source}</body>`).window.document.body.textContent;
 
 export async function createVideoFromTwitter(value: string, thumbnail: string, sensitive: boolean, actor: ITwitterUser): Promise<IDriveFile> {
 	if (!value)
@@ -148,11 +151,11 @@ export async function createUserFromTwitter(value: { user: { screen_name?: strin
 			updatedAt: new Date(),
 			originalFollowersCount: twitterUser.followers_count,
 			friendsCount: twitterUser.friends_count,
-			name: twitterUser.name,
+			name: unescape(twitterUser.name),
 			notesCount: twitterUser.statuses_count,
 			username: twitterUser.screen_name,
 			usernameLower: twitterUser.screen_name.toLowerCase(),
-			description: twitterUser.description,
+			description: unescape(twitterUser.description),
 			lang: twitterUser.lang,
 			isLocked: twitterUser.protected,
 			...(avatar ? {
@@ -280,6 +283,8 @@ export async function createNoteFromTwitter(value: any, resolver: Resolver, sile
 		for (let i = 0, p = i; i < raw.length; p = i) {
 			text += replacers[i] ? (i = replacers[i].next, replacers[p].to) : raw[i++];
 		}
+
+		text = unescape(text);
 
 		const reply = tweet.in_reply_to_status_id_str ? await createNoteFromTwitter(tweet.in_reply_to_status_id_str, resolver, silent) : null;
 
