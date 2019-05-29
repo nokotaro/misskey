@@ -72,8 +72,9 @@ export default Vue.extend({
 			transition transform 1s ease
 
 		> div
-			display flex
 			align-items center
+			display flex
+			overflow hidden
 			padding 14px 16px
 
 			&:not(:last-child)
