@@ -251,7 +251,10 @@ export async function createNoteFromTwitter(value: any, resolver: Resolver, sile
 					}[]
 				}
 			}[];
-		} = (tweet as any).extended_entities || tweet.entities;
+		} = {
+			...tweet.entities,
+			...(tweet as any).extended_entities
+		};
 
 		const replacers: Replacer = {
 			...entities.hashtags.reduce<Replacer>((a, c) => (a[c.indices[0]] = {
