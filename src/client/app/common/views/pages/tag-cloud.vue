@@ -13,7 +13,8 @@ export default Vue.extend({
 	},
 	methods: {
 		click(e: MouseEvent) {
-			history.back();
+			if (!(e.target instanceof HTMLAnchorElement))
+				history.back();
 		}
 	},
 	beforeDestroy() {
