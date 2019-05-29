@@ -1,5 +1,5 @@
 <template>
-<main class="max-height">
+<main class="max-height" @click="click">
 	<mk-tag-cloud/>
 </main>
 </template>
@@ -10,6 +10,11 @@ import Vue from 'vue'
 export default Vue.extend({
 	created() {
 		document.body.classList.add('max-height')
+	},
+	methods: {
+		click(e: MouseEvent) {
+			history.back();
+		}
 	},
 	beforeDestroy() {
 		document.body.classList.remove('max-height')

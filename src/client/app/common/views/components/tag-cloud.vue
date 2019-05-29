@@ -9,9 +9,7 @@
 				:spacing="1"
 				font-family="kan412typos-std">
 			<template slot-scope="{word, text, weight}">
-				<div style="cursor:pointer" :title="weight">
-					{{ text }}
-				</div>
+				<router-link :to="`/tags/${text}`" style="cursor:pointer" :title="weight">{{ text }}</router-link>
 			</template>
 		</vue-word-cloud>
 	</div>
