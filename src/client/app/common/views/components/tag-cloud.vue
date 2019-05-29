@@ -45,7 +45,7 @@ export default Vue.extend({
 	},
 	computed: {
 		words() {
-			return this.tags.slice(0, 20).map(x => [x.name, x.count]);
+			return this.tags.slice(0, 100).map(x => [x.name, x.count]);
 		}
 	},
 	methods: {
