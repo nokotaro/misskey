@@ -12,7 +12,7 @@ import * as cssnano from 'cssnano';
 import * as through2 from 'through2';
 import * as rimraf from 'rimraf';
 import chalk from 'chalk';
-// import * as imagemin from 'gulp-imagemin';
+import * as imagemin from 'gulp-imagemin';
 import * as rename from 'gulp-rename';
 import * as mocha from 'gulp-mocha';
 import * as replace from 'gulp-replace';
@@ -120,7 +120,7 @@ gulp.task('copy:client', () =>
 			'./src/client/assets/**/*',
 			'./src/client/app/*/assets/**/*'
 		])
-			// .pipe(isProduction ? (imagemin as any)() : through2())
+			.pipe(isProduction ? (imagemin as any)() : through2())
 			.pipe(rename(path => {
 				path.dirname = path.dirname.replace('assets', '.');
 			}))
