@@ -18,12 +18,12 @@
 		<x-sub :note="appearNote.reply"/>
 	</div>
 	<article>
-		<mk-avatar class="avatar" :user="appearNote.user"/>
 		<header>
+			<mk-avatar class="avatar" :user="appearNote.user"/>
 			<router-link class="name" :to="appearNote.user | userPage" v-user-preview="appearNote.user.id">
 				<mk-user-name :user="appearNote.user"/>
+				<div class="username"><mk-acct :user="appearNote.user"/></div>
 			</router-link>
-			<span class="username"><mk-acct :user="appearNote.user"/></span>
 			<div class="info">
 				<router-link class="time" :to="appearNote | notePage">
 					<mk-time :time="appearNote.createdAt"/>
@@ -38,6 +38,7 @@
 					<span class="remote" :title="$t('@.note-visibility.remote-post')" v-if="appearNote.user.host"><fa :icon="['fal', 'chart-network']"/></span>
 				</div>
 			</div>
+			<div class="via-twitter" v-if="appearNote.user.host === 'twitter.com'" :title="$t('@.twitter.note-from-twitter')"><fa :icon="['fab', 'twitter']" size="3x"/></div>
 		</header>
 		<div class="body" v-for="type in ['light', 'shade']" :key="type" :class="type">
 			<p v-if="appearNote.cw" class="cw">
@@ -234,41 +235,36 @@ export default Vue.extend({
 			> footer > button
 				color var(--noteActionsHighlighted)
 
-		> .avatar
-			width 60px
-			height 60px
-			border-radius 8px
-
 		> header
-			position absolute
-			top 28px
-			left 108px
-			width calc(100% - 108px)
+			display flex
+			// gap 16px
+
+			> .avatar
+				width 60px
+				height 60px
+				border-radius 8px
 
 			> .name
-				display inline-block
-				margin 0
-				line-height 24px
 				color var(--noteHeaderName)
-				font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
+				display inline-block
+				flex 1 0 auto
 				font-size 18px
-				font-weight 600
-				text-align left
+				line-height 24px
+				margin 0
 				text-decoration none
+
+				margin 0 16px // gap fallbacking
 
 				&:hover
 					text-decoration underline
 
-			> .username
-				display block
-				text-align left
-				margin 0
-				color var(--noteHeaderAcct)
+				> .username
+					color var(--noteHeaderAcct)
+					display block
+					font-size 16px
+					margin 0
 
 			> .info
-				position absolute
-				top 0
-				right 32px
 				font-size 1em
 
 				> .time
@@ -288,6 +284,10 @@ export default Vue.extend({
 					> .remote
 						margin-left 4px
 						color #4dabf7
+
+			> .via-twitter
+				color #4dabf7
+				margin 2px 0 0 16px // gap fallbacking
 	
 		> .body
 			padding 8px 0

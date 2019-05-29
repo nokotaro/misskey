@@ -19,10 +19,11 @@
 	<article>
 		<header>
 			<mk-avatar class="avatar" :user="appearNote.user"/>
-			<div>
+			<div class="names">
 				<router-link class="name" :to="appearNote.user | userPage"><mk-user-name :user="appearNote.user"/></router-link>
 				<span class="username"><mk-acct :user="appearNote.user"/></span>
 			</div>
+			<div class="via-twitter" v-if="appearNote.user.host === 'twitter.com'" :title="$t('@.twitter.note-from-twitter')"><fa :icon="['fab', 'twitter']" size="2x"/></div>
 		</header>
 		<div class="body">
 			<p v-if="appearNote.cw != null" class="cw">
@@ -256,7 +257,7 @@ export default Vue.extend({
 					width 60px
 					height 60px
 
-			> div
+			> .names
 
 				> .name
 					display inline-block
@@ -276,6 +277,10 @@ export default Vue.extend({
 					text-align left
 					margin 0
 					color var(--noteHeaderAcct)
+
+			> .via-twitter
+				color #4dabf7
+				margin 0 0 0 auto
 
 		> .body
 			padding 8px 0
@@ -338,6 +343,7 @@ export default Vue.extend({
 
 		> .visibility-info
 			color var(--noteHeaderInfo)
+			display inline
 
 			> .visibility 
 				color var(--noteActionsReactionHover)
