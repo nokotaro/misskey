@@ -174,6 +174,7 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 
 import {
+	faMastodon,
 	faTwitter,
 	faGithub,
 	faDiscord
@@ -325,6 +326,7 @@ library.add(
 
 	fFaStar,
 
+	faMastodon,
 	faTwitter,
 	faGithub,
 	faDiscord
