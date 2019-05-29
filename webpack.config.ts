@@ -112,7 +112,17 @@ module.exports = {
 		}]
 	},
 	plugins: [
-		new HardSourceWebpackPlugin(),
+		new HardSourceWebpackPlugin({
+			environmentHash: {
+				root: process.cwd(),
+				directories: [],
+				files: ['yarn.lock']
+			},
+			cachePrune: {
+				maxAge: 2592000000,
+				sizeThreshold: 4294967296
+			}
+		}),
 		new ProgressBarPlugin({
 			format: chalk`{cyan.bold Choco is eating a lot} {bold [}:bar{bold ]} {green.bold :percent} {gray (:current/:total)} :elapseds`,
 			complete: '😋',
