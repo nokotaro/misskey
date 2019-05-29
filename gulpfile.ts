@@ -9,7 +9,6 @@ import tslint from 'gulp-tslint';
 const postcss = require('gulp-postcss'); // import * as postcss from 'gulp-postcss';
 import * as uglifyComposer from 'gulp-uglify/composer';
 import * as cssnano from 'cssnano';
-import * as through2 from 'through2';
 import * as rimraf from 'rimraf';
 import chalk from 'chalk';
 import * as imagemin from 'gulp-imagemin';
@@ -25,6 +24,7 @@ const uglify = uglifyComposer(uglifyes, console);
 const env = process.env.NODE_ENV || 'development';
 const isProduction = env === 'production';
 const isDebug = !isProduction;
+const productionOnly = (src: NodeJS.ReadableStream, dst: NodeJS.ReadWriteStream) => isProduction ? src.pipe(dst) : src;
 
 if (isDebug) {
 	console.warn(chalk.yellow.bold('WARNING! NODE_ENV is not "production".'));
@@ -94,37 +94,35 @@ gulp.task('cleanall', gulp.parallel('clean', cb =>
 
 gulp.task('build:client:script', () => {
 	const client = require('./built/client/meta.json');
-	return gulp.src(['./src/client/app/boot.js', './src/client/app/safe.js'])
-		.pipe(replace('VERSION', JSON.stringify(client.version)))
-		.pipe(replace('ENV', JSON.stringify(env)))
-		.pipe(replace('LANGS', JSON.stringify(Object.keys(locales))))
-		.pipe(isProduction ? uglify({
+	return productionOnly(gulp.src(['./src/client/app/boot.js', './src/client/app/safe.js'])
+			.pipe(replace('VERSION', JSON.stringify(client.version)))
+			.pipe(replace('ENV', JSON.stringify(env)))
+			.pipe(replace('LANGS', JSON.stringify(Object.keys(locales)))),
+		uglify({
 			toplevel: true
-		} as any) : through2())
+		} as any))
 		.pipe(gulp.dest('./built/client/assets/'));
 });
 
 gulp.task('build:client:styles', () =>
-	gulp.src('./src/client/app/init.css')
-		.pipe(isProduction
-			? postcss([
-				cssnano()
-			])
-			: through2())
+	productionOnly(gulp.src('./src/client/app/init.css'),
+		postcss([
+			cssnano()
+		]))
 		.pipe(gulp.dest('./built/client/assets/'))
 );
 
 gulp.task('copy:client', () =>
-		gulp.src([
+	productionOnly(gulp.src([
 			'./assets/**/*',
 			'./src/client/assets/**/*',
 			'./src/client/app/*/assets/**/*'
-		])
-			.pipe(isProduction ? (imagemin as any)() : through2())
-			.pipe(rename(path => {
-				path.dirname = path.dirname.replace('assets', '.');
-			}))
-			.pipe(gulp.dest('./built/client/assets/'))
+		]),
+		(imagemin as any)())
+		.pipe(rename(path => {
+			path.dirname = path.dirname.replace('assets', '.');
+		}))
+		.pipe(gulp.dest('./built/client/assets/'))
 );
 
 gulp.task('build:client', gulp.parallel(
