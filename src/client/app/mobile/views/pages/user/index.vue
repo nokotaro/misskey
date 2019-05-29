@@ -1,17 +1,17 @@
 <template>
 <mk-ui>
 	<template #header v-if="!fetching">
-		<img :src="avator" alt=""><mk-user-name :user="user" :key="user.id"/>
+		<img :src="avatar" :style="avatarStyle" alt=""><mk-user-name :user="user" :key="user.id"/>
 	</template>
 	<div class="wwtwuxyh" v-if="!fetching">
 		<div class="is-suspended" v-if="user.isSuspended"><p><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.user-suspended') }}</p></div>
-		<div class="is-remote" v-if="user.host != null"><p><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.is-remote-user') }}<a :href="user.url || user.uri" rel="nofollow noopener" target="_blank">{{ $t('@.view-on-remote') }}</a></p></div>
+		<div class="is-remote" v-if="user.host"><p><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.is-remote-user') }}<a :href="user.url || user.uri" rel="nofollow noopener" target="_blank">{{ $t('@.view-on-remote') }}</a></p></div>
 		<header>
 			<div class="banner" :style="style"></div>
 			<div class="body">
 				<div class="top">
 					<a class="avatar">
-						<img :src="avator" alt="avatar"/>
+						<img :src="avatar" :style="avatarStyle" alt="avatar"/>
 					</a>
 					<button class="menu" ref="menu" @click="menu"><fa :icon="['fal', 'ellipsis-h']"/></button>
 					<mk-follow-button v-if="$store.getters.isSignedIn && $store.state.i.id != user.id" :user="user" :key="user.id"/>
@@ -106,12 +106,17 @@ export default Vue.extend({
 		age(): number {
 			return age(this.user.profile.birthday);
 		},
-		avator(): string {
+		avatar(): string {
 			return this.$store.state.device.disableShowingAnimatedImages
 				? getStaticImageUrl(this.user.avatarUrl)
 				: this.user.avatarUrl;
 		},
-		style(): any {
+		avatarStyle(): object {
+			return {
+				borderRadius: this.$store.state.settings.circleIcons ? '100%' : null
+			}
+		},
+		style(): object {
 			if (this.user.bannerUrl == null) return {};
 			return {
 				backgroundColor: this.user.bannerColor && this.user.bannerColor.length == 3 ? `rgb(${this.user.bannerColor.join(',')})` : null,
