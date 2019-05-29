@@ -7,6 +7,34 @@ import uploadFromUrl from '../../services/drive/upload-from-url';
 import post from '../../services/note/create';
 import Resolver from '../activitypub/resolver';
 
+export async function createVideoFromTwitter(value: string, thumbnail: string, sensitive: boolean, actor: ITwitterUser): Promise<IDriveFile> {
+	if (!value)
+		return null;
+
+	const instance = await fetchMeta();
+	const cache = instance.cacheRemoteFiles;
+
+	let file = await uploadFromUrl(value, actor, null, value, sensitive, false, !cache).catch(() => null);
+
+	if (file.metadata.isRemote) {
+		// URLが異なっている場合、同じ画像が以前に異なるURLで登録されていたということなので、
+		// URLを更新する
+		if (file.metadata.url !== value) {
+			file = await DriveFile.findOneAndUpdate({ _id: file._id }, {
+				$set: {
+					'metadata.url': value,
+					'metadata.uri': value,
+					'metadata.thumbnailUrl': thumbnail
+				}
+			}, {
+				returnNewDocument: true
+			});
+		}
+	}
+
+	return file;
+}
+
 export async function createImageFromTwitter(value: string, sensitive: boolean, actor: ITwitterUser): Promise<IDriveFile> {
 	if (!value)
 		return null;
@@ -73,6 +101,7 @@ export async function createUserFromTwitter(value: { user: { screen_name?: strin
 	if (!twitterUser)
 		return null;
 
+/*
 	const authorized = [
 		'2386153344', // imas_official
 		'954243596131041281', // enza_official
@@ -82,6 +111,7 @@ export async function createUserFromTwitter(value: { user: { screen_name?: strin
 
 	if (!authorized)
 		return null;
+*/
 
 	const createdAtCreatedAt = new Date(twitterUser.created_at);
 	const createdAtSnowflake = new Date(Number(BigInt(twitterUser.id_str) >> 22n) + 1288834974657);
@@ -197,21 +227,47 @@ export async function createNoteFromTwitter(value: any, resolver: Resolver, sile
 			next: number;
 		}>;
 
+		type IndicedText = {
+			text: string;
+			indices: [number, number];
+		};
+
+		const entities: {
+			hashtags: IndicedText[];
+			urls: (IndicedText & {
+				expanded_url: string;
+			})[];
+			user_mentions: (IndicedText & {
+				screen_name: string;
+			})[];
+			symbols: IndicedText[];
+			media: {
+				media_url_https: string;
+				video_info: {
+					variants: {
+						bitrate: number;
+						content_type: string;
+						url: string;
+					}[]
+				}
+			}[];
+		} = (tweet as any).extended_entities || tweet.entities;
+
 		const replacers: Replacer = {
-			...tweet.entities.hashtags.reduce<Replacer>((a, c) => (a[c.indices[0]] = {
+			...entities.hashtags.reduce<Replacer>((a, c) => (a[c.indices[0]] = {
 				to: `#${c.text}`,
 				next: c.indices[1]
 			}, a), {}),
-			...tweet.entities.urls.reduce<Replacer>((a, c) => (a[c.indices[0]] = {
+			...entities.urls.reduce<Replacer>((a, c) => (a[c.indices[0]] = {
 				to: `<${c.expanded_url}>`,
 				next: c.indices[1]
 			}, a), {}),
-			...tweet.entities.user_mentions.reduce<Replacer>((a, c) => (a[c.indices[0]] = {
+			...entities.user_mentions.reduce<Replacer>((a, c) => (a[c.indices[0]] = {
 				to: `@${c.screen_name}@twitter.com`,
 				next: c.indices[1]
 			}, a), {}),
-			...(tweet.entities as any as { symbols: { text: string, indices: [number, number] }[] }).symbols.reduce<Replacer>((a, c) => (a[c.indices[0]] = {
-				to: c.text,
+			...entities.symbols.reduce<Replacer>((a, c) => (a[c.indices[0]] = {
+				to: `$${c.text}`,
 				next: c.indices[1]
 			}, a), {})
 		};
@@ -224,7 +280,11 @@ export async function createNoteFromTwitter(value: any, resolver: Resolver, sile
 
 		const reply = tweet.in_reply_to_status_id_str ? await createNoteFromTwitter(tweet.in_reply_to_status_id_str, resolver, silent) : null;
 
-		const files = await Promise.all((tweet.entities.media || []).map(({ media_url_https }) => createImageFromTwitter(media_url_https, tweet.possibly_sensitive, user)));
+		const files = await Promise.all((entities.media || []).map(({ media_url_https, video_info }) => video_info ?
+			createVideoFromTwitter(video_info.variants
+				.filter(({ content_type }) => content_type.startsWith('video'))
+				.sort(({ bitrate }, x) => x.bitrate - bitrate)[0].url, media_url_https, tweet.possibly_sensitive, user) :
+			createImageFromTwitter(media_url_https, tweet.possibly_sensitive, user)));
 
 		return await post(user, {
 			createdAt,
