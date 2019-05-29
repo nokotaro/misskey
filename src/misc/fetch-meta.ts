@@ -18,10 +18,10 @@ const defaultMeta: any = {
 	enableGithubIntegration: false,
 	enableDiscordIntegration: false,
 	enableExternalUserRecommendation: false,
-	externalUserRecommendationEngine: 'https://vinayaka.distsn.org/cgi-bin/vinayaka-user-match-misskey-api.cgi?{{host}}+{{user}}+{{limit}}+{{offset}}',
+	externalUserRecommendationEngine: '#',
 	externalUserRecommendationTimeout: 300000,
-	mascotImageUrl: '/assets/ai.png',
-	errorImageUrl: 'https://ai.misskey.xyz/aiart/yubitun.png',
+	mascotImageUrl: '#',
+	errorImageUrl: '#',
 	enableServiceWorker: false
 };
 
