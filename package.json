@@ -23,6 +23,7 @@
 		"format": "gulp format"
 	},
 	"resolutions": {
+		"filed/mime": "^1.4.1",
 		"lodash": "4.17.11",
 		"ts-node": "8.0.1"
 	},
