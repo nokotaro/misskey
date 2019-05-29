@@ -82,8 +82,8 @@
 					<header><fa :icon="['fal', 'info-circle']"/> {{ $t('info') }}</header>
 					<div>
 						<div v-if="meta" class="body">
-							<p><fa :icon="['fal', 'code-commit']" fixed-width/><b> {{ meta.version }}</b></p>
-							<p><fa :icon="['fal', 'user-tie']" fixed-width/><b><span> </span><a :href="'mailto:' + meta.maintainer.email" target="_blank">{{ meta.maintainer.name }}</a></b></p>
+							<p><fa :icon="['fal', 'code-commit']" fixed-width/>&nbsp;<b>{{ meta.version }}</b></p>
+							<p><fa :icon="['fal', 'user-tie']" fixed-width/>&nbsp;<b><a :href="'mailto:' + meta.maintainer.email" target="_blank">{{ meta.maintainer.name }}</a></b></p>
 						</div>
 					</div>
 				</div>
