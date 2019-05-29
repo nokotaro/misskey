@@ -137,11 +137,6 @@
 		if (meta.version != ver) {
 			localStorage.setItem('v', meta.version);
 
-			alert(
-				'twistaの新しいバージョンがあります。ページを再度読み込みします。' +
-				'\n\n' +
-				'New version of twista available. The page will be reloaded.');
-
 			refresh();
 		}
 	}, 3000);
