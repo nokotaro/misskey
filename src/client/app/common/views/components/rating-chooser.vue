@@ -1,7 +1,7 @@
 <template>
 <div class="izumiski">
 	<div class="backdrop" ref="backdrop" @click="close"></div>
-	<div class="popover" :class="{ isMobile: $root.isMobile, first: v == null }" ref="popover">
+	<div class="popover" :class="{ isMobile: $root.isMobile, first: r == null }" ref="popover">
 		<div @click="choose(null)" :class="{ active: r == null }">
 			<div><fa :icon="['fal', 'eye']" fixed-width/></div>
 			<div>
