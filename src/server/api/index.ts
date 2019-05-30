@@ -15,6 +15,7 @@ import signin from './private/signin';
 import discord from './service/discord';
 import github from './service/github';
 import twitter from './service/twitter';
+import mastodon from './service/mastodon';
 import Instance from '../../models/instance';
 import { toApHost } from '../../misc/convert-host';
 import { unique } from '../../prelude/array';
@@ -66,6 +67,7 @@ router.post('/signin', signin);
 router.use(discord.routes());
 router.use(github.routes());
 router.use(twitter.routes());
+router.use(mastodon.routes());
 
 router.get('/v1/instance/peers', async ctx => {
 	const instances = await Instance.find({

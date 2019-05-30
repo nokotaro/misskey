@@ -6,6 +6,8 @@
 	</template>
 
 	<template v-if="page == null || page == 'appearance'">
+		<x-mastodon/>
+
 		<x-theme/>
 
 		<ui-card>
@@ -212,6 +214,10 @@
 		<x-extended-notification/>
 	</template>
 
+	<template v-if="page == 'mastodon'">
+		<x-mastodon/>
+	</template>
+
 	<template v-if="page == null || page == 'apps'">
 		<ui-card>
 			<template #title><fa :icon="['fal', 'puzzle-piece']"/> {{ $t('@._settings.apps') }}</template>
@@ -291,6 +297,7 @@ import XApps from './apps.vue';
 import XSignins from './signins.vue';
 import XTags from './tags.vue';
 import XIntegration from './integration.vue';
+import XMastodon from './mastodon.vue';
 import XTheme from './theme.vue';
 import XDrive from './drive.vue';
 import XMuteAndBlock from './mute-and-block.vue';
@@ -312,6 +319,7 @@ export default Vue.extend({
 		XSignins,
 		XTags,
 		XIntegration,
+		XMastodon,
 		XTheme,
 		XDrive,
 		XMuteAndBlock,

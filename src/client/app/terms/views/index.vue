@@ -1,18 +1,25 @@
 <template>
 <main>
 	<ui-card>
-		<template #title>利用規約</template>
+		<template #title><fa :icon="['fal', 'balance-scale']" fixed-width/>&nbsp;利用規約</template>
+		<section>
+			<header></header>
+			<div class="slot">
+				<p>あ</p>
+			</div>
+		</section>
 		<section>
 			<header>
 				<fa :icon="['fal', 'atlas']" fixed-width/>
 				<span class="title">総則</span>
 			</header>
 			<div class="slot">
+				<p></p>
 			</div>
 		</section>
 	</ui-card>
 	<ui-card>
-		<template #title>プライバシーポリシー</template>
+		<template #title><fa :icon="['fal', 'user-secret']" fixed-width/>&nbsp;プライバシーポリシー</template>
 		<section>
 			<header>
 				<fa :icon="['fal', 'atlas']" fixed-width/>
@@ -44,6 +51,7 @@ main
 
 		> *
 			flex 1 1 auto
+			margin 0
 
 	.title
 		margin 8px

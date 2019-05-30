@@ -126,6 +126,12 @@ export interface ILocalUser extends IUserBase {
 		username: string;
 		discriminator: string;
 	};
+	mastodon: {
+		hostname: string;
+		accessToken: string;
+		id: string;
+		username: string;
+	};
 	profile: {
 		location: string;
 		birthday: string; // 'YYYY-MM-DD'
@@ -371,6 +377,9 @@ export const pack = (
 			delete _user.discord.accessToken;
 			delete _user.discord.refreshToken;
 			delete _user.discord.expiresDate;
+		}
+		if (_user.mastodon) {
+			delete _user.mastodon.accessToken;
 		}
 
 		// Visible via only the official client

@@ -111,6 +111,11 @@ export type INote = {
 		inbox?: string;
 	};
 	_files?: IDriveFile[];
+	_mastodonMirror?: {
+		hostname: string;
+		id: string;
+		uri: string;
+	}
 };
 
 export type IPoll = {
@@ -302,6 +307,7 @@ export const pack = async (
 	delete _note._reply;
 	delete _note._renote;
 	delete _note._files;
+	delete _note._mastodonMirror;
 	delete _note._replyIds;
 	delete _note.mentionedRemoteUsers;
 

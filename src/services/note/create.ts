@@ -39,6 +39,7 @@ import { genId } from '../../misc/gen-id';
 import { resolveNote } from '../../remote/activitypub/models/note';
 import Resolver from '../../remote/activitypub/resolver';
 import Blocking from '../../models/blocking';
+import * as request from 'request';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention' | 'highlight';
 
@@ -325,6 +326,76 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	const note = await insertNote(user, data, tags, emojis, mentionedUsers);
 
 	res(note);
+
+	if (isLocalUser(user) && user.mastodon && ['public', 'home'].includes(data.visibility) && !data.localOnly) {
+		const status = data.text || (data.files && data.files.length ? '' : '\u200b');
+
+		const in_reply_to_id = await (data.reply && data.reply._mastodonMirror ? new Promise<string>((s, j) => request({
+			url: `https://${user.mastodon.hostname}/authorize_interaction?acct=${encodeURIComponent(data.reply._mastodonMirror.uri)}`,
+			headers: {
+				'Authorization': `Bearer ${user.mastodon.accessToken}`,
+				'User-Agent': config.userAgent
+			},
+			followAllRedirects: true
+		}, (err, response) => err ? j(err) : ((m => m && m[1] ? s(m[1]) : j())(new URL(response.url).pathname.match(/^\/web\/statuses\/([^\/]+)\/?$/))))).catch(_ => {}) : Promise.resolve(null));
+
+		const media_ids = (await Promise.all(data.files && data.files.map(x => new Promise<string>(s => request({
+			url: x.metadata.webpublicUrl || x.metadata.url
+		}, (err, _, file) => err ? s() : request({
+			method: 'POST',
+			url: `https://${user.mastodon.hostname}/api/v1/media`,
+			headers: {
+				'Authorization': `Bearer ${user.mastodon.accessToken}`,
+				'User-Agent': config.userAgent
+			},
+			formData: { file },
+			json: true
+		}, (err, _, body) => err ? s() : s(body && body.id))))))).filter(x => x);
+
+		const poll = data.poll && {
+			options: data.poll.choices,
+			expires_in: Math.min(data.poll.expiresAt instanceof Date ? (data.poll.expiresAt as Date).valueOf() - Date.now() : 604800, 604800),
+			multiple: data.poll.multiple
+		};
+
+		const sensitive = data.files && data.files.some(x => x.metadata.isSensitive) || data.cw;
+
+		const spoiler_text = data.cw && (data.cw.length ? data.cw : '\u200b');
+
+		const visibility = data.visibility === 'home' ? 'unlisted' : 'public';
+
+		request({
+			method: 'POST',
+			url: `https://${user.mastodon.hostname}/api/v1/statuses`,
+			headers: {
+				'Authorization': `Bearer ${user.mastodon.accessToken}`,
+				'User-Agent': config.userAgent
+			},
+			form: {
+				status,
+				in_reply_to_id,
+				media_ids,
+				poll,
+				sensitive,
+				spoiler_text,
+				visibility
+			}
+		}, (err, response, body) => {
+			if (!err) {
+				const { hostname } = new URL(response.url);
+
+				const { id, uri } = body as Record<string, string>;
+
+				if ([id, uri].every(x => typeof x === 'string')) {
+					Note.update({ _id: note._id }, {
+						$set: {
+							_mastodonMirror: { hostname, id, uri }
+						}
+					});
+				}
+			}
+		});
+	}
 
 	if (note == null) {
 		return;
