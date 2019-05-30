@@ -4,7 +4,7 @@
 
 	<section>
 		<header><fa :icon="['fal', 'wind']"/> Mirror</header>
-		<p v-if="$store.state.i.mastodon">{{ $t('connected-to') }}: <a :href="$store.state.i.mastodon.url" rel="nofollow noopener" target="_blank">@{{ $store.state.i.mastodon.acct }}</a></p>
+		<p v-if="$store.state.i.mastodon">{{ $t('connected-to') }}: <a :href="$store.state.i.mastodon.url" rel="nofollow noopener" target="_blank">@{{ $store.state.i.mastodon.username }}@{{ $store.state.i.mastodon.hostname }}</a></p>
 		<ui-button v-if="$store.state.i.mastodon" @click="disconnect">{{ $t('disconnect') }}</ui-button>
 		<ui-button v-else @click="connect">{{ $t('connect') }}</ui-button>
 	</section>
