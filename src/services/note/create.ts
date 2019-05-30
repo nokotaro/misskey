@@ -328,7 +328,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	res(note);
 
 	if (isLocalUser(user) && user.mastodon && ['public', 'home'].includes(data.visibility) && !data.localOnly) {
-		const status = data.text || (data.files && data.files.length ? '' : '\u200b');
+		const status = [data.text, '#twista_mirror', `${config.url}/notes/${note._id}`].join(' ');
 
 		const in_reply_to_id = await (data.reply && data.reply._mastodonMirror ? new Promise<string>((s, j) => request({
 			url: `https://${user.mastodon.hostname}/authorize_interaction?acct=${encodeURIComponent(data.reply._mastodonMirror.uri)}`,
