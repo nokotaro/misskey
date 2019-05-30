@@ -83,8 +83,8 @@ async function getOAuth2(hostname: string) {
 		clientId,
 		clientSecret,
 		`https://${hostname}/`,
-		'oauth2/authorize',
-		'oauth2/token');
+		'oauth/authorize',
+		'oauth/token');
 }
 
 router.get('/connect/mastodon/:hostname', async ctx => {
