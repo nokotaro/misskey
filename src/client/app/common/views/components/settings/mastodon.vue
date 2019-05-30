@@ -51,7 +51,7 @@ export default Vue.extend({
 		},
 
 		disconnect() {
-			window.open(`${apiUrl}/disonnect/mastodon`,
+			window.open(`${apiUrl}/disconnect/mastodon`,
 				'disconnect_window',
 				'height=570, width=520');
 		},
