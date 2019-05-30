@@ -327,7 +327,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 
 	res(note);
 
-	if (isLocalUser(user) && user.mastodon && ['public', 'home'].includes(data.visibility) && !data.localOnly) {
+	if (isLocalUser(user) && user.mastodon && ['public', 'home'].includes(data.visibility) && !data.localOnly && !(data.text && data.text.includes('#twista_mirror'))) {
 		const status = [data.text, '#twista_mirror', `${config.url}/notes/${note._id}`].join(' ');
 
 		const in_reply_to_id = await (data.reply && data.reply._mastodonMirror ? new Promise<string>((s, j) => request({
