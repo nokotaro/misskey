@@ -98,9 +98,11 @@ router.get('/connect/mastodon/:hostname', async ctx => {
 
 	const params = {
 		redirect_uri: `${config.url}/api/mt/cb/${hostname}`,
-		scope: ['read:accounts', 'write:media', 'write:statuses'],
+		scope: 'read:accounts write:media write:statuses',
 		response_type: 'code'
 	};
+
+	redis.set(userToken, JSON.stringify(params));
 
 	const oauth2 = await getOAuth2(hostname);
 
@@ -154,6 +156,8 @@ router.get('/mt/cb/:hostname', async ctx => {
 		}, (err, response, body) => {
 			if (err)
 				rej(err);
+			else if (body && body.error)
+				rej(body.error);
 			else
 				res(body);
 		}));

@@ -339,18 +339,7 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 			followAllRedirects: true
 		}, (err, response) => err ? j(err) : ((m => m && m[1] ? s(m[1]) : j())(new URL(response.url).pathname.match(/^\/web\/statuses\/([^\/]+)\/?$/))))).catch(_ => {}) : Promise.resolve(null));
 
-		const media_ids = (await Promise.all(data.files && data.files.map(x => new Promise<string>(s => request({
-			url: x.metadata.webpublicUrl || x.metadata.url
-		}, (err, _, file) => err ? s() : request({
-			method: 'POST',
-			url: `https://${user.mastodon.hostname}/api/v1/media`,
-			headers: {
-				'Authorization': `Bearer ${user.mastodon.accessToken}`,
-				'User-Agent': config.userAgent
-			},
-			formData: { file },
-			json: true
-		}, (err, _, body) => err ? s() : s(body && body.id))))))).filter(x => x);
+		const media_ids = data.files && ((x => x.length ? x : null)(data.files.filter(x => x.metadata.mastodon && x.metadata.mastodon.hostname === user.mastodon.hostname).map(x => x.metadata.mastodon.id)));
 
 		const poll = data.poll && {
 			options: data.poll.choices,
@@ -379,10 +368,13 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 				sensitive,
 				spoiler_text,
 				visibility
+			},
+			qsStringifyOptions: {
+				arrayFormat: 'brackets'
 			}
 		}, (err, response, body) => {
 			if (!err) {
-				const { hostname } = new URL(response.url);
+				const { hostname } = user.mastodon;
 
 				const { id, uri } = body as Record<string, string>;
 

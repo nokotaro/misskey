@@ -30,6 +30,7 @@ import { contentDisposition } from '../../misc/content-disposition';
 import { detectMine } from '../../misc/detect-mine';
 import { DriveConfig } from '../../config/types';
 import { getDriveConfig } from '../../misc/get-drive-config';
+import * as request from 'request';
 
 const logger = driveLogger.createSubLogger('register', 'yellow');
 
@@ -551,7 +552,7 @@ export default async function addFile(
 
 	const [folder] = await Promise.all([fetchFolder(), Promise.all(propPromises)]);
 
-	const metadata = {
+	const metadata: IMetadata = {
 		userId: user._id,
 		_user: {
 			host: user.host
@@ -565,7 +566,7 @@ export default async function addFile(
 			(sensitive !== null && sensitive !== undefined)
 				? sensitive
 				: false
-	} as IMetadata;
+	};
 
 	if (url !== null) {
 		metadata.src = url;
@@ -577,6 +578,29 @@ export default async function addFile(
 
 	if (uri !== null) {
 		metadata.uri = uri;
+	}
+
+	if (isLocalUser(user) && user.mastodon && !isLink) {
+		const hostname = user.mastodon.hostname;
+		const id = await new Promise<string>((s, j) => request({
+			method: 'POST',
+			url: `https://${hostname}/api/v1/media`,
+			headers: {
+				'Authorization': `Bearer ${user.mastodon.accessToken}`,
+				'User-Agent': config.userAgent
+			},
+			formData: {
+				file: fs.createReadStream(path)
+			},
+			json: true
+		}, (err, _, body) =>
+			err ? j(err) :
+			body && body.error ? j(body.error) : s(body && body.id)))
+			.catch(() => {});
+
+		if (id) {
+			metadata.mastodon = { hostname, id };
+		}
 	}
 
 	let driveFile: IDriveFile;

@@ -86,6 +86,11 @@ export type IMetadata = {
 	 * 外部の(信頼されていない)URLへの直リンクか否か
 	 */
 	isRemote?: boolean;
+
+	mastodon?: {
+		hostname: string;
+		id: string;
+	}
 };
 
 export type IStorageProps = {
