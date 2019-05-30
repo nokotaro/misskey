@@ -7,6 +7,7 @@
 		<p v-if="$store.state.i.mastodon">{{ $t('connected-to') }}: <a :href="$store.state.i.mastodon.url" rel="nofollow noopener" target="_blank">@{{ $store.state.i.mastodon.username }}@{{ $store.state.i.mastodon.hostname }}</a></p>
 		<ui-button v-if="$store.state.i.mastodon" @click="disconnect">{{ $t('disconnect') }}</ui-button>
 		<ui-button v-else @click="connect">{{ $t('connect') }}</ui-button>
+		<ui-switch v-model="preferBoost" @change="save">{{ $t('prefer-boost') }}</ui-switch>
 	</section>
 </ui-card>
 </template>
@@ -22,8 +23,13 @@ export default Vue.extend({
 	data() {
 		return {
 			apiUrl,
-			form: null
+			form: null,
+			preferBoost: false
 		};
+	},
+
+	created() {
+		this.preferBoost = this.$store.state.i.preferBoost;
 	},
 
 	mounted() {
@@ -55,6 +61,12 @@ export default Vue.extend({
 				'disconnect_window',
 				'height=570, width=520');
 		},
+
+		save() {
+			this.$root.api('i/update', {
+				preferBoost: !!this.preferBoost
+			});
+		}
 	}
 });
 </script>

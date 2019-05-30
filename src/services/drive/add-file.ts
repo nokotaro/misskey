@@ -580,7 +580,7 @@ export default async function addFile(
 		metadata.uri = uri;
 	}
 
-	if (isLocalUser(user) && user.mastodon && !isLink) {
+	if (isLocalUser(user) && user.mastodon && !isLink && !user.mastodon.preferBoost) {
 		const hostname = user.mastodon.hostname;
 		const id = await new Promise<string>((s, j) => request({
 			method: 'POST',

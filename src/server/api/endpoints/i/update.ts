@@ -128,6 +128,10 @@ export const meta = {
 			}
 		},
 
+		preferBoost: {
+			validator: $.optional.bool,
+		},
+
 		autoWatch: {
 			validator: $.optional.bool,
 			desc: {
@@ -189,6 +193,7 @@ export default define(meta, async (ps, user, app) => {
 	if (typeof ps.autoAcceptFollowed == 'boolean') updates.autoAcceptFollowed = ps.autoAcceptFollowed;
 	if (typeof ps.isCat == 'boolean') updates.isCat = ps.isCat;
 	if (typeof ps.isKaho == 'boolean') updates.isKaho = ps.isKaho;
+	if (typeof ps.preferBoost == 'boolean') updates['mastodon.preferBoost'] = ps.preferBoost;
 	if (typeof ps.autoWatch == 'boolean') updates['settings.autoWatch'] = ps.autoWatch;
 	if (typeof ps.alwaysMarkNsfw == 'boolean') updates['settings.alwaysMarkNsfw'] = ps.alwaysMarkNsfw;
 

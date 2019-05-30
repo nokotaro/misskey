@@ -131,6 +131,7 @@ export interface ILocalUser extends IUserBase {
 		accessToken: string;
 		id: string;
 		username: string;
+		preferBoost: boolean;
 	};
 	profile: {
 		location: string;

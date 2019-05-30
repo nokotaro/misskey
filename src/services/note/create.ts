@@ -328,65 +328,101 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	res(note);
 
 	if (isLocalUser(user) && user.mastodon && ['public', 'home'].includes(data.visibility) && !data.localOnly && !(data.text && data.text.includes('#twista_mirror'))) {
-		const status = [data.text, '#twista_mirror', `${config.url}/notes/${note._id}`].join(' ');
+		if (user.mastodon.preferBoost) {
+			const id = await new Promise<string>((s, j) => request({
+				url: `https://${user.mastodon.hostname}/authorize_interaction?acct=${encodeURIComponent(note.uri)}`,
+				headers: {
+					'Authorization': `Bearer ${user.mastodon.accessToken}`,
+					'User-Agent': config.userAgent
+				},
+				followAllRedirects: true
+			}, (err, response) => err ? j(err) : ((m => m && m[1] ? s(m[1]) : j())(new URL(response.url).pathname.match(/^\/web\/statuses\/([^\/]+)\/?$/))))).catch(_ => {});
 
-		const in_reply_to_id = await (data.reply && data.reply._mastodonMirror ? new Promise<string>((s, j) => request({
-			url: `https://${user.mastodon.hostname}/authorize_interaction?acct=${encodeURIComponent(data.reply._mastodonMirror.uri)}`,
-			headers: {
-				'Authorization': `Bearer ${user.mastodon.accessToken}`,
-				'User-Agent': config.userAgent
-			},
-			followAllRedirects: true
-		}, (err, response) => err ? j(err) : ((m => m && m[1] ? s(m[1]) : j())(new URL(response.url).pathname.match(/^\/web\/statuses\/([^\/]+)\/?$/))))).catch(_ => {}) : Promise.resolve(null));
+			if (id) {
+				request({
+					method: 'POST',
+					url: `https://${user.mastodon.hostname}/api/v1/statuses/${id}/reblog`,
+					headers: {
+						'Authorization': `Bearer ${user.mastodon.accessToken}`,
+						'User-Agent': config.userAgent
+					}
+				}, (err, response, body) => {
+					if (!err) {
+						const { hostname } = user.mastodon;
 
-		const media_ids = data.files && ((x => x.length ? x : null)(data.files.filter(x => x.metadata.mastodon && x.metadata.mastodon.hostname === user.mastodon.hostname).map(x => x.metadata.mastodon.id)));
+						const { id, uri } = body as Record<string, string>;
 
-		const poll = data.poll && {
-			options: data.poll.choices,
-			expires_in: Math.min(data.poll.expiresAt instanceof Date ? (data.poll.expiresAt as Date).valueOf() - Date.now() : 604800, 604800),
-			multiple: data.poll.multiple
-		};
-
-		const sensitive = data.files && data.files.some(x => x.metadata.isSensitive) || data.cw;
-
-		const spoiler_text = data.cw && (data.cw.length ? data.cw : '\u200b');
-
-		const visibility = data.visibility === 'home' ? 'unlisted' : 'public';
-
-		request({
-			method: 'POST',
-			url: `https://${user.mastodon.hostname}/api/v1/statuses`,
-			headers: {
-				'Authorization': `Bearer ${user.mastodon.accessToken}`,
-				'User-Agent': config.userAgent
-			},
-			form: {
-				status,
-				in_reply_to_id,
-				media_ids,
-				poll,
-				sensitive,
-				spoiler_text,
-				visibility
-			},
-			qsStringifyOptions: {
-				arrayFormat: 'brackets'
-			}
-		}, (err, response, body) => {
-			if (!err) {
-				const { hostname } = user.mastodon;
-
-				const { id, uri } = body as Record<string, string>;
-
-				if ([id, uri].every(x => typeof x === 'string')) {
-					Note.update({ _id: note._id }, {
-						$set: {
-							_mastodonMirror: { hostname, id, uri }
+						if ([id, uri].every(x => typeof x === 'string')) {
+							Note.update({ _id: note._id }, {
+								$set: {
+									_mastodonMirror: { hostname, id, uri }
+								}
+							});
 						}
-					});
-				}
+					}
+				});
 			}
-		});
+		} else {
+			const status = [data.text, '#twista_mirror', `${config.url}/notes/${note._id}`].join(' ');
+
+			const in_reply_to_id = await (data.reply && data.reply._mastodonMirror ? new Promise<string>((s, j) => request({
+				url: `https://${user.mastodon.hostname}/authorize_interaction?acct=${encodeURIComponent(data.reply._mastodonMirror.uri)}`,
+				headers: {
+					'Authorization': `Bearer ${user.mastodon.accessToken}`,
+					'User-Agent': config.userAgent
+				},
+				followAllRedirects: true
+			}, (err, response) => err ? j(err) : ((m => m && m[1] ? s(m[1]) : j())(new URL(response.url).pathname.match(/^\/web\/statuses\/([^\/]+)\/?$/))))).catch(_ => {}) : Promise.resolve(null));
+
+			const media_ids = data.files && ((x => x.length ? x : null)(data.files.filter(x => x.metadata.mastodon && x.metadata.mastodon.hostname === user.mastodon.hostname).map(x => x.metadata.mastodon.id)));
+
+			const poll = data.poll && {
+				options: data.poll.choices,
+				expires_in: Math.min(data.poll.expiresAt instanceof Date ? (data.poll.expiresAt as Date).valueOf() - Date.now() : 604800, 604800),
+				multiple: data.poll.multiple
+			};
+
+			const sensitive = data.files && data.files.some(x => x.metadata.isSensitive) || data.cw;
+
+			const spoiler_text = data.cw && (data.cw.length ? data.cw : '\u200b');
+
+			const visibility = data.visibility === 'home' ? 'unlisted' : 'public';
+
+			request({
+				method: 'POST',
+				url: `https://${user.mastodon.hostname}/api/v1/statuses`,
+				headers: {
+					'Authorization': `Bearer ${user.mastodon.accessToken}`,
+					'User-Agent': config.userAgent
+				},
+				form: {
+					status,
+					in_reply_to_id,
+					media_ids,
+					poll,
+					sensitive,
+					spoiler_text,
+					visibility
+				},
+				qsStringifyOptions: {
+					arrayFormat: 'brackets'
+				}
+			}, (err, response, body) => {
+				if (!err) {
+					const { hostname } = user.mastodon;
+
+					const { id, uri } = body as Record<string, string>;
+
+					if ([id, uri].every(x => typeof x === 'string')) {
+						Note.update({ _id: note._id }, {
+							$set: {
+								_mastodonMirror: { hostname, id, uri }
+							}
+						});
+					}
+				}
+			});
+		}
 	}
 
 	if (note == null) {
