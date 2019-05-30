@@ -61,7 +61,7 @@ async function getOAuth2(hostname: string) {
 				if (err) {
 					rej(err);
 				} else {
-					const { hostname } = new URL(response.url);
+					// const { hostname } = new URL(response.url);
 
 					const clientId = body.client_id;
 
