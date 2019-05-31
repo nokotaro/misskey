@@ -188,7 +188,7 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 			isCat: (person as any).isCat === true,
 			isKaho: (person as any).isKaho === true,
 			avatarAngle: (person as any).avatarAngle
-		}) as IRemoteUser;
+		});
 	} catch (e) {
 		// duplicate key error
 		if (e.code === 11000) {
