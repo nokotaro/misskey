@@ -19,7 +19,7 @@ router.get(authorizeInteractionPath, async ctx => {
 		await (async x =>
 			(x => x && `${config.url}/users/${x._id}`)(await createPersonFromObject(x.url, x, resolver).catch(() => null)) ||
 			(x => x && `${config.url}/notes/${x._id}`)(await createNote(x, resolver, true).catch(() => null))
-		)(await resolver.resolve(acct));
+		)(await resolver.resolve(acct).catch(() => null));
 
 	if (url)
 		ctx.redirect(url);
