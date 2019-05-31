@@ -33,7 +33,7 @@ export function validateNote(object: any, uri: string) {
 		return new Error('invalid Note: object is null');
 	}
 
-	if (!['Note', 'Question', 'Article'].includes(object.type)) {
+	if (!['Note', 'Question'/* , 'Article' */].includes(object.type)) {
 		return new Error(`invalid Note: invalied object type ${object.type}`);
 	}
 

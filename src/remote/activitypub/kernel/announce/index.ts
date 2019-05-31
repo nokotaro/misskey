@@ -25,7 +25,7 @@ export default async (actor: IRemoteUser, activity: IAnnounce): Promise<void> =>
 	switch (object.type) {
 	case 'Note':
 	case 'Question':
-	case 'Article':
+	// case 'Article':
 		announceNote(resolver, actor, activity, object as INote);
 		break;
 

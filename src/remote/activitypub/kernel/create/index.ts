@@ -30,7 +30,7 @@ export default async (actor: IRemoteUser, activity: ICreate): Promise<void> => {
 
 	case 'Note':
 	case 'Question':
-	case 'Article':
+	// case 'Article':
 		createNote(resolver, actor, object);
 		break;
 

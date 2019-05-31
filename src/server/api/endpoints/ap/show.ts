@@ -117,7 +117,7 @@ export async function fetchAny(uri: string, user: ILocalUser) {
 			};
 		}
 
-		if (['Note', 'Question', 'Article'].includes(object.type)) {
+		if (['Note', 'Question'/* , 'Article' */].includes(object.type)) {
 			const note = await createNote(object.id, null, true);
 			return {
 				type: 'Note',
