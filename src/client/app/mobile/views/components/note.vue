@@ -242,7 +242,6 @@ export default Vue.extend({
 						padding 0
 						overflow-wrap break-word
 						color var(--noteText)
-						max-height 200px
 						overflow auto
 						font-size calc(1em + var(--fontSize))
 
