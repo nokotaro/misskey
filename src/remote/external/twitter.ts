@@ -3,7 +3,7 @@ import fetchMeta from '../../misc/fetch-meta';
 import DriveFile, { IDriveFile } from '../../models/drive-file';
 import Note, { INote } from '../../models/note';
 import User, { ITwitterUser } from '../../models/user';
-import uploadFromUrl from '../../services/drive/upload-from-url';
+import { uploadFromUrl } from '../../services/drive/upload-from-url';
 import post from '../../services/note/create';
 import Resolver from '../activitypub/resolver';
 import { JSDOM } from 'jsdom';
