@@ -3,7 +3,7 @@
 	<template v-for="media in mediaList.filter(media => !previewable(media))">
 		<x-banner :media="media" :key="media.id"/>
 	</template>
-	<div v-if="count" class="gird-container">
+	<div v-if="count" class="grid-container" ref="container">
 		<div :data-count="count" ref="grid">
 			<template v-for="media in mediaList">
 				<mk-media-video v-if="media.type.startsWith('video')" :video="media" :key="media.id"/>
@@ -50,6 +50,14 @@ export default Vue.extend({
 					this.$refs.grid.clientHeight ? `${this.$refs.grid.clientHeight}px` :
 					'netscape' in window ? '' : '400px'
 				}${half ? '/2)' : ''}`;
+
+			if (this.$refs.container instanceof HTMLDivElement) {
+				const { height } = this.$refs.container.getBoundingClientRect();
+
+				if (height) {
+					this.$refs.grid.style.height = height;
+				}
+			}
 		}
 		//#endregion
 	},
@@ -63,7 +71,7 @@ export default Vue.extend({
 
 <style lang="stylus" scoped>
 .mk-media-list
-	> .gird-container
+	> .grid-container
 		width 100%
 		margin-top 4px
 
