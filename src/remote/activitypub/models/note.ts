@@ -326,10 +326,11 @@ export async function extractEmojis(tags: ITag[], host_: string) {
 			});
 
 			if (exists) {
-				if ((tag.updated != null && exists.updatedAt == null)
-					|| (tag.id != null && exists.uri == null)
+				if ((tag.updated && !exists.updatedAt)
+					|| (tag.id && !exists.uri)
 					|| (exists.url != tag.icon.url)
-					|| (tag.updated != null && exists.updatedAt != null && new Date(tag.updated) > exists.updatedAt)) {
+					|| (exists.updatedAt && Date.now() - exists.updatedAt.getTime() > 7 * 86400 * 1000)
+					|| (tag.updated && exists.updatedAt && new Date(tag.updated) > exists.updatedAt)) {
 						logger.info(`update emoji host=${host}, name=${name}`);
 						return await Emoji.findOneAndUpdate({
 							host,
