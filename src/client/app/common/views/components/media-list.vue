@@ -58,7 +58,7 @@ export default Vue.extend({
 			this.$refs.grid.style.height =
 				`${half ? 'calc(' : ''}${
 					this.$refs.grid.clientHeight ? `${this.$refs.grid.clientHeight}px` :
-					'netscape' in window ? '' : '400px'
+					'netscape' in window ? '' : '128px'
 				}${half ? '/2)' : ''}`;
 		}
 		//#endregion
