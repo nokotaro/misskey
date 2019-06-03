@@ -26,11 +26,11 @@
 			<div class="via-twitter" v-if="appearNote.user.host === 'twitter.com'" :title="$t('@.twitter.note-from-twitter')"><fa :icon="['fab', 'twitter']" size="2x"/></div>
 		</header>
 		<div class="body">
-			<p v-if="appearNote.cw != null" class="cw">
-				<mfm v-if="appearNote.cw != ''" class="text" :text="appearNote.cw" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis" />
+			<p v-if="appearNote.cw" class="cw">
+				<mfm v-if="appearNote.cw.length" class="text" :text="appearNote.cw" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis" />
 				<mk-cw-button v-model="showContent" :note="appearNote"/>
 			</p>
-			<div class="content" v-show="appearNote.cw == null || showContent">
+			<div class="content" v-show="!appearNote.cw || showContent">
 				<div class="text">
 					<span v-if="appearNote.isHidden" style="opacity:.5">({{ $t('private') }})</span>
 					<span v-if="appearNote.deletedAt" style="opacity:.5">({{ $t('deleted') }})</span>
@@ -131,7 +131,7 @@ export default Vue.extend({
 
 	data() {
 		return {
-			faGlobeAmericas,
+			showContent: false,
 			conversation: [],
 			conversationFetching: false,
 			replies: []
