@@ -43,6 +43,16 @@ export default Vue.extend({
 	mounted() {
 		//#region for Safari bug
 		if (this.$refs.grid) {
+			if (this.$refs.container instanceof HTMLDivElement) {
+				const { height } = this.$refs.container.getBoundingClientRect();
+
+				if (height) {
+					this.$refs.grid.style.height = `${height}px`;
+
+					return;
+				}
+			}
+
 			const half = navigator.vendor === 'Apple Computer, Inc.' && [3, 4].includes(this.count);
 
 			this.$refs.grid.style.height =
@@ -50,14 +60,6 @@ export default Vue.extend({
 					this.$refs.grid.clientHeight ? `${this.$refs.grid.clientHeight}px` :
 					'netscape' in window ? '' : '400px'
 				}${half ? '/2)' : ''}`;
-
-			if (this.$refs.container instanceof HTMLDivElement) {
-				const { height } = this.$refs.container.getBoundingClientRect();
-
-				if (height) {
-					this.$refs.grid.style.height = height;
-				}
-			}
 		}
 		//#endregion
 	},
