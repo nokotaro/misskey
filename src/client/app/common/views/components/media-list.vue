@@ -43,7 +43,7 @@ export default Vue.extend({
 	mounted() {
 		//#region for Safari bug
 		if (this.$refs.grid) {
-			if (this.$refs.container instanceof HTMLDivElement) {
+			if (this.$refs.container instanceof HTMLElement) {
 				const { height } = this.$refs.container.getBoundingClientRect();
 
 				if (height) {
