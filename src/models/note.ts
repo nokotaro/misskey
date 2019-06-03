@@ -1,6 +1,5 @@
 import * as mongo from 'mongodb';
 import * as deepcopy from 'deepcopy';
-import { JSDOM } from 'jsdom';
 import rap from '@prezzemolo/rap';
 import db from '../db/mongodb';
 import isObjectId from '../misc/is-objectid';
@@ -15,6 +14,7 @@ import Emoji from './emoji';
 import packEmojis from '../misc/pack-emojis';
 import { dbLogger } from '../db/logger';
 import { unique, concat } from '../prelude/array';
+import { textContent } from '../prelude/html';
 
 const Note = db.get<INote>('notes');
 Note.createIndex('uri', { sparse: true, unique: true });
@@ -325,7 +325,7 @@ export const pack = async (
 		const viaTwitter: string = _note.viaTwitter;
 		const match = viaTwitter.match(/^<a (?:[^<>]* )*href="([^<>"]+)"(?: [^<>]*)*>(.+)<\/a>$/i);
 		if (match) {
-			const name = new JSDOM(`<!DOCTYPE html><a id="a">${match[2]}</a>`).window.document.getElementById('a').textContent;
+			const name = textContent(match[2]);
 			const url = match[1];
 
 			_note.viaMobile = [
