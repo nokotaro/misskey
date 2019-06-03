@@ -1,6 +1,7 @@
 import $ from 'cafy';
 import define from '../../define';
 import Emoji, { packXEmoji } from '../../../../models/emoji';
+import Instance from '../../../../models/instance';
 
 export const meta = {
 	tags: ['emojis'],
@@ -28,9 +29,11 @@ export const meta = {
 };
 
 export default define(meta, async (ps, me) => {
+	const blocking = await Instance.find({ isBlocked: true });
+
 	const xs = await Emoji.aggregate([{
 		$match: {
-			host: { $ne: null },
+			host: { $nin: [null, ...blocking.map(x => x.host)] },
 			md5: { $ne: null },
 			updatedAt: { $gt: new Date('2000-01-01') }
 		}

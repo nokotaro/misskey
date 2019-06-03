@@ -2,6 +2,7 @@ import $ from 'cafy';
 import define from '../define';
 import { fallback } from '../../../prelude/symbol';
 import Emoji, { packXEmoji } from '../../../models/emoji';
+import Instance from '../../../models/instance';
 
 const nonnull = { $ne: null as any };
 
@@ -63,11 +64,14 @@ const sort: any = { // < https://github.com/Microsoft/TypeScript/issues/1863
 };
 
 export default define(meta, async (ps, me) => {
+	const blocking = await Instance.find({ isBlocked: true });
 
-	const emojis = await Emoji
-		.find({
+	const emojis = await Emoji.find({
 			$and: [
-				origin[ps.origin] || origin[fallback]
+				origin[ps.origin] || origin[fallback],
+				{
+					host: { $nin: blocking.map(x => x.host) }
+				}
 			],
 		}, {
 			limit: ps.limit,

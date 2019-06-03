@@ -33,6 +33,7 @@ import { program } from '../argv';
 import Emoji from '../models/emoji';
 import { lib, ordered } from 'emojilib';
 import { twemojiBase } from '../misc/twemoji-base';
+import Instance from '../models/instance';
 
 export const serverLogger = new Logger('server', 'gray', false);
 
@@ -97,6 +98,17 @@ router.get('/assets/emojis/:query', async ctx => {
 			ctx.status = 404;
 	} else {
 		const [name, host = null] = query.split('@');
+
+		if (host) {
+			const blocking = await Instance.find({ isBlocked: true });
+
+			if (blocking.map(x => x.host).includes(host)) {
+				ctx.status = 403;
+
+				return;
+			}
+		}
+
 		const emoji = await Emoji.findOne({
 			host,
 			$or: [
