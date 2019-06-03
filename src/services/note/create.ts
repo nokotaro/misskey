@@ -179,10 +179,10 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	if (data.localOnly == null) data.localOnly = false;
 
 	//#region Auto Quote
-	const split = data.text && data.text.trim().split(/[\n\r\s]/ig);
+	const split = data.text && data.text.trim().split(/[\n\r\s：]/ig);
 	const uri = split && split[split.length - 1];
 
-	if (uri) {
+	if (uri && uri.startsWith('http')) {
 		const note = await resolveNote(uri, new Resolver({ twitter: (user as ILocalUser).twitter }), true).catch(() => null);
 
 		if (note) {
