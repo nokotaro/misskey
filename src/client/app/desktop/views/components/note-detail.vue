@@ -52,7 +52,7 @@
 					<mfm v-if="appearNote.text" :text="appearNote.text" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis" />
 				</div>
 				<div class="files" v-if="appearNote.files.length">
-					<mk-media-list :media-list="appearNote.files" :raw="true"/>
+					<mk-media-list :media-list="appearNote.files" :raw="true" :inDetails="true"/>
 				</div>
 				<mk-poll v-if="appearNote.poll" :note="appearNote"/>
 				<mk-url-preview v-for="url in urls" :url="url" :key="url" :detail="true"/>

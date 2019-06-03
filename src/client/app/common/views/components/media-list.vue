@@ -33,6 +33,9 @@ export default Vue.extend({
 		},
 		raw: {
 			default: false
+		},
+		inDetails: {
+			type: Boolean
 		}
 	},
 	computed: {
@@ -47,7 +50,7 @@ export default Vue.extend({
 				const { height } = this.$refs.container.getBoundingClientRect();
 
 				if (height) {
-					this.$refs.grid.style.height = `${height}px`;
+					this.$refs.grid.style.height = `${this.inDetails ? height / 2 : height}px`;
 
 					return;
 				}
@@ -56,10 +59,12 @@ export default Vue.extend({
 			const half = navigator.vendor === 'Apple Computer, Inc.' && [3, 4].includes(this.count);
 
 			this.$refs.grid.style.height =
-				`${half ? 'calc(' : ''}${
-					this.$refs.grid.clientHeight ? `${this.$refs.grid.clientHeight}px` :
-					'netscape' in window ? '' : '128px'
-				}${half ? '/2)' : ''}`;
+				`${this.inDetails ? 'calc(' : ''}${
+					`${half ? 'calc(' : ''}${
+						this.$refs.grid.clientHeight ? `${this.$refs.grid.clientHeight}px` :
+						'netscape' in window ? '' : '128px'
+					}${half ? '/2)' : ''}`
+				}${this.inDetails ? '/2)' : ''}`;
 		}
 		//#endregion
 	},
