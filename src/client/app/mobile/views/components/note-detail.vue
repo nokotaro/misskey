@@ -6,8 +6,8 @@
 		@click="fetchConversation"
 		:disabled="conversationFetching"
 	>
-		<template v-if="!conversationFetching"><fa :icon="['fal', 'ellipsis-v']"/></template>
 		<template v-if="conversationFetching"><fa :icon="['fal', 'spinner']" pulse/></template>
+		<template v-else><fa :icon="['fal', 'ellipsis-v']"/></template>
 	</button>
 	<mk-renote class="renote" v-if="isRenote" :note="note" mini/>
 	<div class="conversation">
