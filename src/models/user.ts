@@ -344,10 +344,10 @@ export const pack = (
 	// Me
 	const meId: mongo.ObjectID = me
 		? isObjectId(me)
-			? me as mongo.ObjectID
+			? me
 			: typeof me === 'string'
 				? new mongo.ObjectID(me)
-				: (me as IUser)._id
+				: me._id
 		: null;
 
 	// Rename _id to id
@@ -489,5 +489,5 @@ function img(url) {
 
 export async function fetchProxyAccount(): Promise<ILocalUser> {
 	const meta = await fetchMeta();
-	return await User.findOne({ username: meta.proxyAccount, host: null }) as ILocalUser;
+	return await User.findOne({ username: meta.proxyAccount, host: null });
 }
