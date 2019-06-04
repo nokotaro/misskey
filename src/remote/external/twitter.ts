@@ -148,8 +148,10 @@ export async function createUserFromTwitter(value: { user: { screen_name?: strin
 	const bannerUrl = twitterUser.profile_banner_url;
 	const avatar = avatarUrl && await createImageFromTwitter(avatarUrl, sensitive, user);
 	const banner = bannerUrl && await createImageFromTwitter(bannerUrl, sensitive, user);
-	const avatarColor = avatar && avatar.metadata.properties.avgColor ? avatar.metadata.properties.avgColor : null;
-	const bannerColor = banner && avatar.metadata.properties.avgColor ? banner.metadata.properties.avgColor : null;
+	const avatarId = avatar && avatar._id;
+	const bannerId = banner && avatar._id;
+	const avatarColor = avatar && avatar.metadata.properties.avgColor;
+	const bannerColor = banner && avatar.metadata.properties.avgColor;
 
 	user = await User.findOneAndUpdate(query, {
 		$set: {
@@ -163,16 +165,12 @@ export async function createUserFromTwitter(value: { user: { screen_name?: strin
 			description: textContent(twitterUser.description),
 			lang: twitterUser.lang,
 			isLocked: twitterUser.protected,
-			...(avatar ? {
-				avatarId: avatar._id,
-				avatarUrl,
-				avatarColor
-			} : {}),
-			...(banner ? {
-				bannerId: banner._id,
-				bannerUrl,
-				bannerColor
-			} : {})
+			avatarId,
+			avatarUrl,
+			avatarColor,
+			bannerId,
+			bannerUrl,
+			bannerColor
 		}
 	}, {
 		returnNewDocument: true
