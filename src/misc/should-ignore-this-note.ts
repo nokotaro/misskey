@@ -5,10 +5,11 @@ function toString(id: any) {
 	return isObjectId(id) ? id.toHexString() : id;
 }
 
-export default (note: any, ignoredUserIds: string[]) => Promise.resolve(
+export default (note: any, ignoredUserIds: string[], hideFromUsers?: string[]) => Promise.resolve(
 	ignoredUserIds.includes(toString(note.userId)) ||
 	note.reply && ignoredUserIds.includes(toString(note.reply.userId)) ||
 	note.renote && ignoredUserIds.includes(toString(note.renote.userId)) ||
+	hideFromUsers && hideFromUsers.includes(toString(note.userId)) ||
 	Blocking.find({ blocker: note.userId })
 		.then(x => x.map(x => x.blockeeId.toHexString()))
 		.then(x =>

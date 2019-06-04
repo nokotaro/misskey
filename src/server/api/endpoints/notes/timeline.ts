@@ -6,6 +6,8 @@ import { packMany } from '../../../../models/note';
 import define from '../../define';
 import activeUsersChart from '../../../../services/chart/active-users';
 import { getHideUserIds } from '../../common/get-hide-users';
+import UserList from '../../../../models/user-list';
+import { concat } from '../../../../prelude/array';
 
 export const meta = {
 	desc: {
@@ -128,14 +130,22 @@ export const meta = {
 };
 
 export default define(meta, async (ps, user) => {
-	const [followings, hideUserIds] = await Promise.all([
+	const [followings, hideUserIds, hideFromHomeLists] = await Promise.all([
 		// フォローを取得
 		// Fetch following
 		getFriends(user._id),
 
 		// 隠すユーザーを取得
-		getHideUserIds(user)
+		getHideUserIds(user),
+
+		// Homeから隠すリストを取得
+		UserList.find({
+			userId: user._id,
+			hideFromHome: true,
+		})
 	]);
+
+	const hideFromHomeUsers = concat(hideFromHomeLists.map(list => list.userIds));
 
 	//#region Construct query
 	const sort = {
@@ -189,7 +199,7 @@ export default define(meta, async (ps, user) => {
 
 			// mute
 			userId: {
-				$nin: hideUserIds
+				$nin: hideUserIds.concat(hideFromHomeUsers)
 			},
 			'_reply.userId': {
 				$nin: hideUserIds

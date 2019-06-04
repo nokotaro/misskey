@@ -4,6 +4,8 @@ import { pack } from '../../../../models/note';
 import shouldIgnoreThisNote from '../../../../misc/should-ignore-this-note';
 import Channel from '../channel';
 import Blocking from '../../../../models/blocking';
+import { concat } from '../../../../prelude/array';
+import UserList from '../../../../models/user-list';
 
 export default class extends Channel {
 	public readonly chName = 'homeTimeline';
@@ -11,6 +13,7 @@ export default class extends Channel {
 	public static requireCredential = true;
 
 	private ignoredUserIds: string[] = [];
+	private hideFromUsers: string[] = [];
 
 	@autobind
 	public async init(params: any) {
@@ -23,6 +26,14 @@ export default class extends Channel {
 			...mute.map(x => x.muteeId.toHexString()),
 			...blocking.map(x => x.blockeeId.toHexString())
 		];
+
+		// Homeから隠すリストユーザー
+		const lists = await UserList.find({
+			userId: this.user._id,
+			hideFromHome: true,
+		});
+
+		this.hideFromUsers = concat(lists.map(list => list.userIds)).map(x => x.toString());
 	}
 
 	@autobind
@@ -41,7 +52,7 @@ export default class extends Channel {
 		}
 
 		// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
-		if (await shouldIgnoreThisNote(note, this.ignoredUserIds)) return;
+		if (await shouldIgnoreThisNote(note, this.ignoredUserIds, this.hideFromUsers)) return;
 
 		this.send('note', note);
 	}

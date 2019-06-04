@@ -28,8 +28,8 @@ export type IEmoji = {
 };
 
 export type IXEmoji = {
-	name: string,
-	url: string,
+	name: string;
+	url: string;
 };
 
 /**
