@@ -130,7 +130,9 @@ export const imasHosts = [
 	'imastodon.blue',
 	'imastodon.net',
 	'imastodon.org',
-];
+	'twista.nokotaro.work',
+	'twista.283.cloud'
+].filter(x => x !== config.hostname);
 
 const nyaizable = (text: string) => {
 	if (typeof text !== 'string')
