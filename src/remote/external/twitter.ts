@@ -7,6 +7,7 @@ import { uploadFromUrl } from '../../services/drive/upload-from-url';
 import post from '../../services/note/create';
 import Resolver from '../activitypub/resolver';
 import { textContent } from '../../prelude/html';
+import * as uuid from 'uuid';
 
 export async function createVideoFromTwitter(value: string, thumbnail: string, sensitive: boolean, actor: ITwitterUser): Promise<IDriveFile> {
 	if (!value)
@@ -64,7 +65,10 @@ export async function createImageFromTwitter(value: string, sensitive: boolean, 
 }
 
 export async function createUserFromTwitter(value: { user: { screen_name?: string, id_str?: string } } | string, resolver: Resolver): Promise<ITwitterUser> {
-	await resolver.twitterPromise;
+	await Promise.all([
+		resolver.twitterPromise,
+		User.remove({ username: null, host: 'twitter.com' })
+	]);
 
 	if (typeof value === 'string') {
 
@@ -114,18 +118,24 @@ export async function createUserFromTwitter(value: { user: { screen_name?: strin
 		return null;
 */
 
+	const host = 'twitter.com';
+	const username = uuid();
+	const usernameLower = username.toLowerCase();
+	const twitterId = twitterUser.id_str;
+
+	const query = { host, twitterId };
+
 	const createdAtCreatedAt = new Date(twitterUser.created_at);
 	const createdAtSnowflake = new Date(Number(BigInt(twitterUser.id_str) >> 22n) + 1288834974657);
 	const createdAt = createdAtCreatedAt.valueOf() / 1000 === ~~(createdAtSnowflake.valueOf() / 1000) ? createdAtSnowflake : createdAtCreatedAt;
 
-	let user: ITwitterUser = await User.findOneAndUpdate({
-		host: 'twitter.com',
-		twitterId: twitterUser.id_str
-	}, {
+	let user: ITwitterUser = await User.findOneAndUpdate(query, {
 		$set: {
 			createdAt,
-			host: 'twitter.com',
-			twitterId: twitterUser.id_str,
+			host,
+			username,
+			usernameLower,
+			twitterId,
 			uri: `https://twitter.com/intent/user?user_id=${twitterUser.id_str}`
 		}
 	}, {
@@ -141,10 +151,7 @@ export async function createUserFromTwitter(value: { user: { screen_name?: strin
 	const avatarColor = avatar && avatar.metadata.properties.avgColor ? avatar.metadata.properties.avgColor : null;
 	const bannerColor = banner && avatar.metadata.properties.avgColor ? banner.metadata.properties.avgColor : null;
 
-	user = await User.findOneAndUpdate({
-		host: 'twitter.com',
-		twitterId: twitterUser.id_str
-	}, {
+	user = await User.findOneAndUpdate(query, {
 		$set: {
 			updatedAt: new Date(),
 			originalFollowersCount: twitterUser.followers_count,
