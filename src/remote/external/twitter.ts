@@ -188,18 +188,26 @@ export async function createNoteFromTwitter(value: any, resolver: Resolver, sile
 	if (!resolver.twitter)
 		return null;
 
-	const url = new URL(value);
+	const id = Number(value) ? value : (value => {
+		try {
+			const url = new URL(value);
 
-	if (!`.${url.host}`.endsWith('.twitter.com'))
-		return null;
+			if (!`.${url.host}`.endsWith('.twitter.com'))
+				return null;
 
-	const segments = url.pathname.split('/');
+			const segments = url.pathname.split('/');
 
-	if (segments[2] !== 'status' || !segments[3].match(/^\d+$/))
-		return null;
+			if (segments[2] !== 'status' || !segments[3].match(/^\d+$/))
+				return null;
+
+			return segments[3];
+		} catch {
+			return null;
+		}
+	})(value);
 
 	const tweet: Twitter.Twitter.Status = await resolver.twitter.get('statuses/show', {
-		id: segments[3],
+		id,
 		tweet_mode: 'extended',
 		...({ // For incorrect types
 			include_ext_alt_text: true
