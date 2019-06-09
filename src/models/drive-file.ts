@@ -90,7 +90,10 @@ export type IMetadata = {
 	mastodon?: {
 		hostname: string;
 		id: string;
-	}
+	};
+
+	width?: number;
+	height?: number;
 };
 
 export type IStorageProps = {
@@ -199,6 +202,8 @@ export const pack = (
 	_target.url = getDriveFileUrl(_file);
 	_target.thumbnailUrl = getDriveFileUrl(_file, true);
 	_target.isRemote = _file.metadata.isRemote;
+	_target.width = _file.metadata.width;
+	_target.height = _file.metadata.height;
 
 	if (_target.generatedThumbnailUrl) delete _target.generatedThumbnailUrl;
 

@@ -31,6 +31,7 @@ import { detectMine } from '../../misc/detect-mine';
 import { DriveConfig } from '../../config/types';
 import { getDriveConfig } from '../../misc/get-drive-config';
 import * as request from 'request';
+import { measureVideoResoluttion } from './measure-video-resolution';
 
 const logger = driveLogger.createSubLogger('register', 'yellow');
 
@@ -550,7 +551,7 @@ export async function addFile(
 		propPromises = [calcWh(), calcAvg()];
 	}
 
-	const [folder] = await Promise.all([fetchFolder(), Promise.all(propPromises)]);
+	const [folder, [width, height]] = await Promise.all([fetchFolder(), measureVideoResoluttion(path).catch(() => [0, 0]), Promise.all(propPromises)]);
 
 	const metadata: IMetadata = {
 		userId: user._id,
@@ -558,8 +559,9 @@ export async function addFile(
 			host: user.host
 		},
 		folderId: folder !== null ? folder._id : null,
-		comment: comment,
-		properties: properties,
+		comment,
+		properties,
+		...(width && height ? { width, height } : {}),
 		withoutChunks: isLink,
 		isRemote: isLink,
 		isSensitive: (isLocalUser(user) && user.settings.alwaysMarkNsfw) || sensitive
