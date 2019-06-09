@@ -56,6 +56,10 @@ export function sum(xs: number[]): number {
 	return xs.reduce((a, b) => a + b, 0);
 }
 
+export function multiple(xs: number[]): number {
+	return xs.reduce((a, b) => a * b, 1);
+}
+
 export function maximum(xs: number[]): number {
 	return Math.max(...xs);
 }
