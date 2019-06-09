@@ -9,8 +9,8 @@ import DriveFileThumbnail, { getDriveFileThumbnailBucket } from '../../models/dr
 import DriveFileWebpublic, { getDriveFileWebpublicBucket } from '../../models/drive-file-webpublic';
 import { serverLogger } from '..';
 
-import { ConvertToJpeg, ConvertToPng } from '../../services/drive/image-processor';
-import { GenerateVideoThumbnail } from '../../services/drive/generate-video-thumbnail';
+import { convertToJpeg, convertToPng } from '../../services/drive/image-processor';
+import { generateVideoThumbnail } from '../../services/drive/generate-video-thumbnail';
 import { contentDisposition } from '../../misc/content-disposition';
 import { detectMine } from '../../misc/detect-mine';
 import { downloadUrl } from '../../misc/donwload-url';
@@ -60,11 +60,11 @@ export default async function(ctx: Koa.BaseContext) {
 			const convertFile = async () => {
 				if ('thumbnail' in ctx.query) {
 					if (['image/jpg', 'image/webp'].includes(type)) {
-						return await ConvertToJpeg(path, 498, 280);
+						return await convertToJpeg(path, 498, 280);
 					} else if (['image/png'].includes(type)) {
-						return await ConvertToPng(path, 498, 280);
+						return await convertToPng(path, 498, 280);
 					} else if (type.startsWith('video/')) {
-						return await GenerateVideoThumbnail(path);
+						return await generateVideoThumbnail(path);
 					}
 				}
 
