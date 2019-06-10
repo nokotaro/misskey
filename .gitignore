@@ -20,6 +20,5 @@ api-docs.json
 .DS_Store
 /files
 report.*.json
-*.js
 !/index.js
 !/lib
