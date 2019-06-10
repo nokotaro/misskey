@@ -3,9 +3,8 @@
 	<ui-card>
 		<template #title><fa :icon="['fal', 'balance-scale']" fixed-width/>&nbsp;利用規約</template>
 		<section>
-			<header></header>
 			<div class="slot">
-				<p>あ</p>
+				<p>本利用規約（以下、「本規約」といいます。）は、{{ domain }} ドメイン上で展開される SNS および</p>
 			</div>
 		</section>
 		<section>
@@ -36,6 +35,11 @@
 import Vue from 'vue';
 
 export default Vue.extend({
+	data() {
+		return {
+			domain: 'twista.283.cloud'
+		}
+	}
 });
 </script>
 
@@ -47,7 +51,6 @@ main
 	.slot
 		display flex
 		gap 8px
-		margin -32px 0
 
 		> *
 			flex 1 1 auto

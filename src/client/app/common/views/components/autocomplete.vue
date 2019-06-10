@@ -19,7 +19,11 @@
 			<span class="emoji" v-if="emoji.isCustomEmoji"><img :src="emoji.url" :alt="emoji.emoji"/></span>
 			<span class="emoji" v-else-if="!useOsDefaultEmojis"><img :src="emoji.url" :alt="emoji.emoji"/></span>
 			<span class="emoji" v-else>{{ emoji.emoji }}</span>
-			<span class="name" v-html="emoji.name.replace(q, `<b>${q}</b>`)"></span>
+			<span class="name">
+				{{ emoji.name.split(q)[0] }}
+				<b>{{ q }}</b>
+				{{ emoji.name.split(q)[1] || '' }}
+			</span>
 			<span class="alias" v-if="emoji.aliasOf">({{ emoji.aliasOf }})</span>
 		</li>
 	</ol>
