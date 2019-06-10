@@ -420,7 +420,7 @@ common/views/components/games/reversi/reversi.room.vue:
   settings-of-the-game: "ゲームの設定"
   choose-map: "マップを選択"
   random: "ランダム"
-  black-or-white: "先手/後手"
+  black-or-white: "先手"
   black-is: "{}が黒"
   rules: "ルール"
   is-llotheo: "石の少ない方が勝ち(ロセオ)"
@@ -797,6 +797,7 @@ common/views/components/user-list-editor.vue:
   remove-user: "このリストから削除"
   delete-are-you-sure: "リスト「$1」を削除しますか？"
   deleted: "削除しました"
+  hide-from-home: "これらのユーザーをホームに表示しない"
 
 common/views/components/user-lists.vue:
   create-list: "リストを作成"
