@@ -19,7 +19,11 @@
 			<span class="emoji" v-if="emoji.isCustomEmoji"><img :src="emoji.url" :alt="emoji.emoji"/></span>
 			<span class="emoji" v-else-if="!useOsDefaultEmojis"><img :src="emoji.url" :alt="emoji.emoji"/></span>
 			<span class="emoji" v-else>{{ emoji.emoji }}</span>
-			<span class="name">{{ beforeQ }}<b>{{ q }}</b>{{ afterQ }}</span>
+			<span class="name">
+				{{ emoji.name.split(q)[0] }}
+				<b>{{ q }}</b>
+				{{ emoji.name.split(q)[1] || '' }}
+			</span>
 			<span class="alias" v-if="emoji.aliasOf">({{ emoji.aliasOf }})</span>
 		</li>
 	</ol>
@@ -89,14 +93,6 @@ export default Vue.extend({
 	},
 
 	computed: {
-		beforeQ(): string {
-			return this.emoji.name.split(this.q)[0];
-		},
-
-		afterQ(): string {
-			return this.emoji.name.split(this.q)[1] || '';
-		},
-
 		items(): HTMLCollection {
 			return (this.$refs.suggests as Element).children;
 		},
