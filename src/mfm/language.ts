@@ -183,14 +183,14 @@ export const mfmLanguage = P.createLanguage({
 	},
 	rt: r => P((input, i) => {
 		const text = input.substr(i);
-		const match = text.match(/^｜([^｜《》〈〉]+)《(.+?)》/);
+		const match = text.match(/^([|｜])([^|｜《》〈〉]+)《(.+?)》/);
 		if (!match) return P.makeFailure(i, 'not a rt');
 		const [raw, content, rt] = match;
 		return P.makeSuccess(i + raw.length, { content, rt, raw });
 	}).map(({ content, rt, raw }) => createTree('rt', r.inline.atLeast(1).tryParse(content), { rt, raw })),
 	rtc: r => P((input, i) => {
 		const text = input.substr(i);
-		const match = text.match(/^｜([^〈〉]+)〈(.+?)〉/);
+		const match = text.match(/^[|｜]([^〈〉]+)〈(.+?)〉/);
 		if (!match) return P.makeFailure(i, 'not a rtc');
 		const [raw, content, rtc] = match;
 		return P.makeSuccess(i + raw.length, { content, rtc, raw });
