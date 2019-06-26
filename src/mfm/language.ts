@@ -311,9 +311,13 @@ export const mfmLanguage = P.createLanguage({
 		}));
 	},
 	emoji: () => {
-		const name = P.regexp(/:(@?[\w-]+(?:@[\w.-]+)?):/i, 1).map(x => createLeaf('emoji', { name: x }));
-		const code = P.regexp(emojiRegex).map(x => createLeaf('emoji', { emoji: x }));
-		return P.alt(name, code);
+		const name = P((input, i) => {
+			const text = input.substr(i);
+			const [full, name] = text.match(/:(@?[\w-]+(?:@[\w.-]+)?):/i) || [null, null];
+			return name && !name.match(/^\d*$/) ? P.makeSuccess(i + full.length, name) : P.makeFailure(i, 'not an emoji');
+		});
+		const code = P.regexp(emojiRegex);
+		return P.alt(name, code).map(name => createLeaf('emoji', { name }));
 	},
 	text: () => P.any.map(x => createLeaf('text', { text: x }))
 });
