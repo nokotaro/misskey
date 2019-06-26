@@ -5,7 +5,7 @@ import config from '../../../config';
 import Resolver from '../resolver';
 import Note, { INote } from '../../../models/note';
 import post from '../../../services/note/create';
-import { INote as INoteActivityStreamsObject, IObject } from '../type';
+import { INote as INoteActivityStreamsObject, IObject, getApIds, getOneApId, getApId, validPost } from '../type';
 import { resolvePerson, updatePerson } from './person';
 import { resolveImage } from './image';
 import { IRemoteUser, IUser } from '../../../models/user';
@@ -33,7 +33,7 @@ export function validateNote(object: any, uri: string) {
 		return new Error('invalid Note: object is null');
 	}
 
-	if (!['Note', 'Question'/* , 'Article' */].includes(object.type)) {
+	if (!validPost.includes(object.type)) {
 		return new Error(`invalid Note: invalied object type ${object.type}`);
 	}
 
@@ -41,7 +41,7 @@ export function validateNote(object: any, uri: string) {
 		return new Error(`invalid Note: id has different host. expected: ${expectHost}, actual: ${extractApHost(object.id)}`);
 	}
 
-	if (object.attributedTo && extractApHost(object.attributedTo) !== expectHost) {
+	if (object.attributedTo && extractApHost(getOneApId(object.attributedTo)) !== expectHost) {
 		return new Error(`invalid Note: attributedTo has different host. expected: ${expectHost}, actual: ${extractApHost(object.attributedTo)}`);
 	}
 
@@ -54,7 +54,7 @@ export function validateNote(object: any, uri: string) {
  * twistaに対象のNoteが登録されていればそれを返します。
  */
 export async function fetchNote(value: string | IObject, resolver?: Resolver): Promise<INote> {
-	const uri = typeof value == 'string' ? value : value.id;
+	const uri = getApId(value);
 
 	// URIがこのサーバーを指しているならデータベースからフェッチ
 	if (uri.startsWith(config.url + '/')) {
@@ -76,7 +76,7 @@ export async function fetchNote(value: string | IObject, resolver?: Resolver): P
 /**
  * Noteを作成します。
  */
-export async function createNote(value: any, resolver?: Resolver, silent = false): Promise<INote> {
+export async function createNote(value: string | IObject, resolver?: Resolver, silent = false): Promise<INote> {
 	if (resolver == null) resolver = new Resolver();
 
 	const tweet = await createNoteFromTwitter(value, resolver, silent);
@@ -86,7 +86,7 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 
 	const object: any = await resolver.resolve(value);
 
-	const entryUri = value.id || value;
+	const entryUri = getApId(value);
 	const err = validateNote(object, entryUri);
 	if (err) {
 		logger.error(`${err.message}`, {
@@ -107,17 +107,15 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 
 	// 投稿者をフェッチ
 	const actorOrActors = Array.isArray(note.attributedTo) ?
-		await Promise.all(note.attributedTo.map(x => resolvePerson(x, null, resolver).catch(() => null) as Promise<IRemoteUser>))
+		await Promise.all((note.attributedTo as (string | IObject)[]).map(x => resolvePerson(typeof x === 'string' ? x : x.id, null, resolver).catch(() => null) as Promise<IRemoteUser>))
 			.then(x => x.filter(x => x)) :
-		await resolvePerson(note.attributedTo, null, resolver) as IRemoteUser;
+		await resolvePerson(typeof note.attributedTo === 'string' ? note.attributedTo : note.attributedTo.id, null, resolver) as IRemoteUser;
 
-	const [actor] = Array.isArray(actorOrActors) ?
-		actorOrActors.filter(x => x.host === new URL(note.url).host) :
-		[actorOrActors];
+	const actors = Array.isArray(actorOrActors) ? actorOrActors : [actorOrActors];
 
-	const [author] = Array.isArray(actorOrActors) ?
-		actorOrActors.filter(x => x.uri !== actor.uri) :
-		[undefined];
+	const [actor] = actors.filter(x => x.host === new URL(note.url).host);
+
+	const [author] = actors.filter(x => x.uri !== actor.uri);
 
 	if (!actor) {
 		return null;
@@ -129,15 +127,15 @@ export async function createNote(value: any, resolver?: Resolver, silent = false
 	}
 
 	//#region Visibility
-	note.to = note.to == null ? [] : typeof note.to == 'string' ? [note.to] : note.to;
-	note.cc = note.cc == null ? [] : typeof note.cc == 'string' ? [note.cc] : note.cc;
+	note.to = getApIds(note.to);
+	note.cc = getApIds(note.cc);
 
 	let visibility = 'public';
 	let visibleUsers: IUser[] = [];
 	if (!note.to.includes('https://www.w3.org/ns/activitystreams#Public')) {
 		if (note.cc.includes('https://www.w3.org/ns/activitystreams#Public')) {
 			visibility = 'home';
-		} else if (note.to.includes(`${actor.uri}/followers`)) {	// TODO: person.followerと照合するべき？
+		} else if (note.to.includes(`${actor.uri}/followers`)) { // TODO: person.followerと照合するべき？
 			visibility = 'followers';
 		} else {
 			visibility = 'specified';

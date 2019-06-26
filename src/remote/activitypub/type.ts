@@ -1,14 +1,15 @@
-export type obj = { [x: string]: any };
+export type AnyObject = Record<string, any>;
+export type Item = string[] | string | IObject[] | IObject;
 
 export interface IObject {
-	'@context': string | obj | obj[];
+	'@context': string | AnyObject | AnyObject[];
 	type: string;
 	id?: string;
 	summary?: string;
 	published?: string;
-	cc?: string[];
-	to?: string[];
-	attributedTo: string | string[];
+	cc?: Item;
+	to?: Item;
+	attributedTo: Item;
 	attachment?: any[];
 	inReplyTo?: any;
 	replies?: ICollection;
@@ -23,6 +24,32 @@ export interface IObject {
 	sensitive?: boolean;
 }
 
+/**
+ * Get array of ActivityStreams Objects id
+ */
+export function getApIds(value: Item): string[] {
+	if (value == null) return [];
+	const array = Array.isArray(value) ? value : [value];
+	return array.map(x => getApId(x));
+}
+
+/**
+ * Get first ActivityStreams Object id
+ */
+export function getOneApId(value: Item): string {
+	const firstOne = Array.isArray(value) ? value[0] : value;
+	return getApId(firstOne);
+}
+
+/**
+ * Get ActivityStreams Object id
+ */
+export function getApId(value: string | IObject): string {
+	if (typeof value === 'string') return value;
+	if (typeof value.id === 'string') return value.id;
+	throw new Error(`cannot detemine id`);
+}
+
 export interface IActivity extends IObject {
 	//type: 'Activity';
 	actor: IObject | string;
@@ -33,7 +60,7 @@ export interface IActivity extends IObject {
 export interface ICollection extends IObject {
 	type: 'Collection';
 	totalItems: number;
-	items?: IObject | string | IObject[] | string[];
+	items?: Item;
 	current?: ICollectionPage;
 	first?: ICollectionPage;
 	last?: ICollectionPage;
@@ -42,7 +69,7 @@ export interface ICollection extends IObject {
 export interface ICollectionPage extends IObject {
 	type: 'CollectionPage';
 	totalItems: number;
-	items?: IObject | string | IObject[] | string[];
+	items?: Item;
 	current?: ICollectionPage;
 	first?: ICollectionPage;
 	last?: ICollectionPage;	partOf: string;
@@ -53,7 +80,7 @@ export interface ICollectionPage extends IObject {
 export interface IOrderedCollection extends IObject {
 	type: 'OrderedCollection';
 	totalItems: number;
-	orderedItems?: IObject | string | IObject[] | string[];
+	orderedItems?: Item;
 	current?: IOrderedCollectionPage;
 	first?: IOrderedCollectionPage;
 	last?: IOrderedCollectionPage;
@@ -62,7 +89,7 @@ export interface IOrderedCollection extends IObject {
 export interface IOrderedCollectionPage extends IObject {
 	type: 'OrderedCollectionPage';
 	totalItems: number;
-	orderedItems?: IObject | string | IObject[] | string[];
+	orderedItems?: Item;
 	current?: IOrderedCollectionPage;
 	first?: IOrderedCollectionPage;
 	last?: IOrderedCollectionPage;
@@ -71,6 +98,8 @@ export interface IOrderedCollectionPage extends IObject {
 	prev?: IOrderedCollectionPage;
 	startIndex?: number;
 }
+
+export const validPost = ['Note', 'Question', 'Article', 'Audio', 'Document', 'Image', 'Page', 'Video'];
 
 export interface INote extends IObject {
 	type: 'Note' | 'Question';
@@ -106,6 +135,14 @@ export const actorMap = {
 	'Person': false,
 	'Service': true
 };
+export const validDocument = ['Audio', 'Document', 'Image', 'Page', 'Video'];
+
+export interface IApDocument extends IObject {
+	type: 'Audio' | 'Document' | 'Image' | 'Page' | 'Video';
+}
+
+export const isDocumentLike = (object: IObject): object is IApDocument =>
+	validDocument.includes(object.type);
 
 export const actorIsBot: Record<keyof typeof actorMap, boolean> = actorMap;
 
@@ -125,6 +162,16 @@ export interface IActor extends IObject {
 	outbox: any;
 	endpoints: any;
 }
+
+export interface IApEmoji extends IObject {
+	type: 'Emoji';
+	name: string;
+	updated: Date;
+	icon: IObject;
+}
+
+export const isEmoji = (object: IObject): object is IApEmoji =>
+	object.type === 'Emoji' && object.icon && object.icon.url;
 
 export const isCollection = (object: IObject): object is ICollection =>
 	object.type === 'Collection';

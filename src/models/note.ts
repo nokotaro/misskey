@@ -475,8 +475,8 @@ export const pack = async (
 	}
 	//#endregion
 
-	if (_note.name)
-		_note.text = `[${_note.name}]\n${_note.text}`;
+	if (_note.name && _note.uri)
+		_note.text = `【${_note.name}】\n${(_note.text || '').trim()}\n${_note.uri}`;
 
 	if ((() => { // Recheck syntax
 		const match = _note.text && _note.text.match(/<\/?!?nya>/ig) || [];

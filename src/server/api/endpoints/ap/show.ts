@@ -10,7 +10,7 @@ import Resolver from '../../../../remote/activitypub/resolver';
 import { ApiError } from '../../error';
 import Instance from '../../../../models/instance';
 import { extractDbHost } from '../../../../misc/convert-host';
-import { validActor } from '../../../../remote/activitypub/type';
+import { validActor, validPost } from '../../../../remote/activitypub/type';
 import { createNoteFromTwitter, createUserFromTwitter } from '../../../../remote/external/twitter';
 
 export const meta = {
@@ -117,7 +117,7 @@ export async function fetchAny(uri: string, user: ILocalUser) {
 			};
 		}
 
-		if (['Note', 'Question'/* , 'Article' */].includes(object.type)) {
+		if (validPost.includes(object.type)) {
 			const note = await createNote(object.id, null, true);
 			return {
 				type: 'Note',
