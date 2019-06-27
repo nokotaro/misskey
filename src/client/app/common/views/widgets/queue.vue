@@ -4,6 +4,8 @@
 		<template #header><fa :icon="faTasks"/>Queue</template>
 
 		<div class="mntrproz">
+			<fa :icon="faRadiation" size="4x"/>
+			<!--
 			<div>
 				<b>In</b>
 				<span v-if="latestStats">{{ latestStats.inbox.active | number }} / {{ latestStats.inbox.limit | number }} ({{ latestStats.inbox.waiting | number }})</span>
@@ -14,6 +16,7 @@
 				<span v-if="latestStats">{{ latestStats.deliver.active | number }} / {{ latestStats.deliver.limit | number }} ({{ latestStats.deliver.waiting | number }})</span>
 				<div ref="out"></div>
 			</div>
+			-->
 		</div>
 	</ui-container>
 </div>
@@ -21,8 +24,8 @@
 
 <script lang="ts">
 import define from '../../define-widget';
-import { faTasks } from '@fortawesome/pro-light-svg-icons';
-import ApexCharts from 'apexcharts';
+import { faRadiation, faTasks } from '@fortawesome/pro-light-svg-icons';
+// import ApexCharts from 'apexcharts';
 
 export default define({
 	name: 'queue',
@@ -35,11 +38,13 @@ export default define({
 			stats: [],
 			inChart: null,
 			outChart: null,
+			faRadiation,
 			faTasks
 		};
 	},
 
 	watch: {
+		/*
 		stats(stats) {
 			this.inChart.updateSeries([{
 				type: 'area',
@@ -68,15 +73,19 @@ export default define({
 				data: stats.map((x, i) => ({ x: i, y: x.deliver.delayed }))
 			}]);
 		}
+		*/
 	},
 
 	computed: {
+		/*
 		latestStats(): any {
 			return this.stats[this.stats.length - 1];
 		}
+		*/
 	},
 
 	mounted() {
+		/*
 		const chartOpts = {
 			chart: {
 				type: 'area',
@@ -123,6 +132,7 @@ export default define({
 			this.inChart.destroy();
 			this.outChart.destroy();
 		});
+		*/
 	},
 
 	methods: {
@@ -131,6 +141,7 @@ export default define({
 			this.save();
 		},
 
+		/*
 		onStats(stats) {
 			this.stats.push(stats);
 			if (this.stats.length > 50) this.stats.shift();
@@ -141,15 +152,23 @@ export default define({
 				this.onStats(stats);
 			}
 		}
+		*/
 	}
 });
 </script>
 
 <style lang="stylus" scoped>
 .mntrproz
+	align-items center
+	color var(--text)
 	display flex
+	justify-content center
 	padding 4px
 
+	> svg
+		margin 16px
+
+	/*
 	> div
 		width 50%
 		padding 4px
@@ -166,4 +185,5 @@ export default define({
 			opacity 0.7
 			font-size 12px
 			color var(--text)
+	*/
 </style>
