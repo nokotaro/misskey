@@ -1,5 +1,5 @@
 export type AnyObject = Record<string, any>;
-export type Item = string[] | string | IObject[] | IObject;
+export type Item = IObject | string | (IObject | string)[];
 
 export interface IObject {
 	'@context': string | AnyObject | AnyObject[];
@@ -102,7 +102,7 @@ export interface IOrderedCollectionPage extends IObject {
 export const validPost = ['Note', 'Question', 'Article', 'Audio', 'Document', 'Image', 'Page', 'Video'];
 
 export interface INote extends IObject {
-	type: 'Note' | 'Question';
+	type: 'Note' | 'Question' | 'Article' | 'Audio' | 'Document' | 'Image' | 'Page' | 'Video';
 	_misskey_content: string;
 	_misskey_quote: string;
 	_misskey_question: string;
@@ -121,6 +121,9 @@ export interface IQuestion extends IObject {
 	anyOf?: IQuestionChoice[];
 	endTime?: Date;
 }
+
+export const isQuestion = (object: IObject): object is IQuestion =>
+	object.type === 'Note' || object.type === 'Question';
 
 interface IQuestionChoice {
 	name?: string;

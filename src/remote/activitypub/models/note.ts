@@ -107,7 +107,7 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 
 	// 投稿者をフェッチ
 	const actorOrActors = Array.isArray(note.attributedTo) ?
-		await Promise.all((note.attributedTo as (string | IObject)[]).map(x => resolvePerson(typeof x === 'string' ? x : x.id, null, resolver).catch(() => null) as Promise<IRemoteUser>))
+		await Promise.all((note.attributedTo).map(x => resolvePerson(typeof x === 'string' ? x : x.id, null, resolver).catch(() => null) as Promise<IRemoteUser>))
 			.then(x => x.filter(x => x)) :
 		await resolvePerson(typeof note.attributedTo === 'string' ? note.attributedTo : note.attributedTo.id, null, resolver) as IRemoteUser;
 
@@ -127,19 +127,19 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 	}
 
 	//#region Visibility
-	note.to = getApIds(note.to);
-	note.cc = getApIds(note.cc);
+	const to = getApIds(note.to);
+	const cc = getApIds(note.cc);
 
 	let visibility = 'public';
 	let visibleUsers: IUser[] = [];
-	if (!note.to.includes('https://www.w3.org/ns/activitystreams#Public')) {
-		if (note.cc.includes('https://www.w3.org/ns/activitystreams#Public')) {
+	if (!to.includes('https://www.w3.org/ns/activitystreams#Public')) {
+		if (cc.includes('https://www.w3.org/ns/activitystreams#Public')) {
 			visibility = 'home';
-		} else if (note.to.includes(`${actor.uri}/followers`)) { // TODO: person.followerと照合するべき？
+		} else if (to.includes(`${actor.uri}/followers`)) {	// TODO: person.followerと照合するべき？
 			visibility = 'followers';
 		} else {
 			visibility = 'specified';
-			visibleUsers = await Promise.all(note.to.map(uri => resolvePerson(uri, null, resolver)));
+			visibleUsers = await Promise.all(to.map(uri => resolvePerson(uri, null, resolver)));
 		}
 	}
 	//#endergion
@@ -150,7 +150,7 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 
 	const qa = guard(note._misskey_qa, ['question', 'resolvedQuestion', 'answer', 'bestAnswer']);
 
-	const apMentions = await extractMentionedUsers(actor, note.to, note.cc, resolver);
+	const apMentions = await extractMentionedUsers(actor, to, note.cc, resolver);
 
 	const apHashtags = await extractHashtags(note.tag);
 
@@ -237,7 +237,7 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 	const apEmojis = emojis.map(emoji => emoji.name);
 
 	const questionUri = note._misskey_question;
-	const poll = await extractPollFromQuestion(note._misskey_question || note).catch(() => undefined);
+	const poll = await extractPollFromQuestion(note._misskey_question || note, resolver).catch(() => undefined);
 
 	// ユーザーの情報が古かったらついでに更新しておく
 	if (actor.lastFetchedAt == null || Date.now() - actor.lastFetchedAt.getTime() > 1000 * 60 * 60 * 24) {
