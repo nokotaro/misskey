@@ -71,9 +71,10 @@ router.use(mastodon.routes());
 
 router.get('/v1/instance/peers', async ctx => {
 	const instances = await Instance.find({
-		}, {
-			host: 1
-		});
+		isBlocked: { $ne: true }
+	}, {
+		host: 1
+	});
 
 	const punyCodes = unique(instances.map(instance => toApHost(instance.host)));
 
