@@ -8,3 +8,25 @@ patch:
         patched: '2019-07-03T21:19:10.439Z'
     - async > lodash:
         patched: '2019-07-03T21:19:10.439Z'
+    - snyk > snyk-nuget-plugin > lodash:
+        patched: '2019-07-04T09:38:38.868Z'
+    - snyk > lodash:
+        patched: '2019-07-04T09:38:38.868Z'
+    - snyk > snyk-config > lodash:
+        patched: '2019-07-04T09:38:38.868Z'
+    - snyk > snyk-mvn-plugin > lodash:
+        patched: '2019-07-04T09:38:38.868Z'
+    - snyk > snyk-nodejs-lockfile-parser > lodash:
+        patched: '2019-07-04T09:38:38.868Z'
+    - snyk > @snyk/dep-graph > lodash:
+        patched: '2019-07-04T09:38:38.868Z'
+    - snyk > inquirer > lodash:
+        patched: '2019-07-04T09:38:38.868Z'
+    - snyk > snyk-go-plugin > graphlib > lodash:
+        patched: '2019-07-04T09:38:38.868Z'
+    - snyk > snyk-nodejs-lockfile-parser > graphlib > lodash:
+        patched: '2019-07-04T09:38:38.868Z'
+    - snyk > @snyk/dep-graph > graphlib > lodash:
+        patched: '2019-07-04T09:38:38.868Z'
+    - snyk > snyk-php-plugin > @snyk/composer-lockfile-parser > lodash:
+        patched: '2019-07-04T09:38:38.868Z'
