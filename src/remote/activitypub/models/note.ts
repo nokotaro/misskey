@@ -113,7 +113,15 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 
 	const actors = Array.isArray(actorOrActors) ? actorOrActors : [actorOrActors];
 
-	const [actor] = actors.filter(x => x.host === new URL(note.url).host);
+	const tryGetHost = (url: string) => {
+		try {
+			return new URL(url).host;
+		} catch {
+			return false;
+		}
+	};
+
+	const [actor] = actors.filter(x => x.host === tryGetHost(note.url)).concat(actors);
 
 	const [author] = actors.filter(x => x.uri !== actor.uri);
 
