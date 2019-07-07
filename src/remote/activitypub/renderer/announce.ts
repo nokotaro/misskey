@@ -2,11 +2,11 @@ import config from '../../../config';
 import { INote } from '../../../models/note';
 
 export default (object: any, note: INote) => {
-	if (typeof object === 'string' && object.startsWith('https://twitter.com/i/web/status/')) {
-		return null;
-	}
+	let type = 'Announce';
 
 	const attributedTo = `${config.url}/users/${note.userId}`;
+
+	const published = note.createdAt.toISOString();
 
 	let to: string[] = [];
 	let cc: string[] = [];
@@ -23,11 +23,25 @@ export default (object: any, note: INote) => {
 		return null;
 	}
 
+	if (typeof object === 'string' && object.startsWith('https://twitter.com/i/web/status/')) {
+		type = 'Create';
+
+		object = {
+			id: `${config.url}/notes/${note._id}`,
+			type: 'Page',
+			attributedTo,
+			published,
+			to,
+			cc,
+			url: object
+		};
+	}
+
 	return {
 		id: `${config.url}/notes/${note._id}/activity`,
 		actor: `${config.url}/users/${note.userId}`,
-		type: 'Announce',
-		published: note.createdAt.toISOString(),
+		type,
+		published,
 		to,
 		cc,
 		object
