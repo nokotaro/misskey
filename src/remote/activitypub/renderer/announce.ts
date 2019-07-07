@@ -27,12 +27,7 @@ export default (object: any, note: INote) => {
 		type = 'View';
 
 		object = {
-			id: `${config.url}/notes/${note._id}`,
 			type: 'Page',
-			attributedTo,
-			published,
-			to,
-			cc,
 			url: object
 		};
 	}
