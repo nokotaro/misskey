@@ -343,7 +343,7 @@ export default Vue.component('misskey-flavored-markdown', {
 							class: 'bubble'
 						}
 					}, [
-						genEl(token.node.props.speaker),
+						createElement('div', genEl(token.node.props.speaker)),
 						createElement('div', genEl(token.children))
 					])];
 				}
