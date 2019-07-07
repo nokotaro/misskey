@@ -40,7 +40,7 @@
 			</div>
 			<div class="via-twitter" v-if="appearNote.user.host === 'twitter.com'" :title="$t('@.twitter.note-from-twitter')"><fa :icon="['fab', 'twitter']" size="3x"/></div>
 		</header>
-		<div class="body" v-for="type in ['light', 'shade']" :key="type" :class="type">
+		<div class="body">
 			<p v-if="appearNote.cw" class="cw">
 				<mfm v-if="appearNote.cw != ''" class="text" :text="appearNote.cw" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis" />
 				<mk-cw-button v-model="showContent" :note="appearNote"/>
@@ -291,14 +291,16 @@ export default Vue.extend({
 	
 		> .body
 			padding 8px 0
-			transform-origin top left
-			width 50%
+			font-size 2em
 
-			&.light
-				transform scale(2)
+			.bubble
+				&::before
+					border-width 16px
+					margin 24px 0 0
 
-			&.shade
-				transform scale(0)
+				> :last-child
+					border-radius 16px
+					padding 16px
 
 			> .cw
 				cursor default
