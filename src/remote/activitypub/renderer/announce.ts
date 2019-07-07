@@ -24,7 +24,7 @@ export default (object: any, note: INote) => {
 	}
 
 	if (typeof object === 'string' && object.startsWith('https://twitter.com/i/web/status/')) {
-		type = 'Create';
+		type = 'View';
 
 		object = {
 			id: `${config.url}/notes/${note._id}`,
