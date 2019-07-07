@@ -293,15 +293,6 @@ export default Vue.extend({
 			padding 8px 0
 			font-size 2em
 
-			.bubble
-				&::before
-					border-width 16px
-					margin 24px 0 0
-
-				> :last-child
-					border-radius 16px
-					padding 16px
-
 			> .cw
 				cursor default
 				display block
@@ -321,6 +312,18 @@ export default Vue.extend({
 					padding 0
 					overflow-wrap break-word
 					color var(--noteText)
+
+					.bubble
+						margin 16px
+
+						&::before
+							border-width 16px
+							margin 24px 0 0
+
+						> :last-child
+							border-radius 16px
+							padding 16px
+
 
 				> .renote
 					margin 8px 0
