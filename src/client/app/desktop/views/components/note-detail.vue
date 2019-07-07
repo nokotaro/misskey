@@ -313,7 +313,7 @@ export default Vue.extend({
 					overflow-wrap break-word
 					color var(--noteText)
 
-					.bubble
+					>>> .bubble
 						margin 16px
 
 						&::before
