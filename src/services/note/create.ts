@@ -1,7 +1,21 @@
+import * as deepcopy from 'deepcopy';
+import * as request from 'request';
+
 import es from '../../db/elasticsearch';
 import Note, { pack, INote, IChoice } from '../../models/note';
 import User, { isLocalUser, IUser, isRemoteUser, IRemoteUser, ILocalUser } from '../../models/user';
-import { publishMainStream, publishHomeTimelineStream, publishLocalTimelineStream, publishHybridTimelineStream, publishImasTimelineStream, publishImasHybridTimelineStream, publishGlobalTimelineStream, publishUserListStream, publishHashtagStream, publishNoteStream } from '../stream';
+import {
+	publishMainStream,
+	publishHomeTimelineStream,
+	publishLocalTimelineStream,
+	publishHybridTimelineStream,
+	publishImasTimelineStream,
+	publishImasHybridTimelineStream,
+	publishGlobalTimelineStream,
+	publishUserListStream,
+	publishHashtagStream,
+	publishNoteStream
+} from '../stream';
 import Following from '../../models/following';
 import { deliver } from '../../queue';
 import renderNote from '../../remote/activitypub/renderer/note';
@@ -25,8 +39,6 @@ import notesChart from '../../services/chart/notes';
 import perUserNotesChart from '../../services/chart/per-user-notes';
 import activeUsersChart from '../../services/chart/active-users';
 import instanceChart from '../../services/chart/instance';
-import * as deepcopy from 'deepcopy';
-
 import { erase, concat, unique } from '../../prelude/array';
 import insertNoteUnread from './unread';
 import { registerOrFetchInstanceDoc } from '../register-or-fetch-instance-doc';
@@ -39,7 +51,6 @@ import { genId } from '../../misc/gen-id';
 import { resolveNote } from '../../remote/activitypub/models/note';
 import Resolver from '../../remote/activitypub/resolver';
 import Blocking from '../../models/blocking';
-import * as request from 'request';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention' | 'highlight';
 
