@@ -179,7 +179,7 @@ const kahoizable = (text: string) => {
 	return !!stack.length;
 };
 
-export default async (user: IUser, data: Option, silent = false) => new Promise<INote>(async (res, rej) => {
+const create = async (user: IUser, data: Option, silent = false) => new Promise<INote>(async (res, rej) => {
 	const isFirstNote = user.notesCount === 0;
 
 	if (data.author == null) data.author = null;
@@ -602,6 +602,8 @@ export default async (user: IUser, data: Option, silent = false) => new Promise<
 	// Register to search database
 	index(note, text);
 });
+
+export default create;
 
 async function renderNoteOrRenoteActivity(data: Option, note: INote, text: string) {
 	if (data.localOnly) return null;
