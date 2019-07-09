@@ -1,5 +1,5 @@
 import Note, { INote } from '../../models/note';
-import { IUser, isLocalUser, isRemoteUser } from '../../models/user';
+import User, { IUser, isLocalUser, isRemoteUser, ILocalUser } from '../../models/user';
 import { publishNoteStream } from '../stream';
 import renderDelete from '../../remote/activitypub/renderer/delete';
 import renderUndo from '../../remote/activitypub/renderer/undo';
@@ -103,9 +103,29 @@ export default async function(user: IUser, note: INote, quiet = false) {
 				});
 			}
 
-			const content = renderActivity(renote
-				? renderUndo(renderAnnounce(renote.uri || `${config.url}/notes/${renote._id}`, note), user)
-				: renderDelete(renderTombstone(`${config.url}/notes/${note._id}`), user));
+			const contentExpression = (user: ILocalUser) => renderActivity(renote ?
+				renderUndo(renderAnnounce(renote.uri || `${config.url}/notes/${renote._id}`, note), user) :
+				renderDelete(renderTombstone(`${config.url}/notes/${note._id}`), user));
+
+			const content = contentExpression(user);
+
+			const everyone: ILocalUser = await User.findOne({
+				usernameLower: 'everyone',
+				host: null
+			});
+
+			if (everyone) {
+				const content = contentExpression(everyone);
+
+				const followings = await Following.find({
+					followeeId: everyone._id,
+					'_follower.host': { $ne: null }
+				});
+
+				for (const following of followings) {
+					deliver(everyone, content, following._follower.inbox);
+				}
+			}
 
 			const followings = await Following.find({
 				followeeId: user._id,
