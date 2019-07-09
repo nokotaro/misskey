@@ -150,15 +150,19 @@ export default define(meta, async (ps, me) => {
 		throw e;
 	});
 
-	const isFollowing = me == null ? false : ((await Following.findOne({
+	const isEveryone = user.usernameLower === 'everyone';
+
+	const isFollowing = !(isEveryone || !me || !(await Following.findOne({
 		followerId: me._id,
 		followeeId: user._id
-	})) != null);
+	})));
 
 	//#region Construct query
-	const sort = { } as any;
+	const sort = {} as any;
 
-	const visibleQuery = me == null ? [{
+	const visibleQuery = isEveryone ? [{
+		visibility: 'public'
+	}] : !me ? [{
 		visibility: { $in: ['public', 'home'] }
 	}] : [{
 		visibility: {
@@ -173,10 +177,10 @@ export default define(meta, async (ps, me) => {
 	}];
 
 	const query = {
-		$and: [ {} ],
+		$and: [{}],
 		deletedAt: null,
-		userId: user._id,
-		$or: visibleQuery
+		$or: visibleQuery,
+		...(isEveryone ? {} : { userId: user._id })
 	} as any;
 
 	if (ps.sinceId) {
