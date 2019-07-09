@@ -79,6 +79,7 @@ export default async (user: ILocalUser) => {
 
 	return {
 		type:
+			user.usernameLower === 'everyone' ? 'Application' :
 			[meta.informationAccount]
 				.map(x => x.toLowerCase())
 				.includes(user.usernameLower) ? 'Organization' :
