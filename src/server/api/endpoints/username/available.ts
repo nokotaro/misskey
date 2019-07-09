@@ -16,15 +16,14 @@ export const meta = {
 };
 
 export default define(meta, async (ps) => {
-	// Get exist
-	const exist = await User.count({
-		host: null,
-		usernameLower: ps.username.toLowerCase()
-	}, {
-		limit: 1
-	});
+	const usernameLower = ps.username.toLowerCase();
 
 	return {
-		available: exist === 0
+		available: usernameLower !== 'everyone' && !(await User.count({
+			host: null,
+			usernameLower
+		}, {
+			limit: 1
+		}))
 	};
 });
