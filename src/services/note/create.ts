@@ -893,6 +893,27 @@ async function publishToFollowers(note: INote, user: IUser, noteActivity: any) {
 		deliver(user as any, noteActivity, inbox);
 	}
 
+	if (isLocalUser(user)) {
+		const queue: string[] = [];
+
+		const everyone: ILocalUser = await User.findOne({
+			usernameLower: 'everyone',
+			host: null
+		});
+
+		if (everyone) {
+			for (const inbox of followers.map(({ _follower }) => _follower).filter(isRemoteUser).map(({ sharedInbox, inbox }) => sharedInbox || inbox)) {
+				if (!queue.includes(inbox)) {
+					queue.push(inbox);
+				}
+			}
+
+			for (const inbox of queue) {
+				deliver(everyone, noteActivity, inbox);
+			}
+		}
+	}
+
 	// 後方互換製のため、Questionは時間差でNoteでも送る
 	// Questionに対応してないインスタンスは、2つめのNoteだけを採用する
 	// Questionに対応しているインスタンスは、同IDで採番されている2つめのNoteを無視する
