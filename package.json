@@ -26,7 +26,7 @@
 	},
 	"resolutions": {
 		"filed/mime": "^1.4.1",
-		"lodash": "4.17.11",
+		"lodash": "4.17.13",
 		"ts-node": "8.0.1"
 	},
 	"dependencies": {
@@ -187,7 +187,7 @@
 		"koa-slow": "2.1.0",
 		"koa-views": "6.2.0",
 		"loader-utils": "1.2.3",
-		"lodash": "4.17.11",
+		"lodash": "4.17.13",
 		"lookup-dns-cache": "2.1.0",
 		"mime": "2.4.4",
 		"minio": "7.0.10",
