@@ -161,6 +161,7 @@ export default define(meta, async (ps, me) => {
 	const sort = {} as any;
 
 	const visibleQuery = isEveryone ? [{
+		'_user.host': null as unknown,
 		visibility: 'public'
 	}] : !me ? [{
 		visibility: { $in: ['public', 'home'] }

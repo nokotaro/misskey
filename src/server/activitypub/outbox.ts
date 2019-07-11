@@ -63,7 +63,10 @@ export default async (ctx: Router.IRouterContext) => {
 
 		const query = {
 			localOnly: { $ne: true },
-			...(isEveryone ? { visibility: 'public' } : {
+			...(isEveryone ? {
+				'_user.host': null,
+				visibility: 'public'
+			} : {
 				userId: user._id,
 				visibility: { $in: ['public', 'home'] }
 			})
