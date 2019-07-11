@@ -15,6 +15,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import confetti from 'canvas-confetti';
 import i18n from '../../../../i18n';
 import parseAcct from '../../../../../../misc/acct/parse';
 import Progress from '../../../../common/scripts/loading';
@@ -45,6 +46,36 @@ export default Vue.extend({
 				this.user = user;
 				this.fetching = false;
 				Progress.done();
+				
+				const [today] = new Date().toISOString().split('T');
+				const [, todayMonth, todayDay] = today.split('-');
+				if (!this.$store.state.device.reduceMotion && user.profile && user.profile.birthday && user.profile.birthday.endsWith(['', todayMonth, todayDay].join('-'))) {
+					const end = Date.now() + 15000;
+					const base = { spread: 60 };
+					let count = 0;
+
+					const frame = () => {
+						if (!(count++ % 15)) {
+							for (const option of [{
+								...base,
+								angle: 60,
+								origin: { x: 0 }
+							}, {
+								...base,
+								angle: 120,
+								origin: { x: 1 }
+							}]) {
+								confetti(option);
+							}
+						}
+
+						if (Date.now() < end) {
+							requestAnimationFrame(frame);
+						}
+					};
+
+					frame();
+				}
 			}).catch(() => {
 				this.fetching = false;
 				Progress.done();
