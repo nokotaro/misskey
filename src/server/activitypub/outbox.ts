@@ -51,6 +51,7 @@ export default async (ctx: Router.IRouterContext) => {
 		return;
 	}
 
+	const isEveryone = user.usernameLower === 'everyone';
 	const limit = 20;
 	const partOf = `${config.url}/users/${userId}/outbox`;
 
@@ -61,9 +62,11 @@ export default async (ctx: Router.IRouterContext) => {
 		};
 
 		const query = {
-			userId: user._id,
-			visibility: { $in: ['public', 'home'] },
-			localOnly: { $ne: true }
+			localOnly: { $ne: true },
+			...(isEveryone ? { visibility: 'public' } : {
+				userId: user._id,
+				visibility: { $in: ['public', 'home'] }
+			})
 		} as any;
 
 		if (sinceId) {
