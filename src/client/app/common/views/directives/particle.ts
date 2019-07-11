@@ -6,8 +6,6 @@ export default {
 
 		const z = binding.arg;
 
-		console.log(el, binding, vn, z);
-
 		el.addEventListener('click', () => {
 			if (binding.value === false) return;
 
