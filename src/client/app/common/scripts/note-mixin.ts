@@ -150,7 +150,7 @@ export default (opts: Opts = {}) => ({
 		},
 
 		reactDirectly(reaction) {
-			(this.$root.api('notes/reactions/create', {
+			this.$root.api('notes/reactions/create', {
 				noteId: this.appearNote.id,
 				reaction: reaction
 			});
