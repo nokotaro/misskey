@@ -1,9 +1,11 @@
 <template>
-<div class="vswabwbm" :style="{ top: `${y - 50}px`, left: `${x - 50}px` }" :class="{ active }"></div>
+<div class="qhoangwe" v-if="z === 'congrats'"></div>
+<div class="vswabwbm" v-else :style="{ top: `${y - 50}px`, left: `${x - 50}px` }" :class="{ active }"></div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import confetti from 'canvas-confetti';
 
 export default Vue.extend({
 	props: {
@@ -14,6 +16,10 @@ export default Vue.extend({
 		y: {
 			type: Number,
 			required: true
+		},
+		z: {
+			type: String,
+			required: false
 		}
 	},
 	data() {
@@ -22,13 +28,28 @@ export default Vue.extend({
 		}
 	},
 	mounted() {
-		setTimeout(() => {
-			this.active = true;
-		}, 1);
+		switch (this.z) {
+			case 'congrats': {
+				const { width, height } = document.documentElement.getBoundingClientRect();
+				confetti({
+					origin: {
+						x: this.x / width,
+						y: this.y / height
+					}
+				});
+				break;
+			}
+			default: {
+				setTimeout(() => {
+					this.active = true;
+				}, 1);
 
-		setTimeout(() => {
-			this.destroyDom();
-		}, 1000);
+				setTimeout(() => {
+					this.destroyDom();
+				}, 1000);
+				break;
+			}
+		}
 	}
 });
 </script>

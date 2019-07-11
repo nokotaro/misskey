@@ -4,7 +4,8 @@
 	:class="{ reacted: note.myReaction == reaction }"
 	@click="toggleReaction(reaction)"
 	v-if="count > 0"
-	v-particle="!isMe"
+	v-particle:congrats="!isMe && reaction === 'congrats'"
+	v-particle="!isMe && reaction !== 'congrats'"
 >
 	<mk-reaction-icon :reaction="reaction" ref="icon"/>
 	<span>{{ count }}</span>

@@ -2,7 +2,11 @@ import Particle from '../components/particle.vue';
 
 export default {
 	bind(el, binding, vn) {
-		if (vn.context.$store.state.device.reduceMotion) return;
+		if (!binding.value || vn.context.$store.state.device.reduceMotion) return;
+
+		const z = binding.arg;
+
+		console.log(el, binding, vn, z);
 
 		el.addEventListener('click', () => {
 			if (binding.value === false) return;
@@ -14,10 +18,7 @@ export default {
 
 			const particle = new Particle({
 				parent: vn.context,
-				propsData: {
-					x,
-					y
-				}
+				propsData: { x, y, z }
 			}).$mount();
 
 			document.body.appendChild(particle.$el);
