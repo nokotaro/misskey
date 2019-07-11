@@ -51,6 +51,7 @@ import { genId } from '../../misc/gen-id';
 import { resolveNote } from '../../remote/activitypub/models/note';
 import Resolver from '../../remote/activitypub/resolver';
 import Blocking from '../../models/blocking';
+import { packActivity } from '../../server/activitypub/outbox';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention' | 'highlight';
 
@@ -902,6 +903,8 @@ async function publishToFollowers(note: INote, user: IUser, noteActivity: any) {
 		});
 
 		if (everyone) {
+			const everyoneActivity = renderActivity(await packActivity(note, everyone));
+
 			for (const inbox of followers.map(({ _follower }) => _follower).filter(isRemoteUser).map(({ sharedInbox, inbox }) => sharedInbox || inbox)) {
 				if (!queue.includes(inbox)) {
 					queue.push(inbox);
@@ -909,7 +912,7 @@ async function publishToFollowers(note: INote, user: IUser, noteActivity: any) {
 			}
 
 			for (const inbox of queue) {
-				deliver(everyone, noteActivity, inbox);
+				deliver(everyone, everyoneActivity, inbox);
 			}
 		}
 	}

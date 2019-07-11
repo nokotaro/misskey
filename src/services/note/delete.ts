@@ -103,11 +103,9 @@ export default async function(user: IUser, note: INote, quiet = false) {
 				});
 			}
 
-			const contentExpression = (user: ILocalUser) => renderActivity(renote ?
+			const content = renderActivity(renote ?
 				renderUndo(renderAnnounce(renote.uri || `${config.url}/notes/${renote._id}`, note), user) :
 				renderDelete(renderTombstone(`${config.url}/notes/${note._id}`), user));
-
-			const content = contentExpression(user);
 
 			const everyone: ILocalUser = await User.findOne({
 				usernameLower: 'everyone',
@@ -115,7 +113,11 @@ export default async function(user: IUser, note: INote, quiet = false) {
 			});
 
 			if (everyone) {
-				const content = contentExpression(everyone);
+				const overwriter = {
+					userId: everyone._id,
+					isEveryone: true
+				};
+				const content = renderActivity(renderUndo(renderAnnounce(note.uri || `${config.url}/notes/${note._id}`, { ...note, ...overwriter }), everyone));
 
 				const followings = await Following.find({
 					followeeId: everyone._id,

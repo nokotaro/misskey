@@ -77,7 +77,7 @@ app.use(mount('/proxy', proxyServer));
 const router = new Router();
 
 // Routing
-router.use(activityPub.routes());
+router.use(activityPub().routes());
 router.use(nodeinfo.routes());
 router.use(ostatus.routes());
 router.use(wellKnown.routes());

@@ -3,7 +3,7 @@ import * as Router from 'koa-router';
 import config from '../../config';
 import $ from 'cafy';
 import ID, { transform } from '../../misc/cafy-id';
-import User from '../../models/user';
+import User, { IUser } from '../../models/user';
 import { renderActivity } from '../../remote/activitypub/renderer';
 import renderOrderedCollection from '../../remote/activitypub/renderer/ordered-collection';
 import renderOrderedCollectionPage from '../../remote/activitypub/renderer/ordered-collection-page';
@@ -16,7 +16,7 @@ import renderAnnounce from '../../remote/activitypub/renderer/announce';
 import { countIf } from '../../prelude/array';
 import * as url from '../../prelude/url';
 
-export default async (ctx: Router.IRouterContext) => {
+const middleware = async (ctx: Router.IRouterContext) => {
 	if (!ObjectID.isValid(ctx.params.user)) {
 		ctx.status = 404;
 		return;
@@ -52,6 +52,10 @@ export default async (ctx: Router.IRouterContext) => {
 	}
 
 	const isEveryone = user.usernameLower === 'everyone';
+	const everyone = isEveryone ? await User.findOne({
+		usernameLower: 'everyone',
+		host: null
+	}) : undefined;
 	const limit = 20;
 	const partOf = `${config.url}/users/${userId}/outbox`;
 
@@ -92,7 +96,7 @@ export default async (ctx: Router.IRouterContext) => {
 
 		if (sinceId) notes.reverse();
 
-		const activities = await Promise.all(notes.map(note => packActivity(note)));
+		const activities = await Promise.all(notes.map(note => packActivity(note, everyone)));
 		const rendered = renderOrderedCollectionPage(
 			`${partOf}?${url.query({
 				page: 'true',
@@ -125,14 +129,24 @@ export default async (ctx: Router.IRouterContext) => {
 	}
 };
 
+export default middleware;
+
 /**
  * Pack Create<Note> or Announce Activity
  * @param note Note
  */
-export async function packActivity(note: INote): Promise<object> {
+export async function packActivity(note: INote, announcer?: IUser): Promise<object> {
+	if (announcer) {
+		const overwriter = {
+			userId: announcer._id,
+			isEveryone: true
+		};
+		return renderAnnounce(note.uri || `${config.url}/notes/${note._id}`, { ...note, ...overwriter });
+	}
+
 	if (note.renoteId && note.text == null && note.poll == null && (note.fileIds == null || note.fileIds.length == 0)) {
 		const renote = await Note.findOne(note.renoteId);
-		return renderAnnounce(renote.uri ? renote.uri : `${config.url}/notes/${renote._id}`, note);
+		return renderAnnounce(renote.uri || `${config.url}/notes/${renote._id}`, note);
 	}
 
 	return renderCreate(await renderNote(note, false), note);

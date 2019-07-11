@@ -33,7 +33,7 @@ export default (object: any, note: INote) => {
 	}
 
 	return {
-		id: `${config.url}/notes/${note._id}/activity`,
+		id: `${config.url}/notes/${note._id}/activity${(note as unknown as Record<string, boolean>).isEveryone ? '/everyone' : ''}`,
 		actor: `${config.url}/users/${note.userId}`,
 		type,
 		published,

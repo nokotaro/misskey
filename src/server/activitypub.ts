@@ -57,140 +57,6 @@ export function setResponseType(ctx: Router.IRouterContext) {
 	}
 }
 
-// inbox
-router.post('/inbox', json(), inbox);
-router.post('/users/:user/inbox', json(), inbox);
-
-// note
-router.get('/notes/:note', async (ctx, next) => {
-	if (!isActivityPubReq(ctx)) return await next();
-
-	if (!ObjectID.isValid(ctx.params.note)) {
-		ctx.status = 404;
-		return;
-	}
-
-	const note = await Note.findOne({
-		_id: new ObjectID(ctx.params.note),
-		visibility: { $in: ['public', 'home'] },
-		localOnly: { $ne: true }
-	});
-
-	if (note === null) {
-		ctx.status = 404;
-		return;
-	}
-
-	// リモートだったらリダイレクト
-	if (note._user.host != null) {
-		if (note.uri == null || isSelfHost(note._user.host)) {
-			ctx.status = 500;
-			return;
-		}
-		ctx.redirect(note.uri);
-		return;
-	}
-
-	ctx.body = renderActivity(await renderNote(note, false));
-	ctx.set('Cache-Control', 'public, max-age=180');
-	setResponseType(ctx);
-});
-
-// note activity
-router.get('/notes/:note/activity', async ctx => {
-	if (!ObjectID.isValid(ctx.params.note)) {
-		ctx.status = 404;
-		return;
-	}
-
-	const note = await Note.findOne({
-		_id: new ObjectID(ctx.params.note),
-		'_user.host': null,
-		visibility: { $in: ['public', 'home'] },
-		localOnly: { $ne: true }
-	});
-
-	if (note === null) {
-		ctx.status = 404;
-		return;
-	}
-
-	ctx.body = renderActivity(await packActivity(note));
-	ctx.set('Cache-Control', 'public, max-age=180');
-	setResponseType(ctx);
-});
-
-// question
-router.get('/questions/:question', async (ctx, next) => {
-	if (!ObjectID.isValid(ctx.params.question)) {
-		ctx.status = 404;
-		return;
-	}
-
-	const poll = await Note.findOne({
-		_id: new ObjectID(ctx.params.question),
-		'_user.host': null,
-		visibility: { $in: ['public', 'home'] },
-		localOnly: { $ne: true },
-		poll: {
-			$exists: true,
-			$ne: null
-		},
-	});
-
-	if (poll === null) {
-		ctx.status = 404;
-		return;
-	}
-
-	const user = await User.findOne({
-			_id: poll.userId
-	});
-
-	ctx.body = renderActivity(await renderQuestion(user as ILocalUser, poll));
-	setResponseType(ctx);
-});
-
-// outbox
-router.get('/users/:user/outbox', Outbox);
-
-// followers
-router.get('/users/:user/followers', Followers);
-
-// following
-router.get('/users/:user/following', Following);
-
-// featured
-router.get('/users/:user/collections/featured', Featured);
-
-// publickey
-router.get('/users/:user/publickey', async ctx => {
-	if (!ObjectID.isValid(ctx.params.user)) {
-		ctx.status = 404;
-		return;
-	}
-
-	const userId = new ObjectID(ctx.params.user);
-
-	const user = await User.findOne({
-		_id: userId,
-		host: null
-	});
-
-	if (user === null) {
-		ctx.status = 404;
-		return;
-	}
-
-	if (isLocalUser(user)) {
-		ctx.body = renderActivity(renderKey(user));
-		ctx.set('Cache-Control', 'public, max-age=180');
-		setResponseType(ctx);
-	} else {
-		ctx.status = 400;
-	}
-});
-
 // user
 async function userInfo(ctx: Router.IRouterContext, user: IUser) {
 	if (user === null) {
@@ -203,51 +69,223 @@ async function userInfo(ctx: Router.IRouterContext, user: IUser) {
 	setResponseType(ctx);
 }
 
-router.get('/users/:user', async (ctx, next) => {
-	if (!isActivityPubReq(ctx)) return await next();
-	
-	const user = await resolveUser(ctx.params.user);
+const load = () => {
+	// inbox
+	router.post('/inbox', json(), inbox);
+	router.post('/users/:user/inbox', json(), inbox);
 
-	if (!user) return await next();
+	// note
+	router.get('/notes/:note', async (ctx, next) => {
+		if (!isActivityPubReq(ctx)) return await next();
 
-	await userInfo(ctx, user);
-});
+		if (!ObjectID.isValid(ctx.params.note)) {
+			ctx.status = 404;
+			return;
+		}
 
-router.get('/users/:user.json', async (ctx, next) => {
-	const user = await resolveUser(ctx.params.user);
+		const note = await Note.findOne({
+			_id: new ObjectID(ctx.params.note),
+			visibility: { $in: ['public', 'home'] },
+			localOnly: { $ne: true }
+		});
 
-	if (!user) return await next();
+		if (note === null) {
+			ctx.status = 404;
+			return;
+		}
 
-	await userInfo(ctx, user);
-});
+		// リモートだったらリダイレクト
+		if (note._user.host != null) {
+			if (note.uri == null || isSelfHost(note._user.host)) {
+				ctx.status = 500;
+				return;
+			}
+			ctx.redirect(note.uri);
+			return;
+		}
 
-router.get('/@:user', async (ctx, next) => {
-	if (!isActivityPubReq(ctx)) return await next();
-
-	const user = await User.findOne({
-		usernameLower: ctx.params.user.toLowerCase(),
-		host: null
+		ctx.body = renderActivity(await renderNote(note, false));
+		ctx.set('Cache-Control', 'public, max-age=180');
+		setResponseType(ctx);
 	});
 
-	await userInfo(ctx, user);
-});
-//#endregion
+	// note activity
+	router.get('/notes/:note/activity', async ctx => {
+		if (!ObjectID.isValid(ctx.params.note)) {
+			ctx.status = 404;
+			return;
+		}
 
-// emoji
-router.get('/emojis/:emoji', async ctx => {
-	const emoji = await Emoji.findOne({
-		host: null,
-		name: ctx.params.emoji
+		const note = await Note.findOne({
+			_id: new ObjectID(ctx.params.note),
+			'_user.host': null,
+			visibility: { $in: ['public', 'home'] },
+			localOnly: { $ne: true }
+		});
+
+		if (note === null) {
+			ctx.status = 404;
+			return;
+		}
+
+		ctx.body = renderActivity(await packActivity(note));
+		ctx.set('Cache-Control', 'public, max-age=180');
+		setResponseType(ctx);
 	});
 
-	if (emoji === null) {
-		ctx.status = 404;
-		return;
-	}
+	// note activity (everyone)
+	router.get('/notes/:note/activity/everyone', async ctx => {
+		if (!ObjectID.isValid(ctx.params.note)) {
+			ctx.status = 404;
+			return;
+		}
 
-	ctx.body = renderActivity(await renderEmoji(emoji));
-	ctx.set('Cache-Control', 'public, max-age=180');
-	setResponseType(ctx);
-});
+		const everyone = await User.findOne({
+			usernameLower: 'everyone',
+			host: null
+		});
 
-export default router;
+		if (!everyone) {
+			ctx.status = 404;
+			return;
+		}
+
+		const note = await Note.findOne({
+			_id: new ObjectID(ctx.params.note),
+			'_user.host': null,
+			visibility: 'public',
+			localOnly: { $ne: true }
+		});
+
+		if (note === null) {
+			ctx.status = 404;
+			return;
+		}
+
+		ctx.body = renderActivity(await packActivity(note, everyone));
+		ctx.set('Cache-Control', 'public, max-age=180');
+		setResponseType(ctx);
+	});
+
+	// question
+	router.get('/questions/:question', async (ctx, next) => {
+		if (!ObjectID.isValid(ctx.params.question)) {
+			ctx.status = 404;
+			return;
+		}
+
+		const poll = await Note.findOne({
+			_id: new ObjectID(ctx.params.question),
+			'_user.host': null,
+			visibility: { $in: ['public', 'home'] },
+			localOnly: { $ne: true },
+			poll: {
+				$exists: true,
+				$ne: null
+			},
+		});
+
+		if (poll === null) {
+			ctx.status = 404;
+			return;
+		}
+
+		const user = await User.findOne({
+				_id: poll.userId
+		});
+
+		ctx.body = renderActivity(await renderQuestion(user as ILocalUser, poll));
+		setResponseType(ctx);
+	});
+
+	// outbox
+	router.get('/users/:user/outbox', Outbox);
+
+	// followers
+	router.get('/users/:user/followers', Followers);
+
+	// following
+	router.get('/users/:user/following', Following);
+
+	// featured
+	router.get('/users/:user/collections/featured', Featured);
+
+	// publickey
+	router.get('/users/:user/publickey', async ctx => {
+		if (!ObjectID.isValid(ctx.params.user)) {
+			ctx.status = 404;
+			return;
+		}
+
+		const userId = new ObjectID(ctx.params.user);
+
+		const user = await User.findOne({
+			_id: userId,
+			host: null
+		});
+
+		if (user === null) {
+			ctx.status = 404;
+			return;
+		}
+
+		if (isLocalUser(user)) {
+			ctx.body = renderActivity(renderKey(user));
+			ctx.set('Cache-Control', 'public, max-age=180');
+			setResponseType(ctx);
+		} else {
+			ctx.status = 400;
+		}
+	});
+
+	router.get('/users/:user', async (ctx, next) => {
+		if (!isActivityPubReq(ctx)) return await next();
+
+		const user = await resolveUser(ctx.params.user);
+
+		if (!user) return await next();
+
+		await userInfo(ctx, user);
+	});
+
+	router.get('/users/:user.json', async (ctx, next) => {
+		const user = await resolveUser(ctx.params.user);
+
+		if (!user) return await next();
+
+		await userInfo(ctx, user);
+	});
+
+	router.get('/@:user', async (ctx, next) => {
+		if (!isActivityPubReq(ctx)) return await next();
+
+		const user = await User.findOne({
+			usernameLower: ctx.params.user.toLowerCase(),
+			host: null
+		});
+
+		await userInfo(ctx, user);
+	});
+	//#endregion
+
+	// emoji
+	router.get('/emojis/:emoji', async ctx => {
+		const emoji = await Emoji.findOne({
+			host: null,
+			name: ctx.params.emoji
+		});
+
+		if (emoji === null) {
+			ctx.status = 404;
+			return;
+		}
+
+		ctx.body = renderActivity(await renderEmoji(emoji));
+		ctx.set('Cache-Control', 'public, max-age=180');
+		setResponseType(ctx);
+	});
+
+	return router;
+};
+
+export default load;
