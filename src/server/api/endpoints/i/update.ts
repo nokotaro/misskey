@@ -203,7 +203,7 @@ export default define(meta, async (ps, user, app) => {
 		});
 
 		if (avatar == null) throw new ApiError(meta.errors.noSuchAvatar);
-		if (!avatar.contentType.startsWith('image/')) throw new ApiError(meta.errors.avatarNotAnImage);
+		if (!(avatar.contentType || 'image/unknown').startsWith('image/')) throw new ApiError(meta.errors.avatarNotAnImage);
 
 		if (avatar.metadata.deletedAt) {
 			updates.avatarUrl = null;
@@ -222,7 +222,7 @@ export default define(meta, async (ps, user, app) => {
 		});
 
 		if (banner == null) throw new ApiError(meta.errors.noSuchBanner);
-		if (!banner.contentType.startsWith('image/')) throw new ApiError(meta.errors.bannerNotAnImage);
+		if (!(banner.contentType || 'image/unknown').startsWith('image/')) throw new ApiError(meta.errors.bannerNotAnImage);
 
 		if (banner.metadata.deletedAt) {
 			updates.bannerUrl = null;
