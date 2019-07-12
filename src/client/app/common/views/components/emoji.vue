@@ -1,8 +1,8 @@
 <template>
 <img v-if="customEmoji" class="fvgwvorwhxigeolkkrcderjzcawqrscl custom" :class="{ normal, avatar, circle }" :src="url" :alt="alt" :title="title"/>
 <img v-else-if="!char" class="fvgwvorwhxigeolkkrcderjzcawqrscl custom unknown" :class="{ normal, avatar, circle }" :src="animate ? `${config.url}/assets/emojis/${name}` : `${config.url}/proxy/${name}.png?url=${encodeURIComponent(`${config.url}/assets/emojis/${name}`)}&static=1`" :alt="`:${name}:`" :title="`:${name}:`"/>
-<span v-else-if="useOsDefaultEmojis">{{ char }}</span>
-<img v-else class="fvgwvorwhxigeolkkrcderjzcawqrscl" :src="url" :alt="alt" :title="alt"/>
+<span v-else-if="useOsDefaultEmojis" v-particle:congrats="char === '🎉'">{{ char }}</span>
+<img v-else class="fvgwvorwhxigeolkkrcderjzcawqrscl" :src="url" :alt="alt" :title="alt" v-particle:congrats="char === '🎉'"/>
 </template>
 
 <script lang="ts">
