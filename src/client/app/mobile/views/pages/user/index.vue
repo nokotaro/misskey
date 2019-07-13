@@ -80,6 +80,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import confetti from 'canvas-confetti';
 import i18n from '../../../../i18n';
 import * as age from 's-age';
 import parseAcct from '../../../../../../misc/acct/parse';
@@ -140,6 +141,37 @@ export default Vue.extend({
 
 				Progress.done();
 				document.title = `${Vue.filter('userName')(this.user)} | ${this.$root.instanceName}`;
+
+				const now = new Date();
+				const [today] = new Date(now.valueOf() - now.getTimezoneOffset() * 60000).toISOString().split('T');
+				const [, todayMonth, todayDay] = today.split('-');
+				if (!this.$store.state.device.reduceMotion && user.profile && user.profile.birthday && user.profile.birthday.endsWith(['', todayMonth, todayDay].join('-'))) {
+					const end = Date.now() + 15000;
+					const base = { spread: 60 };
+					let count = 0;
+
+					const frame = () => {
+						if (!(count++ % 15)) {
+							for (const option of [{
+								...base,
+								angle: 60,
+								origin: { x: 0 }
+							}, {
+								...base,
+								angle: 120,
+								origin: { x: 1 }
+							}]) {
+								confetti(option);
+							}
+						}
+
+						if (Date.now() < end) {
+							requestAnimationFrame(frame);
+						}
+					};
+
+					frame();
+				}
 			});
 		},
 
