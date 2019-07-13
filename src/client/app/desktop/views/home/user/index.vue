@@ -46,8 +46,9 @@ export default Vue.extend({
 				this.user = user;
 				this.fetching = false;
 				Progress.done();
-				
-				const [today] = new Date().toISOString().split('T');
+
+				const now = new Date();
+				const [today] = new Date(now.valueOf() - now.getTimezoneOffset() * 60000).toISOString().split('T');
 				const [, todayMonth, todayDay] = today.split('-');
 				if (!this.$store.state.device.reduceMotion && user.profile && user.profile.birthday && user.profile.birthday.endsWith(['', todayMonth, todayDay].join('-'))) {
 					const end = Date.now() + 15000;
