@@ -75,7 +75,7 @@ export default Vue.extend({
 						}
 					};
 
-					frame();
+					setTimeout(frame, 2000);
 				}
 			}).catch(() => {
 				this.fetching = false;

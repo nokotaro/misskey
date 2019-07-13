@@ -170,7 +170,7 @@ export default Vue.extend({
 						}
 					};
 
-					frame();
+					setTimeout(frame, 2000);
 				}
 			});
 		},
