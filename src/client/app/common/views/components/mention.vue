@@ -1,7 +1,7 @@
 <template>
 <router-link class="ldlomzub" :to="`/${canonical}`" v-user-preview="canonical">
 	<span class="me" v-if="isMe">{{ $t('@.you') }}</span>
-	<img class="avator" v-if="!isMe && avator != null" :src="avator"/>
+	<img class="avatar" v-if="!isMe && avatar != null" :src="avatar"/>
 	<span class="main">
 		<span class="username">@{{ username }}</span>
 		<span class="host" :class="{ fade: $store.state.settings.contrastedAcct }" v-if="(host != localHost) || $store.state.settings.showFullAcct">@{{ toUnicode(host) }}</span>
@@ -43,7 +43,7 @@ export default Vue.extend({
 		isMe(): boolean {
 			return this.$store.getters.isSignedIn && this.canonical.toLowerCase() === `@${this.$store.state.i.username}@${toUnicode(localHost)}`.toLowerCase();
 		},
-		avator(): string {
+		avatar(): string {
 			const ascii = `@${this.username}` + (this.host != localHost ? `@${this.host}` : '');
 			const customEmoji = this.customEmojis.find(x => x.name == ascii);
 			return customEmoji ? customEmoji.url : null;
@@ -73,7 +73,7 @@ export default Vue.extend({
 			border solid var(--lineWidth) var(--mfmMention)
 			border-radius 0 4px 4px 0
 
-	> .avator
+	> .avatar
 		height 1.25em
 		vertical-align -0.25em
 		margin-right 0.2em

@@ -2,7 +2,7 @@
 <div class="mk-note-card">
 	<a :href="note | notePage">
 		<header>
-			<img :src="avator" alt="avatar"/>
+			<img :src="avatar" alt="avatar"/>
 			<h3><mk-user-name :user="note.user"/></h3>
 		</header>
 		<div>
@@ -24,7 +24,7 @@ export default Vue.extend({
 		text(): string {
 			return summary(this.note);
 		},
-		avator(): string {
+		avatar(): string {
 			return this.$store.state.device.disableShowingAnimatedImages
 				? getStaticImageUrl(this.note.user.avatarUrl)
 				: this.note.user.avatarUrl;
