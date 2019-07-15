@@ -2,7 +2,7 @@
 <div class="mk-note-card">
 	<a :href="note | notePage">
 		<header>
-			<img :src="avatar" alt="avatar"/>
+			<img :src="avatar" :class="{ round: $store.state.settings.circleIcons }" alt="avatar"/>
 			<h3><mk-user-name :user="note.user"/></h3>
 		</header>
 		<div>
@@ -58,6 +58,9 @@ export default Vue.extend({
 				width 28px
 				height 28px
 				border-radius 6px
+
+				&.avatar
+					border-radius 100%
 
 			> h3
 				display inline-block

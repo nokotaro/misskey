@@ -1,7 +1,7 @@
 <template>
 <router-link class="ldlomzub" :to="`/${canonical}`" v-user-preview="canonical">
 	<span class="me" v-if="isMe">{{ $t('@.you') }}</span>
-	<img class="avatar" v-if="!isMe && avatar != null" :src="avatar"/>
+	<img class="avatar" :class="{ round: $store.state.settings.circleIcons }" v-if="!isMe && avatar != null" :src="avatar"/>
 	<span class="main">
 		<span class="username">@{{ username }}</span>
 		<span class="host" :class="{ fade: $store.state.settings.contrastedAcct }" v-if="(host != localHost) || $store.state.settings.showFullAcct">@{{ toUnicode(host) }}</span>
@@ -77,6 +77,9 @@ export default Vue.extend({
 		height 1.25em
 		vertical-align -0.25em
 		margin-right 0.2em
+
+		&.round
+			border-radius 100%
 
 	> .main
 		> .host.fade
