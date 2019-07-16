@@ -1,7 +1,9 @@
 <template>
-<div class="dkjvrdxtkvqrwmhfickhndpmnncsgacq">
+<div class="dkjvrdxtkvqrwmhfickhndpmnncsgacq" v-hotkey.global="keymap">
 	<div class="bg" @click="close"></div>
-	<img :src="image.url" :alt="image.name" :title="image.name" @click="close"/>
+	<img :src="image.url" :alt="image.name" :title="image.name" @click="close" ref="rotator"/>
+	<div class="paginator left" @click="left"><fa :icon="['fal', 'angle-left']"/></div>
+	<div class="paginator right" @click="right"><fa :icon="['fal', 'angle-right']"/></div>
 </div>
 </template>
 
@@ -10,7 +12,33 @@ import Vue from 'vue';
 import anime from 'animejs';
 
 export default Vue.extend({
-	props: ['image'],
+	props: {
+		images: {
+			type: Array,
+			required: true
+		},
+		index: {
+			type: Number,
+			required: true
+		}
+	},
+	data() {
+		return {
+			i: this.index,
+			queue: null
+		};
+	},
+	computed: {
+		image() {
+			return this.images[this.i];
+		},
+		keymap() {
+			return {
+				'left': this.left,
+				'right': this.right
+			};
+		}
+	},
 	mounted() {
 		anime({
 			targets: this.$el,
@@ -20,6 +48,67 @@ export default Vue.extend({
 		});
 	},
 	methods: {
+		left() {
+			if (this.queue) {
+				this.queue.push(true);
+			} else {
+				this.queue = [];
+				this.shift(true);
+			}
+		},
+		right() {
+			if (this.queue) {
+				this.queue.push(false);
+			} else {
+				this.queue = [];
+				this.shift(false);
+			}
+		},
+		shift(isLeft: boolean, continued = false) {
+			const self = this;
+			const targets = this.$refs.rotator;
+
+			anime({
+				targets,
+				duration: continued ? 30 : 300,
+				rotateY: isLeft ? 90 : -90,
+				easing: continued ? 'linear' : 'easeInSine',
+				complete() {
+					self.i = isLeft ? self.i ? --self.i : ~-self.images.length : ++self.i % self.images.length;
+
+					anime({
+						targets,
+						duration: 0,
+						rotateY: isLeft ? -90 : 90,
+						easing: 'linear',
+						complete() {
+							const stack = self.queue.shift();
+							const continues = stack !== undefined;
+
+							anime({
+								targets,
+								duration: continues ? 30 : 300,
+								rotateY: 0,
+								easing: continues ? 'linear' : 'easeOutSine',
+								complete() {
+									if (continues) {
+										self.shift(stack, true);
+									} else {
+										const stack = self.queue.shift();
+
+										if (stack === undefined) {
+											self.queue = null;
+										} else {
+											self.shift(stack);
+										}
+									}
+								}
+							})
+						}
+					})
+				}
+			});
+		},
 		close() {
 			anime({
 				targets: this.$el,
@@ -35,7 +124,6 @@ export default Vue.extend({
 
 <style lang="stylus" scoped>
 .dkjvrdxtkvqrwmhfickhndpmnncsgacq
-	display block
 	position fixed
 	z-index 2048
 	top 0
@@ -43,9 +131,9 @@ export default Vue.extend({
 	width 100%
 	height 100%
 	opacity 0
+	perspective 100vw
 
 	> .bg
-		display block
 		position fixed
 		z-index 1
 		top 0
@@ -66,4 +154,37 @@ export default Vue.extend({
 		margin auto
 		cursor zoom-out
 		image-orientation from-image
+		transform-style preserve-3d
+
+	> .paginator
+		align-items center
+		background var(--text)
+		color var(--bg)
+		display flex
+		height 10vw
+		justify-content center
+		margin -5vw 0 0
+		opacity .25
+		position fixed
+		top 50%
+		width 5vw
+		z-index 3
+
+		> svg
+			height 4vw
+			width 1.5vw
+
+		&.left
+			border-radius 0 100% 100% 0 / 50%
+			left 0
+
+			> svg
+				margin 0 .5vw 0 0
+
+		&.right
+			border-radius 100% 0 0 100% / 50%
+			right 0
+
+			> svg
+				margin 0 0 0 .5vw
 </style>

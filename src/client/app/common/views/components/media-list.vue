@@ -5,10 +5,10 @@
 	</template>
 	<div v-if="count" class="grid-container" ref="container">
 		<div :data-count="count" ref="grid">
-			<template v-for="media in mediaList">
-				<mk-media-video v-if="media.type.startsWith('video')" :video="media" :key="media.id"/>
-				<x-image v-else-if="media.type.startsWith('image') && $store.state.settings.dynamicView" :image="media" :key="media.id" :raw="raw" :count="count"/>
-				<x-image-legacy v-else-if="media.type.startsWith('image')" :image="media" :key="media.id" :raw="raw" :count="count"/>
+			<template v-for="(media, i) in mediaList">
+				<mk-media-video v-if="isVideo(media)" :video="media" :key="media.id"/>
+				<x-image v-else-if="isImage(media) && $store.state.settings.dynamicView" :images="images" :index="i - [...mediaList].splice(0, i).filter(isVideo).length" :key="media.id" :raw="raw" :count="count"/>
+				<x-image-legacy v-else-if="isImage(media)" :images="images" :index="i - [...mediaList].splice(0, i).filter(isVideo).length" :key="media.id" :raw="raw" :count="count"/>
 			</template>
 		</div>
 	</div>
@@ -39,8 +39,14 @@ export default Vue.extend({
 		}
 	},
 	computed: {
+		images(): unknown[] {
+			return (this.mediaList as { type: string }[]).filter(this.isImage);
+		},
+		videos(): unknown[] {
+			return (this.mediaList as { type: string }[]).filter(this.isVideo);
+		},
 		count(): number {
-			return this.mediaList.filter(this.previewable).length;
+			return (this.mediaList as { type: string }[]).filter(this.previewable).length;
 		}
 	},
 	mounted() {
@@ -69,8 +75,14 @@ export default Vue.extend({
 		//#endregion
 	},
 	methods: {
-		previewable(file) {
-			return file.type.startsWith('video') || file.type.startsWith('image');
+		isImage(file: { type: string }) {
+			return file.type.startsWith('image');
+		},
+		isVideo(file: { type: string }) {
+			return file.type.startsWith('video');
+		},
+		previewable(file: { type: string }) {
+			return this.isImage(file) || this.isVideo(file);
 		}
 	}
 });

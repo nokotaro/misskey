@@ -24,8 +24,12 @@ import { getStaticImageUrl } from '../../../common/scripts/get-static-image-url'
 export default Vue.extend({
 	i18n: i18n('common/views/components/media-image.vue'),
 	props: {
-		image: {
-			type: Object,
+		images: {
+			type: Array,
+			required: true
+		},
+		index: {
+			type: Number,
 			required: true
 		},
 		raw: {
@@ -36,8 +40,11 @@ export default Vue.extend({
 		return {
 			hide: true
 		};
-	}
+	},
 	computed: {
+		image(): object {
+			return this.images[this.index];
+		},
 		style(): any {
 			let url = `url(${
 				this.$store.state.device.disableShowingAnimatedImages
@@ -60,7 +67,8 @@ export default Vue.extend({
 	methods: {
 		onClick() {
 			this.$root.new(ImageViewer, {
-				image: this.image
+				images: this.images,
+				index: this.index
 			});
 		}
 	}
