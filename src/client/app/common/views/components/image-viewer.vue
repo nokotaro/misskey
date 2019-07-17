@@ -131,7 +131,7 @@ export default Vue.extend({
 	width 100%
 	height 100%
 	opacity 0
-	perspective 100vw
+	perspective 100vmax
 
 	> .bg
 		position fixed
@@ -161,30 +161,30 @@ export default Vue.extend({
 		background var(--text)
 		color var(--bg)
 		display flex
-		height 10vw
+		height 10vmax
 		justify-content center
-		margin -5vw 0 0
+		margin -5vmax 0 0
 		opacity .25
 		position fixed
 		top 50%
-		width 5vw
+		width 5vmax
 		z-index 3
 
 		> svg
-			height 4vw
-			width 1.5vw
+			height 4vmax
+			width 1.5vmax
 
 		&.left
 			border-radius 0 100% 100% 0 / 50%
 			left 0
 
 			> svg
-				margin 0 .5vw 0 0
+				margin 0 .5vmax 0 0
 
 		&.right
 			border-radius 100% 0 0 100% / 50%
 			right 0
 
 			> svg
-				margin 0 0 0 .5vw
+				margin 0 0 0 .5vmax
 </style>
