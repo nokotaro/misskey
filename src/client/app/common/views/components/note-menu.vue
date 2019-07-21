@@ -124,7 +124,7 @@ export default Vue.extend({
 			this.$router.push(`/notes/${this.note.id}`);
 		},
 
-		copyContent() {
+		async copyContent() {
 			try {
 				await copyToClipboard(this.note.text);
 				this.$root.dialog({
@@ -139,7 +139,7 @@ export default Vue.extend({
 			}
 		},
 
-		copyLink() {
+		async copyLink() {
 			try {
 				await copyToClipboard(`${url}/notes/${this.note.id}`);
 				this.$root.dialog({
