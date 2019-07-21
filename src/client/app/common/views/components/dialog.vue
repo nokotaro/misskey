@@ -76,10 +76,10 @@ export default Vue.extend({
 	computed: {
 		icon(): any {
 			switch (this.type) {
-				case 'success': return 'check';
+				case 'success': return ['fal', 'check'];
 				case 'error': return faTimesCircle;
-				case 'warning': return 'exclamation-triangle';
-				case 'info': return 'info-circle';
+				case 'warning': return ['fal', 'exclamation-triangle'];
+				case 'info': return ['fal', 'info-circle'];
 				case 'question': return faQuestionCircle;
 			}
 		}
