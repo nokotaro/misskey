@@ -6,8 +6,6 @@
 	</template>
 
 	<template v-if="page == null || page == 'appearance'">
-		<x-mastodon/>
-
 		<x-theme/>
 
 		<ui-card>
