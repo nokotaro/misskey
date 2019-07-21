@@ -21,7 +21,7 @@
 				<p>{{ $t('followers') }}</p><span>{{ u.followersCount }}</span>
 			</div>
 		</div>
-		<mk-follow-button class="koudoku-button" v-if="$store.getters.isSignedIn && u.id != $store.state.i.id" :user="u" mini/>
+		<mk-follow-button class="dumbbell" v-if="$store.getters.isSignedIn && u.id != $store.state.i.id" :user="u" mini/>
 	</template>
 </div>
 </template>
@@ -157,7 +157,7 @@ export default Vue.extend({
 				font-size 1em
 				color var(--primary)
 
-	> .koudoku-button
+	> .dumbbell
 		position absolute
 		top 8px
 		right 8px
