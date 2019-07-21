@@ -147,11 +147,11 @@ export default Vue.extend({
 				if (!(json && typeof json === 'object' && 'note' in json && typeof json.note === 'object')) {
 					throw JSON.stringify(json);
 				}
-				const url = json.note.full_url || json.note.url;
-				if (typeof url !== 'string') {
+				const noteUrl = json.note.full_url || json.note.url;
+				if (typeof noteUrl !== 'string') {
 					throw JSON.stringify(json);
 				}
-				copyToClipboard(url);
+				copyToClipboard(noteUrl);
 				this.$root.dialog({
 					type: 'success',
 					splash: true
