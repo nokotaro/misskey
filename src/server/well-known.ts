@@ -12,7 +12,7 @@ import { authorizeInteractionPath } from './ostatus';
 // Init router
 const router = new Router();
 
-const XRD = (...x: { element: string, value?: string, attributes?: Record<string, string> }[]) =>
+const genXRD = (...x: { element: string, value?: string, attributes?: Record<string, string> }[]) =>
 	`<?xml version="1.0" encoding="UTF-8"?><XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">${x.map(({ element, value, attributes }) =>
 	`<${
 		Object.entries(typeof attributes === 'object' && attributes || {}).reduce((a, [k, v]) => `${a} ${k}="${escapeAttribute(v)}"`, element)
@@ -26,7 +26,7 @@ const xrd = 'application/xrd+xml';
 
 router.get('/.well-known/host-meta', async ctx => {
 	ctx.set('Content-Type', xrd);
-	ctx.body = XRD({ element: 'Link', attributes: {
+	ctx.body = genXRD({ element: 'Link', attributes: {
 		type: xrd,
 		template: `${config.url}${webFingerPath}?resource={uri}`
 	}});
@@ -109,7 +109,7 @@ router.get(webFingerPath, async ctx => {
 	};
 
 	if (ctx.accepts(jrd, xrd) === xrd) {
-		ctx.body = XRD(
+		ctx.body = genXRD(
 			{ element: 'Subject', value: subject },
 			{ element: 'Link', attributes: self },
 			{ element: 'Link', attributes: profilePage },
