@@ -173,6 +173,13 @@ export default Vue.extend({
 					splash: true
 				});
 				this.destroyDom();
+			}).catch(e => {
+				if (e.id === '72dab508-c64d-498f-8740-a8eec1ba385a') {
+					this.$root.dialog({
+						type: 'error',
+						text: this.$t('pin-limit-exceeded')
+					});
+				}
 			});
 		},
 

@@ -1,5 +1,5 @@
 <template>
-<mk-window class="mk-post-form-window" ref="window" is-modal @closed="onWindowClosed" :animation="animation">
+<mk-window class="mk-post-form-window" ref="window" is-modal @closed="onWindowClosed" :animation="animation" width="640px">
 	<template #header>
 		<span class="mk-post-form-window--header">
 			<span class="icon" v-if="geo"><fa :icon="['fal', 'map-marker-alt']"/></span>
@@ -10,7 +10,7 @@
 		</span>
 	</template>
 
-	<div class="mk-post-form-window--body">
+	<div class="mk-post-form-window--body" :style="{ maxHeight: `${maxHeight}px` }">
 		<mk-note-preview v-if="reply" class="notePreview" :note="reply"/>
 		<mk-post-form ref="form"
 			:reply="reply"
@@ -53,6 +53,12 @@ export default Vue.extend({
 			files: [],
 			geo: null
 		};
+	},
+
+	computed: {
+		maxHeight() {
+			return window.innerHeight - 50;
+		},
 	},
 
 	mounted() {

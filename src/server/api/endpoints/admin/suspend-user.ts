@@ -1,9 +1,8 @@
 import $ from 'cafy';
 import ID, { transform } from '../../../../misc/cafy-id';
 import define from '../../define';
-import User, { IUser, pack } from '../../../../models/user';
-import Following from '../../../../models/following';
-import deleteFollowing from '../../../../services/following/delete';
+import User, { pack } from '../../../../models/user';
+import { doPostSuspend } from '../../../../services/suspend-user';
 
 export const meta = {
 	desc: {
@@ -45,7 +44,7 @@ export default define(meta, async (ps, me) => {
 		throw new Error('cannot suspend moderator');
 	}
 
-	unFollowAll(user);
+	doPostSuspend(user);
 
 	return await pack(await User.findOneAndUpdate({
 		_id: user._id
@@ -55,21 +54,3 @@ export default define(meta, async (ps, me) => {
 		}
 	}, { returnNewDocument: true }), me);
 });
-
-async function unFollowAll(follower: IUser) {
-	const followings = await Following.find({
-		followerId: follower._id
-	});
-
-	for (const following of followings) {
-		const followee = await User.findOne({
-			_id: following.followeeId
-		});
-
-		if (followee == null) {
-			throw `Cant find followee ${following.followeeId}`;
-		}
-
-		await deleteFollowing(follower, followee, true);
-	}
-}

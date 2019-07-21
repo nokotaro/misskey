@@ -103,6 +103,11 @@ export default Vue.extend({
 			type: Object,
 			required: false
 		},
+		quote: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
 		initialText: {
 			type: String,
 			required: false
@@ -175,7 +180,7 @@ export default Vue.extend({
 		},
 
 		submitText(): string {
-			return this.renote
+			return (this.renote && !this.quote)
 				? this.$t('renote')
 				: this.reply
 					? this.$t('reply')
@@ -234,11 +239,17 @@ export default Vue.extend({
 		// 公開以外へのリプライ時は元の公開範囲を引き継ぐ
 		if (this.reply && ['home', 'followers', 'specified'].includes(this.reply.visibility)) {
 			this.visibility = this.reply.visibility;
+			if (this.reply.visibility === 'specified') {
+				this.$root.api('users/show', {
+					userIds: this.reply.visibleUserIds.filter(uid => uid !== this.$store.state.i.id && uid !== this.reply.userId)
+				}).then(users => {
+					this.visibleUsers.push(...users);
+				});
+			}
 		}
 
-		if (this.reply) {
+		if (this.reply && this.reply.userId !== this.$store.state.i.id) {
 			this.rating = this.reply.rating;
-
 			this.$root.api('users/show', { userId: this.reply.userId }).then(user => {
 				this.visibleUsers.push(user);
 			});
@@ -375,6 +386,9 @@ export default Vue.extend({
 			let visibility = this.visibility;
 			let localOnly = this.localOnly;
 
+			// ただのRenoteはクライアントでvisibilityを指定しない
+			if (this.renote && !this.quote) visibility = undefined;
+
 			if (typeof v == 'string') {
 				const m = v.match(/^local-(.+)/);
 				if (m) {
@@ -496,6 +510,7 @@ export default Vue.extend({
 					margin 8px 6px
 					padding 0 16px
 					line-height 34px
+					min-width 80px
 					vertical-align bottom
 					color var(--primaryForeground)
 					background var(--primary)
@@ -635,6 +650,12 @@ export default Vue.extend({
 					top 0
 					right 0.2em
 					transform scale(.8)
+
+				> .quote
+					display block
+					margin-right auto
+					margin-left 8px
+					color var(--link)
 
 	> .hashtags
 		margin 8px

@@ -5,15 +5,15 @@ import config from '../../../config';
 import Resolver from '../resolver';
 import Note, { INote } from '../../../models/note';
 import post from '../../../services/note/create';
-import { INote as INoteActivityStreamsObject, IObject, getApIds, getOneApId, getApId, validPost } from '../type';
+import { IApNote, IObject, getApIds, getOneApId, getApId, isNote, isEmoji } from '../type';
 import { resolvePerson, updatePerson } from './person';
 import { resolveImage } from './image';
 import { IRemoteUser, IUser } from '../../../models/user';
 import { fromHtml } from '../../../mfm/fromHtml';
 import Emoji, { IEmoji } from '../../../models/emoji';
-import { ITag, extractHashtags } from './tag';
+import { extractHashtags } from './tag';
 import { toUnicode } from 'punycode';
-import { unique, concat, difference } from '../../../prelude/array';
+import { unique, concat, difference, toArray, toSingle } from '../../../prelude/array';
 import { extractPollFromQuestion } from './question';
 import vote from '../../../services/note/polls/vote';
 import { apLogger } from '../logger';
@@ -26,26 +26,26 @@ import { getApLock } from '../../../misc/app-lock';
 
 const logger = apLogger;
 
-export function validateNote(object: any, uri: string) {
+function toNote(object: IObject, uri: string): IApNote {
 	const expectHost = extractApHost(uri);
 
 	if (object == null) {
-		return new Error('invalid Note: object is null');
+		throw new Error('invalid Note: object is null');
 	}
 
-	if (!validPost.includes(object.type)) {
-		return new Error(`invalid Note: invalied object type ${object.type}`);
+	if (!isNote(object)) {
+		throw new Error(`invalid Note: invalied object type ${object.type}`);
 	}
 
 	if (object.id && extractApHost(object.id) !== expectHost) {
-		return new Error(`invalid Note: id has different host. expected: ${expectHost}, actual: ${extractApHost(object.id)}`);
+		throw new Error(`invalid Note: id has different host. expected: ${expectHost}, actual: ${extractApHost(object.id)}`);
 	}
 
 	if (object.attributedTo && extractApHost(getOneApId(object.attributedTo)) !== expectHost) {
-		return new Error(`invalid Note: attributedTo has different host. expected: ${expectHost}, actual: ${extractApHost(object.attributedTo)}`);
+		throw new Error(`invalid Note: attributedTo has different host. expected: ${expectHost}, actual: ${extractApHost(getOneApId(object.attributedTo))}`);
 	}
 
-	return null;
+	return object;
 }
 
 /**
@@ -87,8 +87,11 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 	const object: any = await resolver.resolve(value);
 
 	const entryUri = getApId(value);
-	const err = validateNote(object, entryUri);
-	if (err) {
+
+	let note: IApNote;
+	try {
+		note = toNote(object, entryUri);
+	} catch (err) {
 		logger.error(`${err.message}`, {
 			resolver: {
 				history: resolver.getHistory()
@@ -98,8 +101,6 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 		});
 		return null;
 	}
-
-	const note: INoteActivityStreamsObject = object;
 
 	logger.debug(`Note fetched: ${JSON.stringify(note, null, 2)}`);
 
@@ -163,12 +164,10 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 	const apHashtags = await extractHashtags(note.tag);
 
 	// 添付ファイル
-	// TODO: attachmentは必ずしもImageではない
-	// TODO: attachmentは必ずしも配列ではない
 	// Noteがsensitiveなら添付もsensitiveにする
 	const limit = promiseLimit(2);
 
-	note.attachment = Array.isArray(note.attachment) ? note.attachment : note.attachment ? [note.attachment] : [];
+	note.attachment = toArray(note.attachment);
 	const files = note.attachment
 		.map(attach => attach.sensitive = note.sensitive)
 		? (await Promise.all(note.attachment.map(x => limit(() => resolveImage(actor, x)) as Promise<IDriveFile>)))
@@ -177,7 +176,7 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 
 	// リプライ
 	const reply: INote = note.inReplyTo
-		? await resolveNote(note.inReplyTo, resolver).catch(e => {
+		? await resolveNote(getOneApId(note.inReplyTo), resolver).catch(e => {
 			// 4xxの場合はリプライしてないことにする
 			if (e.statusCode >= 400 && e.statusCode < 500) {
 				logger.warn(`Ignored inReplyTo ${note.inReplyTo} - ${e.statusCode} `);
@@ -244,8 +243,7 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 
 	const apEmojis = emojis.map(emoji => emoji.name);
 
-	const questionUri = note._misskey_question;
-	const poll = await extractPollFromQuestion(note._misskey_question || note, resolver).catch(() => undefined);
+	const poll = await extractPollFromQuestion(note, resolver).catch(() => undefined);
 
 	// ユーザーの情報が古かったらついでに更新しておく
 	if (actor.lastFetchedAt == null || Date.now() - actor.lastFetchedAt.getTime() > 1000 * 60 * 60 * 24) {
@@ -275,7 +273,6 @@ export async function createNote(value: string | IObject, resolver?: Resolver, s
 		apMentions,
 		apHashtags,
 		apEmojis,
-		questionUri,
 		poll,
 		uri: note.id
 	}, silent);
@@ -315,16 +312,15 @@ export async function resolveNote(value: string | IObject, resolver?: Resolver, 
 	}
 }
 
-export async function extractEmojis(tags: ITag[], host_: string) {
+export async function extractEmojis(tags: IObject | IObject[], host_: string) {
 	const host = toUnicode(host_.toLowerCase());
 
-	if (!tags) return [];
-
-	const eomjiTags = tags.filter(tag => tag.type === 'Emoji' && tag.icon && tag.icon.url);
+	const eomjiTags = toArray(tags).filter(isEmoji);
 
 	return await Promise.all(
 		eomjiTags.map(async tag => {
 			const name = tag.name.replace(/^:/, '').replace(/:$/, '');
+			tag.icon = toSingle(tag.icon);
 
 			const exists = await Emoji.findOne({
 				host,

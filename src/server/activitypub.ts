@@ -15,7 +15,6 @@ import Outbox, { packActivity } from './activitypub/outbox';
 import Followers from './activitypub/followers';
 import Following from './activitypub/following';
 import Featured from './activitypub/featured';
-import renderQuestion from '../remote/activitypub/renderer/question';
 import { inbox as processInbox } from '../queue';
 import { isSelfHost } from '../misc/convert-host';
 import { resolveUser } from './web';
@@ -86,7 +85,8 @@ const load = () => {
 		const note = await Note.findOne({
 			_id: new ObjectID(ctx.params.note),
 			visibility: { $in: ['public', 'home'] },
-			localOnly: { $ne: true }
+			localOnly: { $ne: true },
+			deletedAt: { $exists: false },
 		});
 
 		if (note === null) {
@@ -120,7 +120,8 @@ const load = () => {
 			_id: new ObjectID(ctx.params.note),
 			'_user.host': null,
 			visibility: { $in: ['public', 'home'] },
-			localOnly: { $ne: true }
+			localOnly: { $ne: true },
+			deletedAt: { $exists: false },
 		});
 
 		if (note === null) {
@@ -154,7 +155,8 @@ const load = () => {
 			_id: new ObjectID(ctx.params.note),
 			'_user.host': null,
 			visibility: 'public',
-			localOnly: { $ne: true }
+			localOnly: { $ne: true },
+			deletedAt: { $exists: false },
 		});
 
 		if (note === null) {
@@ -169,33 +171,8 @@ const load = () => {
 
 	// question
 	router.get('/questions/:question', async (ctx, next) => {
-		if (!ObjectID.isValid(ctx.params.question)) {
-			ctx.status = 404;
-			return;
-		}
-
-		const poll = await Note.findOne({
-			_id: new ObjectID(ctx.params.question),
-			'_user.host': null,
-			visibility: { $in: ['public', 'home'] },
-			localOnly: { $ne: true },
-			poll: {
-				$exists: true,
-				$ne: null
-			},
-		});
-
-		if (poll === null) {
-			ctx.status = 404;
-			return;
-		}
-
-		const user = await User.findOne({
-				_id: poll.userId
-		});
-
-		ctx.body = renderActivity(await renderQuestion(user as ILocalUser, poll));
-		setResponseType(ctx);
+		ctx.status = 501;
+		return;
 	});
 
 	// outbox
@@ -221,7 +198,10 @@ const load = () => {
 
 		const user = await User.findOne({
 			_id: userId,
-			host: null
+			host: null,
+			isDeleted: { $ne: true },
+			isSuspended: { $ne: true },
+			noFederation: { $ne: true },
 		});
 
 		if (user === null) {
@@ -241,6 +221,11 @@ const load = () => {
 	router.get('/users/:user', async (ctx, next) => {
 		if (!isActivityPubReq(ctx)) return await next();
 
+		if (!ObjectID.isValid(ctx.params.user)) {
+			ctx.status = 404;
+			return;
+		}
+
 		const user = await resolveUser(ctx.params.user);
 
 		if (!user) return await next();
@@ -249,6 +234,11 @@ const load = () => {
 	});
 
 	router.get('/users/:user.json', async (ctx, next) => {
+		if (!ObjectID.isValid(ctx.params.user)) {
+			ctx.status = 404;
+			return;
+		}
+
 		const user = await resolveUser(ctx.params.user);
 
 		if (!user) return await next();
@@ -261,7 +251,10 @@ const load = () => {
 
 		const user = await User.findOne({
 			usernameLower: ctx.params.user.toLowerCase(),
-			host: null
+			host: null,
+			isDeleted: { $ne: true },
+			isSuspended: { $ne: true },
+			noFederation: { $ne: true },
 		});
 
 		await userInfo(ctx, user);

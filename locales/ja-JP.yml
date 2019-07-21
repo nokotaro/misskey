@@ -36,6 +36,7 @@ common:
   signup: "新規登録"
   signout: "ログアウト"
   reload-to-apply-the-setting: "この設定を反映するにはページをリロードする必要があります。今すぐリロードしますか？"
+  unfollow-confirm: "{name}さんをフォロー解除しますか？"
 
   got-it: "わかった"
   customization-tips:
@@ -261,9 +262,11 @@ common:
   verified-user: "公式プロデューサー"
   hide-password: "パスワードを隠す"
   show-password: "パスワードを表示する"
+  reload: "リロード"
 
   do-not-use-in-production: "これは開発ビルドです。本番環境で使用しないでください。"
   user-suspended: "このユーザーは凍結されています。"
+  user-no-federation: "このユーザーは連合していません。"
   is-remote-user: "このユーザー情報は不正確な可能性があります。"
   is-remote-post: "この投稿情報はコピーです。"
   view-on-remote: "正確な情報を見る"
@@ -560,6 +563,7 @@ common/views/components/note-menu.vue:
   delete: "削除"
   delete-confirm: "この投稿を削除しますか？"
   remote: "投稿元で見る"
+  pin-limit-exceeded: "これ以上ピン留めできません。"
 
 common/views/components/user-menu.vue:
   mention: "メンション"
@@ -765,12 +769,16 @@ common/views/components/profile-editor.vue:
   is-locked: "フォローを承認制にする"
   careful-bot: "Botからのフォローだけ承認制にする"
   auto-accept-followed: "フォローしているユーザーからのフォローを自動承認する"
+  no-federation: "連合を無効にする"
   advanced: "その他"
   privacy: "プライバシー"
   save: "保存"
   saved: "プロフィールを保存しました"
   uploading: "アップロード中"
   upload-failed: "アップロードに失敗しました"
+  unable-to-process: "操作を完了できません"
+  avatar-not-an-image: "アイコンとして指定したファイルは画像ではありません"
+  banner-not-an-image: "バナーとして指定したファイルは画像ではありません"
   email: "メール設定"
   email-address: "メールアドレス"
   email-verified: "メールアドレスが確認されました"
@@ -790,6 +798,12 @@ common/views/components/profile-editor.vue:
   danger-zone: "危険な設定"
   delete-account: "プロデューサーを削除"
   account-deleted: "プロデューサーが削除されました。データが消えるまで時間がかかる場合があります。"
+  profile-metadata: "プロフィール補足情報"
+  metadata-label: "ラベル"
+  metadata-content: "内容"
+  disable-federation: "連合を無効にする"
+  enable-federation: "連合を有効にする"
+  disable-federation-confirm: "連合を無効にしますか？フォロー関係も解除されます"
 
 common/views/components/user-list-editor.vue:
   users: "ユーザー"
@@ -805,6 +819,7 @@ common/views/components/user-lists.vue:
   list-name: "リスト名"
 
 common/views/widgets/broadcast.vue:
+  title: "お知らせ"
   fetching: "確認中"
   no-broadcasts: "お知らせはありません"
   have-a-nice-day: "良い一日を！"
@@ -886,6 +901,7 @@ desktop:
   uploading-avatar: "新しいアバターをアップロードしています"
   avatar-updated: "アバターを更新しました"
   choose-avatar: "アバターにする画像を選択"
+  unable-to-process: "操作を完了できません"
   invalid-filetype: "この形式のファイルはサポートされていません"
 
 desktop/views/components/activity.chart.vue:
@@ -1034,6 +1050,7 @@ desktop/views/components/post-form.vue:
   use-broadcast: "実況モード"
   reply-placeholder: "この投稿への返信..."
   quote-placeholder: "この投稿を引用..."
+  preview: "プレビュー"
   submit: "投稿"
   reply: "返信"
   renote: "Renote"
@@ -1439,6 +1456,10 @@ admin/views/users.vue:
   unverified: "公式プロデューサーを解除しました"
   update-remote-user: "リモートユーザー情報の更新"
   remote-user-updated: "リモートユーザー情報を更新しました"
+  delete-all-files: "すべてのファイルを削除"
+  delete-all-files-confirm: "すべてのファイルを削除しますか？"
+  username: "ユーザー名"
+  host: "ホスト"
   users:
     title: "ユーザー"
     sort:
@@ -1745,6 +1766,7 @@ mobile/views/components/post-form.vue:
   location-alert: "お使いの端末は位置情報に対応していません"
   error: "エラー"
   username-prompt: "ユーザー名を入力してください"
+  quote: "引用する..."
 
 mobile/views/components/sub-note-content.vue:
   private: "この投稿は非公開です"

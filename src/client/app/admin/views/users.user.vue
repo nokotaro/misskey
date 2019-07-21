@@ -5,7 +5,7 @@
 			<mk-avatar class="avatar" :user="user" :disable-link="true"/>
 		</a>
 	</div>
-	<div>
+	<div @click="click(user.id)">
 		<header>
 			<b><mk-user-name :user="user"/></b>
 			<span class="username">@{{ user | acct }}</span>
@@ -33,7 +33,7 @@ import { faBadgeCheck, faMicrophoneSlash, faSnowflake } from '@fortawesome/pro-l
 
 export default Vue.extend({
 	i18n: i18n('admin/views/users.vue'),
-	props: ['user'],
+	props: ['user', 'click'],
 	data() {
 		return {
 			faBadgeCheck,
@@ -47,7 +47,7 @@ export default Vue.extend({
 <style lang="stylus" scoped>
 .kofvwchc
 	display flex
-	padding 16px 0
+	padding 16px
 	border-top solid 1px var(--faceDivider)
 
 	> div:first-child
@@ -58,6 +58,7 @@ export default Vue.extend({
 
 	> div:last-child
 		flex 1
+		cursor pointer
 		padding-left 16px
 
 		@media (max-width 500px)
@@ -85,4 +86,15 @@ export default Vue.extend({
 			> .via-twitter
 				margin 0 0 0 .5em
 				color #4dabf7
+
+	&:hover
+		color var(--primaryForeground)
+		background var(--primary)
+		text-decoration none
+		border-radius 3px
+
+	&:active
+		color var(--primaryForeground)
+		background var(--primaryDarken10)
+		border-radius 3px
 </style>

@@ -38,6 +38,7 @@
 					<ul>
 						<li @click="toggleDeckMode"><p><i><fa :icon="$store.state.device.inDeckMode ? faHome : faColumns" fixed-width/></i><span>{{ $store.state.device.inDeckMode ? $t('@.home') : $t('@.deck') }}</span></p></li>
 						<li @click="dark"><p><i><fa :icon="$store.state.device.darkmode ? faSun : faMoon" fixed-width/></i><span>{{ $store.state.device.darkmode ? $t('@.turn-off-darkmode') : $t('@.turn-on-darkmode') }}</span></p></li>
+						<li @click="reload"><p><i><fa :icon="faSync" fixed-width/></i><span>{{ $t('@.reload') }}</span></p></li>
 					</ul>
 				</div>
 				<div class="announcements" v-if="announcements && announcements.length > 0">
@@ -67,8 +68,7 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import { lang } from '../../../config';
-import { faNewspaper, faHashtag, faHome, faColumns, faSun } from '@fortawesome/pro-light-svg-icons';
-import { faMoon } from '@fortawesome/pro-light-svg-icons';
+import { faNewspaper, faHashtag, faHome, faColumns, faSun, faMoon, faSync } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('mobile/views/components/ui.nav.vue'),
@@ -87,7 +87,7 @@ export default Vue.extend({
 			announcements: [],
 			searching: false,
 			showNotifications: false,
-			faNewspaper, faHashtag, faMoon, faSun, faHome, faColumns
+			faNewspaper, faHashtag, faMoon, faSun, faHome, faColumns, faSync
 		};
 	},
 
@@ -184,6 +184,10 @@ export default Vue.extend({
 
 		readAllNotifications() {
 			this.$root.api('notifications/mark_all_as_read');
+		},
+
+		reload() {
+			location.reload();
 		},
 	}
 });

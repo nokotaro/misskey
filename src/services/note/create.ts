@@ -133,9 +133,9 @@ type Option = {
 	apMentions?: IUser[];
 	apHashtags?: string[];
 	apEmojis?: string[];
-	questionUri?: string;
 	uri?: string;
 	app?: IApp;
+	preview?: boolean;
 };
 
 export const imasHosts = [
@@ -346,6 +346,8 @@ const create = async (user: IUser, data: Option, silent = false) => new Promise<
 
 	res(note);
 
+	if (data.preview) return;
+
 	if (isLocalUser(user) && user.mastodon && ['public', 'home'].includes(data.visibility) && !data.localOnly && !(data.text && data.text.includes('#twista_mirror'))) {
 		if (user.mastodon.preferBoost) {
 			const id = await new Promise<string>((s, j) => request({
@@ -537,7 +539,7 @@ const create = async (user: IUser, data: Option, silent = false) => new Promise<
 
 	createMentionedEvents(mentionedUsers, note, nm);
 
-	const noteActivity = await renderNoteOrRenoteActivity(data, note, text);
+	const noteActivity = await renderNoteOrRenoteActivity(data, note, text, user);
 
 	if (isLocalUser(user)) {
 		deliverNoteToMentionedRemoteUsers(mentionedUsers, user, noteActivity);
@@ -611,8 +613,9 @@ const create = async (user: IUser, data: Option, silent = false) => new Promise<
 
 export default create;
 
-async function renderNoteOrRenoteActivity(data: Option, note: INote, text: string) {
+async function renderNoteOrRenoteActivity(data: Option, note: INote, text: string, user: IUser) {
 	if (data.localOnly) return null;
+	if (user.noFederation) return null;
 
 	const content = data.renote && !text && !data.poll && (!data.files || !data.files.length)
 		? renderAnnounce(data.renote.uri ? data.renote.uri : `${config.url}/notes/${data.renote._id}`, note)
@@ -762,6 +765,13 @@ async function insertNote(user: IUser, data: Option, tags: string[], emojis: str
 			username: u.username,
 			host: u.host
 		}));
+	}
+
+	if (data.preview) {
+		return Object.assign(insert, {
+			_id: '1',
+			preview: true
+		}) as INote;
 	}
 
 	// 投稿を作成

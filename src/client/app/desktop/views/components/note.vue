@@ -37,7 +37,7 @@
 					<mk-url-preview v-for="url in urls" :url="url" :key="url" :mini="mini" :compact="compact"/>
 				</div>
 			</div>
-			<footer v-if="appearNote.deletedAt == null" class="footer">
+			<footer v-if="!appearNote.deletedAt && !preview" class="footer">
 				<span class="app" v-if="appearNote.app && narrow && $store.state.settings.showVia">via <b>{{ appearNote.app.name }}</b> <a :href="appearNote.uri" :title="$t('@.twitter.note-from-twitter')" v-if="appearNote.app.twitter"><fa :icon="['fab', 'twitter']"/></a></span>
 				<mk-reactions-viewer :note="appearNote" ref="reactionsViewer"/>
 				<button class="replyButton button" @click="reply()" :title="$t('reply')">
@@ -112,6 +112,11 @@ export default Vue.extend({
 			default: false
 		},
 		compact: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		preview: {
 			type: Boolean,
 			required: false,
 			default: false

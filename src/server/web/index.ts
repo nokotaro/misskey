@@ -10,7 +10,6 @@ import * as favicon from 'koa-favicon';
 import * as views from 'koa-views';
 import { ObjectID } from 'mongodb';
 
-import packFeed from './feed';
 import urlPreview from './url-preview';
 import User, { ILocalUser } from '../../models/user';
 import parseAcct from '../../misc/acct/parse';
@@ -19,6 +18,9 @@ import Note, { pack as packNote } from '../../models/note';
 import getNoteSummary from '../../misc/get-note-summary';
 import fetchMeta from '../../misc/fetch-meta';
 import { genOpenapiSpec } from '../api/openapi/gen-spec';
+import { getAtomFeed } from './feed/atom';
+import { getRSSFeed } from './feed/rss';
+import { getJSONFeed } from './feed/json';
 
 const client = `${__dirname}/../../client/`;
 
@@ -87,23 +89,13 @@ router.get('/api.json', async ctx => {
 	ctx.body = genOpenapiSpec();
 });
 
-const getFeed = async (acct: string) => {
-	const { username, host } = parseAcct(acct);
-	const user = await User.findOne({
-		usernameLower: username.toLowerCase(),
-		host
-	});
-
-	return user && await packFeed(user);
-};
-
 // Atom
 router.get('/@:user.atom', async ctx => {
-	const feed = await getFeed(ctx.params.user);
+	const feed = await getAtomFeed(ctx.params.user, ctx.query.until_id);
 
 	if (feed) {
 		ctx.set('Content-Type', 'application/atom+xml; charset=utf-8');
-		ctx.body = feed.atom1();
+		ctx.body = feed;
 	} else {
 		ctx.status = 404;
 	}
@@ -111,11 +103,11 @@ router.get('/@:user.atom', async ctx => {
 
 // RSS
 router.get('/@:user.rss', async ctx => {
-	const feed = await getFeed(ctx.params.user);
+	const feed = await getRSSFeed(ctx.params.user, ctx.query.until_id);
 
 	if (feed) {
 		ctx.set('Content-Type', 'application/rss+xml; charset=utf-8');
-		ctx.body = feed.rss2();
+		ctx.body = feed;
 	} else {
 		ctx.status = 404;
 	}
@@ -123,11 +115,11 @@ router.get('/@:user.rss', async ctx => {
 
 // JSON
 router.get('/@:user.json', async ctx => {
-	const feed = await getFeed(ctx.params.user);
+	const feed = await getJSONFeed(ctx.params.user, ctx.query.until_id);
 
 	if (feed) {
 		ctx.set('Content-Type', 'application/json; charset=utf-8');
-		ctx.body = feed.json1();
+		ctx.body = JSON.stringify(feed, null, 2);
 	} else {
 		ctx.status = 404;
 	}
@@ -150,16 +142,24 @@ router.get('/@:user', async (ctx, next) => {
 	const user = await User.findOne({
 		usernameLower: username.toLowerCase(),
 		host
-	});
+	}) as ILocalUser;
 
 	if (user != null) {
 		const meta = await fetchMeta();
+
+		const me = user.fields
+			? user.fields
+				.filter(filed => filed.value != null && filed.value.match(/^https?:/))
+				.map(field => field.value)
+			: [];
+
 		await ctx.render('user', {
 			user,
+			me,
 			instanceName: meta.name,
 			instanceDescription: meta.description
 		});
-		ctx.set('Cache-Control', 'public, max-age=180');
+		ctx.set('Cache-Control', 'public, max-age=60');
 	} else {
 		// リモートユーザーなので
 		await next();

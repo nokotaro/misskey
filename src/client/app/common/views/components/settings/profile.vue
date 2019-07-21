@@ -58,6 +58,26 @@
 				<span slot="prefix"><fa :icon="['fal', 'drafting-compass']"/></span>
 			</ui-input>
 
+			<div class="fields">
+				<header>{{ $t('profile-metadata') }}</header>
+				<ui-horizon-group>
+					<ui-input v-model="fieldName0">{{ $t('metadata-label') }}</ui-input>
+					<ui-input v-model="fieldValue0">{{ $t('metadata-content') }}</ui-input>
+				</ui-horizon-group>
+				<ui-horizon-group>
+					<ui-input v-model="fieldName1">{{ $t('metadata-label') }}</ui-input>
+					<ui-input v-model="fieldValue1">{{ $t('metadata-content') }}</ui-input>
+				</ui-horizon-group>
+				<ui-horizon-group>
+					<ui-input v-model="fieldName2">{{ $t('metadata-label') }}</ui-input>
+					<ui-input v-model="fieldValue2">{{ $t('metadata-content') }}</ui-input>
+				</ui-horizon-group>
+				<ui-horizon-group>
+					<ui-input v-model="fieldName3">{{ $t('metadata-label') }}</ui-input>
+					<ui-input v-model="fieldValue3">{{ $t('metadata-content') }}</ui-input>
+				</ui-horizon-group>
+			</div>
+
 			<ui-button primary @click="save(true)"><fa :icon="faSave"/> {{ $t('save') }}</ui-button>
 		</ui-form>
 	</section>
@@ -114,9 +134,11 @@
 		</div>
 	</section>
 
-	<section v-if="isAdvanced">
+	<section>
 		<details>
 			<summary>{{ $t('danger-zone') }}</summary>
+			<ui-button v-if="!noFederation" @click="disableFederation()">{{ $t('disable-federation') }}</ui-button>
+			<ui-button v-if="noFederation" @click="enableFederation()">{{ $t('enable-federation') }}</ui-button>
 		</details>
 	</section>
 </ui-card>
@@ -153,6 +175,15 @@ export default Vue.extend({
 			isLocked: false,
 			carefulBot: false,
 			autoAcceptFollowed: false,
+			noFederation: false,
+			fieldName0 : null,
+			fieldValue0 : null,
+			fieldName1 : null,
+			fieldValue1 : null,
+			fieldName2 : null,
+			fieldValue2 : null,
+			fieldName3 : null,
+			fieldValue3 : null,
 			saving: false,
 			avatarUploading: false,
 			bannerUploading: false,
@@ -195,6 +226,21 @@ export default Vue.extend({
 		this.isLocked = this.$store.state.i.isLocked;
 		this.carefulBot = this.$store.state.i.carefulBot;
 		this.autoAcceptFollowed = this.$store.state.i.autoAcceptFollowed;
+		this.noFederation = this.$store.state.i.noFederation;
+
+		if (this.$store.state.i.fields) {
+			const fetchName = (i: number) => this.$store.state.i.fields[i] ? this.$store.state.i.fields[i].name : null;
+			const fetchValue = (i: number) => this.$store.state.i.fields[i] ? this.$store.state.i.fields[i].value : null;
+
+			this.fieldName0 = fetchName(0);
+			this.fieldValue0 = fetchValue(0);
+			this.fieldName1 = fetchName(1);
+			this.fieldValue1 = fetchValue(1);
+			this.fieldName2 = fetchName(2);
+			this.fieldValue3 = fetchValue(2);
+			this.fieldName3 = fetchName(3);
+			this.fieldValue3 = fetchValue(3);
+		}
 	},
 
 	methods: {
@@ -245,6 +291,13 @@ export default Vue.extend({
 		},
 
 		save(notify) {
+			const fields = [
+				{ name: this.fieldName0, value: this.fieldValue0 },
+				{ name: this.fieldName1, value: this.fieldValue1 },
+				{ name: this.fieldName2, value: this.fieldValue2 },
+				{ name: this.fieldName3, value: this.fieldValue3 },
+			];
+
 			this.saving = true;
 
 			this.$root.api('i/update', {
@@ -260,7 +313,8 @@ export default Vue.extend({
 				isBot: !!this.isBot,
 				isLocked: !!this.isLocked,
 				carefulBot: !!this.carefulBot,
-				autoAcceptFollowed: !!this.autoAcceptFollowed
+				autoAcceptFollowed: !!this.autoAcceptFollowed,
+				fields,
 			}).then(i => {
 				this.saving = false;
 				this.$store.state.i.avatarId = i.avatarId;
@@ -273,6 +327,29 @@ export default Vue.extend({
 						type: 'success',
 						text: this.$t('saved')
 					});
+				}
+			}).catch(err => {
+				this.saving = false;
+				switch(err.id) {
+					case 'f419f9f8-2f4d-46b1-9fb4-49d3a2fd7191':
+						this.$root.dialog({
+							type: 'error',
+							title: this.$t('unable-to-process'),
+							text: this.$t('avatar-not-an-image')
+						});
+						break;
+					case '75aedb19-2afd-4e6d-87fc-67941256fa60':
+						this.$root.dialog({
+							type: 'error',
+							title: this.$t('unable-to-process'),
+							text: this.$t('banner-not-an-image')
+						});
+						break;
+					default:
+						this.$root.dialog({
+							type: 'error',
+							text: this.$t('unable-to-process')
+						});
 				}
 			});
 		},
@@ -333,6 +410,42 @@ export default Vue.extend({
 			});
 		},
 
+		async disableFederation() {
+			this.$root.dialog({
+				type: 'warning',
+				text: this.$t('disable-federation-confirm'),
+				showCancelButton: true
+			}).then(({ canceled }) => {
+				if (canceled) return;
+
+				this.saving = true;
+				this.noFederation = true;
+				this.$root.api('i/update', {
+					noFederation: this.noFederation
+				}).then(i => {
+					this.saving = false;
+					this.$root.dialog({
+						type: 'success',
+						text: 'Saved'
+					});
+				});
+			});
+		},
+
+		async enableFederation() {
+			this.saving = true;
+			this.noFederation = false;
+			this.$root.api('i/update', {
+				noFederation: this.noFederation
+			}).then(i => {
+				this.saving = false;
+				this.$root.dialog({
+					type: 'success',
+					text: 'Saved'
+				});
+			});
+		},
+
 		async deleteAccount() {
 			const { canceled: canceled, result: password } = await this.$root.dialog({
 				title: this.$t('enter-password'),
@@ -374,4 +487,9 @@ export default Vue.extend({
 			width 72px
 			height 72px
 			margin auto
+
+.fields
+	> header
+		padding 8px 0px
+		font-weight bold
 </style>

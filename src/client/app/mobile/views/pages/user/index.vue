@@ -6,6 +6,7 @@
 	<div class="wwtwuxyh" v-if="!fetching">
 		<div class="is-suspended" v-if="user.isSuspended"><p><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.user-suspended') }}</p></div>
 		<div class="is-remote" v-if="user.host"><p><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.is-remote-user') }}<a :href="user.url || user.uri" rel="nofollow noopener" target="_blank">{{ $t('@.view-on-remote') }}</a></p></div>
+		<div class="no-federation" v-if="user.noFederation"><p><fa :icon="['fal', 'exclamation-triangle']"/> {{ $t('@.user-no-federation') }}</p></div>
 		<header>
 			<div class="banner" :style="style"></div>
 			<div class="body">
@@ -28,7 +29,7 @@
 				<div class="fields" v-if="user.fields">
 					<dl class="field" v-for="(field, i) in user.fields" :key="i">
 						<dt class="name">
-							<mfm :text="field.name" :should-break="false" :plain-text="true" :custom-emojis="user.emojis"/>
+							<mfm :text="field.name" :plain="true" :custom-emojis="user.emojis"/>
 						</dt>
 						<dd class="value">
 							<mfm :text="field.value" :author="user" :i="$store.state.i" :custom-emojis="user.emojis"/>
@@ -191,11 +192,12 @@ export default Vue.extend({
 
 	> .is-suspended
 	> .is-remote
+	> .no-federation
 		&.is-suspended
 			color #570808
 			background #ffdbdb
 
-		&.is-remote
+		&.is-remote, &.no-federation
 			color #573c08
 			background #fff0db
 

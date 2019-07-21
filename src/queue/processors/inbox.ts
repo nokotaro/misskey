@@ -3,7 +3,7 @@ import * as httpSignature from 'http-signature';
 import parseAcct from '../../misc/acct/parse';
 import User, { IRemoteUser } from '../../models/user';
 import perform from '../../remote/activitypub/perform';
-import { resolvePerson, updatePerson } from '../../remote/activitypub/models/person';
+import { resolvePerson } from '../../remote/activitypub/models/person';
 import { toUnicode } from 'punycode';
 import { URL } from 'url';
 import { publishApLogStream } from '../../services/stream';
@@ -11,15 +11,16 @@ import Logger from '../../services/logger';
 import { registerOrFetchInstanceDoc } from '../../services/register-or-fetch-instance-doc';
 import Instance from '../../models/instance';
 import instanceChart from '../../services/chart/instance';
-import { validActor } from '../../remote/activitypub/type';
+import { IActivity, getApId } from '../../remote/activitypub/type';
 import { toDbHost } from '../../misc/convert-host';
+import { detectSystem } from '../../remote/activitypub/misc/detect-system';
 
 const logger = new Logger('inbox');
 
 // ユーザーのinboxにアクティビティが届いた時の処理
 export default async (job: Bull.Job): Promise<void> => {
-	const signature = job.data.signature;
-	const activity = job.data.activity;
+	const signature = job.data.signature as httpSignature.IParsedSignature;
+	const activity = job.data.activity as IActivity;
 
 	//#region Log
 	const info = Object.assign({}, activity);
@@ -79,6 +80,7 @@ export default async (job: Bull.Job): Promise<void> => {
 		}) as IRemoteUser;
 	}
 
+	/*
 	// Update activityの場合は、ここで署名検証/更新処理まで実施して終了
 	if (activity.type === 'Update') {
 		if (activity.object && validActor.includes(activity.object.type)) {
@@ -92,11 +94,12 @@ export default async (job: Bull.Job): Promise<void> => {
 			return;
 		}
 	}
+	*/
 
 	// アクティビティを送信してきたユーザーがまだtwistaサーバーに登録されていなかったら登録する
 	if (user === null) {
 		try {
-			user = await resolvePerson(activity.actor) as IRemoteUser;
+			user = await resolvePerson(getApId(activity.actor)) as IRemoteUser;
 		} catch (e) {
 			// 対象が4xxならスキップ
 			if (e.statusCode >= 400 && e.statusCode < 500) {
@@ -128,12 +131,17 @@ export default async (job: Bull.Job): Promise<void> => {
 
 	// Update stats
 	registerOrFetchInstanceDoc(user.host).then(i => {
+		const set = {
+			latestRequestReceivedAt: new Date(),
+			lastCommunicatedAt: new Date(),
+			isNotResponding: false
+		} as any;
+
+		const system = detectSystem(activity);
+		if (system != null) set.system = system;
+
 		Instance.update({ _id: i._id }, {
-			$set: {
-				latestRequestReceivedAt: new Date(),
-				lastCommunicatedAt: new Date(),
-				isNotResponding: false
-			}
+			$set: set
 		});
 
 		instanceChart.requestReceived(i.host);

@@ -63,16 +63,19 @@ export const meta = {
 };
 
 export default define(meta, async (ps, me) => {
+	const isName = ps.query.replace('@', '').match(/^[\W-]/) != null;
 	const isUsername = validateUsername(ps.query.replace('@', ''), !ps.localOnly);
 	const isHostname = ps.query.replace('@', '').match(/\./) != null;
 
 	let users: IUser[] = [];
 
-	if (isUsername) {
+	if (isName) {
+		const name = ps.query.replace(/^-/, '');
+
 		users = await User
 			.find({
 				host: null,
-				usernameLower: new RegExp('^' + escapeRegexp(ps.query.replace('@', '').toLowerCase())),
+				name: new RegExp('^' + escapeRegexp(name), 'i'),
 				isSuspended: { $ne: true }
 			}, {
 				limit: ps.limit,
@@ -83,10 +86,54 @@ export default define(meta, async (ps, me) => {
 			const otherUsers = await User
 				.find({
 					host: { $ne: null },
-					usernameLower: new RegExp('^' + escapeRegexp(ps.query.replace('@', '').toLowerCase())),
+					name: new RegExp('^' + escapeRegexp(name), 'i'),
 					isSuspended: { $ne: true }
 				}, {
 					limit: ps.limit - users.length
+				});
+
+			users = users.concat(otherUsers);
+		}
+	} else if (isUsername) {
+		if (users.length < ps.limit && !ps.localOnly) {
+			users = await User
+				.find({
+						usernameLower: ps.query.replace('@', '').toLowerCase(),
+						isSuspended: { $ne: true }
+					}, {
+						limit: ps.limit - users.length,
+						skip: ps.offset,
+						sort: { updatedAt: -1 },
+					});
+		}
+
+		const ids = users.map(user => user._id);
+
+		if (users.length < ps.limit) {
+			const otherUsers = await User
+				.find({
+					_id: { $nin: ids },
+					host: null,
+					usernameLower: new RegExp('^' + escapeRegexp(ps.query.replace('@', '').toLowerCase())),
+					isSuspended: { $ne: true }
+				}, {
+					limit: ps.limit - users.length,
+					skip: ps.offset
+				});
+
+				users = users.concat(otherUsers);
+			}
+
+		if (users.length < ps.limit && !ps.localOnly) {
+			const otherUsers = await User
+				.find({
+					_id: { $nin: ids },
+					host: { $ne: null },
+					usernameLower: new RegExp('^' + escapeRegexp(ps.query.replace('@', '').toLowerCase())),
+					isSuspended: { $ne: true }
+				}, {
+					limit: ps.limit - users.length,
+					skip: ps.offset
 				});
 
 			users = users.concat(otherUsers);

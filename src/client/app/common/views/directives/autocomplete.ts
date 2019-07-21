@@ -97,7 +97,7 @@ class Autocomplete {
 
 		if (isMention) {
 			const username = text.substr(mentionIndex + 1);
-			if (username.match(/^[\w.-]+$/)) {
+			if (username.length) {
 				this.open('user', username);
 				opened = true;
 			}

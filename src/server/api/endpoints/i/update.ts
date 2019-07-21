@@ -12,6 +12,8 @@ import extractEmojis from '../../../../misc/extract-emojis';
 import extractHashtags from '../../../../misc/extract-hashtags';
 import { updateHashtag } from '../../../../services/update-hashtag';
 import { ApiError } from '../../error';
+import { sendDeleteActivity } from '../../../../services/suspend-user';
+import { doPostUnsuspend } from '../../../../services/unsuspend-user';
 
 export const meta = {
 	desc: {
@@ -107,6 +109,13 @@ export const meta = {
 			}
 		},
 
+		noFederation: {
+			validator: $.optional.bool,
+			desc: {
+				'ja-JP': 'noFederation'
+			}
+		},
+
 		isBot: {
 			validator: $.optional.bool,
 			desc: {
@@ -143,6 +152,13 @@ export const meta = {
 			validator: $.optional.bool,
 			desc: {
 				'ja-JP': 'アップロードするメディアをデフォルトで「閲覧注意」として設定するか'
+			}
+		},
+
+		fields: {
+			validator: $.optional.arr($.object()).range(1, 4),
+			desc: {
+				'ja-JP': 'fields'
 			}
 		},
 	},
@@ -191,6 +207,7 @@ export default define(meta, async (ps, user, app) => {
 	if (typeof ps.isBot == 'boolean') updates.isBot = ps.isBot;
 	if (typeof ps.carefulBot == 'boolean') updates.carefulBot = ps.carefulBot;
 	if (typeof ps.autoAcceptFollowed == 'boolean') updates.autoAcceptFollowed = ps.autoAcceptFollowed;
+	if (typeof ps.noFederation == 'boolean') updates.noFederation = ps.noFederation;
 	if (typeof ps.isCat == 'boolean') updates.isCat = ps.isCat;
 	if (typeof ps.isKaho == 'boolean') updates.isKaho = ps.isKaho;
 	if (typeof ps.preferBoost == 'boolean') updates['mastodon.preferBoost'] = ps.preferBoost;
@@ -258,6 +275,14 @@ export default define(meta, async (ps, user, app) => {
 		}
 	}
 
+	if (ps.fields) {
+		updates.fields = ps.fields
+			.filter(x => typeof x.name === 'string' && x.name !== '' && typeof x.value === 'string' && x.value !== '')
+			.map(x => {
+				return { name: x.name, value: x.value };
+			});
+	}
+
 	//#region emojis/tags
 	if (updates.name != null || updates.description != null) {
 		let emojis = [] as string[];
@@ -300,8 +325,16 @@ export default define(meta, async (ps, user, app) => {
 		acceptAllFollowRequests(user);
 	}
 
-	// フォロワーにUpdateを配信
-	publishToFollowers(user._id);
+	if (typeof updates.noFederation !== 'undefined') {
+		if (updates.noFederation) {
+			sendDeleteActivity(user);
+		} else {
+			doPostUnsuspend(user);
+		}
+	} else {
+		// フォロワーにUpdateを配信
+		publishToFollowers(user._id);
+	}
 
 	return iObj;
 });

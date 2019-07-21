@@ -2,6 +2,7 @@ import $ from 'cafy';
 import ID, { transform } from '../../../../misc/cafy-id';
 import define from '../../define';
 import User, { pack } from '../../../../models/user';
+import { doPostUnsuspend } from '../../../../services/unsuspend-user';
 
 export const meta = {
 	desc: {
@@ -34,6 +35,8 @@ export default define(meta, async (ps, me) => {
 	if (user == null) {
 		throw new Error('user not found');
 	}
+
+	doPostUnsuspend(user);
 
 	return await pack(await User.findOneAndUpdate({
 		_id: user._id
