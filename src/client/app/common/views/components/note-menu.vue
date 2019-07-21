@@ -142,7 +142,7 @@ export default Vue.extend({
 
 		async notestock() {
 			try {
-				const response: Response = await fetch(`https://notestock.osa-p.net/api/v1/isstock.json?${query({ id: `${url}/notes/${this.note.id}` })}`);
+				const response: Response = await fetch(`https://notestock.osa-p.net/api/v1/isstock.json?${query({ id: this.note.uri || `${url}/notes/${this.note.id}` })}`);
 				const json = await response.json();
 				if (!(json && typeof json === 'object' && 'note' in json && typeof json.note === 'object')) {
 					throw JSON.stringify(json);
