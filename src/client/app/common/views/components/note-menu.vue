@@ -10,6 +10,7 @@ import i18n from '../../../i18n';
 import { url } from '../../../config';
 import copyToClipboard from '../../../common/scripts/copy-to-clipboard';
 import { faCopy, faEye, faEyeSlash, faPlaneArrival, faPlaneDeparture } from '@fortawesome/pro-light-svg-icons';
+import { query } from '../../../../../prelude/url';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/note-menu.vue'),
@@ -52,7 +53,11 @@ export default Vue.extend({
 				action: () => {
 					window.open(this.note.uri, '_blank');
 				}
-			} : undefined,
+			} : undefined, {
+				icon: ['fal', 'layer-group'],
+				text: this.$t('copy-notestock-link'),
+				action: this.notestock
+			},
 			null,
 			this.isFavorited ? {
 				icon: ['fal', 'star'],
@@ -133,6 +138,30 @@ export default Vue.extend({
 				type: 'success',
 				splash: true
 			});
+		},
+
+		async notestock() {
+			try {
+				const response: Response = await fetch(`https://notestock.osa-p.net/api/v1/isstock.json?${query({ id: `${url}/notes/${this.note.id}` })}`);
+				const json = await response.json();
+				if (!(json && typeof json === 'object' && 'note' in json && typeof json.note === 'object')) {
+					throw JSON.stringify(json);
+				}
+				const url = json.note.full_url || json.note.url;
+				if (typeof url !== 'string') {
+					throw JSON.stringify(json);
+				}
+				copyToClipboard(url);
+				this.$root.dialog({
+					type: 'success',
+					splash: true
+				});
+			} catch (e) {
+				this.$root.dialog({
+					type: 'error',
+					text: e
+				})
+			}
 		},
 
 		togglePin(pin: boolean) {

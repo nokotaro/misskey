@@ -484,6 +484,7 @@ common/views/components/note-menu.vue:
   up-timeline: "Go timeline (reversed)"
   copy-content: "Copy the contents"
   copy-link: "Copy link"
+  copy-notestock-link: "Copy notestock link"
   favorite: "Favorite this note"
   unfavorite: "Unfavorite"
   watch: "Watch"

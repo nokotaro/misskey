@@ -550,6 +550,7 @@ common/views/components/note-menu.vue:
   up-timeline: "タイムラインへ (逆順)"
   copy-content: "内容をコピー"
   copy-link: "リンクをコピー"
+  copy-notestock-link: "notestock のリンクをコピー"
   favorite: "お気に入り"
   unfavorite: "お気に入り解除"
   watch: "ウォッチ"
