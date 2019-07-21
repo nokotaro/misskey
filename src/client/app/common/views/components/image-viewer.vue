@@ -1,9 +1,8 @@
 <template>
-<div class="dkjvrdxtkvqrwmhfickhndpmnncsgacq" v-hotkey.global="keymap">
-	<div class="bg" @click="close"></div>
-	<img :src="image.url" :alt="image.name" :title="image.name" @click="close" ref="rotator"/>
-	<div class="paginator left" @click="left"><fa :icon="['fal', 'angle-left']"/></div>
-	<div class="paginator right" @click="right"><fa :icon="['fal', 'angle-right']"/></div>
+<div class="dkjvrdxtkvqrwmhfickhndpmnncsgacq" @click="close" v-hotkey.global="keymap">
+	<img :src="image.url" :alt="image.name" :title="image.name" ref="rotator"/>
+	<div class="paginator left" @click.stop="left"><fa :icon="['fal', 'angle-left']"/></div>
+	<div class="paginator right" @click.stop="right"><fa :icon="['fal', 'angle-right']"/></div>
 </div>
 </template>
 
@@ -124,27 +123,19 @@ export default Vue.extend({
 
 <style lang="stylus" scoped>
 .dkjvrdxtkvqrwmhfickhndpmnncsgacq
-	position fixed
-	z-index 2048
-	top 0
-	left 0
-	width 100%
+	background rgba(#000, 0.7)
 	height 100%
+	left 0
 	opacity 0
 	perspective 100vmax
-
-	> .bg
-		position fixed
-		z-index 1
-		top 0
-		left 0
-		width 100%
-		height 100%
-		background rgba(#000, 0.7)
+	position fixed
+	top 0
+	width 100%
+	z-index 2048
 
 	> img
 		position fixed
-		z-index 2
+		z-index 4096
 		top 0
 		right 0
 		bottom 0
@@ -168,7 +159,7 @@ export default Vue.extend({
 		position fixed
 		top 50%
 		width 5vmax
-		z-index 3
+		z-index 8192
 
 		> svg
 			height 4vmax
