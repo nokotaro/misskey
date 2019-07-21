@@ -125,33 +125,47 @@ export default Vue.extend({
 		},
 
 		copyContent() {
-			copyToClipboard(this.note.text);
-			this.$root.dialog({
-				type: 'success',
-				splash: true
-			});
+			try {
+				await copyToClipboard(this.note.text);
+				this.$root.dialog({
+					type: 'success',
+					splash: true
+				});
+			} catch (e) {
+				this.$root.dialog({
+					type: 'error',
+					text: e
+				})
+			}
 		},
 
 		copyLink() {
-			copyToClipboard(`${url}/notes/${this.note.id}`);
-			this.$root.dialog({
-				type: 'success',
-				splash: true
-			});
+			try {
+				await copyToClipboard(`${url}/notes/${this.note.id}`);
+				this.$root.dialog({
+					type: 'success',
+					splash: true
+				});
+			} catch (e) {
+				this.$root.dialog({
+					type: 'error',
+					text: e
+				})
+			}
 		},
 
 		async notestock() {
 			try {
-				const response: Response = await fetch(`https://notestock.osa-p.net/api/v1/isstock.json?${query({ id: this.note.uri || `${url}/notes/${this.note.id}` })}`);
+				const response = await fetch(`https://notestock.osa-p.net/api/v1/isstock.json?${query({ id: this.note.uri || `${url}/notes/${this.note.id}` })}`);
 				const json = await response.json();
-				if (!(json && typeof json === 'object' && 'note' in json && typeof json.note === 'object')) {
+				if (!(json && typeof json === 'object' && json.note && typeof json.note === 'object')) {
 					throw JSON.stringify(json);
 				}
 				const noteUrl = json.note.full_url || json.note.url;
 				if (typeof noteUrl !== 'string') {
-					throw JSON.stringify(json);
+					throw '404 - stock not found';
 				}
-				copyToClipboard(noteUrl);
+				await copyToClipboard(noteUrl);
 				this.$root.dialog({
 					type: 'success',
 					splash: true
