@@ -64,7 +64,7 @@ function work() {
 
 			socket.on('close', _ => {
 				logger.info(`close @${host}`);
-				setTimeout(connect, interval, socket);
+				setTimeout(connect, interval, host, token);
 			});
 		};
 
