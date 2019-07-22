@@ -2,6 +2,9 @@ import { scheduleJob } from 'node-schedule';
 import fetchMeta from '../misc/fetch-meta';
 import User, { IUser } from '../models/user';
 import create from '../services/note/create';
+import { createSubLogger } from './logger';
+
+const logger = createSubLogger('futaba-anzu-bot');
 
 const text = `みなさん ! おはようございまーっす♪
 今日も一日、元気いっぱいがんばろー !
@@ -25,5 +28,8 @@ export default function() {
 		}))
 		.then(user => user || Promise.reject<IUser>('Anzu bot not found.'))
 		.then(user => requestCreate(date)
-			.then(createdAt => create(user, { createdAt, text }))));
+			.then(createdAt => create(user, { createdAt, text })))
+		.then(
+			x => logger.succ('success', { x }),
+			e => logger.error('failure', { e })));
 }
