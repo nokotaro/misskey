@@ -12,7 +12,7 @@ const interval = 1024;
 function work() {
 	try {
 		const connect = (host: string, token: string) => {
-			logger.info('connect', { host });
+			logger.info(`connect @${host}`);
 
 			const socket = new WebSocket(`https://${host}/api/v1/streaming?${query({
 				access_token: token,
@@ -26,7 +26,7 @@ function work() {
 						payload?: string
 					} = JSON.parse(typeof x === 'string' ? x : x.toString());
 
-					logger.info('message', { host, data });
+					logger.info(`message @${host}`, { data });
 
 					if (data.event === 'update' && typeof data.payload === 'string') {
 						const payload: {
@@ -37,7 +37,7 @@ function work() {
 							createNote(payload.uri);
 					}
 				} catch (e) {
-					logger.error('message', { host, e });
+					logger.error(`message @${host}`, { e });
 				}
 			});
 
@@ -54,16 +54,16 @@ function work() {
 							Accept: 'application/json+oembed, application/json'
 						},
 						json: true
-					}).then(response => (logger.info('open', { host, response }), Array.isArray(response) && response
+					}).then(response => (logger.info(`open @${host}`, { response }), Array.isArray(response) && response
 						.filter(x => typeof x === 'object' && typeof x.uri === 'string')
 						.reduceRight<Promise<void>>((a, c) => a.then(() => createNote(c)).then(() => {}), Promise.resolve())));
 				} catch (e) {
-					logger.error('open', e);
+					logger.error(`open @${host}`, { e });
 				}
 			});
 
 			socket.on('close', _ => {
-				logger.info('close', { host });
+				logger.info(`close @${host}`);
 				setTimeout(connect, interval, socket);
 			});
 		};
