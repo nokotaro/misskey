@@ -142,7 +142,7 @@ export const imasHosts = [
 	'imastodon.blue',
 	'imastodon.net',
 	'imastodon.org',
-	'mstdn.imastags.com',
+	// 'mstdn.imastags.com', (inbox disabled)
 	'twista.nokotaro.work',
 	'twista.283.cloud'
 ].filter(x => x !== config.hostname);
