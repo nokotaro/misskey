@@ -99,6 +99,7 @@ import Logger from './services/logger';
 import serverStats from './daemons/server-stats';
 import notesStats from './daemons/notes-stats';
 import queueStats from './daemons/queue-stats';
+import indexer from './daemons/indexer';
 import imasTlWorker from './daemons/imas-tl-worker';
 import futabaAnzuBot from './daemons/futaba-anzu-bot';
 import loadConfig from './config/load';
@@ -136,6 +137,7 @@ function main() {
 			serverStats();
 			notesStats();
 			queueStats();
+			indexer();
 			imasTlWorker();
 			futabaAnzuBot();
 		}
