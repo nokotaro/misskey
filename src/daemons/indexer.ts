@@ -1,7 +1,7 @@
 import { getIndexer } from '../misc/mecab';
 import Note from '../models/note';
 
-const interval = 16;
+const interval = 0;
 
 export async function index() {
 	const note = await Note.findOne({
