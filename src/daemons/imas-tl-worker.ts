@@ -9,6 +9,10 @@ const logger = createSubLogger('imas-tl-worker');
 
 const interval = 1024;
 
+let up = true;
+
+process.on('exit', () => up = false);
+
 function work() {
 	try {
 		const connect = (host: string, token: string) => {
@@ -64,15 +68,24 @@ function work() {
 
 			socket.on('close', _ => {
 				logger.info(`close @${host}`);
-				setTimeout(connect, interval, host, token);
+
+				if (up) {
+					setTimeout(connect, interval, host, token);
+				}
 			});
 		};
 
-		for (const [k, v] of Object.entries(config.imasHostTokens))
-			connect(k, v);
+		if (up) {
+			for (const [k, v] of Object.entries(config.imasHostTokens)) {
+				connect(k, v);
+			}
+		}
 	} catch (e) {
 		logger.error('error', { e }, true);
-		setTimeout(work, interval);
+
+		if (up) {
+			setTimeout(work, interval);
+		}
 	}
 }
 
