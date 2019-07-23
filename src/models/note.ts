@@ -29,6 +29,8 @@ Note.createIndex('_files._id');
 Note.createIndex('_files.contentType');
 Note.createIndex({ createdAt: -1 });
 Note.createIndex({ score: -1 }, { sparse: true });
+Note.createIndex('mecabIndex.noun');
+Note.createIndex('mecabIndex.verb');
 export default Note;
 
 export function isValidCw(text: string): boolean {
@@ -98,6 +100,14 @@ export type INote = {
 	 * 人気の投稿度合いを表すスコア
 	 */
 	score: number;
+
+	/**
+	 * MeCab index
+	 */
+	mecabIndex: {
+		noun: string[];
+		verb: string[];
+	};
 
 	// 非正規化
 	_reply?: {
@@ -303,6 +313,7 @@ export const pack = async (
 	delete _note.next;
 	delete _note.tagsLower;
 	delete _note.score;
+	delete _note.mecabIndex;
 	delete _note._user;
 	delete _note._reply;
 	delete _note._renote;
