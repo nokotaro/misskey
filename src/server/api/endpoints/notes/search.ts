@@ -12,7 +12,7 @@ import { concat } from '../../../../prelude/array';
 import { getHideUserIds } from '../../common/get-hide-users';
 import { getFriends } from '../../common/get-friends';
 import NoteWatching from '../../../../models/note-watching';
-const escapeRegexp = require('escape-regexp');
+import { getIndexer } from '../../../../misc/mecab';
 
 export const meta = {
 	desc: {
@@ -234,7 +234,9 @@ async function searchInternal(me: ILocalUser, query: string, limit: number, offs
 		if (es) return null;
 
 		// なければ期間を縮めてDB検索
+		/* するとでも？
 		since = new Date(Date.now() - 1 * 86400 * 1000);
+		*/
 	}
 
 	let visibleQuery;
@@ -303,9 +305,13 @@ async function searchInternal(me: ILocalUser, query: string, limit: number, offs
 	// 隠すユーザーを取得
 	const hideUserIds = await getHideUserIds(me);
 
+	const { noun, verb } = await getIndexer({ text: words.join(' ') });
+
 	// note
 	const noteQuery = {
-		$and: [ {} ],
+		$and: [{}],
+		...(noun.length ? { 'mecabIndex.noun': { $in: noun } } : {}),
+		...(verb.length ? { 'mecabIndex.verb': { $in: verb } } : {}),
 		deletedAt: null,
 		$or: visibleQuery,
 		userId: {
@@ -363,11 +369,13 @@ async function searchInternal(me: ILocalUser, query: string, limit: number, offs
 	}
 
 	// note - words
+	/*
 	for (const word of words) {
 		noteQuery.$and.push({
 			text: new RegExp(escapeRegexp(word), 'i')
 		});
 	}
+	*/
 
 	//console.log(JSON.stringify(noteQuery, null, 2));
 
