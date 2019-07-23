@@ -1,6 +1,6 @@
 <template>
 <form class="wlvfdpkp" @submit.prevent="onSubmit">
-	<i><fa :icon="['fal', 'fingerprint']"/></i>
+	<i><fa :icon="['fal', 'search']"/></i>
 	<input v-model="q" type="search" :placeholder="$t('placeholder')" v-autocomplete="{ model: 'q' }"/>
 	<div class="result"></div>
 </form>

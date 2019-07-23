@@ -1077,7 +1077,7 @@ desktop/views/components/ui.header.notifications.vue:
 desktop/views/components/ui.header.post.vue:
   post: "Compose new Post"
 desktop/views/components/ui.header.search.vue:
-  placeholder: "inquire"
+  placeholder: "Search"
 desktop/views/components/received-follow-requests-window.vue:
   title: "Follow requests"
   accept: "Accept"

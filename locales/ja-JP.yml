@@ -1230,7 +1230,7 @@ desktop/views/components/ui.header.post.vue:
   post: "新規投稿"
 
 desktop/views/components/ui.header.search.vue:
-  placeholder: "照会"
+  placeholder: "検索"
 
 desktop/views/components/received-follow-requests-window.vue:
   title: "フォロー申請"
