@@ -5,7 +5,7 @@ const check = (x?: string) => x && x.length;
 function visit(tree: MfmTree): string {
 	switch (tree.node.type) {
 		case 'bubble': {
-			return [tree.node.props.speaker, ...tree.children].filter(check).map(visit).join(' ');
+			return [...tree.node.props.speaker, ...tree.children].filter(check).map(visit).join(' ');
 		}
 
 		case 'search': {
