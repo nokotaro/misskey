@@ -4,7 +4,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { url, lang } from './config';
 
 export default Vue.extend({
 	computed: {
@@ -18,7 +17,7 @@ export default Vue.extend({
 
 	methods: {
 		help() {
-			window.open(`${url}/docs/${lang}/keyboard-shortcut`, '_blank');
+			window.open('https://twista-docs.283.cloud', '_blank', 'noopener');
 		},
 
 		dark() {

@@ -19,7 +19,7 @@ export default Vue.extend({
 	i18n: i18n('common/views/components/nav.vue'),
 	data() {
 		return {
-			aboutUrl: `/docs/${lang}/about`,
+			aboutUrl: 'https://twista-docs.283.cloud',
 			repositoryUrl: 'https://github.com/346design/twista.283.cloud',
 			feedbackUrl: 'https://github.com/346design/twista.283.cloud/issues/new'
 		}

@@ -67,7 +67,6 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
-import { lang } from '../../../config';
 import { faNewspaper, faHashtag, faHome, faColumns, faSun, faMoon, faSync } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
@@ -83,7 +82,7 @@ export default Vue.extend({
 		return {
 			hasGameInvitation: false,
 			connection: null,
-			aboutUrl: `/docs/${lang}/about`,
+			aboutUrl: 'https://twista-docs.283.cloud',
 			announcements: [],
 			searching: false,
 			showNotifications: false,
