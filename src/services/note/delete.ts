@@ -34,6 +34,8 @@ export default async function(user: IUser, note: INote, quiet = false) {
 	}, {
 		$set: {
 			deletedAt,
+			'mecabIndex.noun': [],
+			'mecabIndex.verb': [],
 			text: null,
 			tags: [],
 			fileIds: [],
