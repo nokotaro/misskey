@@ -6,7 +6,7 @@ const map: Record<string, string> = {
 	'\'': '&apos;'
 };
 
-const beginingOfCDATA = '<![CDATA[';
+const beginOfCDATA = '<![CDATA[';
 const endOfCDATA = ']]>';
 
 export function escapeValue(x: string): string {
@@ -17,16 +17,18 @@ export function escapeValue(x: string): string {
 		i < x.length;
 	) {
 		if (insideOfCDATA) {
-			if (x.slice(i, i + beginingOfCDATA.length) === beginingOfCDATA) {
-				insideOfCDATA = true;
-				i += beginingOfCDATA.length;
+			if (x.slice(i, i + endOfCDATA.length) === endOfCDATA) {
+				insideOfCDATA = false;
+				i += endOfCDATA.length;
+				builder += endOfCDATA;
 			} else {
 				builder += x[i++];
 			}
 		} else {
-			if (x.slice(i, i + endOfCDATA.length) === endOfCDATA) {
-				insideOfCDATA = false;
-				i += endOfCDATA.length;
+			if (x.slice(i, i + beginOfCDATA.length) === beginOfCDATA) {
+				insideOfCDATA = true;
+				i += beginOfCDATA.length;
+				builder += beginOfCDATA;
 			} else {
 				const b = x[i++];
 				builder += map[b] || b;
