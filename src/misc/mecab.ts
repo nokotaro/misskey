@@ -43,7 +43,7 @@ function parse(stdout: string) {
 		const six = value[6] || '*';
 		const key = six.length && six !== '*' ? six : k;
 		const [type] = value;
-		const container = containers[type as keyof MeCabResult] || dummy;
+		const container = containers[containerMap[type as keyof ContainerMap]] || dummy;
 
 		if (!container.includes(key)) {
 			container.push(key);
