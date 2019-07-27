@@ -13,6 +13,7 @@ import Following from './following';
 import Emoji from './emoji';
 import packEmojis from '../misc/pack-emojis';
 import { dbLogger } from '../db/logger';
+import { containerMap, MeCabResult } from '../misc/mecab';
 import { unique, concat } from '../prelude/array';
 import { textContent } from '../prelude/html';
 
@@ -29,8 +30,9 @@ Note.createIndex('_files._id');
 Note.createIndex('_files.contentType');
 Note.createIndex({ createdAt: -1 });
 Note.createIndex({ score: -1 }, { sparse: true });
-Note.createIndex('mecabIndex.noun');
-Note.createIndex('mecabIndex.verb');
+for (const key of Object.values(containerMap)) {
+	Note.createIndex(`mecabIndex.${key}`);
+}
 export default Note;
 
 export function isValidCw(text: string): boolean {
@@ -104,10 +106,7 @@ export type INote = {
 	/**
 	 * MeCab index
 	 */
-	mecabIndex: {
-		noun: string[];
-		verb: string[];
-	};
+	mecabIndex: MeCabResult;
 
 	// 非正規化
 	_reply?: {

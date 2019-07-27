@@ -305,13 +305,9 @@ async function searchInternal(me: ILocalUser, query: string, limit: number, offs
 	// 隠すユーザーを取得
 	const hideUserIds = await getHideUserIds(me);
 
-	const { noun, verb } = await getIndexer({ text: words.join(' ') });
-
 	// note
 	const noteQuery = {
 		$and: [{}],
-		...(noun.length ? { 'mecabIndex.noun': { $in: noun } } : {}),
-		...(verb.length ? { 'mecabIndex.verb': { $in: verb } } : {}),
 		deletedAt: null,
 		$or: visibleQuery,
 		userId: {
@@ -324,6 +320,12 @@ async function searchInternal(me: ILocalUser, query: string, limit: number, offs
 			$nin: hideUserIds
 		},
 	} as any;
+
+	for (const [key, value] of Object.entries(await getIndexer({ text: words.join(' ') }))) {
+		if (value.length) {
+			noteQuery[`mecabIndex.${key}`] = { $in: value };
+		}
+	}
 
 	// note - userId
 	if (from != null) {

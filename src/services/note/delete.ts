@@ -11,6 +11,7 @@ import renderAnnounce from '../../remote/activitypub/renderer/announce';
 import notesChart from '../../services/chart/notes';
 import perUserNotesChart from '../../services/chart/per-user-notes';
 import config from '../../config';
+import { containerMap } from '../../misc/mecab';
 import NoteUnread from '../../models/note-unread';
 import read from './read';
 import DriveFile from '../../models/drive-file';
@@ -34,8 +35,7 @@ export default async function(user: IUser, note: INote, quiet = false) {
 	}, {
 		$set: {
 			deletedAt,
-			'mecabIndex.noun': [],
-			'mecabIndex.verb': [],
+			...(Object.values(containerMap).reduce<Record<string, string[]>>((a, c) => (a[`mecabIndex.${c}`] = [], a), {})),
 			text: null,
 			tags: [],
 			fileIds: [],

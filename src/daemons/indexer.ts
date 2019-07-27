@@ -5,7 +5,7 @@ const interval = 0;
 
 export async function index() {
 	const note = await Note.findOne({
-		mecabIndex: { $exists: false }
+		'mecabIndex.filler': { $exists: false }
 	}).catch(_ => null);
 
 	if (!note) {
