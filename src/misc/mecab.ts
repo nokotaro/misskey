@@ -3,14 +3,14 @@ import { parse as parseMfm } from '../mfm/parse';
 import toText from '../mfm/toText';
 
 const dummy = {
-	includes(_: string) {
+	includes(_) {
 		return true;
 	},
 
-	push(_: string) {
-		return;
+	push(_) {
+		return 0;
 	}
-};
+} as string[];
 
 export const containerMap = {
 	'フィラー': 'filler' as const,
