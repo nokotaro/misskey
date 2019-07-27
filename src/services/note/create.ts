@@ -791,9 +791,10 @@ async function insertNote(user: IUser, data: Option, tags: string[], emojis: str
 
 function index(note: INote, text: string) {
 	const { _id } = note;
+	const mecabIndexVersion = 3;
 
 	getIndexer(note).then(mecabIndex => Note.findOneAndUpdate({ _id }, {
-		$set: { mecabIndex }
+		$set: { mecabIndex, mecabIndexVersion }
 	}));
 
 	if (!text || !config.elasticsearch) return;

@@ -35,6 +35,7 @@ export default async function(user: IUser, note: INote, quiet = false) {
 	}, {
 		$set: {
 			deletedAt,
+			mecabIndexVersion: -1,
 			...(Object.values(containerMap).reduce<Record<string, string[]>>((a, c) => (a[`mecabIndex.${c}`] = [], a), {})),
 			text: null,
 			tags: [],

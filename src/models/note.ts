@@ -30,6 +30,7 @@ Note.createIndex('_files._id');
 Note.createIndex('_files.contentType');
 Note.createIndex({ createdAt: -1 });
 Note.createIndex({ score: -1 }, { sparse: true });
+Note.createIndex('mecabIndexVersion');
 for (const key of Object.values(containerMap)) {
 	Note.createIndex(`mecabIndex.${key}`);
 }
@@ -107,6 +108,7 @@ export type INote = {
 	 * MeCab index
 	 */
 	mecabIndex: MeCabResult;
+	mecabIndexVersion: number;
 
 	// 非正規化
 	_reply?: {
@@ -313,6 +315,7 @@ export const pack = async (
 	delete _note.tagsLower;
 	delete _note.score;
 	delete _note.mecabIndex;
+	delete _note.mecabIndexVersion;
 	delete _note._user;
 	delete _note._reply;
 	delete _note._renote;
