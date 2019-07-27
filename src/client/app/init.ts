@@ -154,6 +154,7 @@ import {
 	faRobot,
 	faHourglassHalf,
 	faGavel,
+	faUndoAlt,
 	faDraftingCompass,
 	faBell,
 	faTrashAlt,
@@ -310,6 +311,7 @@ library.add(
 	faRobot,
 	faHourglassHalf,
 	faGavel,
+	faUndoAlt,
 	faDraftingCompass,
 
 	faBell,
