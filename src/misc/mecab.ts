@@ -20,6 +20,10 @@ export const containerMap = {
 	'名詞': 'noun' as const,
 };
 
+export const mecabIndexVersion = 3;
+
+export const droppedndexVersion = -1;
+
 export type ContainerMap = typeof containerMap;
 
 export type MeCabResult = Record<ContainerMap[keyof ContainerMap], string[]>;

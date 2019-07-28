@@ -52,7 +52,7 @@ import { resolveNote } from '../../remote/activitypub/models/note';
 import Resolver from '../../remote/activitypub/resolver';
 import Blocking from '../../models/blocking';
 import { packActivity } from '../../server/activitypub/outbox';
-import { getIndexer } from '../../misc/mecab';
+import { getIndexer, mecabIndexVersion } from '../../misc/mecab';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention' | 'highlight';
 
@@ -791,7 +791,6 @@ async function insertNote(user: IUser, data: Option, tags: string[], emojis: str
 
 function index(note: INote, text: string) {
 	const { _id } = note;
-	const mecabIndexVersion = 3;
 
 	getIndexer(note).then(mecabIndex => Note.findOneAndUpdate({ _id }, {
 		$set: { mecabIndex, mecabIndexVersion }

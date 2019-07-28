@@ -1,11 +1,11 @@
-import { getIndexer } from '../misc/mecab';
+import { getIndexer, mecabIndexVersion, droppedndexVersion } from '../misc/mecab';
 import Note from '../models/note';
 
 const interval = 0;
 
 export async function index() {
 	const note = await Note.findOne({
-		mecabIndexVersion: { $nin: [3, -1] }
+		mecabIndexVersion: { $nin: [mecabIndexVersion, droppedndexVersion] }
 	}).catch(_ => null);
 
 	if (!note) {
@@ -17,7 +17,7 @@ export async function index() {
 	await Note.findOneAndUpdate({ _id }, {
 		$set: {
 			mecabIndex: await getIndexer(note),
-			mecabIndexVersion: 3
+			mecabIndexVersion
 		}
 	}).catch(_ => {});
 
