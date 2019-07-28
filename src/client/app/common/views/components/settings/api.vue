@@ -9,7 +9,7 @@
 		<p>{{ $t('intro') }}</p>
 		<ui-info warn>{{ $t('caution') }}</ui-info>
 		<p>{{ $t('regeneration-of-token') }}</p>
-		<ui-button @click="regenerateToken"><fa :icon="['fal', 'sync-alt']"/> {{ $t('regenerate-token') }}</ui-button>
+		<ui-button @click="regenerateToken"><fa :icon="['fal', 'sync']"/> {{ $t('regenerate-token') }}</ui-button>
 	</section>
 
 	<section>

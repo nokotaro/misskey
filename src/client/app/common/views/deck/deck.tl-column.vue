@@ -3,7 +3,7 @@
 	<template #header>
 		<fa v-if="column.type == 'home'" :icon="['fal', 'home']"/>
 		<fa v-if="column.type == 'local'" :icon="['fal', 'comments']"/>
-		<fa v-if="column.type == 'hybrid'" :icon="['fal', 'share-alt']"/>
+		<fa v-if="column.type == 'hybrid'" :icon="['fal', 'share']"/>
 		<fa v-if="column.type == 'imas'" :icon="['fal', 'building']"/>
 		<fa v-if="column.type == 'imas'" :icon="['fal', 'city']"/>
 		<fa v-if="column.type == 'global'" :icon="['fal', 'globe']"/>

@@ -35,7 +35,7 @@
 		<div>
 			<ui-input readonly :value="file.url">URL</ui-input>
 			<ui-button link :href="dlUrl" :download="file.name"><fa :icon="['fal', 'download']"/> {{ $t('download') }}</ui-button>
-			<ui-button @click="rename"><fa :icon="['fal', 'pencil-alt']"/> {{ $t('rename') }}</ui-button>
+			<ui-button @click="rename"><fa :icon="['fal', 'pencil']"/> {{ $t('rename') }}</ui-button>
 			<ui-button @click="move"><fa :icon="['fal', 'folder-open']"/> {{ $t('move') }}</ui-button>
 			<ui-button @click="toggleSensitive" v-if="file.isSensitive"><fa :icon="['fal', 'eye']"/> {{ $t('unmark-as-sensitive') }}</ui-button>
 			<ui-button @click="toggleSensitive" v-else><fa :icon="['fal', 'eye-slash']"/> {{ $t('mark-as-sensitive') }}</ui-button>

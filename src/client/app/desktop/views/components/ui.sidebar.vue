@@ -2,7 +2,7 @@
 <div class="header" :class="navbar" :data-shadow="$store.state.device.useShadow">
 	<div class="body">
 		<div class="post">
-			<button @click="post" :title="$t('title')"><fa :icon="['fal', 'pencil-alt']"/></button>
+			<button @click="post" :title="$t('title')"><fa :icon="['fal', 'pencil']"/></button>
 		</div>
 
 		<div class="nav" v-if="$store.getters.isSignedIn">

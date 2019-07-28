@@ -26,7 +26,7 @@
 
 	<fa :icon="faFileCsv" class="icon" v-else-if="is === 'csv'"/>
 	<fa :icon="faFilePdf" class="icon" v-else-if="is === 'pdf'"/>
-	<fa :icon="faFileAlt" class="icon" v-else-if="is === 'textfile'"/>
+	<fa :icon="faFile" class="icon" v-else-if="is === 'textfile'"/>
 	<fa :icon="faFileArchive" class="icon" v-else-if="is === 'archive'"/>
 	<fa :icon="faFile" class="icon" v-else/>
 
@@ -39,7 +39,7 @@ import Vue from 'vue';
 import anime from 'animejs';
 import {
 	faFile,
-	faFileAlt,
+	faFile,
 	faFileImage,
 	faMusic,
 	faFileVideo,
@@ -71,7 +71,7 @@ export default Vue.extend({
 			isDragging: false,
 
 			faFile,
-			faFileAlt,
+			faFile,
 			faFileImage,
 			faMusic,
 			faFileVideo,

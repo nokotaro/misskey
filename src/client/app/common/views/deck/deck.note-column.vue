@@ -1,7 +1,7 @@
 <template>
 <x-column>
 	<template #header>
-		<fa :icon="['fal', 'comment-alt']"/><mk-user-name :user="note.user" v-if="note"/>
+		<fa :icon="['fal', 'comment']"/><mk-user-name :user="note.user" v-if="note"/>
 	</template>
 
 	<div class="rvtscbadixhhbsczoorqoaygovdeecsx" v-if="note">

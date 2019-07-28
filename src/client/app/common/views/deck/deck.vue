@@ -154,7 +154,7 @@ export default Vue.extend({
 						});
 					}
 				}, {
-					icon: ['fal', 'share-alt'],
+					icon: ['fal', 'share'],
 					text: this.$t('@deck.hybrid'),
 					action: () => {
 						this.$store.commit('device/addDeckColumn', {

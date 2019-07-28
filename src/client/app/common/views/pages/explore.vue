@@ -36,7 +36,7 @@
 			<fa icon="users" fixed-width/>{{ $t('recommended-users') }}
 		</mk-user-list>
 		<mk-user-list :make-promise="recentlyUpdatedUsers">
-			<fa :icon="faCommentAlt" fixed-width/>{{ $t('recently-updated-users') }}
+			<fa :icon="faComment" fixed-width/>{{ $t('recently-updated-users') }}
 		</mk-user-list>
 		<mk-user-list :make-promise="recentlyRegisteredUsers">
 			<fa :icon="faPlus" fixed-width/>{{ $t('recently-registered-users') }}
@@ -48,7 +48,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
-import { faChartLine, faPlus, faHashtag, faBadgeCheck, faCommentAlt } from '@fortawesome/pro-light-svg-icons';
+import { faChartLine, faPlus, faHashtag, faBadgeCheck, faComment } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/pages/explore.vue'),
@@ -95,7 +95,7 @@ export default Vue.extend({
 			num: Vue.filter('number'),
 			faBadgeCheck,
 			faChartLine,
-			faCommentAlt,
+			faComment,
 			faPlus,
 			faHashtag
 		};

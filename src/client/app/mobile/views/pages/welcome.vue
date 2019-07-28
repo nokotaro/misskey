@@ -24,7 +24,7 @@
 		</div>
 		<div class="stats" v-if="stats">
 			<span><fa :icon="['fal', 'user']"/> {{ stats.originalUsersCount | number }}</span>
-			<span><fa :icon="['fal', 'pencil-alt']"/> {{ stats.originalNotesCount | number }}</span>
+			<span><fa :icon="['fal', 'pencil']"/> {{ stats.originalNotesCount | number }}</span>
 		</div>
 		<div class="announcements" v-if="announcements && announcements.length > 0">
 			<article v-for="announcement in announcements">

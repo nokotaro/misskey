@@ -25,7 +25,7 @@
 					<div class="info">
 						<div class="stats" v-if="stats">
 							<div><fa :icon="['fal', 'user']" fixed-width/> {{ stats.originalUsersCount | number }}</div>
-							<div><fa :icon="['fal', 'pencil-alt']" fixed-width/> {{ stats.originalNotesCount | number }}</div>
+							<div><fa :icon="['fal', 'pencil']" fixed-width/> {{ stats.originalNotesCount | number }}</div>
 						</div>
 					</div>
 
@@ -68,7 +68,7 @@
 
 			<div class="side">
 				<div class="tl block">
-					<header><fa :icon="['fal', 'comment-alt']"/> {{ $t('timeline') }}</header>
+					<header><fa :icon="['fal', 'comment']"/> {{ $t('timeline') }}</header>
 					<div>
 						<mk-welcome-timeline class="tl" :max="20"/>
 					</div>

@@ -7,7 +7,7 @@
 				<div class="timelines">
 					<span :data-active="src == 'home'" @click="src = 'home'"><fa :icon="['fal', 'home']"/> {{ $t('home') }}</span>
 					<span :data-active="src == 'local'" @click="src = 'local'" v-if="enableLocalTimeline"><fa :icon="['fal', 'comments']"/> {{ $t('local') }}</span>
-					<span :data-active="src == 'hybrid'" @click="src = 'hybrid'" v-if="enableLocalTimeline"><fa :icon="['fal', 'share-alt']"/> {{ $t('hybrid') }}</span>
+					<span :data-active="src == 'hybrid'" @click="src = 'hybrid'" v-if="enableLocalTimeline"><fa :icon="['fal', 'share']"/> {{ $t('hybrid') }}</span>
 					<span :data-active="src == 'imas'" @click="src = 'imas'" v-if="enableLocalTimeline"><fa :icon="['fal', 'building']"/> {{ $t('imas') }}</span>
 					<span :data-active="src == 'imasHybrid'" @click="src = 'imasHybrid'" v-if="enableLocalTimeline"><fa :icon="['fal', 'city']"/> {{ $t('imasHybrid') }}</span>
 					<span :data-active="src == 'global'" @click="src = 'global'" v-if="enableGlobalTimeline"><fa :icon="['fal', 'globe']"/> {{ $t('global') }}</span>

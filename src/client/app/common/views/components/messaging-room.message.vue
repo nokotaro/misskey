@@ -25,7 +25,7 @@
 		<footer>
 			<span class="read" v-if="isMe && message.isRead">{{ $t('is-read') }}</span>
 			<mk-time :time="message.createdAt"/>
-			<template v-if="message.is_edited"><fa :icon="['fal', 'pencil-alt']"/></template>
+			<template v-if="message.is_edited"><fa :icon="['fal', 'pencil']"/></template>
 		</footer>
 	</div>
 </div>

@@ -25,7 +25,7 @@
 						<li><router-link to="/games/reversi" :data-active="$route.name == 'reversi'"><i><fa :icon="['fal', 'gamepad']" fixed-width/></i>{{ $t('game') }}<i v-if="hasGameInvitation" class="circle"><fa :icon="['fas', 'circle']"/></i><i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
 					</ul>
 					<ul>
-						<li><router-link to="/i/widgets" :data-active="$route.name == 'widgets'"><i><fa :icon="['fal', 'calendar-alt']" fixed-width/></i>{{ $t('widgets') }}<i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
+						<li><router-link to="/i/widgets" :data-active="$route.name == 'widgets'"><i><fa :icon="['fal', 'calendar']" fixed-width/></i>{{ $t('widgets') }}<i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
 						<li><router-link to="/i/favorites" :data-active="$route.name == 'favorites'"><i><fa :icon="['fal', 'star']" fixed-width/></i>{{ $t('@.favorites') }}<i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
 						<li><router-link to="/i/lists" :data-active="$route.name == 'user-lists'"><i><fa :icon="['fal', 'list']" fixed-width/></i>{{ $t('user-lists') }}<i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>
 						<li><router-link to="/i/drive" :data-active="$route.name == 'drive'"><i><fa :icon="['fal', 'cloud']" fixed-width/></i>{{ $t('@.drive') }}<i><fa :icon="['fal', 'angle-right']"/></i></router-link></li>

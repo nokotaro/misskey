@@ -23,7 +23,7 @@
 		</div>
 		<div>
 			<div>
-				<div><fa :icon="['fal', 'pencil-alt']"/></div>
+				<div><fa :icon="['fal', 'pencil']"/></div>
 				<div>
 					<span>{{ $t('notes') }}</span>
 					<b>{{ stats.originalNotesCount | number }}</b>

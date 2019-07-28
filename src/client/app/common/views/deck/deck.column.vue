@@ -168,7 +168,7 @@ export default Vue.extend({
 
 		getMenu() {
 			const items = [{
-				icon: ['fal', 'pencil-alt'],
+				icon: ['fal', 'pencil'],
 				text: this.$t('rename'),
 				action: () => {
 					this.$root.dialog({

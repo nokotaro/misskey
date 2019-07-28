@@ -63,7 +63,7 @@
 		<nav v-if="$route.name == 'user'" :class="{ shadow: $store.state.device.useShadow }">
 			<div class="nav-container">
 				<a :data-active="page == 'home'" @click="page = 'home'"><fa :icon="['fal', 'home']"/> {{ $t('overview') }}</a>
-				<a :data-active="page == 'notes'" @click="page = 'notes'"><fa :icon="['fal', 'comment-alt']"/> {{ $t('timeline') }}</a>
+				<a :data-active="page == 'notes'" @click="page = 'notes'"><fa :icon="['fal', 'comment']"/> {{ $t('timeline') }}</a>
 				<a :data-active="page == 'media'" @click="page = 'media'"><fa :icon="['fal', 'image']"/> {{ $t('media') }}</a>
 			</div>
 		</nav>

@@ -242,7 +242,7 @@
 
 		<!--
 		<ui-card>
-			<template #title><fa :icon="['fal', 'sign-in-alt']"/> {{ $t('@._settings.signin') }}</template>
+			<template #title><fa :icon="['fal', 'sign-in']"/> {{ $t('@._settings.signin') }}</template>
 			<section>
 				<x-signins/>
 			</section>
@@ -256,7 +256,7 @@
 
 	<template v-if="page == null || page == 'other'">
 		<ui-card>
-			<template #title><fa :icon="['fal', 'sync-alt']"/> {{ $t('@._settings.update') }}</template>
+			<template #title><fa :icon="['fal', 'sync']"/> {{ $t('@._settings.update') }}</template>
 			<section>
 				<p>
 					<span>{{ $t('@._settings.version') }} <i>{{ version }}</i></span>

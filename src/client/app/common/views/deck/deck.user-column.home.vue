@@ -28,7 +28,7 @@
 		</div>
 	</ui-container>
 	<ui-container>
-		<template #header><fa :icon="['fal', 'comment-alt']"/> {{ $t('timeline') }}</template>
+		<template #header><fa :icon="['fal', 'comment']"/> {{ $t('timeline') }}</template>
 		<div>
 			<x-notes ref="timeline" :make-promise="makePromise" @inited="() => $emit('loaded')"/>
 		</div>

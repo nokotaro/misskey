@@ -48,7 +48,7 @@ export default Vue.extend({
 				text: this.$t('copy-link'),
 				action: this.copyLink
 			}, this.note.uri ? {
-				icon: ['fal', 'external-link-square-alt'],
+				icon: ['fal', 'external-link-square'],
 				text: this.$t('remote'),
 				action: () => {
 					window.open(this.note.uri, '_blank');
@@ -94,7 +94,7 @@ export default Vue.extend({
 					action: this.del
 				},
 				this.note.userId == this.$store.state.i.id ? {
-					icon: ['fal', 'undo-alt'],
+					icon: ['fal', 'undo'],
 					text: this.$t('delete-and-edit'),
 					action: this.deleteAndEdit
 				} : undefined]

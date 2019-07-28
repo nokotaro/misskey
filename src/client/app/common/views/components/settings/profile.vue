@@ -94,7 +94,7 @@
 	</section>
 
 	<section>
-		<header><fa :icon="faUnlockAlt"/> {{ $t('privacy') }}</header>
+		<header><fa :icon="faUnlock"/> {{ $t('privacy') }}</header>
 
 		<div>
 			<ui-switch v-model="isLocked" @change="save(false)">{{ $t('is-locked') }}</ui-switch>
@@ -150,7 +150,7 @@ import i18n from '../../../../i18n';
 import { apiUrl, host } from '../../../../config';
 import { toUnicode } from 'punycode';
 import { unique } from '../../../../../../prelude/array';
-import { faDownload, faUpload, faUnlockAlt, faBoxes, faCogs, faSave, faEnvelope } from '@fortawesome/pro-light-svg-icons';
+import { faDownload, faUpload, faUnlock, faBoxes, faCogs, faSave, faEnvelope } from '@fortawesome/pro-light-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/profile-editor.vue'),
@@ -188,7 +188,7 @@ export default Vue.extend({
 			avatarUploading: false,
 			bannerUploading: false,
 			exportTarget: 'notes',
-			faDownload, faUpload, faSave, faEnvelope, faUnlockAlt, faBoxes, faCogs
+			faDownload, faUpload, faSave, faEnvelope, faUnlock, faBoxes, faCogs
 		};
 	},
 
