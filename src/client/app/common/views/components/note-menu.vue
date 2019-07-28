@@ -231,6 +231,7 @@ export default Vue.extend({
 					this.destroyDom();
 				});
 				this.$post({
+					initialText: this.note.text,
 					initialNote: this.note,
 					reply: this.note.reply,
 				});
