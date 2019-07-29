@@ -261,6 +261,9 @@ export default Vue.extend({
 			> div
 				pointer-events none
 
+		&.prefer-sushi > :nth-child(8) > div::before
+			background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f363.svg')
+
 		> div
 			grid-column 1
 			grid-row 1
@@ -389,7 +392,4 @@ export default Vue.extend({
 				> div::before
 					background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f389.svg')
 					transform rotate(-120deg)
-
-			> .prefer-sushi:nth-child(8) > div::before
-				background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f363.svg')
 </style>
