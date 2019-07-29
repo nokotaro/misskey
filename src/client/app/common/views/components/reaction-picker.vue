@@ -8,8 +8,8 @@
 		<div v-for="(x, i) in ['like', 'love', 'laugh', 'hmm', 'surprise']" :key="x" :class="x">
 			<div @click="react(x)" :tabindex="-~i" :title="$t(`@.reactions.${x}`)" v-particle="x !== 'congrats'" v-particle:congrats="x === 'congrats'"></div>
 		</div>
-		<div class="-random" :class="{ hidden: !enableEmojiReaction }" key="random">
-			<div @click="react('-random')"><fa :icon="['fal', 'random']"/></div>
+		<div class="recent" :class="{ hidden: !enableEmojiReaction }" key="recent">
+			<div @click="react()"></div>
 		</div>
 		<div v-for="(x, i) in ['pudding', 'rip', 'confused', 'angry', 'congrats']" :key="x" :class="x">
 			<div @click="react(x)" :tabindex="10-i" :title="$t(`@.reactions.${x}`)" v-particle="x !== 'congrats'" v-particle:congrats="x === 'congrats'"></div>
@@ -86,7 +86,11 @@ export default Vue.extend({
 	},
 
 	methods: {
-		react(reaction) {
+		react(reaction: string) {
+			if (!reaction) {
+				reaction = this.recentReaction;
+			}
+
 			this.$emit('reacted', reaction);
 
 			const { popover }: Record<string, HTMLElement> = (this as any).$refs;
