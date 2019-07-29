@@ -9,7 +9,7 @@
 			<div @click="react(x)" :tabindex="-~i" :title="$t(`@.reactions.${x}`)" v-particle="x !== 'congrats'" v-particle:congrats="x === 'congrats'"></div>
 		</div>
 		<div class="recent" :class="{ hidden: !enableEmojiReaction }" key="recent">
-			<div @click="react()"></div>
+			<div @click="react(recentReaction)" ref="recent"></div>
 		</div>
 		<div v-for="(x, i) in ['pudding', 'rip', 'confused', 'angry', 'congrats']" :key="x" :class="x">
 			<div @click="react(x)" :tabindex="10-i" :title="$t(`@.reactions.${x}`)" v-particle="x !== 'congrats'" v-particle:congrats="x === 'congrats'"></div>
@@ -51,7 +51,7 @@ export default Vue.extend({
 		return {
 			title: this.$t('choose-reaction'),
 			enableEmojiReaction: true,
-			recentReaction: null,
+			recentReaction: localStorage.getItem('recentReaction') || '',
 		};
 	},
 
@@ -60,6 +60,10 @@ export default Vue.extend({
 			return {
 				'esc': this.close,
 			};
+		},
+
+		recentReaction() {
+			return localStorage.getItem('recentReaction');
 		}
 	},
 
@@ -71,24 +75,72 @@ export default Vue.extend({
 			});
 		});
 
-		this.recentReaction = localStorage.getItem('recentReaction');
+		const recentReaction = localStorage.getItem('recentReaction');
 
 		this.$nextTick(() => {
-			const popover: HTMLElement = this.$refs.popover;
 
-			const { left, top } = this.source.getBoundingClientRect();
+			let url = '';
 
-			popover.style.left = ((left + window.pageXOffset + (this.source.offsetWidth / 2)) - (popover.offsetWidth / 2)) + 'px';
-			popover.style.top = ((top + window.pageYOffset + (this.source.offsetHeight / 2)) - (popover.offsetHeight / 2)) + 'px';
+			if (recentReaction.startsWith(':')) {
+				url = `/assets/emojis/${recentReaction.substr(1, recentReaction.length - 2)}`;
+			} else {
+				const char = (() => {
+					switch (recentReaction) {
+						case 'like': return '👍';
+						case 'love':
+						case 'twitter_favorite': return '❤';
+						case 'laugh': return '😆';
+						case 'hmm': return '🤔';
+						case 'surprise': return '😮';
+						case 'congrats': return '🎉';
+						case 'angry': return '💢';
+						case 'confused': return '😥';
+						case 'rip': return '😇';
+						case 'pudding': return (this.$store.getters.isSignedIn && this.$store.state.settings.iLikeSushi) ? '🍣' : '🍮';
+						case 'star':
+						case '': return '⭐';
+						default: return recentReaction;
+					}
+				})();
 
-			popover.classList.remove('await');
-		});
+				let codes = Array.from(char).map(x => x.codePointAt(0).toString(16));
+
+				if (!codes.includes('200d')) {
+					codes = codes.filter(x => x != 'fe0f');
+				}
+
+				codes = codes.filter(x => x && x.length);
+
+				url = `https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/${codes.join('-')}.svg`;
+			}
+
+			if (this.$refs.recent && this.$refs.recent.style) {
+				this.$refs.recent.style = `--recent-reaction-url:url('${url.replace('\'', '%27')}')`;
+			}
+
+			this.$nextTick(() => {
+				const popover: HTMLElement = this.$refs.popover;
+
+				const { left, top } = this.source.getBoundingClientRect();
+
+				popover.style.left = ((left + window.pageXOffset + (this.source.offsetWidth / 2)) - (popover.offsetWidth / 2)) + 'px';
+				popover.style.top = ((top + window.pageYOffset + (this.source.offsetHeight / 2)) - (popover.offsetHeight / 2)) + 'px';
+
+				popover.classList.remove('await');
+			});
+		})
 	},
 
 	methods: {
 		react(reaction: string) {
-			if (!reaction) {
-				reaction = this.recentReaction;
+			reaction = reaction || '⭐';
+
+			if (![
+				'👍', '❤', '😆', '🤔', '😮', '🎉', '💢', '😥', '😇', '🍣', '🍮', '⭐',
+				'like', 'love', 'twitter_favorite', 'laugh', 'hmm', 'surprise',
+				'congrats', 'angry', 'confused', 'rip', 'pudding', 'star', ''
+			].includes(reaction)) {
+				localStorage.setItem('recentReaction', reaction);
 			}
 
 			this.$emit('reacted', reaction);
@@ -108,6 +160,15 @@ export default Vue.extend({
 					reaction
 				}).then(() => {
 					const popover: HTMLElement = this.$refs.popover;
+					popover.classList.add('close');
+					if (this.cb) this.cb();
+					this.$emit('closed');
+					setTimeout(this.destroyDom, 1000);
+				}, (text: string) => {
+					this.$root.dialog({
+						type: 'error',
+						text
+					});
 					popover.classList.add('close');
 					if (this.cb) this.cb();
 					this.$emit('closed');
@@ -288,6 +349,7 @@ export default Vue.extend({
 
 				> div
 					&::before
+						background-image var(--recent-reaction-url)
 						transform rotate(90deg)
 
 					> svg
