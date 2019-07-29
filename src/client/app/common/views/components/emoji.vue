@@ -28,7 +28,9 @@ export default Vue.extend({
 		},
 		customEmojis: {
 			required: false,
-			default: () => []
+			default() {
+				return [] as string[];
+			}
 		},
 		isReaction: {
 			type: Boolean,
@@ -36,7 +38,9 @@ export default Vue.extend({
 		},
 		config: {
 			required: false,
-			default: {}
+			default() {
+				return {};
+			}
 		},
 		animate: {
 			type: Boolean,
