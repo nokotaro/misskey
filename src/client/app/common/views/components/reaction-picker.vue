@@ -51,7 +51,6 @@ export default Vue.extend({
 		return {
 			title: this.$t('choose-reaction'),
 			enableEmojiReaction: true,
-			recentReaction: localStorage.getItem('recentReaction') || '',
 		};
 	},
 
@@ -63,7 +62,7 @@ export default Vue.extend({
 		},
 
 		recentReaction() {
-			return localStorage.getItem('recentReaction');
+			return localStorage.getItem('recentReaction') || '';
 		}
 	},
 
@@ -75,7 +74,7 @@ export default Vue.extend({
 			});
 		});
 
-		const recentReaction = localStorage.getItem('recentReaction');
+		const recentReaction = localStorage.getItem('recentReaction') || '';
 
 		this.$nextTick(() => {
 
