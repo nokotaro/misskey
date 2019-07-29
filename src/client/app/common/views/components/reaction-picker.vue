@@ -172,7 +172,7 @@ export default Vue.extend({
 		z-index 10000
 
 	> .popover
-		animation x 60s linear infinite
+		animation x 300s linear infinite
 		display grid
 		height 192px
 		pointer-events none
