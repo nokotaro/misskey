@@ -111,14 +111,14 @@ export default Vue.extend({
 					popover.classList.add('close');
 					if (this.cb) this.cb();
 					this.$emit('closed');
-					setTimeout(this.destroyDom, 1250);
+					setTimeout(this.destroyDom, 1000);
 				});
 			} else {
 				const popover: HTMLElement = this.$refs.popover;
 				popover.classList.add('close');
 				if (this.cb) this.cb();
 				this.$emit('closed');
-				setTimeout(this.destroyDom, 1250);
+				setTimeout(this.destroyDom, 1000);
 			}
 		},
 
@@ -142,7 +142,7 @@ export default Vue.extend({
 			const popover: HTMLElement = this.$refs.popover;
 			popover.classList.add('close');
 			this.$emit('closed');
-			setTimeout(this.destroyDom, 1250);
+			setTimeout(this.destroyDom, 1000);
 		},
 	}
 });
@@ -192,7 +192,7 @@ export default Vue.extend({
 			transform rotate(90deg) scale(.001) // Avoid the Servo bug
 
 			&.active
-				animation y .25s cubic-bezier(.08,.82,.17,1) 1s both
+				animation y .25s cubic-bezier(.08,.82,.17,1) .75s both
 				background-color var(--primary)
 
 				> div::before
