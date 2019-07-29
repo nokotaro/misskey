@@ -223,6 +223,7 @@ export default Vue.extend({
 				&::before
 					background var(--popupBg) 50% 12.5%/50% no-repeat
 					content ''
+					-webkit-clip-path polygon(0 0,100% 0,75% 48%,25% 48%)
 					clip-path polygon(0 0,100% 0,75% 48%,25% 48%)
 					cursor pointer
 					display block
