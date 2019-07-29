@@ -1,7 +1,7 @@
 <template>
 <div class="age14b83" v-hotkey.global="keymap">
 	<div class="backdrop" ref="backdrop" @click="close"></div>
-	<div class="popover await" :class="{ 'prefer-sushi': $store.state.settings.iLikeSushi }" ref="popover">
+	<div class="popover await" :class="{ 'prefer-sushi': $store.getters.isSignedIn && $store.state.settings.iLikeSushi }" ref="popover">
 		<div class="emoji" :class="{ hidden: !enableEmojiReaction }" key="emoji">
 			<div @click="pickEmoji"><fa :icon="['fal', 'icons']"/></div>
 		</div>
