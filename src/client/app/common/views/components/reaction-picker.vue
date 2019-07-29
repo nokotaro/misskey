@@ -208,7 +208,7 @@ export default Vue.extend({
 			&.hidden
 				display none
 
-			&:nth-child(6n+1) > div:not(:hover)::before
+			&:nth-child(6n+1):not(.active) > div:not(:hover)::before
 				background-color var(--infoBg)
 
 			> div
