@@ -170,6 +170,7 @@ common:
     keep-cw: "CW保持"
     keep-cw-desc: "投稿にリプライする際、リプライ元の投稿にCWが設定されていたとき、デフォルトで同じCWを設定するようにします。"
     i-like-sushi: "私は(プリンよりむしろ)寿司が好き"
+    use-legacy-reaction-picker: "古来より伝わるリアクションピッカーを使う"
     show-reversi-board-labels: "リバーシのボードの行と列のラベルを表示"
     use-avatar-reversi-stones: "リバーシの石にアバターを使う"
     disable-animated-mfm: "投稿内の動きのあるテキストを無効にする"

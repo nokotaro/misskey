@@ -38,6 +38,7 @@
 				<ui-switch v-model="showVia">{{ $t('@._settings.show-via') }}</ui-switch>
 				<ui-switch v-model="useOsDefaultEmojis" v-if="isAdvanced">{{ $t('@._settings.use-os-default-emojis') }}</ui-switch>
 				<ui-switch v-model="iLikeSushi">{{ $t('@._settings.i-like-sushi') }}</ui-switch>
+				<ui-switch v-model="useLegacyReactionPicker">{{ $t('@._settings.use-legacy-reaction-picker') }}</ui-switch>
 			</section>
 			<section>
 				<ui-switch v-model="suggestRecentHashtags" v-if="isAdvanced">{{ $t('@._settings.suggest-recent-hashtags') }}</ui-switch>
@@ -542,6 +543,11 @@ export default Vue.extend({
 		iLikeSushi: {
 			get() { return this.$store.state.settings.iLikeSushi; },
 			set(value) { this.$store.dispatch('settings/set', { key: 'iLikeSushi', value }); }
+		},
+
+		useLegacyReactionPicker: {
+			get() { return this.$store.state.settings.useLegacyReactionPicker; },
+			set(value) { this.$store.dispatch('settings/set', { key: 'useLegacyReactionPicker', value }); }
 		},
 
 		games_reversi_showBoardLabels: {

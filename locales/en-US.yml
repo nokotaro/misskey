@@ -158,6 +158,7 @@ common:
     keep-cw: "Preserve content warning"
     keep-cw-desc: "When replying to a post, the same content warning is set by default to the reply, as has been set by the original post."
     i-like-sushi: "I prefer sushi rather than pudding"
+    use-legacy-reaction-picker: "Use legacy reaction picker"
     show-reversi-board-labels: "Show row and column labels in Reversi"
     use-avatar-reversi-stones: "Use avatar as a stone in reversi"
     disable-animated-mfm: "Disable animated texts in a post"

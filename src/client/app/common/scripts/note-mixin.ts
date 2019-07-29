@@ -3,6 +3,7 @@ import { sum, unique } from '../../../../prelude/array';
 import shouldMuteNote from './should-mute-note';
 import MkNoteMenu from '../views/components/note-menu.vue';
 import MkReactionPicker from '../views/components/reaction-picker.vue';
+import MkReactionPickerLegacy from '../views/components/reaction-picker-legacy.vue';
 
 function focus(el, fn) {
 	const target = fn(el);
@@ -141,7 +142,7 @@ export default (opts: Opts = {}) => ({
 
 		react(viaKeyboard = false) {
 			this.blur();
-			this.$root.new(MkReactionPicker, {
+			this.$root.new(this.$store.state.settings.useLegacyReactionPicker ? MkReactionPickerLegacy : MkReactionPicker, {
 				source: this.$refs.reactButton,
 				note: this.appearNote,
 				showFocus: viaKeyboard,
