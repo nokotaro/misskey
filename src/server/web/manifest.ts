@@ -11,6 +11,9 @@ module.exports = async (ctx: Koa.BaseContext) => {
 	json.short_name = instance.name || 'twista';
 	json.name = instance.name || 'twista';
 
-	ctx.set('Cache-Control', 'max-age=300');
+	ctx.set({
+		'Cache-Control': 'max-age=300',
+		'Content-Type': 'application/manifest+json'
+	});
 	ctx.body = json;
 };
