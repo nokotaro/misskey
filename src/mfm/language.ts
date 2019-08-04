@@ -187,7 +187,7 @@ export const mfmLanguage = P.createLanguage({
 	},
 	rt: r => P((input, i) => {
 		const text = input.substr(i);
-		const match = text.match(/^([|｜])([^|｜《》〈〉]+)《(.+?)》/);
+		const match = text.match(/^[|｜]([^|｜《》〈〉]+)《(.+?)》/);
 		if (!match) return P.makeFailure(i, 'not a rt');
 		const [raw, content, rt] = match;
 		return P.makeSuccess(i + raw.length, { content, rt, raw });
