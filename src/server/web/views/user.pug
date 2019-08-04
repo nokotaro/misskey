@@ -46,7 +46,5 @@ block meta
 	if !user.host
 		link(rel='alternate' href=`${url}.json` type='application/json')
 
-block content
-	div#me(style={ display: 'none' })
-		each m in me
-			a(rel='me' href=`${m}`) #{m}
+	each m in me
+		link(rel='me' href=`${m}`)
