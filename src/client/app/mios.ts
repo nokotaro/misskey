@@ -306,7 +306,10 @@ export default class MiOS extends EventEmitter {
 	 * Register service worker
 	 */
 	@autobind
-	private registerSw(swPublickey) {
+	private registerSw(swPublickey: string) {
+		// <https://github.com/syuilo/misskey/pull/4421>
+		if (!swPublickey) return;
+
 		// Check whether service worker and push manager supported
 		const isSwSupported =
 			('serviceWorker' in navigator) && ('PushManager' in window);
