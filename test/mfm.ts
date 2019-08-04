@@ -994,14 +994,14 @@ describe('MFM', () => {
 			it('simple', () => {
 				const tokens = parse('```\nvar x = "Strawberry Pasta";\n```');
 				assert.deepStrictEqual(tokens, [
-					leaf('blockCode', { code: 'var x = "Strawberry Pasta";', lang: null })
+					leaf('codeBlock', { code: 'var x = "Strawberry Pasta";', lang: null })
 				]);
 			});
 
 			it('can specify language', () => {
 				const tokens = parse('``` json\n{ "x": 42 }\n```');
 				assert.deepStrictEqual(tokens, [
-					leaf('blockCode', { code: '{ "x": 42 }', lang: 'json' })
+					leaf('codeBlock', { code: '{ "x": 42 }', lang: 'json' })
 				]);
 			});
 
@@ -1009,32 +1009,32 @@ describe('MFM', () => {
 				const tokens = parse('before```\nfoo\n```');
 				assert.deepStrictEqual(tokens, [
 					text('before'),
-					leaf('inlineCode', { code: '`' }),
+					leaf('codeInline', { code: '`' }),
 					text('\nfoo\n'),
-					leaf('inlineCode', { code: '`' })
+					leaf('codeInline', { code: '`' })
 				]);
 			});
 
 			it('series', () => {
 				const tokens = parse('```\nfoo\n```\n```\nbar\n```\n```\nbaz\n```');
 				assert.deepStrictEqual(tokens, [
-					leaf('blockCode', { code: 'foo', lang: null }),
-					leaf('blockCode', { code: 'bar', lang: null }),
-					leaf('blockCode', { code: 'baz', lang: null }),
+					leaf('codeBlock', { code: 'foo', lang: null }),
+					leaf('codeBlock', { code: 'bar', lang: null }),
+					leaf('codeBlock', { code: 'baz', lang: null }),
 				]);
 			});
 
 			it('ignore internal marker', () => {
 				const tokens = parse('```\naaa```bbb\n```');
 				assert.deepStrictEqual(tokens, [
-					leaf('blockCode', { code: 'aaa```bbb', lang: null })
+					leaf('codeBlock', { code: 'aaa```bbb', lang: null })
 				]);
 			});
 
 			it('trim after line break', () => {
 				const tokens = parse('```\nfoo\n```\nbar');
 				assert.deepStrictEqual(tokens, [
-					leaf('blockCode', { code: 'foo', lang: null }),
+					leaf('codeBlock', { code: 'foo', lang: null }),
 					text('bar')
 				]);
 			});
@@ -1044,7 +1044,7 @@ describe('MFM', () => {
 			it('simple', () => {
 				const tokens = parse('`var x = "Strawberry Pasta";`');
 				assert.deepStrictEqual(tokens, [
-					leaf('inlineCode', { code: 'var x = "Strawberry Pasta";' })
+					leaf('codeInline', { code: 'var x = "Strawberry Pasta";' })
 				]);
 			});
 
@@ -1299,18 +1299,18 @@ describe('MFM', () => {
 			tree('quote', [
 				text('foo')
 			], {}),
-			leaf('blockCode', { code: 'bar', lang: null })
+			leaf('codeBlock', { code: 'bar', lang: null })
 		]);
 	});
 
 	it('quote between two code blocks', () => {
 		const tokens = parse('```\nbefore\n```\n> foo\n```\nafter\n```');
 		assert.deepStrictEqual(tokens, [
-			leaf('blockCode', { code: 'before', lang: null }),
+			leaf('codeBlock', { code: 'before', lang: null }),
 			tree('quote', [
 				text('foo')
 			], {}),
-			leaf('blockCode', { code: 'after', lang: null })
+			leaf('codeBlock', { code: 'after', lang: null })
 		]);
 	});
 });

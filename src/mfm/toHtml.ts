@@ -120,7 +120,7 @@ export function toHtml(tokens: MfmForest, mentionedRemoteUsers: INote['mentioned
 			return el;
 		},
 
-		blockCode(token) {
+		codeBlock(token) {
 			const pre = doc.createElement('pre');
 			const inner = doc.createElement('code');
 			inner.innerHTML = token.node.props.code;
@@ -146,7 +146,7 @@ export function toHtml(tokens: MfmForest, mentionedRemoteUsers: INote['mentioned
 			return a;
 		},
 
-		inlineCode(token) {
+		codeInline(token) {
 			const el = doc.createElement('code');
 			el.textContent = token.node.props.code;
 			return el;

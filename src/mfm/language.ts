@@ -27,7 +27,7 @@ export const mfmLanguage = P.createLanguage({
 		r.quote,
 		r.bubble,
 		r.search,
-		r.blockCode,
+		r.codeBlock,
 		r.mathBlock,
 		r.center,
 	),
@@ -104,11 +104,11 @@ export const mfmLanguage = P.createLanguage({
 		if (!match) return P.makeFailure(i, 'not a search');
 		return P.makeSuccess(i + match[0].length, createLeaf('search', { query: match[1], content: match[0].trim() }));
 	})),
-	blockCode: r => r.startOfLine.then(P((input, i) => {
+	codeBlock: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
 		const match = text.match(/^```(.+?)?\n([\s\S]+?)\n```(\n|$)/i);
-		if (!match) return P.makeFailure(i, 'not a blockCode');
-		return P.makeSuccess(i + match[0].length, createLeaf('blockCode', { code: match[2], lang: match[1] ? match[1].trim() : null }));
+		if (!match) return P.makeFailure(i, 'not a codeBlock');
+		return P.makeSuccess(i + match[0].length, createLeaf('codeBlock', { code: match[2], lang: match[1] ? match[1].trim() : null }));
 	})),
 	inline: r => P.alt(
 		r.big,
@@ -128,7 +128,7 @@ export const mfmLanguage = P.createLanguage({
 		r.flip,
 		r.vflip,
 		r.rotate,
-		r.inlineCode,
+		r.codeInline,
 		r.mathInline,
 		r.mention,
 		r.hashtag,
@@ -242,7 +242,7 @@ export const mfmLanguage = P.createLanguage({
 		}).map(x => createTree('rotate', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
 	},
 	center: r => r.startOfLine.then(P.regexp(/<(c(?:enter)?)>([\s\S]+?)<\/\1>/, 2).map(x => createTree('center', r.inline.atLeast(1).tryParse(x), {}))),
-	inlineCode: () => P.regexp(/`([^´\n]+?)`/, 1).map(x => createLeaf('inlineCode', { code: x })),
+	codeInline: () => P.regexp(/`([^´\n]+?)`/, 1).map(x => createLeaf('codeInline', { code: x })),
 	mathBlock: r => r.startOfLine.then(P.regexp(/\\\[([\s\S]+?)\\\]/, 1).map(x => createLeaf('mathBlock', { formula: x.trim() }))),
 	mathInline: () => P.regexp(/\\\((.+?)\\\)/, 1).map(x => createLeaf('mathInline', { formula: x })),
 	mention: () => {

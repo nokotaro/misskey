@@ -12,8 +12,8 @@ function visit(tree: MfmTree): string {
 			return tree.node.props.query;
 		}
 
-		case 'blockCode':
-		case 'inlineCode': {
+		case 'codeBlock':
+		case 'codeInline': {
 			return [tree.node.props.lang, tree.node.props.code].filter(check).join(' ');
 		}
 

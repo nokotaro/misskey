@@ -316,7 +316,7 @@ export default Vue.component('misskey-flavored-markdown', {
 					}, `#${token.node.props.hashtag}`)];
 				}
 
-				case 'blockCode': {
+				case 'codeBlock': {
 					return [createElement(MkCode, {
 						key: Math.random(),
 						props: {
@@ -326,7 +326,7 @@ export default Vue.component('misskey-flavored-markdown', {
 					})];
 				}
 
-				case 'inlineCode': {
+				case 'codeInline': {
 					return [createElement(MkCode, {
 						key: Math.random(),
 						props: {
