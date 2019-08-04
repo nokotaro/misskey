@@ -420,7 +420,7 @@ export const schemas = {
 			tag: {
 				type: 'string',
 				description: 'The hashtag name. No # prefixed.',
-				example: 'misskey',
+				example: 'twista',
 			},
 			mentionedUsersCount: {
 				type: 'number',

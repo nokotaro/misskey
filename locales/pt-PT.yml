@@ -2,7 +2,7 @@
 meta:
   lang: "Português"
 common:
-  misskey: "Uma ⭐ do fediverso"
+  twista: "Uma ⭐ do fediverso"
   about-title: "Uma ⭐ do fediverso."
   about: "Obrigado por encontrar twista. Uma <b>plataforma descentralizada de microblog</b> nascida na Terra. Já que ela existe no Fediverso (um universo onde várias plataformas de mídia social são organizadas), ela é ligada com outras plataformas.Por que você não tira uma folga do agito e confusão da cidade, e mergulha em uma nova internet?"
   intro:
@@ -207,7 +207,7 @@ admin/views/federation.vue:
   followers: "Seguidores"
 desktop/views/pages/welcome.vue:
   timeline: "Timeline"
-  powered-by-misskey: "Desenvolvido por <b>twista</b>."
+  powered-by-twista: "Desenvolvido por <b>twista</b>."
 desktop/views/pages/drive.vue:
   title: "Drive twista"
 desktop/views/pages/note.vue:

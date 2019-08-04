@@ -66,7 +66,7 @@ export default define(meta, async (ps, me) => {
 	if (es == null) throw new ApiError(meta.errors.searchingNotAvailable);
 
 	const response = await es.search({
-		index: 'misskey',
+		index: 'twista',
 		type: 'note',
 		body: {
 			size: ps.limit,

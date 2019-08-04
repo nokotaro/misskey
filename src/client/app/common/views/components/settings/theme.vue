@@ -81,7 +81,7 @@
 		<details>
 			<summary><fa :icon="['fal', 'download']"/> {{ $t('install-a-theme') }}</summary>
 			<ui-button @click="import_()"><fa :icon="['fal', 'file-import']"/> {{ $t('import') }}</ui-button>
-			<input ref="file" type="file" accept=".misskeytheme" style="display:none" @change="onUpdateImportFile"/>
+			<input ref="file" type="file" accept=".twistatheme" style="display:none" @change="onUpdateImportFile"/>
 			<p>{{ $t('import-by-code') }}:</p>
 			<ui-textarea v-model="installThemeCode">
 				<span>{{ $t('theme-code') }}</span>
@@ -112,7 +112,7 @@
 				<ui-textarea readonly tall :value="selectedThemeCode">
 					<span>{{ $t('theme-code') }}</span>
 				</ui-textarea>
-				<ui-button @click="export_()" link :download="`${selectedTheme.name}.misskeytheme`" ref="export"><fa :icon="['fal', 'box']"/> {{ $t('export') }}</ui-button>
+				<ui-button @click="export_()" link :download="`${selectedTheme.name}.twistatheme`" ref="export"><fa :icon="['fal', 'box']"/> {{ $t('export') }}</ui-button>
 				<ui-button @click="uninstall()" v-if="!builtinThemes.some(t => t.id == selectedTheme.id)"><fa :icon="['fal', 'trash-alt']"/> {{ $t('uninstall') }}</ui-button>
 			</template>
 		</details>

@@ -30,8 +30,8 @@
 			<li @click="nav('hashtags')" :class="{ active: page == 'hashtags' }"><fa :icon="['fal', 'hashtag']" fixed-width/>{{ $t('hashtags') }}</li>
 			<li @click="nav('abuse')" :class="{ active: page == 'abuse' }"><fa :icon="faExclamationCircle" fixed-width/>{{ $t('abuse') }}</li>
 		</ul>
-		<div class="back-to-misskey">
-			<a href="/"><fa :icon="faArrowLeft"/> {{ $t('back-to-misskey') }}</a>
+		<div class="back-to-twista">
+			<a href="/"><fa :icon="faArrowLeft"/> {{ $t('back-to-twista') }}</a>
 		</div>
 		<div class="version">
 			<small>twista {{ version }}</small>
@@ -199,7 +199,7 @@ export default Vue.extend({
 				white-space nowrap
 				font-size 15px
 
-		> .back-to-misskey
+		> .back-to-twista
 			margin 16px 16px 0 16px
 			padding 0
 			border-top solid 1px #555

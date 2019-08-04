@@ -22,7 +22,7 @@ class Publisher {
 		if (this.ev) {
 			this.ev.emit(channel, message);
 		} else {
-			redis.publish('misskey', JSON.stringify({
+			redis.publish('twista', JSON.stringify({
 				channel: channel,
 				message: message
 			}));

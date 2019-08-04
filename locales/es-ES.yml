@@ -2,7 +2,7 @@
 meta:
   lang: "Español"
 common:
-  misskey: "Una ⭐️ del fediverso"
+  twista: "Una ⭐️ del fediverso"
   about-title: "Una ⭐️ del fediverso"
   about: "Gracias por encontrar twista. twista es una <b>plataforma descentralizada de microblogging</b> nacida en la Tierra. Porque el servicio existe dentro del Fediverso (un universo donde se organizan varias plataformas sociales), se encuentra enlazado mutuamente con otras plataformas sociales. ¿Por qué no te tomas un respiro del caos de la ciudad y te sumerges es una nueva manera de entender Internet?"
   intro:
@@ -748,7 +748,7 @@ admin/views/index.vue:
   moderators: "Moderadores"
   users: "Usuarios"
   hashtags: "Hashtags"
-  back-to-misskey: "Volver a twista"
+  back-to-twista: "Volver a twista"
 admin/views/dashboard.vue:
   dashboard: "Panel de Control"
   accounts: "Cuenta"

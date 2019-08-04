@@ -799,7 +799,7 @@ function index(note: INote, text: string) {
 	if (!text || !config.elasticsearch) return;
 
 	es.index({
-		index: 'misskey',
+		index: 'twista',
 		type: 'note',
 		id: note._id.toString(),
 		body: { text }
@@ -948,7 +948,7 @@ async function publishToFollowers(note: INote, user: IUser, noteActivity: any) {
 			const asNote = deepcopy(noteActivity);
 
 			asNote.object.type = 'Note';
-			asNote.object.content = asNote.object._misskey_fallback_content;
+			asNote.object.content = asNote.object._twista_fallback_content;
 
 			for (const inbox of queue) {
 				deliver(user as any, asNote, inbox);

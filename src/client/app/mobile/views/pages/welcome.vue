@@ -32,7 +32,7 @@
 				<div v-html="announcement.text"></div>
 			</article>
 		</div>
-		<article class="about-misskey">
+		<article class="about-twista">
 			<h1>{{ $t('@.intro.title') }}</h1>
 			<p v-html="this.$t('@.intro.about')"></p>
 			<section>
@@ -249,7 +249,7 @@ export default Vue.extend({
 					font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 					font-weight 600
 
-		> .about-misskey
+		> .about-twista
 			margin 16px 0
 			padding 32px
 			font-size 14px

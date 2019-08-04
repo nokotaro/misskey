@@ -2,7 +2,7 @@
 meta:
   lang: "Français"
 common:
-  misskey: "Une ⭐ du fédiverse"
+  twista: "Une ⭐ du fédiverse"
   about-title: "Une ⭐ du fédiverse."
   about: "Merci d’avoir choisis twista. twista est une <b>plateforme de microblogage distribuée</b> née sur Terre et fait partie du Fédiverse (un univers composé de diverses plateformes de réseaux sociaux organisées), elle est connectée mutuellement avec d’autres plateformes de réseaux sociaux. Désirez-vous prendre une pause, un court instant, loin de l’agitation de la ville et plonger dans un Internet d’un nouveau genre ?"
   intro:
@@ -953,7 +953,7 @@ admin/views/index.vue:
   hashtags: "Hashtags"
   abuse: "Abus"
   queue: "File d’attente"
-  back-to-misskey: "Retour vers twista"
+  back-to-twista: "Retour vers twista"
 admin/views/dashboard.vue:
   dashboard: "Tableau de bord"
   accounts: "Comptes"
@@ -1023,7 +1023,7 @@ admin/views/instance.vue:
   user-recommendation-config: "Utilisateurs"
   enable-external-user-recommendation: "Activer la recommandation des utilisateurs distants"
   external-user-recommendation-engine: "Moteur"
-  external-user-recommendation-engine-desc: "Exemple : https://vinayaka.distsn.org/cgi-bin/vinayaka-user-match-misskey-api.cgi?{{host}}+{{user}}+{{limit}}+{{offset}}"
+  external-user-recommendation-engine-desc: "Exemple : https://vinayaka.distsn.org/cgi-bin/vinayaka-user-match-twista-api.cgi?{{host}}+{{user}}+{{limit}}+{{offset}}"
   external-user-recommendation-timeout: "Délai d’expiration"
   external-user-recommendation-timeout-desc: "En millisecondes (par exemple : 300000)"
   email-config: "Paramètres du serveur de messagerie"
@@ -1231,7 +1231,7 @@ desktop/views/pages/welcome.vue:
   timeline: "Fil d’actualité"
   announcements: "Notices"
   photos: "Images récentes"
-  powered-by-misskey: "Propulsé par <b>twista</b>."
+  powered-by-twista: "Propulsé par <b>twista</b>."
   info: "Informations"
 desktop/views/pages/drive.vue:
   title: "Lecteur de twista"

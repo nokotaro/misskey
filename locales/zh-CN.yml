@@ -2,7 +2,7 @@
 meta:
   lang: "中文(简体)"
 common:
-  misskey: "Fediverse中的一颗⭐"
+  twista: "Fediverse中的一颗⭐"
   about-title: "Fediverse中的一颗⭐"
   about: "非常感谢您找到了twista。 twista是诞生于地球的<b>分布式微博SNS</b>。因为她处于Fediverse(由各种SNS组成的宇宙)中，所以她与其他SNS相互连接。想要远离喧嚣的城市，不如深入这个新的互联网来探索一下吧。"
   intro:
@@ -1035,7 +1035,7 @@ admin/views/index.vue:
   abuse: "举报垃圾信息"
   queue: "作业队列"
   logs: "登录"
-  back-to-misskey: "返回 twista"
+  back-to-twista: "返回 twista"
 admin/views/dashboard.vue:
   dashboard: "Dashboard"
   accounts: "账户"
@@ -1109,7 +1109,7 @@ admin/views/instance.vue:
   user-recommendation-config: "推荐用户"
   enable-external-user-recommendation: "启用外部用户推荐"
   external-user-recommendation-engine: "引擎"
-  external-user-recommendation-engine-desc: "例如: https://vinayaka.distsn.org/cgi-bin/vinayaka-user-match-misskey-api.cgi?{{host}}+{{user}}+{{limit}}+{{offset}}"
+  external-user-recommendation-engine-desc: "例如: https://vinayaka.distsn.org/cgi-bin/vinayaka-user-match-twista-api.cgi?{{host}}+{{user}}+{{limit}}+{{offset}}"
   external-user-recommendation-timeout: "超时"
   external-user-recommendation-timeout-desc: "单位为毫秒 (例如：300000)"
   email-config: "电子邮件服务器设置"
@@ -1328,7 +1328,7 @@ desktop/views/pages/welcome.vue:
   timeline: "时间线"
   announcements: "公告"
   photos: "最近图片"
-  powered-by-misskey: "Powered by <b>twista</b>."
+  powered-by-twista: "Powered by <b>twista</b>."
   info: "信息"
 desktop/views/pages/drive.vue:
   title: "twista 网盘"

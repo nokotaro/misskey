@@ -2,7 +2,7 @@
 meta:
   lang: "English"
 common:
-  misskey: "A ⭐ of the fediverse"
+  twista: "A ⭐ of the fediverse"
   about-title: "A ⭐ of the fediverse."
   about: "Thank you for finding twista. twista is a <b>decentralized microblogging platform</b> born on Earth. Since it exists within the Fediverse (a universe where various social media platforms are organized), it is mutually linked with other social media platforms. Why don't you take a short break from the hustle and bustle of the city, and dive into a new Internet?"
   intro:
@@ -1112,7 +1112,7 @@ admin/views/index.vue:
   abuse: "Abuse"
   queue: "Job Queue"
   logs: "Logs"
-  back-to-misskey: "Back to twista"
+  back-to-twista: "Back to twista"
 admin/views/dashboard.vue:
   dashboard: "Dashboard"
   accounts: "Producers"
@@ -1196,7 +1196,7 @@ admin/views/instance.vue:
   user-recommendation-config: "Recommended users"
   enable-external-user-recommendation: "Enable external user recommendations"
   external-user-recommendation-engine: "Engine"
-  external-user-recommendation-engine-desc: "Example : https://vinayaka.distsn.org/cgi-bin/vinayaka-user-match-misskey-api.cgi?{{host}}+{{user}}+{{limit}}+{{offset}}"
+  external-user-recommendation-engine-desc: "Example : https://vinayaka.distsn.org/cgi-bin/vinayaka-user-match-twista-api.cgi?{{host}}+{{user}}+{{limit}}+{{offset}}"
   external-user-recommendation-timeout: "Timeout"
   external-user-recommendation-timeout-desc: "Number of milliseconds (ex. 300,000)"
   email-config: "Email server settings"
@@ -1421,7 +1421,7 @@ desktop/views/pages/welcome.vue:
   timeline: "Timeline"
   announcements: "Announcements"
   photos: "Recent Images"
-  powered-by-misskey: "Powered by <b>twista</b>."
+  powered-by-twista: "Powered by <b>twista</b>."
   info: "Information"
 desktop/views/pages/drive.vue:
   title: "twista storage"

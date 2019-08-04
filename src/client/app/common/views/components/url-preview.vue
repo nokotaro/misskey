@@ -30,7 +30,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
-import { url as misskeyUrl, lang } from '../../../config';
+import { url as twistaUrl, lang } from '../../../config';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/url-preview.vue'),
@@ -74,7 +74,7 @@ export default Vue.extend({
 			},
 			tweetUrl: null,
 			playerEnabled: false,
-			misskeyUrl,
+			twistaUrl,
 		};
 	},
 

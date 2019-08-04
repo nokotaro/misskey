@@ -11,7 +11,7 @@
 	"private": true,
 	"scripts": {
 		"start": "node ./index.js",
-		"debug": "DEBUG=misskey:* node ./index.js",
+		"debug": "DEBUG=twista:* node ./index.js",
 		"build": "webpack && gulp build",
 		"webpack": "webpack",
 		"watch": "webpack --watch",

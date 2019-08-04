@@ -64,7 +64,7 @@ export default Vue.extend({
 		}).then(() => {
 			this.internet = true;
 
-			// Check misskey server is available
+			// Check twista server is available
 			fetch(`${apiUrl}/meta`).then(() => {
 				this.end = true;
 				this.server = true;

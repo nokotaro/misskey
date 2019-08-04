@@ -2,7 +2,7 @@
 meta:
   lang: "Čeština"
 common:
-  misskey: "⭐ ve fedivesmíru"
+  twista: "⭐ ve fedivesmíru"
   about-title: "⭐ ve fedivesmíru."
   about: "Děkujeme, že jste našli Misskey. Misskey je <b>decentralizovaná mikroblogovací platforma</b> zrozená na Zemi. Neboť existuje ve fedivesmíru (vesmíru, kde jsou organizovány různé sociální sítě), je vzájemně propojena s jinými sociálními sítěmi. Co takhle si chvilku odpočinout od ruchu a shonu města a ponořit se do nového internetu?"
   intro:
@@ -840,7 +840,7 @@ admin/views/index.vue:
   hashtags: "Hashtagy"
   queue: "Fronta úloh"
   logs: "Logy"
-  back-to-misskey: "Zpět na Misskey"
+  back-to-twista: "Zpět na Misskey"
 admin/views/dashboard.vue:
   accounts: "Účty"
   notes: "Poznámky"
@@ -1021,7 +1021,7 @@ desktop/views/pages/welcome.vue:
   timeline: "Časová osa"
   announcements: "Oznámení"
   photos: "Nedávné obrázky"
-  powered-by-misskey: "Běží na <b>Misskey</b>."
+  powered-by-twista: "Běží na <b>Misskey</b>."
   info: "Informace"
 desktop/views/pages/drive.vue:
   title: "Misskey Disk"

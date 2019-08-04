@@ -4,7 +4,7 @@ ENV NODE_ENV=production
 
 RUN npm i -g npm@latest
 
-WORKDIR /misskey
+WORKDIR /twista
 
 FROM base AS builder
 
@@ -35,8 +35,8 @@ RUN apk add --no-cache \
 RUN npm i -g web-push
 ENTRYPOINT ["/sbin/tini", "--"]
 
-COPY --from=builder /misskey/node_modules ./node_modules
-COPY --from=builder /misskey/built ./built
+COPY --from=builder /twista/node_modules ./node_modules
+COPY --from=builder /twista/built ./built
 COPY . ./
 
 CMD ["npm", "start"]

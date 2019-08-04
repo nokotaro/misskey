@@ -63,12 +63,12 @@ if (client) {
 	});
 
 	client.indices.exists({
-		index: 'misskey'
+		index: 'twista'
 	}).then(exist => {
 		if (exist) return;
 
 		client.indices.create({
-			index: 'misskey',
+			index: 'twista',
 			body: index
 		});
 	});

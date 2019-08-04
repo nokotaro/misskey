@@ -2,7 +2,7 @@
 meta:
   lang: "Nederlands"
 common:
-  misskey: "Deel alles met anderen die ook twista gebruiken."
+  twista: "Deel alles met anderen die ook twista gebruiken."
   intro:
     rich-contents: "Bericht"
     reaction: "Reactie"

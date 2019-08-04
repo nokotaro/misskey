@@ -29,7 +29,7 @@ services:
     networks:
       - internal_network
     environment:
-      MONGO_INITDB_DATABASE: "misskey"
+      MONGO_INITDB_DATABASE: "twista"
     volumes:
       - ./.config/mongo_initdb.js:/docker-entrypoint-initdb.d/mongo_initdb.js:ro
 ### Uncomment to enable MongoDB persistance

@@ -2,7 +2,7 @@
 meta:
   lang: "język polski"
 common:
-  misskey: "⭐ Fediwersum"
+  twista: "⭐ Fediwersum"
   about-title: "⭐ Fediwersum"
   about: "Dziękujemy za znalezienie twista. twista jest <b>zdecentralizowaną platformą mikroblogową</b> powstałą na Ziemi. Ponieważ działa ona w Fediwersum (uniwersum, w którego skład wchodzi wiele sieci społecznościowych), jest ona połączona z innymi platformami społecznościowymi. Spróbujesz odpocząć od zatłoczoneo miasta i zanurzyć się w nowym Internecie?"
   intro:
@@ -878,7 +878,7 @@ admin/views/instance.vue:
   saved: "Zapisano"
   user-recommendation-config: "Polecani użytkownicy"
   external-user-recommendation-engine: "Silnik"
-  external-user-recommendation-engine-desc: "Np: https://vinayaka.distsn.org/cgi-bin/vinayaka-user-match-misskey-api.cgi?{{host}}+{{user}}+{{limit}}+{{offset}}"
+  external-user-recommendation-engine-desc: "Np: https://vinayaka.distsn.org/cgi-bin/vinayaka-user-match-twista-api.cgi?{{host}}+{{user}}+{{limit}}+{{offset}}"
   email: "Adres e-mail"
 admin/views/charts.vue:
   notes: "Wpisy"
@@ -959,7 +959,7 @@ desktop/views/pages/welcome.vue:
   timeline: "Oś czasu"
   announcements: "Ogłoszenia"
   photos: "Ostatnie obrazy"
-  powered-by-misskey: "Oparto o <b>twista</b>."
+  powered-by-twista: "Oparto o <b>twista</b>."
   info: "Informacje"
 desktop/views/pages/drive.vue:
   title: "Dysk twista"

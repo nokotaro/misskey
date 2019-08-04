@@ -67,10 +67,10 @@ export default {
 				// flatten
 				const reservedKeys = concat(actions.map(a => a.patterns));
 
-				el._misskey_reservedKeys = reservedKeys;
+				el._twista_reservedKeys = reservedKeys;
 
 				el._keyHandler = (e: KeyboardEvent) => {
-					const targetReservedKeys = document.activeElement ? ((document.activeElement as any)._misskey_reservedKeys || []) : [];
+					const targetReservedKeys = document.activeElement ? ((document.activeElement as any)._twista_reservedKeys || []) : [];
 					if (document.activeElement && ignoreElemens.some(el => document.activeElement.matches(el))) return;
 
 					for (const action of actions) {

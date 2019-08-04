@@ -2,7 +2,7 @@
 meta:
   lang: "한국어"
 common:
-  misskey: "연합우주의 ⭐"
+  twista: "연합우주의 ⭐"
   about-title: "연합우주의 ⭐."
   about: "twista를 찾아주셔서 감사합니다. twista는 지구에서 태어난 <b>분산 마이크로 블로그 SNS </b> 입니다. Fediverse(다양한 SNS로 구성되는 우주)에 존재하는 다른 SNS와 상호 연결되어 있습니다. 잠시 도시의 번잡함에서 벗어나 새로운 인터넷에 다이브 해 보지 않겠습니까."
   intro:
@@ -1036,7 +1036,7 @@ admin/views/index.vue:
   abuse: "스팸 신고"
   queue: "작업 대기열"
   logs: "로그"
-  back-to-misskey: "twista로 돌아가기"
+  back-to-twista: "twista로 돌아가기"
 admin/views/dashboard.vue:
   dashboard: "대시보드"
   accounts: "계정"
@@ -1110,7 +1110,7 @@ admin/views/instance.vue:
   user-recommendation-config: "추천 사용자"
   enable-external-user-recommendation: "외부 사용자 추천 활성화"
   external-user-recommendation-engine: "엔진"
-  external-user-recommendation-engine-desc: "예: https://vinayaka.distsn.org/cgi-bin/vinayaka-user-match-misskey-api.cgi?{{host}}+{{user}}+{{limit}}+{{offset}}"
+  external-user-recommendation-engine-desc: "예: https://vinayaka.distsn.org/cgi-bin/vinayaka-user-match-twista-api.cgi?{{host}}+{{user}}+{{limit}}+{{offset}}"
   external-user-recommendation-timeout: "타임 아웃"
   external-user-recommendation-timeout-desc: "밀리초 (예: 300000)"
   email-config: "메일 서버 설정"
@@ -1329,7 +1329,7 @@ desktop/views/pages/welcome.vue:
   timeline: "타임라인"
   announcements: "공지사항"
   photos: "최근 이미지"
-  powered-by-misskey: "Powered by <b>twista</b>."
+  powered-by-twista: "Powered by <b>twista</b>."
   info: "정보"
 desktop/views/pages/drive.vue:
   title: "twista Drive"
