@@ -19,7 +19,7 @@ function sumTextsLength(ts: MfmForest): number {
 	return sum(textNodes.map(x => length(x.props.text)));
 }
 
-export default Vue.component('misskey-flavored-markdown', {
+export default Vue.component('mochimochi-fuwafuwa-markup', {
 	props: {
 		text: {
 			type: String,

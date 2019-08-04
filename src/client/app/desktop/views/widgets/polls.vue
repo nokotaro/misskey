@@ -14,7 +14,7 @@
 			<div class="poll" v-else-if="poll">
 				<p>
 					<router-link :to="poll | notePage">
-						<misskey-flavored-markdown :text="poll.text" :author="poll.user" :custom-emojis="poll.emojis" v-if="poll.text"/>
+						<mochimochi-fuwafuwa-markup :text="poll.text" :author="poll.user" :custom-emojis="poll.emojis" v-if="poll.text"/>
 						<fa :icon="['fal', 'link']" v-else/>
 					</router-link>
 				</p>
