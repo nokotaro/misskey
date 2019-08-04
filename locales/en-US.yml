@@ -35,6 +35,8 @@ common:
   signup: "Sign up"
   signout: "Logout"
   reload-to-apply-the-setting: "You'll need to reload the page to reflect this setting. Do you want to reload it now?"
+  unfollow-confirm: "Do you want to unfollow {name}?"
+  delete-confirm: "Are you sure you want to delete this post?"
   got-it: "Got it!"
   customization-tips:
     title: "Customization tips"
@@ -210,6 +212,8 @@ common:
     sound: "Sound"
     enable-sounds: "Enable sounds"
     enable-sounds-desc: "Play a sound when you receive a post/message. This setting is stored in the browser."
+    enable-speech: "Enable speech"
+    enable-speech-desc: "Speech when a post arrives. This setting is stored in the browser."
     volume: "Volume"
     test: "Test"
     update: "twista Update"

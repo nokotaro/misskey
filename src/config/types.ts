@@ -54,7 +54,7 @@ export type DriveConfig = {
 	container?: string;
 	prefix?: string;
 	baseUrl?: string;
-	config?: any;
+	config?: Record<string, unknown>;
 };
 
 /**

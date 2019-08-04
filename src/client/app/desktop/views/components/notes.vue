@@ -41,7 +41,8 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import * as config from '../../../config';
-import shouldMuteNote from '../../../common/scripts/should-mute-note';
+import { shouldMuteNote } from '../../../common/scripts/should-mute-note';
+import { getSpeechName, getSpeechText } from '../../../../../misc/get-note-speech';
 
 const displayLimit = 30;
 
@@ -167,6 +168,20 @@ export default Vue.extend({
 				}
 			} else {
 				this.queue.push(note);
+			}
+
+			if (this.$store.state.device.enableSpeech && !silent) {
+				const name = getSpeechName(note);
+				const nameUttr = new SpeechSynthesisUtterance(name);
+				nameUttr.pitch = 2;
+
+				const text = getSpeechText(note);
+				const textUttr = new SpeechSynthesisUtterance(text);
+
+				if (getSpeechText) {
+					speechSynthesis.speak(nameUttr);
+					speechSynthesis.speak(textUttr);
+				}
 			}
 		},
 

@@ -65,6 +65,7 @@ const defaultDeviceSettings = {
 	enableSoundsInNotifications: true,
 	soundVolume: 0.5,
 	mediaVolume: 0.5,
+	enableSpeech: false,
 	lang: null,
 	debug: false,
 	showAdvancedSettings: false,
@@ -78,6 +79,7 @@ const defaultDeviceSettings = {
 	disableShowingAnimatedImages: false,
 	expandUsersPhotos: true,
 	expandUsersActivity: true,
+	showPostPreview: true,
 };
 
 export default (os: MiOS) => new Vuex.Store({
