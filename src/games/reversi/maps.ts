@@ -892,7 +892,6 @@ export const test4: Map = {
 	]
 };
 
-// https://misskey.xyz/games/reversi/5aaabf7fe126e10b5216ea09 64
 export const test5: Map = {
 	name: 'Test5',
 	category: 'Test',
