@@ -1,4 +1,5 @@
 import main from './main';
+import sharedEmergency from './shared-emergency';
 import homeTimeline from './home-timeline';
 import localTimeline from './local-timeline';
 import hybridTimeline from './hybrid-timeline';
@@ -20,6 +21,7 @@ import gamesReversiGame from './games/reversi-game';
 
 export default {
 	main,
+	sharedEmergency,
 	homeTimeline,
 	localTimeline,
 	hybridTimeline,

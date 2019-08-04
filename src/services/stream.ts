@@ -33,6 +33,10 @@ class Publisher {
 		this.publish(`mainStream:${userId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
+	public publishSharedEmergencyStream = (type: string, body?: Record<string, string>): void => {
+		this.publish('sharedEmergencyStream', type, body);
+	}
+
 	public publishDriveStream = (userId: ID, type: string, value?: any): void => {
 		this.publish(`driveStream:${userId}`, type, typeof value === 'undefined' ? null : value);
 	}
@@ -106,6 +110,7 @@ const publisher = new Publisher();
 export default publisher;
 
 export const publishMainStream = publisher.publishMainStream;
+export const publishSharedEmergencyStream = publisher.publishSharedEmergencyStream;
 export const publishDriveStream = publisher.publishDriveStream;
 export const publishNoteStream = publisher.publishNoteStream;
 export const publishUserListStream = publisher.publishUserListStream;

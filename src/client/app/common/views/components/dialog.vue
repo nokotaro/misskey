@@ -1,19 +1,25 @@
 <template>
 <div class="felqjxyj" :class="{ splash }">
-	<div class="bg" ref="bg" @click="onBgClick"></div>
+	<div class="bg" ref="bg" @click="onBgClick" :class="type"></div>
 	<div class="main" ref="main">
 		<template v-if="type == 'signin'">
 			<mk-signin/>
 		</template>
 		<template v-else>
 			<div class="icon" v-if="!input && !select && !user" :class="type"><fa :icon="icon"/></div>
-			<header v-if="title" v-html="title"></header>
-			<div class="body" v-if="text" v-html="text"></div>
+			<header v-if="title && asHtml" v-html="title"></header>
+			<header v-else-if="title">{{ title }}</header>
+			<div class="body" v-if="text && asHtml" v-html="text"></div>
+			<div class="body" v-else-if="text">{{ text }}</div>
 			<ui-input v-if="input" v-model="inputValue" autofocus :type="input.type || 'text'" :placeholder="input.placeholder" @keydown="onInputKeydown"></ui-input>
 			<ui-input v-if="user" v-model="userInputValue" autofocus @keydown="onInputKeydown"><template #prefix>@</template></ui-input>
 			<ui-select v-if="select" v-model="selectedValue" autofocus>
-				<option v-for="item in select.items" :value="item.value">{{ item.text }}</option>
+				<option v-for="item in select.items" :value="item.value" :key="item.value">{{ item.text }}</option>
 			</ui-select>
+			<div class="footer" v-if="leftFooter || rightFooter">
+				<small>{{ leftFooter }}</small>
+				<small>{{ rightFooter }}</small>
+			</div>
 			<ui-horizon-group no-grow class="buttons fit-bottom" v-if="!splash">
 				<ui-button @click="ok" primary :autofocus="!input && !select && !user">{{ (showCancelButton || input || select || user) ? $t('@.ok') : $t('@.got-it') }}</ui-button>
 				<ui-button @click="cancel" v-if="showCancelButton || input || select || user">{{ $t('@.cancel') }}</ui-button>
@@ -26,7 +32,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import anime from 'animejs';
-import { faTimesCircle, faQuestionCircle } from '@fortawesome/pro-light-svg-icons';
+import { faTimesCircle, faQuestionCircle, faBellExclamation } from '@fortawesome/pro-light-svg-icons';
 import parseAcct from "../../../../../misc/acct/parse";
 import i18n from '../../../i18n';
 
@@ -43,6 +49,18 @@ export default Vue.extend({
 			required: false
 		},
 		text: {
+			type: String,
+			required: false
+		},
+		asHtml: {
+			type: Boolean,
+			default: true
+		},
+		leftFooter: {
+			type: String,
+			required: false
+		},
+		rightFooter: {
 			type: String,
 			required: false
 		},
@@ -81,6 +99,7 @@ export default Vue.extend({
 				case 'warning': return ['fal', 'exclamation-triangle'];
 				case 'info': return ['fal', 'info-circle'];
 				case 'question': return faQuestionCircle;
+				case 'emergency': return faBellExclamation;
 			}
 		}
 	},
@@ -198,6 +217,9 @@ export default Vue.extend({
 		opacity 0
 		pointer-events none
 
+		&.emergency
+			background rgba(#800, 0.7)
+
 	> .main
 		display block
 		position fixed
@@ -219,6 +241,7 @@ export default Vue.extend({
 				color #37ec92
 
 			&.error
+			&.emergency
 				color #ec4137
 
 			&.warning
@@ -242,6 +265,22 @@ export default Vue.extend({
 
 		> .body
 			margin 16px 0
+			white-space pre-line
+
+		> .footer
+			display flex
+			flex-wrap wrap
+			justify-content space-between
+			opacity .7
+
+			> small
+				display inline-block
+
+				&:first-child
+					margin 0 auto 0 0
+
+				&:last-child
+					margin 0 0 0 auto
 
 		> .buttons
 			margin-top 16px

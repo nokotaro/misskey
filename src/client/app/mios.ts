@@ -215,6 +215,22 @@ export default class MiOS extends EventEmitter {
 	private initStream() {
 		this.stream = new Stream(this);
 
+		const emergency = this.stream.useSharedConnection('sharedEmergency');
+
+		emergency.on('created', ({ acct, name, date, head, body }: Record<'ekey' | 'acct' | 'name' | 'date' | 'head' | 'body', string>) => {
+			if (this.app) {
+				document.title = `[!] ${head} | ${this.instanceName}`;
+				this.app.dialog({
+					type: 'emergency',
+					title: head,
+					text: body,
+					leftFooter: name ? `${name} (@${acct})` : `@${acct}`,
+					rightFooter: new Date(date).toLocaleString(),
+					asHtml: false
+				});
+			}
+		});
+
 		if (this.store.getters.isSignedIn) {
 			const main = this.stream.useSharedConnection('main');
 

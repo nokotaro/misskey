@@ -5,6 +5,7 @@ export type Source = {
 	repository_url?: string;
 	feedback_url?: string;
 	imasHostTokens?: Record<string, string>;
+	emergencyDelivers: Record<string, Record<'trigger' | 'head' | 'body', string | RegExp>>;
 	url: string;
 	port: number;
 	https?: { [x: string]: string };

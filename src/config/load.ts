@@ -43,7 +43,24 @@ export default function load() {
 
 	if (config.autoAdmin == null) config.autoAdmin = false;
 
-	return Object.assign(config, mixin);
+	if (!config.emergencyDelivers) config.emergencyDelivers = {};
+
+	const emergencyDelivers: Record<string, Record<'trigger' | 'head' | 'body', RegExp>> = {};
+
+	for (const [k, v] of Object.entries(config.emergencyDelivers)) {
+		if (v && typeof v === 'object' && typeof v.trigger === 'string' && typeof v.head === 'string' && typeof v.body === 'string') {
+			try {
+				emergencyDelivers[k] = {
+					trigger: new RegExp(v.trigger),
+					head: new RegExp(v.head),
+					body: new RegExp(v.body)
+				};
+			} catch {
+			}
+		}
+	}
+
+	return Object.assign(config, mixin, { emergencyDelivers });
 }
 
 function tryCreateUrl(url: string) {

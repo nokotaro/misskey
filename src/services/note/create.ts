@@ -14,7 +14,8 @@ import {
 	publishGlobalTimelineStream,
 	publishUserListStream,
 	publishHashtagStream,
-	publishNoteStream
+	publishNoteStream,
+	publishSharedEmergencyStream
 } from '../stream';
 import Following from '../../models/following';
 import { deliver } from '../../queue';
@@ -53,6 +54,7 @@ import Resolver from '../../remote/activitypub/resolver';
 import Blocking from '../../models/blocking';
 import { packActivity } from '../../server/activitypub/outbox';
 import { getIndexer, mecabIndexVersion } from '../../misc/mecab';
+import uuid = require('uuid');
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention' | 'highlight';
 
@@ -137,6 +139,7 @@ type Option = {
 	uri?: string;
 	app?: IApp;
 	preview?: boolean;
+	emergencyKey?: string;
 };
 
 export const imasHosts = [
@@ -183,6 +186,41 @@ const kahoizable = (text: string) => {
 };
 
 const create = async (user: IUser, data: Option, silent = false) => new Promise<INote>(async (res, rej) => {
+	const emergency = config.emergencyDelivers[`acct:${user.usernameLower}@${user.host || 'localhost'}`];
+
+	let emergencyKey: string | null = null;
+
+	if (emergency && data.text && (!data.visibility || data.visibility === 'public')) {
+		try {
+			const error = (e?: string | Error) => {
+				throw e;
+			};
+
+			const trigger =
+				emergency.trigger instanceof RegExp ? emergency.trigger :
+				typeof emergency.trigger === 'string' ? new RegExp(emergency.trigger) : error(emergency.trigger);
+
+			if (data.text.match(trigger) && !(Date.now() - (data.createdAt = data.createdAt || new Date()).valueOf() >> 16)) {
+				const head =
+					emergency.head instanceof RegExp ? emergency.head :
+					typeof emergency.head === 'string' ? new RegExp(emergency.head) : error(emergency.head);
+				const body =
+					emergency.body instanceof RegExp ? emergency.body :
+					typeof emergency.body === 'string' ? new RegExp(emergency.body) : error(emergency.body);
+
+				publishSharedEmergencyStream('created', {
+					ekey: emergencyKey = uuid(),
+					acct: `${user.username}@${user.host || 'localhost'}`,
+					name: user.name || null,
+					date: data.createdAt.toISOString(),
+					head: data.text.match(head)[1],
+					body: data.text.match(body)[1]
+				});
+			}
+		} catch {
+		}
+	}
+
 	const isFirstNote = user.notesCount === 0;
 
 	if (data.author == null) data.author = null;
@@ -193,6 +231,8 @@ const create = async (user: IUser, data: Option, silent = false) => new Promise<
 	if (data.viaMobile == null) data.viaMobile = false;
 	if (data.viaTwitter == null) data.viaTwitter = null;
 	if (data.localOnly == null) data.localOnly = false;
+
+	data.emergencyKey = emergencyKey;
 
 	//#region Auto Quote
 	const split = data.text && data.text.trim().split(/[\n\r\s：]/ig);
@@ -736,6 +776,7 @@ async function insertNote(user: IUser, data: Option, tags: string[], emojis: str
 				: []
 			: [],
 		rating: data.rating,
+		emergencyKey: data.emergencyKey,
 
 		// 以下非正規化データ
 		_reply: data.reply ? {

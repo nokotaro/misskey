@@ -51,6 +51,7 @@ export type INote = {
 	authorId: mongo.ObjectID;
 	poll: IPoll;
 	name?: string;
+	emergencyKey?: string;
 	text: string;
 	tags: string[];
 	tagsLower: string[];
