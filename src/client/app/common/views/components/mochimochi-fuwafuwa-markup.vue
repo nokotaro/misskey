@@ -1,5 +1,5 @@
 <template>
-<mfm-core v-bind="$attrs" class="havbbuyv" :class="{ nowrap: $attrs['nowrap'] }" v-once/>
+<mfm-core v-bind="$attrs" class="havbbuyv" :class="{ nowrap: $attrs['nowrap'] }" v-once ref="ref"/>
 </template>
 
 <script lang="ts">
@@ -19,6 +19,9 @@ export default Vue.extend({
 
 	&.nowrap
 		white-space pre
+
+	>>> .emoji:only-child
+		font-size 4em
 
 	>>> .title
 		display block
