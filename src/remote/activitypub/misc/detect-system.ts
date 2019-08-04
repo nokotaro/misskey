@@ -16,7 +16,7 @@ export function detectSystem(x: IAnyObject) {
 	if (Object.keys(obj).includes('commentsEnabled')) return 'PeerTube';
 	if (Object.keys(obj).includes('diaspora')) return 'Friendica';
 	if (Object.keys(obj).includes('toot')) return 'Mastodon';
-	if (Object.keys(obj).includes('Hashtag')) return 'Misskey';
+	if (Object.keys(obj).includes('Hashtag')) return 'Misskey/twista';
 
 	return null;
 }
