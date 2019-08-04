@@ -65,7 +65,7 @@ export async function getAtomFeed(acct: string, untilId?: string) {
 			updated: new Date().toISOString(),
 			author: json.author,
 			generator: {
-				'#text': 'Misskey'
+				'#text': 'twista'
 			},
 			description: json.description,
 		}

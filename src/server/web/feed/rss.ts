@@ -74,7 +74,7 @@ export async function getRSSFeed(acct: string, untilId?: string) {
 				link: json.home_page_url,
 				description: json.description,
 				pubDate: new Date().toUTCString(),
-				generator: 'Misskey',
+				generator: 'twista',
 				image: {
 					url: json.icon,
 					link: json.home_page_url,
