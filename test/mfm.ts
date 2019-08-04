@@ -1169,7 +1169,6 @@ describe('MFM', () => {
 				]);
 			});
 
-			// https://misskey.io/notes/7u1kv5dmia
 			it('ignore internal tilde', () => {
 				const tokens = parse('~~~~~');
 				assert.deepStrictEqual(tokens, [

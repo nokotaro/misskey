@@ -75,9 +75,6 @@ export default define(meta, async (ps, user) => {
 	} else if (ps.url) {
 		const isInternalStorageUrl = ps.url.startsWith(config.driveUrl);
 		if (isInternalStorageUrl) {
-			// Extract file ID from url
-			// e.g.
-			// http://misskey.local/files/foo?original=bar --> foo
 			const fileId = new mongo.ObjectID(ps.url.replace(config.driveUrl, '').replace(/\?(.*)$/, '').replace(/\//g, ''));
 			file = await DriveFile.findOne({
 				_id: fileId,
