@@ -16,7 +16,7 @@ common:
     ui: "Interface utilisateur"
     ui-desc: "Aucune interface graphique ne peut plaire à tout le monde. Par conséquent, twista possède une interface utilisateur hautement personnalisable selon vos goûts. Vous pouvez rendre votre page d'accueil originale en modifiant la mise en page de votre fil et en déplaçant les widgets que vous pouvez facilement ajuster pour vous approprier cet espace."
     drive: "Drive"
-    drive-desc: "Vous voulez poster une photo que vous avez déjà transférée ? Vous souhaitez organiser, nommer et créer un dossier pour vos fichiers téléversés ? Misskey Drive est la meilleure solution pour vous. Très facile de partager vos fichiers en ligne."
+    drive-desc: "Vous voulez poster une photo que vous avez déjà transférée ? Vous souhaitez organiser, nommer et créer un dossier pour vos fichiers téléversés ? twista Drive est la meilleure solution pour vous. Très facile de partager vos fichiers en ligne."
     outro: "Découvrez vous-même les fonctionnalités de twista. Étant donné que twista est un réseau social fédéré, vous pouvez essayer d’autres instances afin de trouver vos amis si la présente instance ne vous correspond pas. Bonne chance et amusez-vous bien !"
   application-authorization: "Autorisations de l’application"
   close: "Fermer"
