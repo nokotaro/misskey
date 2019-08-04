@@ -154,7 +154,7 @@ function greet() {
 	bootLogger.info('Welcome to twista!');
 	bootLogger.info(`twista v${pkg.version}`, null, true);
 	bootLogger.info('twista is maintained by @346design.');
-	bootLogger.info('Misskey (fork base) is maintained by @syuilo, @AyaMorisawa, @mei23, and @acid-chicken.');
+	bootLogger.info('Misskey (fork base) is maintained by @syuilo, @AyaMorisawa, @mei23, @acid-chicken, and @rinsuki.');
 }
 
 /**
