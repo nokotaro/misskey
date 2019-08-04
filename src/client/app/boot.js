@@ -1,8 +1,3 @@
-/**
- * MISSKEY BOOT LOADER
- * (ENTRY POINT)
- */
-
 'use strict';
 
 (async function() {

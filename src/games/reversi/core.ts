@@ -1,7 +1,5 @@
 import { count, concat } from '../../prelude/array';
 
-// MISSKEY REVERSI ENGINE
-
 /**
  * true ... 黒
  * false ... 白
