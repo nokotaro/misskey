@@ -86,6 +86,18 @@ declare global {
      */
 		of<T1>(item1: T1): [T1];
 	}
+
+	interface WindowOrWorkerGlobalScope {
+		setInterval<T extends any[] = any[]>(handler: TimerHandlerGeneric<T>, timeout?: number, ...arguments: T[]): number;
+
+		setTimeout<T extends any[] = any[]>(handler: TimerHandlerGeneric<T>, timeout?: number, ...arguments: T[]): number;
+	}
+
+	type TimerHandlerGeneric<T extends any[] = any[]> = string | ((...args: T) => any);
+
+	function setInterval<T extends any[] = any[]>(handler: TimerHandlerGeneric<T>, timeout?: number, ...arguments: T[]): number;
+
+	function setTimeout<T extends any[] = any[]>(handler: TimerHandlerGeneric<T>, timeout?: number, ...arguments: T[]): number;
 }
 // tslint:enable
 //#endregion
