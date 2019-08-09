@@ -85,17 +85,28 @@ export default Vue.extend({
 			} else {
 				const char = (() => {
 					switch (recentReaction) {
-						case 'like': return '👍';
-						case 'love':
+						case 'like': return (
+							this.$store.getters.isSignedIn && this.$store.state.settings.reaction0 ? this.$store.state.settings.reaction0 : '👍');
+						case 'love': return (
+							this.$store.getters.isSignedIn && this.$store.state.settings.reaction1 ? this.$store.state.settings.reaction1 : '❤');
+						case 'laugh': return (
+							this.$store.getters.isSignedIn && this.$store.state.settings.reaction2 ? this.$store.state.settings.reaction2 : '😆');
+						case 'hmm': return (
+							this.$store.getters.isSignedIn && this.$store.state.settings.reaction3 ? this.$store.state.settings.reaction3 : '🤔');
+						case 'surprise': return (
+							this.$store.getters.isSignedIn && this.$store.state.settings.reaction4 ? this.$store.state.settings.reaction4 : '😮');
+						case 'congrats': return (
+							this.$store.getters.isSignedIn && this.$store.state.settings.reaction5 ? this.$store.state.settings.reaction5 : '🎉');
+						case 'angry': return (
+							this.$store.getters.isSignedIn && this.$store.state.settings.reaction6 ? this.$store.state.settings.reaction6 : '💢');
+						case 'confused': return (
+							this.$store.getters.isSignedIn && this.$store.state.settings.reaction7 ? this.$store.state.settings.reaction7 : '😥');
+						case 'rip': return (
+							this.$store.getters.isSignedIn && this.$store.state.settings.reaction8 ? this.$store.state.settings.reaction8 : '😇');
+						case 'pudding': return (
+							this.$store.getters.isSignedIn && this.$store.state.settings.reaction9 ? this.$store.state.settings.reaction9 :
+							this.$store.getters.isSignedIn && this.$store.state.settings.iLikeSushi ? '🍣' : '🍮');
 						case 'twitter_favorite': return '❤';
-						case 'laugh': return '😆';
-						case 'hmm': return '🤔';
-						case 'surprise': return '😮';
-						case 'congrats': return '🎉';
-						case 'angry': return '💢';
-						case 'confused': return '😥';
-						case 'rip': return '😇';
-						case 'pudding': return (this.$store.getters.isSignedIn && this.$store.state.settings.iLikeSushi) ? '🍣' : '🍮';
 						case 'star':
 						case '': return '⭐';
 						default: return recentReaction;
@@ -262,7 +273,7 @@ export default Vue.extend({
 				pointer-events none
 
 		&.prefer-sushi > :nth-child(8) > div::before
-			background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f363.svg')
+			background-image var(--reaction-9-url, url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f363.svg'))
 
 		> div
 			grid-column 1
@@ -316,34 +327,34 @@ export default Vue.extend({
 				transition-delay .01s
 
 				> div::before
-					background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f44d.svg')
+					background-image var(--reaction-0-url, url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f44d.svg'))
 					transform rotate(-60deg)
 
 			&:nth-child(3)
 				transition-delay .02s
 
 				> div::before
-					background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/2764.svg')
+					background-image var(--reaction-1-url, url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/2764.svg'))
 					transform rotate(-30deg)
 
 			&:nth-child(4)
 				transition-delay .03s
 
 				> div::before
-					background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f606.svg')
+					background-image var(--reaction-2-url, url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f606.svg'))
 
 			&:nth-child(5)
 				transition-delay .04s
 
 				> div::before
-					background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f914.svg')
+					background-image var(--reaction-3-url, url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f914.svg'))
 					transform rotate(30deg)
 
 			&:nth-child(6)
 				transition-delay .05s
 
 				> div::before
-					background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f62e.svg')
+					background-image var(--reaction-4-url, url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f62e.svg'))
 					transform rotate(60deg)
 
 			&:nth-child(7)
@@ -362,34 +373,34 @@ export default Vue.extend({
 				transition-delay .07s
 
 				> div::before
-					background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f36e.svg')
+					background-image var(--reaction-9-url, url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f36e.svg'))
 					transform rotate(120deg)
 
 			&:nth-child(9)
 				transition-delay .08s
 
 				> div::before
-					background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f607.svg')
+					background-image var(--reaction-8-url, url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f607.svg'))
 					transform rotate(150deg)
 
 			&:nth-child(10)
 				transition-delay .09s
 
 				> div::before
-					background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f625.svg')
+					background-image var(--reaction-7-url, url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f625.svg'))
 					transform rotate(180deg)
 
 			&:nth-child(11)
 				transition-delay .1s
 
 				> div::before
-					background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f4a2.svg')
+					background-image var(--reaction-6-url, url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f4a2.svg'))
 					transform rotate(-150deg)
 
 			&:nth-child(12)
 				transition-delay .11s
 
 				> div::before
-					background-image url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f389.svg')
+					background-image var(--reaction-5-url, url('https://cdnjs.cloudflare.com/ajax/libs/twemoji/12.0.1/2/svg/1f389.svg'))
 					transform rotate(-120deg)
 </style>
