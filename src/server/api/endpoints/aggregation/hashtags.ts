@@ -12,26 +12,22 @@ export default define(meta, async (ps) => {
 	const instance = await fetchMeta();
 	const hidedTags = instance.hidedTags.map(t => t.toLowerCase());
 
-	// 重い
-	//const span = 1000 * 60 * 60 * 24 * 7; // 1週間
-	const span = 1000 * 60 * 60 * 24; // 1日
-
 	//#region 1. 指定期間の内に投稿されたハッシュタグ(とユーザーのペア)を集計
 	const data = await Note.aggregate([{
 		$match: {
 			createdAt: {
-				$gt: new Date(Date.now() - span)
+				$gt: new Date(Date.now() - 2592e6)
 			},
-			tagsLower: {
+			tags: {
 				$exists: true,
 				$ne: []
 			}
 		}
 	}, {
-		$unwind: '$tagsLower'
+		$unwind: '$tags'
 	}, {
 		$group: {
-			_id: { tag: '$tagsLower', userId: '$userId' }
+			_id: { tag: '$tags', userId: '$userId' }
 		}
 	}]) as {
 		_id: {
@@ -41,32 +37,17 @@ export default define(meta, async (ps) => {
 	}[];
 	//#endregion
 
-	if (data.length == 0) {
+	if (!data.length) {
 		return [];
 	}
 
-	let tags: {
-		name: string;
-		count: number;
-	}[] = [];
-
-	// カウント
-	for (const x of data.map(x => x._id).filter(x => !hidedTags.includes(x.tag))) {
-		const i = tags.findIndex(tag => tag.name == x.tag);
-		if (i != -1) {
-			tags[i].count++;
-		} else {
-			tags.push({
-				name: x.tag,
-				count: 1
-			});
-		}
-	}
-
-	// タグを人気順に並べ替え
-	tags.sort((a, b) => b.count - a.count);
-
-	tags = tags.slice(0, 30);
-
-	return tags;
+	return Object
+		.entries(data
+			.map(({ _id }) => _id)
+			.filter(({ tag }) => !hidedTags.includes(tag))
+			.reduce<Record<string, number>>((a, { tag }) => (a[tag] = a[tag] ? ++a[tag] : 1, a), Object.create(null)))
+		.sort(([, a], [, b]) => b - a)
+		.reduce<[string, number][]>((a, [k, v], i) => (i = a.findIndex(([x]) => x === k), ~i ? ++a[i][1] : a.push([k, v]), a), [])
+		.sort(([, a], [, b]) => b - a)
+		.map(([name, count]) => ({ name, count }));
 });
