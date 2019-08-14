@@ -28,6 +28,7 @@ Note.createIndex('tagsLower');
 Note.createIndex('_user.host');
 Note.createIndex('_files._id');
 Note.createIndex('_files.contentType');
+Note.createIndex({ 'poll.expiresAt': -1 });
 Note.createIndex({ createdAt: -1 });
 Note.createIndex({ score: -1 }, { sparse: true });
 Note.createIndex('mecabIndexVersion');
