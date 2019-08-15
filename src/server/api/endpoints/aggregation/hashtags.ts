@@ -1,3 +1,4 @@
+import $ from 'cafy';
 import Note from '../../../../models/note';
 import define from '../../define';
 import fetchMeta from '../../../../misc/fetch-meta';
@@ -6,6 +7,13 @@ export const meta = {
 	tags: ['hashtags'],
 
 	requireCredential: false,
+
+	params: {
+		limit: {
+			validator: $.optional.num.min(1),
+			default: 100
+		},
+	}
 };
 
 export default define(meta, async (ps) => {
@@ -49,5 +57,6 @@ export default define(meta, async (ps) => {
 		.sort(([, a], [, b]) => b - a)
 		.reduce<[string, number][]>((a, [k, v], i) => (i = a.findIndex(([x]) => x === k), ~i ? ++a[i][1] : a.push([k, v]), a), [])
 		.sort(([, a], [, b]) => b - a)
-		.map(([name, count]) => ({ name, count }));
+		.map(([name, count]) => ({ name, count }))
+		.splice(ps.limit);
 });
