@@ -346,7 +346,7 @@ const create = async (user: IUser, data: Option, silent = false) => new Promise<
 		mentionedUsers = data.apMentions || await extractMentionedUsers(user, combinedTokens);
 	}
 
-	tags = tags.filter(tag => tag.length <= 127).splice(255);
+	tags = tags.filter(tag => tag.length <= 127).splice(0, 255);
 
 	const normalizeAsciiHost = (host: string) => {
 		if (host == null) return null;

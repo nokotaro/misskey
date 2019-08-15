@@ -58,5 +58,5 @@ export default define(meta, async (ps) => {
 		.reduce<[string, number][]>((a, [k, v], i) => (i = a.findIndex(([x]) => x === k), ~i ? ++a[i][1] : a.push([k, v]), a), [])
 		.sort(([, a], [, b]) => b - a)
 		.map(([name, count]) => ({ name, count }))
-		.splice(ps.limit);
+		.splice(0, ps.limit);
 });
