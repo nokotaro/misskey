@@ -2,6 +2,7 @@
 <span
 	class="reaction"
 	:class="{ reacted: note.myReaction == reaction }"
+	:title="reaction.match(/^\w/) ? `:${reaction}:` : reaction"
 	@click="toggleReaction(reaction)"
 	v-if="count > 0"
 	v-particle:congrats="!isMe && reaction === 'congrats'"
