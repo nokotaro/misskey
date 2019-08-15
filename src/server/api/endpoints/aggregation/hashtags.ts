@@ -13,6 +13,11 @@ export const meta = {
 			validator: $.optional.num.min(1),
 			default: 100
 		},
+
+		rangeMilliseconds: {
+			validator: $.optional.num.min(1),
+			default: 2592e6
+		}
 	}
 };
 
@@ -24,7 +29,7 @@ export default define(meta, async (ps) => {
 	const data = await Note.aggregate([{
 		$match: {
 			createdAt: {
-				$gt: new Date(Date.now() - 2592e6)
+				$gt: new Date(Date.now() - ps.rangeMilliseconds)
 			},
 			tags: {
 				$exists: true,
