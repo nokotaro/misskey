@@ -402,7 +402,9 @@ export default Vue.extend({
 
 		clear() {
 			this.text = '';
+			this.cw = null;
 			this.files = [];
+			this.useCw = false;
 			this.poll = false;
 			this.$emit('change-attached-files', this.files);
 		},
