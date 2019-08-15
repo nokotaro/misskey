@@ -20,7 +20,7 @@ export default Vue.extend({
 	&.nowrap
 		white-space pre
 
-	/deep/ > .emoji:only-child
+	&:not(.nowrap) /deep/ > .emoji:only-child
 		font-size 4em
 
 	>>> .title
