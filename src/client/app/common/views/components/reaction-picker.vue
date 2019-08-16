@@ -16,7 +16,7 @@
 		</div>
 		<aside>
 			<div>
-				<ui-input v-model="atlas" :autofocus="true" :use-autocomplete="true" :no-zwsp="true" @abort="close" @enter="tryReact" @update="tryReact">
+				<ui-input v-model="atlas" :use-autocomplete="true" :no-zwsp="true" @abort="close" @enter="tryReact" @update="tryReact" ref="atlas">
 					<template #icon><fa :icon="['fal', 'atlas']"/></template>
 				</ui-input>
 			</div>
@@ -147,6 +147,8 @@ export default Vue.extend({
 				popover.style.top = ((top + window.pageYOffset + (this.source.offsetHeight / 2)) - (popover.offsetHeight / 2)) + 'px';
 
 				popover.classList.remove('await');
+
+				this.$nextTick(() => this.$refs.atlas.focusQuietly());
 			});
 		})
 	},
