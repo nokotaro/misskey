@@ -66,7 +66,7 @@ export default define(meta, async (ps, user) => {
 	});
 
 	if (ps.reaction === '-random') {
-		const list: string[] = Object.entries(lib).filter((x: any) => x[1].category !== 'flags').map(y => y[0]);
+		const list = Object.entries(lib).filter((x: any) => x[1].category !== 'flags').map(y => y[0]);
 		const code = list[Math.floor(Math.random() * list.length)];
 		ps.reaction = lib[code].char;
 	}
