@@ -19,6 +19,7 @@
 				:placeholder="placeholder"
 				:pattern="pattern"
 				:autocomplete="autocomplete"
+				v-autocomplete="useAutocomplete ? { model: 'v', noZwsp } : undefined"
 				:spellcheck="spellcheck"
 				@focus="focused = true"
 				@blur="focused = false"
@@ -34,6 +35,7 @@
 				:placeholder="placeholder"
 				:pattern="pattern"
 				:autocomplete="autocomplete"
+				v-autocomplete="useAutocomplete ? { model: 'v', noZwsp } : undefined"
 				:spellcheck="spellcheck"
 				@focus="focused = true"
 				@blur="focused = false"
@@ -117,6 +119,14 @@ export default Vue.extend({
 			default: false
 		},
 		autocomplete: {
+			required: false
+		},
+		useAutocomplete: {
+			type: Boolean,
+			default: false
+		},
+		noZwsp: {
+			type: Boolean,
 			required: false
 		},
 		spellcheck: {
@@ -218,9 +228,21 @@ export default Vue.extend({
 		});
 
 		this.$on('keydown', (e: KeyboardEvent) => {
-			if (e.code == 'Enter') {
-				this.$emit('enter');
+			switch (e.code) {
+				case 'Enter': {
+					return this.$emit('enter');
+				}
+				case 'Escape': {
+					return this.$emit('abort');
+				}
+				default : {
+					return null;
+				}
 			}
+		});
+
+		this.$on('input', (e: KeyboardEvent) => {
+			return this.$emit('update');
 		});
 	},
 	methods: {
