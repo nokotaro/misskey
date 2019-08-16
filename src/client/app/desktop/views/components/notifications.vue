@@ -313,7 +313,7 @@ export default Vue.extend({
 					p
 						margin 0
 
-						[data-icon], .mk-reaction-icon
+						[data-icon], .mk-reaction-icon, .emoji
 							margin-right 4px
 
 				.note-preview
