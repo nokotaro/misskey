@@ -24,6 +24,16 @@ import { lab } from 'color-convert';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/tag-cloud.vue'),
+	props: {
+		limit: {
+			type: Number,
+			default: 25
+		},
+		range: {
+			type: Number,
+			default: 6048e5
+		}
+	},
 	components: {
 		[VueWordCloud.name]: VueWordCloud
 	},
@@ -48,7 +58,10 @@ export default Vue.extend({
 	},
 	methods: {
 		fetch() {
-			this.$root.api('aggregation/hashtags').then(tags => {
+			this.$root.api('aggregation/hashtags', {
+				limit: this.limit
+				rangeMilliseconds: this.range
+			}).then(tags => {
 				this.tags = tags;
 				this.fetching = false;
 			});
