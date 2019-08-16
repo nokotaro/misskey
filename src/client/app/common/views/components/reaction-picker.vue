@@ -16,7 +16,7 @@
 		</div>
 		<aside>
 			<div>
-				<ui-input v-model="atlas" :use-autocomplete="true" :no-zwsp="true" @abort="close" @enter="tryReact" @update="tryReact" ref="atlas">
+				<ui-input v-model="atlas" :use-autocomplete="true" :for-react="true" @abort="close" @enter="tryReact(true)" @update="tryReact" ref="atlas">
 					<template #icon><fa :icon="['fal', 'atlas']"/></template>
 				</ui-input>
 			</div>
@@ -154,7 +154,7 @@ export default Vue.extend({
 	},
 
 	methods: {
-		tryReact() {
+		tryReact(force = false) {
 			const maybeReaction: string = this.atlas || '';
 
 			if (maybeReaction.length > 1 && maybeReaction.startsWith(':') && maybeReaction.endsWith(':')) {
@@ -163,6 +163,10 @@ export default Vue.extend({
 				this.react(emoji ? emoji.char : maybeReaction);
 			} else if (emojiRegex.test(maybeReaction)) {
 				this.react(maybeReaction);
+			} else if (force) {
+				const emoji = lib[maybeReaction];
+
+				this.react(emoji ? emoji.char : `:${maybeReaction}:`);
 			}
 		},
 
