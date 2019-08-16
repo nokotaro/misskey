@@ -249,6 +249,9 @@ export default Vue.extend({
 		focus() {
 			this.$refs.input.focus();
 		},
+		focusQuietly() {
+			this.$refs.input.focus({ preventScroll: true });
+		},
 		togglePassword() {
 			if (this.type == 'password') {
 				this.type = 'text'
