@@ -1,4 +1,4 @@
-import { emojiRegex } from './emoji-regex';
+import emojiRegex from './emoji-regex';
 
 export const getSpeechName = (note: any): string => {
 	if (note.user.name) {

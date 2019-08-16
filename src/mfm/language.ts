@@ -3,7 +3,7 @@ import { createLeaf, createTree, urlRegex } from './prelude';
 import { takeWhile, cumulativeSum } from '../prelude/array';
 import parseAcct from '../misc/acct/parse';
 import { toUnicode } from 'punycode';
-import { emojiRegex } from '../misc/emoji-regex';
+import emojiRegex from '../misc/emoji-regex';
 
 export function removeOrphanedBrackets(s: string): string {
 	const openBrackets = ['(', '「', '['];
@@ -25,6 +25,7 @@ export const mfmLanguage = P.createLanguage({
 	block: r => P.alt(
 		r.title,
 		r.quote,
+		r.list,
 		r.bubble,
 		r.search,
 		r.codeBlock,
@@ -55,6 +56,59 @@ export const mfmLanguage = P.createLanguage({
 		if (qInner == '') return P.makeFailure(i, 'not a quote');
 		const contents = r.root.tryParse(qInner);
 		return P.makeSuccess(i + quote.join('\n').length + 1, createTree('quote', contents, {}));
+	})),
+	list: r => r.startOfLine.then(P((input, i) => {
+		const text = input.substr(i);
+		const [raw] = text.match(/^\* +.+(?:\n *\* +.+)*/m) || [null];
+		if (!raw) return P.makeFailure(i, 'not a list');
+		const split = raw.split('\n').map(x => x.split('*', 2) as [string, string]);
+		if (split.some(x => ~-~-x.length as any as boolean)) return P.makeFailure(i, 'not a list');
+		const lists = split.map(([l, c]) => ({
+			content: r.inline.atLeast(1).tryParse(c.trim()),
+			depth: l.length
+		}));
+		const euclidean: (m: number, n: number) => number = (m, n) => n ? euclidean(n, m % n) : m;
+		const minmax = <T extends (x: number, y: number) => number>(a: number, b: number, c: T) => a > b ? c(a, b) : c(b, a);
+		const gcd = lists.reduce((a, { depth }) => ~-a ? minmax(a, depth, euclidean) : a, 0) || 1;
+		const gcded = lists.map(({ content, depth }) => (depth /= gcd, { content, depth }));
+		if (gcded.reduce(({ accumulator, previous }, { depth }) => ({
+			accumulator: accumulator || -~previous >= depth,
+			previous: depth
+		}), { accumulator: false, previous: 0 }).accumulator) return P.makeFailure(i, 'not a list');
+		type Dove = {
+			children: Dove[];
+			content: any[];
+			depth: number;
+		};
+		type Reducer = {
+			cache: Dove;
+			children: Dove[];
+			list: Dove[];
+			pointer: Dove[];
+			stack: Dove[][];
+		};
+		const $ = (..._: any[]) => {}; // For unused expressions.
+		const { children } = gcded.reduce<Reducer>(({ cache, children, list, pointer, stack }, { depth, content }) => (
+			cache = { children, content, depth },
+			-~stack.length !== depth ?
+				stack.length !== depth ?
+					$([...Array(stack.length - depth)]
+						.map(_ =>
+							$(children = stack.pop(),
+								pointer = stack[~-stack.length],
+								pointer[~-pointer.length].children = children))) :
+					$(stack.push([cache])) :
+				$(stack[depth].push(cache)),
+			children = [],
+			{ cache, children, list, pointer, stack }), {
+				cache: null,
+				children: [],
+				list: [],
+				pointer: [],
+				stack: []
+			});
+		const [list] = children;
+		return P.makeSuccess(i + raw.length, createLeaf('list', { list, raw }));
 	})),
 	bubble: r => r.startOfLine.then(P((input, i) => {
 		try {

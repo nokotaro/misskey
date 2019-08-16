@@ -1,5 +1,5 @@
 import Emoji from '../models/emoji';
-import { emojiRegex } from './emoji-regex';
+import emojiRegex from './emoji-regex';
 
 const basic10: Record<string, string> = {
 	'👍': 'like',
