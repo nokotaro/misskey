@@ -19,7 +19,7 @@
 				:placeholder="placeholder"
 				:pattern="pattern"
 				:autocomplete="autocomplete"
-				v-autocomplete="useAutocomplete ? { model: 'v', noZwsp } : undefined"
+				v-autocomplete="useAutocomplete ? { model: 'v', forReact } : undefined"
 				:spellcheck="spellcheck"
 				@focus="focused = true"
 				@blur="focused = false"
@@ -35,7 +35,7 @@
 				:placeholder="placeholder"
 				:pattern="pattern"
 				:autocomplete="autocomplete"
-				v-autocomplete="useAutocomplete ? { model: 'v', noZwsp } : undefined"
+				v-autocomplete="useAutocomplete ? { model: 'v', forReact } : undefined"
 				:spellcheck="spellcheck"
 				@focus="focused = true"
 				@blur="focused = false"
@@ -125,7 +125,7 @@ export default Vue.extend({
 			type: Boolean,
 			default: false
 		},
-		noZwsp: {
+		forReact: {
 			type: Boolean,
 			required: false
 		},

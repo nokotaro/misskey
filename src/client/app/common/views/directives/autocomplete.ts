@@ -26,7 +26,7 @@ class Autocomplete {
 	private currentType: string;
 	private opts: {
 		model: string;
-		noZwsp?: boolean;
+		forReact?: boolean;
 	};
 	private opening: boolean;
 
@@ -86,14 +86,14 @@ class Autocomplete {
 			hashtagIndex,
 			emojiIndex);
 
-		if (max == -1) {
+		if (!this.opts.forReact && !~max) {
 			this.close();
 			return;
 		}
 
-		const isMention = mentionIndex != -1;
-		const isHashtag = hashtagIndex != -1;
-		const isEmoji = emojiIndex != -1;
+		const isMention = ~mentionIndex;
+		const isHashtag = ~hashtagIndex;
+		const isEmoji = ~emojiIndex || this.opts.forReact;
 
 		let opened = false;
 
@@ -114,7 +114,7 @@ class Autocomplete {
 		}
 
 		if (isEmoji && opened == false) {
-			const emoji = text.substr(emojiIndex + 1);
+			const emoji = text.substr(-~emojiIndex);
 			if (!emoji.includes(' ')) {
 				this.open('emoji', emoji);
 				opened = true;
@@ -238,7 +238,7 @@ class Autocomplete {
 			const after = source.substr(caret);
 
 			// 挿入
-			const sep = (value.startsWith(':') && !this.opts.noZwsp) ? String.fromCharCode(0x200B) : '';
+			const sep = (value.startsWith(':') && !this.opts.forReact) ? String.fromCharCode(0x200B) : '';
 			this.text = trimmedBefore + value + sep + after;
 
 			// キャレットを戻す
