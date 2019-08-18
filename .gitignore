@@ -5,6 +5,7 @@
 !/.config/mongo_initdb_example.js
 /build/
 /built/
+/*.local.sh
 
 # Logs
 logs
