@@ -144,7 +144,7 @@ export default Vue.extend({
 				document.title = `${Vue.filter('userName')(this.user)} | ${this.$root.instanceName}`;
 
 				const now = new Date();
-				const [today] = new Date(now.valueOf() - now.getTimezoneOffset() * 60000).toISOString().split('T');
+				const [today] = new Date(now.valueOf() - now.getTimezoneOffset() * 6e4).toISOString().split('T');
 				const [, todayMonth, todayDay] = today.split('-');
 				if (!this.$store.state.device.reduceMotion && user.profile && user.profile.birthday && user.profile.birthday.endsWith(['', todayMonth, todayDay].join('-'))) {
 					const end = Date.now() + 15000;
