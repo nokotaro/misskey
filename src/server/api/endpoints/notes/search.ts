@@ -382,7 +382,7 @@ async function searchInternal(me: ILocalUser, query: string, limit: number, offs
 	//console.log(JSON.stringify(noteQuery, null, 2));
 
 	const notes = await Note.find(noteQuery, {
-		maxTimeMS: 20000,
+		maxTimeMS: 2e4,
 		limit,
 		skip: offset,
 		sort,

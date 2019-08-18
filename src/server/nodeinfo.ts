@@ -29,8 +29,8 @@ const nodeinfo2 = async () => {
 	] = await Promise.all([
 		fetchMeta(),
 		User.count({ host: null }),
-		User.count({ host: null, updatedAt: { $gt: new Date(Date.now() - 15552000000) } }),
-		User.count({ host: null, updatedAt: { $gt: new Date(Date.now() - 2592000000) } }),
+		User.count({ host: null, updatedAt: { $gt: new Date(Date.now() - 15552e6) } }),
+		User.count({ host: null, updatedAt: { $gt: new Date(Date.now() - 2592e6) } }),
 		Note.count({ '_user.host': null, replyId: null }),
 		Note.count({ '_user.host': null, replyId: { $ne: null } })
 	]);

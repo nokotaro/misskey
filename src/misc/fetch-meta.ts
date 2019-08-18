@@ -19,7 +19,7 @@ const defaultMeta: any = {
 	enableDiscordIntegration: false,
 	enableExternalUserRecommendation: false,
 	externalUserRecommendationEngine: '#',
-	externalUserRecommendationTimeout: 300000,
+	externalUserRecommendationTimeout: 3e5,
 	mascotImageUrl: '#',
 	errorImageUrl: '#',
 	enableServiceWorker: false

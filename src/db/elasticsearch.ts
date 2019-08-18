@@ -53,7 +53,7 @@ if (client) {
 	// Send a HEAD request
 	client.ping({
 		// Ping usually has a 3000ms timeout
-		requestTimeout: 30000
+		requestTimeout: 3e4
 	}, error => {
 		if (error) {
 			esLogger.error('elasticsearch is down!');
