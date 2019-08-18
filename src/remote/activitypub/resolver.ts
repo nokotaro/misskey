@@ -1,5 +1,6 @@
 import * as Twitter from 'twit';
 import * as request from 'request-promise-native';
+import { apLogger } from './logger';
 import { IObject } from './type';
 import config from '../../config';
 import fetchMeta from '../../misc/fetch-meta';
@@ -7,6 +8,8 @@ import { registerOrFetchInstanceDoc } from '../../services/register-or-fetch-ins
 import { extractDbHost } from '../../misc/convert-host';
 import Instance from '../../models/instance';
 import { detectSystem } from './misc/detect-system';
+
+const resolverLogger = apLogger.createSubLogger('resolver');
 
 export interface IResolverOptions {
 	twitter?: {
@@ -101,6 +104,8 @@ export default class Resolver {
 		}
 
 		updateInstanceSystem(value, object);
+
+		resolverLogger.debug('get', { request: value, response: object });
 
 		return object;
 	}
