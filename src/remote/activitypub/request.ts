@@ -11,6 +11,7 @@ import { apLogger } from './logger';
 import Instance from '../../models/instance';
 import { toDbHost } from '../../misc/convert-host';
 import * as httpsProxyAgent from 'https-proxy-agent';
+import { tryCreateUrl } from '../../prelude/url';
 
 export const logger = apLogger.createSubLogger('deliver');
 
@@ -23,7 +24,7 @@ const agent = config.proxy
 export default async (user: ILocalUser, url: string, object: any) => {
 	const timeout = 10 * 1000;
 
-	const { protocol, host, hostname, port, pathname, search } = new URL(url);
+	const { protocol, host, hostname, port, pathname, search } = tryCreateUrl(url, URL) || {};
 
 	// ブロック/閉鎖してたら中断
 	// TODO: いちいちデータベースにアクセスするのはコスト高そうなのでどっかにキャッシュしておく

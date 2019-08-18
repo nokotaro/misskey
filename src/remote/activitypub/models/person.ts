@@ -25,6 +25,7 @@ import { INote } from '../../../models/note';
 import { updateHashtag } from '../../../services/update-hashtag';
 import FollowRequest from '../../../models/follow-request';
 import { toArray, toSingle } from '../../../prelude/array';
+import { tryCreateUrl } from '../../../prelude/url';
 const logger = apLogger;
 
 /**
@@ -33,7 +34,8 @@ const logger = apLogger;
  * @param uri Fetch target URI
  */
 function toPerson(x: IObject, uri: string): IActor {
-	const expectHost = toUnicode(new URL(uri).hostname.toLowerCase());
+	const expectHostUrl = tryCreateUrl(uri, URL);
+	const expectHost = expectHostUrl && toUnicode(expectHostUrl.hostname.toLowerCase());
 
 	if (x == null) {
 		throw new Error('invalid person: object is null');
@@ -63,8 +65,9 @@ function toPerson(x: IObject, uri: string): IActor {
 		throw new Error('invalid person: id is not a string');
 	}
 
-	const idHost = toUnicode(new URL(x.id).hostname.toLowerCase());
-	if (idHost !== expectHost) {
+	const idHostUrl = tryCreateUrl(x.id, URL);
+	const idHost = idHostUrl && toUnicode(idHostUrl.hostname.toLowerCase());
+	if (idHostUrl && idHost !== expectHost) {
 		throw new Error('invalid person: id has different host');
 	}
 
@@ -72,8 +75,9 @@ function toPerson(x: IObject, uri: string): IActor {
 		throw new Error('invalid person: publicKey.id is not a string');
 	}
 
-	const publicKeyIdHost = toUnicode(new URL(x.publicKey.id).hostname.toLowerCase());
-	if (publicKeyIdHost !== expectHost) {
+	const publicKeyIdHostUrl = tryCreateUrl(x.publicKey.id, URL);
+	const publicKeyIdHost = publicKeyIdHostUrl && toUnicode(publicKeyIdHostUrl.hostname.toLowerCase());
+	if (publicKeyIdHostUrl && publicKeyIdHost !== expectHost) {
 		throw new Error('invalid person: publicKey.id has different host');
 	}
 
@@ -138,7 +142,7 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 		)
 	]);
 
-	const host = toUnicode(new URL(person.id).hostname.toLowerCase());
+	const host = toUnicode(tryCreateUrl(person.id, URL).hostname.toLowerCase());
 
 	const { fields, services } = analyzeAttachments(person.attachment);
 

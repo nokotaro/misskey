@@ -6,6 +6,7 @@ import { createPerson, updatePerson } from './activitypub/models/person';
 import { URL } from 'url';
 import { remoteLogger } from './logger';
 import chalk from 'chalk';
+import { tryCreateUrl } from '../prelude/url';
 
 const logger = remoteLogger.createSubLogger('resolve-user');
 
@@ -58,8 +59,8 @@ export default async (username: string, _host: string, option?: any, resync = fa
 				logger.info(`recovery missmatch uri for (username=${username}, host=${host}) from ${user.uri} to ${self.href}`);
 
 				// validate uri
-				const uri = new URL(self.href);
-				if (uri.hostname !== hostAscii) {
+				const uri = tryCreateUrl(self.href, URL);
+				if (!uri || uri.hostname !== hostAscii) {
 					throw new Error(`Invalied uri`);
 				}
 

@@ -8,6 +8,7 @@ import post from '../../services/note/create';
 import Resolver from '../activitypub/resolver';
 import { textContent } from '../../prelude/html';
 import * as uuid from 'uuid';
+import { tryCreateUrl } from '../../prelude/url';
 
 export async function createVideoFromTwitter(value: string, thumbnail: string, sensitive: boolean, actor: ITwitterUser): Promise<IDriveFile> {
 	if (!value)
@@ -75,9 +76,9 @@ export async function createUserFromTwitter(value: { user: { screen_name?: strin
 		if (!resolver.twitter)
 			return null;
 
-		const url = new URL(value);
+		const url = tryCreateUrl(value);
 
-		if (!`.${url.host}`.endsWith('.twitter.com'))
+		if (!`.${url && url.host}`.endsWith('.twitter.com'))
 			return null;
 
 		const segments = url.pathname.split('/');
@@ -190,9 +191,9 @@ export async function createNoteFromTwitter(value: any, resolver: Resolver, sile
 
 	const id = Number(value) ? value : (value => {
 		try {
-			const url = new URL(value);
+			const url = tryCreateUrl(value);
 
-			if (!`.${url.host}`.endsWith('.twitter.com'))
+			if (!`.${url && url.host}`.endsWith('.twitter.com'))
 				return null;
 
 			const segments = url.pathname.split('/');

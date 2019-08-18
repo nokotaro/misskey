@@ -10,6 +10,7 @@ import renderEmoji from './emoji';
 import { IIdentifier } from '../models/identifier';
 import renderHashtag from './hashtag';
 import fetchMeta from '../../../misc/fetch-meta';
+import { tryCreateUrl } from '../../../prelude/url';
 
 export default async (user: ILocalUser) => {
 	const id = `${config.url}/users/${user._id}`;
@@ -29,11 +30,14 @@ export default async (user: ILocalUser) => {
 
 	if (user.fields) {
 		for (const field of user.fields) {
+			const url = tryCreateUrl(field.value);
+			const href = url && url.href;
+
 			attachment.push({
 				type: 'PropertyValue',
 				name: field.name,
 				value: (field.value != null && field.value.match(/^https?:/))
-					? `<a href="${new URL(field.value).href}" rel="me nofollow noopener" target="_blank">${new URL(field.value).href}</a>`
+					? `<a href="${href}" rel="me nofollow noopener" target="_blank">${href}</a>`
 					: field.value
 			});
 		}
