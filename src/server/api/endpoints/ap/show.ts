@@ -12,6 +12,7 @@ import Instance from '../../../../models/instance';
 import { extractDbHost } from '../../../../misc/convert-host';
 import { validActor, validDocument } from '../../../../remote/activitypub/type';
 import { createNoteFromTwitter, createUserFromTwitter } from '../../../../remote/external/twitter';
+import { tryCreateUrl } from '../../../../prelude/url';
 
 export const meta = {
 	tags: ['federation'],
@@ -53,6 +54,8 @@ export default define(meta, async (ps, user) => {
  * URIからUserかNoteを解決する
  */
 export async function fetchAny(uri: string, user: ILocalUser) {
+	const url = tryCreateUrl(uri);
+
 	// URIがこのサーバーを指しているなら、ローカルユーザーIDとしてDBからフェッチ
 	if (uri.startsWith(config.url + '/')) {
 		const id = new mongo.ObjectID(uri.split('/').pop());
@@ -72,8 +75,8 @@ export async function fetchAny(uri: string, user: ILocalUser) {
 	// URI(AP Object id)としてDB検索
 	{
 		const [user, note] = await Promise.all([
-			User.findOne({ uri: uri }),
-			Note.findOne({ uri: uri })
+			User.findOne({ uri }),
+			Note.findOne({ uri })
 		]);
 
 		const packed = await mergePack(user, note);
@@ -124,7 +127,7 @@ export async function fetchAny(uri: string, user: ILocalUser) {
 				object: await packNote(note, null, { detail: true })
 			};
 		}
-	} else if (`.${new URL(uri).host}`.endsWith('.twitter.com')) {
+	} else if (`.${url && url.host}`.endsWith('.twitter.com')) {
 		const note = await createNoteFromTwitter(uri, resolver, true);
 
 		if (note) {
