@@ -374,7 +374,7 @@ export const mfmLanguage = P.createLanguage({
 		const name = P((input, i) => {
 			const text = input.substr(i);
 			const [full, name] = text.match(/^:(@?[\w-]+(?:@[\w.-]+)?):(?:\u200b*$)?/i) || [null, null];
-			return name && !name.match(/^\d*$/) ? P.makeSuccess(i + full.length, { name }) : P.makeFailure(i, 'not an emoji');
+			return name && !name.match(/^[\d-]*$/) ? P.makeSuccess(i + full.length, { name }) : P.makeFailure(i, 'not an emoji');
 		});
 		const code = P.regexp(emojiRegex).map(emoji => ({ emoji }));
 		return P.alt(name, code).map(x => createLeaf('emoji', x));
