@@ -60,7 +60,7 @@ export default Vue.extend({
 
 		> :first-child > .emoji:not(.custom):only-child
 			font-size 2.5em
-			height 2.5em
+			height 1em
 			line-height 1
 			vertical-align middle
 
