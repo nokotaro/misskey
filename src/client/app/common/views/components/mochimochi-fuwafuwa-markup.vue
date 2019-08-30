@@ -58,6 +58,10 @@ export default Vue.extend({
 			order 1
 			width 0
 
+		> :first-child > :not(.custom):only-child
+			height 2.5em
+			vertical-align middle
+
 		> :last-child
 			background var(--faceDivider)
 			border-radius 8px
