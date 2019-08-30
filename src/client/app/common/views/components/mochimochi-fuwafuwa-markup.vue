@@ -58,8 +58,10 @@ export default Vue.extend({
 			order 1
 			width 0
 
-		> :first-child > :not(.custom):only-child
+		> :first-child > .emoji:not(.custom):only-child
+			font-size 2.5em
 			height 2.5em
+			line-height 1
 			vertical-align middle
 
 		> :last-child
