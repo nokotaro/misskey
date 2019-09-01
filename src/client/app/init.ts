@@ -394,6 +394,10 @@ const html = document.documentElement;
 html.setAttribute('lang', lang);
 //#endregion
 
+// Detect platform
+window[Symbol.for(':urn:x:twista:is:on:apple')] = navigator.vendor === 'Apple Computer, Inc.';
+window[Symbol.for(':urn:x:twista:is:on:ios')] = window[Symbol.for(':urn:x:twista:is:on:apple')] && navigator.platform.includes('Mac');
+
 // iOSでプライベートモードだとlocalStorageが使えないので既存のメソッドを上書きする
 try {
 	localStorage.setItem('kyoppie', '大石泉すき');
