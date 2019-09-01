@@ -191,10 +191,10 @@
 			</section>
 		</ui-card>
 
-		<ui-card v-if="window[Symbol.for(':urn:x:twista:is:on:apple')]">
+		<ui-card v-if="onApple">
 			<template #title><fa :icon="['fab', 'apple']"/> {{ $t('@._settings.apple') }}</template>
 
-			<section v-if="window[Symbol.for(':urn:x:twista:is:on:ios')]">
+			<section v-if="oniOS">
 				<ui-switch v-model="useVlc"><fa :icon="['fal', 'traffic-cone']"/> {{ $t('@._settings.use-vlc') }}
 					<template #desc>{{ $t('@._settings.use-vlc-desc') }}</template>
 				</ui-switch>
@@ -363,7 +363,15 @@ export default Vue.extend({
 	computed: {
 		isAdvanced(): boolean {
 			return this.$store.state.device.showAdvancedSettings;
-		}
+		},
+
+		onApple(): boolean {
+			return window[Symbol.for(':urn:x:twista:is:on:apple')];
+		},
+
+		oniOS(): boolean {
+			return window[Symbol.for(':urn:x:twista:is:on:ios')];
+		},
 
 		useOsDefaultEmojis: {
 			get() { return this.$store.state.device.useOsDefaultEmojis; },
