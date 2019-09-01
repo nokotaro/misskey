@@ -170,9 +170,9 @@
 				<ui-switch v-model="enableSounds">{{ $t('@._settings.enable-sounds') }}
 					<template #desc>{{ $t('@._settings.enable-sounds-desc') }}</template>
 				</ui-switch>
-				<ui-switch style="margin-left: 2em" :disabled="!enableSounds" v-model="enableSoundsInTimeline">{{ 'Timeline' }}
+				<ui-switch style="margin-left:2em" :disabled="!enableSounds" v-model="enableSoundsInTimeline">{{ 'Timeline' }}
 				</ui-switch>
-				<ui-switch style="margin-left: 2em" :disabled="!enableSounds" v-model="enableSoundsInNotifications">{{ 'Notifications' }}
+				<ui-switch style="margin-left:2em" :disabled="!enableSounds" v-model="enableSoundsInNotifications">{{ 'Notifications' }}
 				</ui-switch>
 				<label>{{ $t('@._settings.volume') }}</label>
 				<input type="range"
