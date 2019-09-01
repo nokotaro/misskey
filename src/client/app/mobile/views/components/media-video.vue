@@ -6,7 +6,7 @@
 	</div>
 </div>
 <a class="kkjnbbplepmiyuadieoenjgutgcmtsvu" v-else
-	:href="video.url"
+	:href="href"
 	rel="nofollow noopener"
 	target="_blank"
 	:style="imageStyle"
@@ -21,6 +21,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
+import { query } from '../../../../../prelude/url';
 
 export default Vue.extend({
 	i18n: i18n('mobile/views/components/media-video.vue'),
@@ -36,6 +37,11 @@ export default Vue.extend({
 		};
 	},
 	computed: {
+		href(): string {
+			return window[Symbol.for(':urn:x:twista:is:on:ios')] && (!this.$store.getters.isSignedIn || this.$store.state.device.useVlc) ?
+				`vlc-x-callback://x-callback-url/stream?${query({ url: this.video.url })}` :
+				this.video.url;
+		},
 		imageStyle(): any {
 			return {
 				'background-image': `url(${this.video.thumbnailUrl})`

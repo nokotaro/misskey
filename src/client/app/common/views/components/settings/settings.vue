@@ -191,6 +191,16 @@
 			</section>
 		</ui-card>
 
+		<ui-card v-if="window[Symbol.for(':urn:x:twista:is:on:apple')]">
+			<template #title><fa :icon="['fab', 'apple']"/> {{ $t('@._settings.apple') }}</template>
+
+			<section v-if="window[Symbol.for(':urn:x:twista:is:on:ios')]">
+				<ui-switch v-model="useVlc"><fa :icon="['fal', 'traffic-cone']"/> {{ $t('@._settings.use-vlc') }}
+					<template #desc>{{ $t('@._settings.use-vlc-desc') }}</template>
+				</ui-switch>
+			</section>
+		</ui-card>
+
 		<x-language/>
 	</template>
 
@@ -403,6 +413,11 @@ export default Vue.extend({
 		enableSpeech: {
 			get() { return this.$store.state.device.enableSpeech; },
 			set(value) { this.$store.commit('device/set', { key: 'enableSpeech', value }); }
+		},
+
+		useVlc: {
+			get() { return this.$store.state.device.useVlc; },
+			set(value) { this.$store.commit('device/set', { key: 'useVlc', value }); }
 		},
 
 		soundVolume: {

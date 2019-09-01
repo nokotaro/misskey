@@ -66,6 +66,7 @@ const defaultDeviceSettings = {
 	soundVolume: 0.5,
 	mediaVolume: 0.5,
 	enableSpeech: false,
+	useVlc: true,
 	lang: null,
 	debug: false,
 	showAdvancedSettings: false,
