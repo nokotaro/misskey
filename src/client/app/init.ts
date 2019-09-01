@@ -144,6 +144,7 @@ import {
 	faStickyNote,
 	faCode,
 	faCodeCommit,
+	faTraficCone,
 	faUserTie,
 	faUserClock,
 	faUserPlus,
@@ -179,6 +180,7 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 
 import {
+	faApple,
 	faMastodon,
 	faTwitter,
 	faGithub,
@@ -303,6 +305,7 @@ library.add(
 	faStickyNote,
 	faCode,
 	faCodeCommit,
+	faTraficCone,
 	faUserTie,
 	faUserClock,
 	faUserPlus,
@@ -336,6 +339,7 @@ library.add(
 
 	fFaStar,
 
+	faApple,
 	faMastodon,
 	faTwitter,
 	faGithub,
