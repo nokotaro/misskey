@@ -265,7 +265,7 @@ export async function generateAlts(path: string, type: string, generateWeb: bool
 		try {
 			thumbnail = await generateVideoThumbnail(path);
 		} catch (e) {
-			logger.error(`GenerateVideoThumbnail failed: ${e}`);
+			logger.error(`generateVideoThumbnail failed: ${e}`);
 		}
 	}
 	// #endregion thumbnail
