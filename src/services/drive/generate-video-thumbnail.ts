@@ -35,3 +35,5 @@ export async function generateVideoThumbnail(path: string): Promise<IImage> {
 
 	return thumbnail;
 }
+
+export default generateVideoThumbnail;

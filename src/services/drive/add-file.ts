@@ -21,7 +21,7 @@ import driveChart from '../../services/chart/drive';
 import perUserDriveChart from '../../services/chart/per-user-drive';
 import instanceChart from '../../services/chart/instance';
 import fetchMeta from '../../misc/fetch-meta';
-import { generateVideoThumbnail } from './generate-video-thumbnail';
+import generateVideoThumbnail from './generate-video-thumbnail';
 import { driveLogger } from './logger';
 import { IImage, convertToJpeg, convertToWebp, convertToPng } from './image-processor';
 import Instance from '../../models/instance';
