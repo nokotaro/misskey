@@ -144,10 +144,14 @@ export async function packActivity(note: INote, announcer?: IUser): Promise<obje
 			userId: announcer._id,
 			isEveryone: true
 		};
-		return renderAnnounce(note.uri || `${config.url}/notes/${note._id}`, { ...note, ...overwriter });
+
+		const renote = note.renoteId && !note.text && !note.poll && (!note.fileIds || !note.fileIds.length) &&
+			await Note.findOne({ _id: note.renoteId });
+
+		return renderAnnounce(note.uri || `${config.url}/notes/${(renote || note)._id}`, { ...note, ...overwriter });
 	}
 
-	if (note.renoteId && note.text == null && note.poll == null && (note.fileIds == null || note.fileIds.length == 0)) {
+	if (note.renoteId && !note.text && !note.poll && (!note.fileIds || !note.fileIds.length)) {
 		const renote = await Note.findOne(note.renoteId);
 		return renderAnnounce(renote.uri || `${config.url}/notes/${renote._id}`, note);
 	}
