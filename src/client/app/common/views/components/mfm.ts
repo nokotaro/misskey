@@ -116,7 +116,7 @@ export default Vue.component('mochimochi-fuwafuwa-markup', {
 				case 'small': {
 					return [createElement('small', {
 						attrs: {
-							style: 'font-size:calc(.75em + var(--fontSize)*.75);opacity:0.7'
+							style: 'font-size:calc(.75em + var(--fontSize)*.75);opacity:.7'
 						},
 					}, genEl(token.children))];
 				}
@@ -242,7 +242,7 @@ export default Vue.component('mochimochi-fuwafuwa-markup', {
 				case 'vflip': {
 					return (createElement as any)('span', {
 						attrs: {
-							style: 'display: inline-block; transform: scaleY(-1);'
+							style: 'display:inline-block;transform:scaleY(-1)'
 						},
 					}, genEl(token.children));
 				}
@@ -253,7 +253,7 @@ export default Vue.component('mochimochi-fuwafuwa-markup', {
 
 					return (createElement as any)('span', {
 						attrs: {
-							style: isLong ? '' : `display: inline-block; transform: rotate(${deg}deg);`
+							style: isLong ? '' : `display:inline-block;transform:rotate(${deg}deg)`
 						},
 					}, genEl(token.children));
 				}
