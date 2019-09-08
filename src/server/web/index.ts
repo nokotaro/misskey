@@ -13,6 +13,8 @@ import { ObjectID } from 'mongodb';
 import urlPreview from './url-preview';
 import User, { ILocalUser } from '../../models/user';
 import parseAcct from '../../misc/acct/parse';
+import { parsePlain } from '../../mfm/parse';
+import toText from '../../mfm/toText';
 import config from '../../config';
 import Note, { pack as packNote } from '../../models/note';
 import getNoteSummary from '../../misc/get-note-summary';
@@ -152,6 +154,8 @@ router.get('/@:user', async (ctx, next) => {
 				.filter(filed => filed.value != null && filed.value.match(/^https?:/))
 				.map(field => field.value)
 			: [];
+
+		user.name = user.name && toText(parsePlain(user.name));
 
 		await ctx.render('user', {
 			user,
