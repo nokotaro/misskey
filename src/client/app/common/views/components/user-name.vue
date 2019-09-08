@@ -19,4 +19,5 @@ export default Vue.extend({
 .sakura
 	font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 	font-weight 600
+	line-height 1
 </style>
