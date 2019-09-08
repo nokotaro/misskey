@@ -4,6 +4,10 @@ const check = (x?: string) => x && x.length;
 
 function visit(tree: MfmTree): string {
 	switch (tree.node.type) {
+		case 'titlePlain': {
+			return tree.node.props.raw;
+		}
+
 		case 'bubble': {
 			return [...tree.node.props.speaker, ...tree.children].filter(check).map(visit).join(' ');
 		}
@@ -35,7 +39,7 @@ function visit(tree: MfmTree): string {
 		}
 
 		case 'emoji': {
-			return tree.node.props.emoji || tree.node.props.name;
+			return tree.node.props.emoji || `:${tree.node.props.name}:`;
 		}
 
 		case 'text': {
