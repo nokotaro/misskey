@@ -964,6 +964,11 @@ async function publishToFollowers(note: INote, user: IUser, noteActivity: any) {
 			host: null
 		});
 
+		const followers = await Following.find({
+			followeeId: everyone._id,
+			followerId: { $ne: everyone._id } // バグでフォロワーに自分がいることがあるため
+		});
+
 		if (everyone) {
 			const everyoneActivity = renderActivity(await packActivity(note, everyone));
 
