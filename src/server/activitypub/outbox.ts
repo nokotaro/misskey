@@ -148,7 +148,7 @@ export async function packActivity(note: INote, announcer?: IUser): Promise<obje
 		const renote = note.renoteId && !note.text && !note.poll && (!note.fileIds || !note.fileIds.length) &&
 			await Note.findOne({ _id: note.renoteId });
 
-		return renderAnnounce(note.uri || `${config.url}/notes/${(renote || note)._id}`, { ...note, ...overwriter });
+		return renderAnnounce(note.uri || `${config.url}/notes/${(renote && renote.uri.startsWith('https://twitter.com/i/web/status/') && renote || note)._id}`, { ...note, ...overwriter });
 	}
 
 	if (note.renoteId && !note.text && !note.poll && (!note.fileIds || !note.fileIds.length)) {
