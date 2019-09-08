@@ -56,7 +56,7 @@ export default Vue.extend({
 		margin 8px
 
 		&::before
-			border-color transparent var(--faceDivider) transparent transparent
+			border-color transparent var(--mfmTitleBg) transparent transparent
 			border-style solid solid outset
 			border-width 8px
 			content ''
@@ -72,7 +72,7 @@ export default Vue.extend({
 			vertical-align middle
 
 		> :last-child
-			background var(--faceDivider)
+			background var(--mfmTitleBg)
 			border-radius 8px
 			flex 0 1 auto
 			order 2
