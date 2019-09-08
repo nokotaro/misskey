@@ -2,8 +2,9 @@ import renderImage from './image';
 import renderKey from './key';
 import config from '../../../config';
 import { ILocalUser } from '../../../models/user';
-import { toHtml } from '../../../mfm/toHtml';
-import { parse } from '../../../mfm/parse';
+import toHtml from '../../../mfm/toHtml';
+import toText from '../../../mfm/toText';
+import { parse, parsePlain } from '../../../mfm/parse';
 import DriveFile from '../../../models/drive-file';
 import { getEmojis } from './note';
 import renderEmoji from './emoji';
@@ -109,7 +110,7 @@ export default async (user: ILocalUser) => {
 		endpoints: { sharedInbox: `${config.url}/inbox` },
 		url: `${config.url}/@${user.username}`,
 		preferredUsername: user.username,
-		name: user.name,
+		name: toText(parsePlain(user.name, true)),
 		summary: toHtml(parse(user.description, true)),
 		icon: user.avatarId && renderImage(avatar),
 		image: user.bannerId && renderImage(banner),

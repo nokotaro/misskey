@@ -38,3 +38,5 @@ function removeEmptyTextNodes(ts: MfmForest): MfmForest {
 export function normalize(ts: MfmForest, remote = false): MfmForest {
 	return removeEmptyTextNodes(concatConsecutiveTextTrees(ts, remote));
 }
+
+export default normalize;

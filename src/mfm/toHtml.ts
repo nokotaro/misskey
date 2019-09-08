@@ -241,3 +241,5 @@ export function toHtml(tokens: MfmForest, mentionedRemoteUsers: INote['mentioned
 
 	return `<p>${doc.body.innerHTML}</p>`;
 }
+
+export default toHtml;
