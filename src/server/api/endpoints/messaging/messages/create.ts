@@ -78,6 +78,7 @@ export const meta = {
 };
 
 export default define(meta, async (ps, user) => {
+	throw 500;
 	// Myself
 	if (ps.userId.equals(user._id)) {
 		throw new ApiError(meta.errors.recipientIsYourself);

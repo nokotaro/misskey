@@ -32,6 +32,7 @@ export const meta = {
 };
 
 export default define(meta, async (ps, user) => {
+	throw 500;
 	const mute = await Mute.find({
 		muterId: user._id
 	});
