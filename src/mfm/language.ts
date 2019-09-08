@@ -21,7 +21,7 @@ export function removeOrphanedBrackets(s: string): string {
 
 export const mfmLanguage = P.createLanguage({
 	root: r => P.alt(r.block, r.inline).atLeast(1),
-	plain: r => P.alt(r.emoji, r.text).atLeast(1),
+	plain: r => P.alt(r.emoji, r.titlePlain, r.text).atLeast(1),
 	block: r => P.alt(
 		r.title,
 		r.quote,
@@ -47,6 +47,26 @@ export const mfmLanguage = P.createLanguage({
 		const q = match[2].trim();
 		const contents = r.inline.atLeast(1).tryParse(q);
 		return P.makeSuccess(i + match[0].length, createTree('title', contents, { raw }));
+	})),
+	/*
+	titleInline: r => r.startOfLine.then(P((input, i) => {
+		const text = input.substr(i);
+		const match = text.match(/^(\[([^\[\]\n]+?)\])(?!\n|$)/) || text.match(/^(【([^【】\n]+?)】)(?!\n|$)/);
+		if (!match) return P.makeFailure(i, 'not a inline title');
+		const raw = match[0].trim();
+		const q = match[2].trim();
+		const contents = r.inline.atLeast(1).tryParse(q);
+		return P.makeSuccess(i + match[0].length, createTree('titleInline', contents, { raw }));
+	})),
+	*/
+	titlePlain: r => r.startOfLine.then(P((input, i) => {
+		const text = input.substr(i);
+		const match = text.match(/^(\[([^\[\]\n]+?)\])/) || text.match(/^(【([^【】\n]+?)】)/);
+		if (!match) return P.makeFailure(i, 'not a plain title');
+		const raw = match[0].trim();
+		const q = match[2].trim();
+		const contents = r.plain.tryParse(q);
+		return P.makeSuccess(i + match[0].length, createTree('titlePlain', contents, { raw }));
 	})),
 	quote: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
@@ -165,6 +185,9 @@ export const mfmLanguage = P.createLanguage({
 		return P.makeSuccess(i + match[0].length, createLeaf('codeBlock', { code: match[2], lang: match[1] ? match[1].trim() : null }));
 	})),
 	inline: r => P.alt(
+		/*
+		r.titleInline,
+		*/
 		r.big,
 		r.bold,
 		r.small,

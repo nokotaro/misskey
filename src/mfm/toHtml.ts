@@ -193,8 +193,20 @@ export function toHtml(tokens: MfmForest, mentionedRemoteUsers: INote['mentioned
 			return el;
 		},
 
+		list(token) {
+			const el = doc.createElement('span');
+			appendChildren(token.children, el);
+			return el;
+		},
+
 		title(token) {
 			const el = doc.createElement('h1');
+			appendChildren(token.children, el);
+			return el;
+		},
+
+		titlePlain(token) {
+			const el = doc.createElement('span');
 			appendChildren(token.children, el);
 			return el;
 		},

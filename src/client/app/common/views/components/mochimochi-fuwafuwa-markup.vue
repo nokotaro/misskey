@@ -37,6 +37,13 @@ export default Vue.extend({
 		.serif
 			font-family a-otf-midashi-mi-ma31-pr6n, vdl-v7mincho, serif !important
 
+	>>> .title-plain
+		background var(--mfmTitleBg)
+		border-radius 4px
+		display inline-block
+		margin 0 8px 0 0
+		padding 4px 8px
+
 	>>> .quote
 		display block
 		margin 8px

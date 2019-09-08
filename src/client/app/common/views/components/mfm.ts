@@ -372,6 +372,14 @@ export default Vue.component('mochimochi-fuwafuwa-markup', {
 					}, genEl(token.children))];
 				}
 
+				case 'titlePlain': {
+					return [createElement('span', {
+						attrs: {
+							class: 'title-plain'
+						}
+					}, genEl(token.children))];
+				}
+
 				case 'emoji': {
 					const customEmojis = (this.$root.getMetaSync() || { emojis: [] }).emojis || [];
 					return [createElement('mk-emoji', {
