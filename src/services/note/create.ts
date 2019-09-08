@@ -924,7 +924,7 @@ async function publishToFollowers(note: INote, user: IUser, noteActivity: any) {
 
 	const followers = await Following.find({
 		followeeId: note.userId,
-		followerId: { $ne: note.userId }	// バグでフォロワーに自分がいることがあるため
+		followerId: { $ne: note.userId } // バグでフォロワーに自分がいることがあるため
 	});
 
 	const queue: string[] = [];
