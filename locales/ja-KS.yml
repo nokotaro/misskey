@@ -962,7 +962,7 @@ admin/views/users.vue:
   user-not-found: "ユーザーが見つからへん！"
   lookup: "照会"
   reset-password: "パスワードをリセット"
-  password-updated: "パスワードは現在「{password} 」やで"
+  password-updated: "パスワードは現在「{password}」やで"
   suspend: "凍結"
   users:
     title: "ユーザー"
