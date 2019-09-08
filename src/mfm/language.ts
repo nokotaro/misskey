@@ -308,7 +308,7 @@ export const mfmLanguage = P.createLanguage({
 	rotate: r => {
 		return P((input, i) => {
 			const text = input.substr(i);
-			const match = text.match(/^<(r(?:otate))\s+([+-]?\d+)>(.+?)<\/\1>/i);
+			const match = text.match(/^<(r(?:otate))\s+([+-]?\d+(?:\.\d+)?)>(.+?)<\/\1>/i);
 
 			return match ?
 				P.makeSuccess(i + match[0].length, {
