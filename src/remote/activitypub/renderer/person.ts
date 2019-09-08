@@ -97,7 +97,7 @@ export default async (user: ILocalUser) => {
 		type:
 			user.usernameLower === 'everyone' ? 'Service' :
 			[meta.informationAccount]
-				.map(x => x.toLowerCase())
+				.map(x => x && x.toLowerCase())
 				.includes(user.usernameLower) ? 'Organization' :
 			user.isBot ? 'Service' : 'Person',
 		id,
