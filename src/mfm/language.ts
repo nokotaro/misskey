@@ -61,12 +61,16 @@ export const mfmLanguage = P.createLanguage({
 	*/
 	titlePlain: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
-		const match = text.match(/^(\[([^\[\]\n]+?)\])/) || text.match(/^(【([^【】\n]+?)】)/);
+		const match =
+			text.match(/^(\[)(?:#((?:[0-9A-Fa-f]{1,2}){3,4}))?(?:#((?:[0-9A-Fa-f]{1,2}){3,4}))?([^\[\]\n]+?)(\])/) ||
+			text.match(/^(【)(?:#((?:[0-9A-Fa-f]{1,2}){3,4}))?(?:#((?:[0-9A-Fa-f]{1,2}){3,4}))?([^【】\n]+?)(】)/);
 		if (!match) return P.makeFailure(i, 'not a plain title');
-		const raw = match[0].trim();
-		const q = match[2].trim();
+		const background = match[2];
+		const foreground = match[3];
+		const q = match[4].trim();
+		const raw = match[1].trim() + q + match[5].trim();
 		const contents = r.plain.tryParse(q);
-		return P.makeSuccess(i + match[0].length, createTree('titlePlain', contents, { raw }));
+		return P.makeSuccess(i + match[0].length, createTree('titlePlain', contents, { raw, background, foreground }));
 	})),
 	quote: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);

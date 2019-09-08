@@ -375,7 +375,11 @@ export default Vue.component('mochimochi-fuwafuwa-markup', {
 				case 'titlePlain': {
 					return [createElement('span', {
 						attrs: {
-							class: 'title-plain'
+							class: 'title-plain',
+							style: [
+								...(token.node.props.background ? [`background:#${token.node.props.background}`] : []),
+								...(token.node.props.foreground ? [`color:#${token.node.props.foreground}`] : []),
+							].join(';')
 						}
 					}, genEl(token.children))];
 				}
