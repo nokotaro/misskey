@@ -4,6 +4,7 @@ import { takeWhile, cumulativeSum } from '../prelude/array';
 import parseAcct from '../misc/acct/parse';
 import { toUnicode } from 'punycode';
 import emojiRegex from '../misc/emoji-regex';
+import normalize from './normalize';
 
 export function removeOrphanedBrackets(s: string): string {
 	const openBrackets = ['(', '「', '['];
@@ -68,8 +69,9 @@ export const mfmLanguage = P.createLanguage({
 		const background = match[2];
 		const foreground = match[3];
 		const q = match[4].trim();
-		const raw = match[1].trim() + q + match[5].trim();
 		const contents = r.plain.tryParse(q);
+		const remote = normalize(contents, true);
+		const raw = match[1].trim() + remote.map(x => x.node.props.text).join('') + match[5].trim();
 		return P.makeSuccess(i + match[0].length, createTree('titlePlain', contents, { raw, background, foreground }));
 	})),
 	quote: r => r.startOfLine.then(P((input, i) => {
