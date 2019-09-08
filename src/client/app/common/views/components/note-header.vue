@@ -75,6 +75,7 @@ export default Vue.extend({
 		font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 		font-size 1em
 		font-weight 600
+		line-height 1
 		text-decoration none
 		text-overflow ellipsis
 
