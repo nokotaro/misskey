@@ -41,8 +41,10 @@ export default Vue.extend({
 		background var(--mfmTitleBg)
 		border-radius 4px
 		display inline-block
-		margin 0 8px 0 0
 		padding 4px 8px
+
+		& + *
+			margin 0 0 0 8px
 
 	>>> .quote
 		display block
