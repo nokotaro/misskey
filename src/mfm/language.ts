@@ -63,8 +63,8 @@ export const mfmLanguage = P.createLanguage({
 	titlePlain: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
 		const match =
-			text.match(/^(\[)(?:#([0-9A-Fa-f]{3}|(?:[0-9A-Fa-f]{2}){2,4}))?(?:#([0-9A-Fa-f]{3}|(?:[0-9A-Fa-f]{2}){2,4}))?([^\[\]\n]+?)(\])/) ||
-			text.match(/^(【)(?:#([0-9A-Fa-f]{3}|(?:[0-9A-Fa-f]{2}){2,4}))?(?:#([0-9A-Fa-f]{3}|(?:[0-9A-Fa-f]{2}){2,4}))?([^【】\n]+?)(】)/);
+			text.match(/^(\[)(?:#([0-9A-Fa-f]{8}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{3,4}))?(?:#([0-9A-Fa-f]{8}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{3,4}))?([^\[\]\n]+?)(\])/) ||
+			text.match(/^(【)(?:#([0-9A-Fa-f]{8}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{3,4}))?(?:#([0-9A-Fa-f]{8}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{3,4}))?([^【】\n]+?)(】)/);
 		if (!match) return P.makeFailure(i, 'not a plain title');
 		const background = match[2];
 		const foreground = match[3];
