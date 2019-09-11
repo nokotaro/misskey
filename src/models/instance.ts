@@ -84,6 +84,11 @@ export interface IInstance {
 	isBlocked: boolean;
 
 	/**
+	 * このインスタンスをミュートしているか
+	 */
+	isMuted: boolean;
+
+	/**
 	 * このインスタンスが閉鎖済みとしてマークされているか
 	 */
 	isMarkedAsClosed: boolean;

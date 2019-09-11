@@ -2,6 +2,8 @@ import $ from 'cafy';
 import Note from '../../../../models/note';
 import define from '../../define';
 import fetchMeta from '../../../../misc/fetch-meta';
+import Instance from '../../../../models/instance';
+import User from '../../../../models/user';
 
 export const meta = {
 	tags: ['hashtags'],
@@ -24,12 +26,26 @@ export const meta = {
 export default define(meta, async (ps) => {
 	const instance = await fetchMeta();
 	const hidedTags = instance.hidedTags.map(t => t.toLowerCase());
+	const hidedInstances = await Instance.find({
+		isBlocked: true,
+		isMuted: true
+	});
+	const hidedUsers = await User.find({
+		isBlocked: true,
+		isSilenced: true
+	});
 
 	//#region 1. 指定期間の内に投稿されたハッシュタグ(とユーザーのペア)を集計
 	const data = await Note.aggregate([{
 		$match: {
 			createdAt: {
 				$gt: new Date(Date.now() - ps.rangeMilliseconds)
+			},
+			'_user.host': {
+				$nin: hidedInstances.map(x => x.host)
+			},
+			userId: {
+				$nin: hidedUsers.map(x => x._id)
 			},
 			tags: {
 				$exists: true,

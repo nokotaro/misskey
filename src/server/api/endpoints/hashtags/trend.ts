@@ -2,6 +2,8 @@ import Note from '../../../../models/note';
 import { erase } from '../../../../prelude/array';
 import define from '../../define';
 import fetchMeta from '../../../../misc/fetch-meta';
+import Instance from '../../../../models/instance';
+import User from '../../../../models/user';
 
 /*
 トレンドに載るためには「『直近a分間のユニーク投稿数が今からa分前～今からb分前の間のユニーク投稿数のn倍以上』のハッシュタグの上位5位以内に入る」ことが必要
@@ -24,12 +26,26 @@ export const meta = {
 export default define(meta, async () => {
 	const instance = await fetchMeta();
 	const hidedTags = instance.hidedTags.map(t => t.toLowerCase());
+	const hidedInstances = await Instance.find({
+		isBlocked: true,
+		isMuted: true
+	});
+	const hidedUsers = await User.find({
+		isBlocked: true,
+		isSilenced: true
+	});
 
 	//#region 1. 直近Aの内に投稿されたハッシュタグ(とユーザーのペア)を集計
 	const data = await Note.aggregate([{
 		$match: {
 			createdAt: {
 				$gt: new Date(Date.now() - rangeA)
+			},
+			'_user.host': {
+				$nin: hidedInstances.map(x => x.host)
+			},
+			userId: {
+				$nin: hidedUsers.map(x => x._id)
 			},
 			tagsLower: {
 				$exists: true,

@@ -14,11 +14,15 @@ export const meta = {
 		},
 
 		isBlocked: {
-			validator: $.bool
+			validator: $.optional.nullable.bool
+		},
+
+		isMuted: {
+			validator: $.optional.nullable.bool
 		},
 
 		isClosed: {
-			validator: $.bool
+			validator: $.optional.nullable.bool
 		},
 	}
 };
@@ -32,8 +36,9 @@ export default define(meta, async ps => {
 
 	return await Instance.findOneAndUpdate({ host: ps.host }, {
 		$set: {
-			isBlocked: ps.isBlocked,
-			isMarkedAsClosed: ps.isClosed
+			isBlocked: !!ps.isBlocked,
+			isMuted: !!ps.isMuted,
+			isMarkedAsClosed: !!ps.isClosed
 		}
 	}, { returnNewDocument: true });
 });
