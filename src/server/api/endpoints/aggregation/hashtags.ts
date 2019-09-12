@@ -74,13 +74,19 @@ export default define(meta, async (ps) => {
 		return [];
 	}
 
-	return Object
+	const sensitive = Object
 		.entries(data
 			.map(({ _id }) => _id)
-			.filter(({ tag }) => !hidedTags.includes(tag))
+			.filter(({ tag }) => !hidedTags
+				.map(x => x.toLowerCase())
+				.includes(tag.toLowerCase()))
 			.reduce<Record<string, number>>((a, { tag }) => (a[tag] = a[tag] ? ++a[tag] : 1, a), Object.create(null)))
-		.sort(([, a], [, b]) => b - a)
-		.reduce<[string, number][]>((a, [k, v], i) => (i = a.findIndex(([x]) => x === k), ~i ? ++a[i][1] : a.push([k, v]), a), [])
+		.sort(([, a], [, b]) => b - a);
+
+	const lower = sensitive.map<[string, number]>(([k, v]) => [k.toLowerCase(), v]);
+
+	return sensitive
+		.reduce<[string, number][]>((a, [k, v], i) => (i = lower.findIndex(([x]) => x === k.toLowerCase()), ~i ? a[i][1] += v : a.push([k, v]), a), [])
 		.sort(([, a], [, b]) => b - a)
 		.map(([name, count]) => ({ name, count }))
 		.splice(0, ps.limit);
