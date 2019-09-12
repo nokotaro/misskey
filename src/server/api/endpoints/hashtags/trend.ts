@@ -27,12 +27,16 @@ export default define(meta, async () => {
 	const instance = await fetchMeta();
 	const hidedTags = instance.hidedTags.map(t => t.toLowerCase());
 	const hidedInstances = await Instance.find({
-		isBlocked: true,
-		isMuted: true
+		$or: [
+			{ isBlocked: true },
+			{ isMuted: true }
+		]
 	});
 	const hidedUsers = await User.find({
-		isBlocked: true,
-		isSilenced: true
+		$or: [
+			{ isBlocked: true },
+			{ isSilenced: true }
+		]
 	});
 
 	//#region 1. 直近Aの内に投稿されたハッシュタグ(とユーザーのペア)を集計
