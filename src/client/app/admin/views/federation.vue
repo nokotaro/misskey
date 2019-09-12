@@ -305,7 +305,7 @@ export default Vue.extend({
 			this.$root.api('admin/federation/update-instance', {
 				host: this.instance.host,
 				isBlocked: !!this.instance.isBlocked,
-				isMuted: !!this.instance.isisMuted,
+				isMuted: !!this.instance.isMuted,
 				isClosed: !!this.instance.isMarkedAsClosed
 			});
 		},
