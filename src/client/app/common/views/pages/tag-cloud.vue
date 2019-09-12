@@ -1,6 +1,6 @@
 <template>
 <main class="max-height" @click="click">
-	<mk-tag-cloud :limit="limitNumber" :range="rangeNumber"/>
+	<mk-tag-cloud :limit="limitNumber" :range="rangeNumber" :count="countNumber"/>
 </main>
 </template>
 
@@ -16,12 +16,17 @@ export default Vue.extend({
 		range: {
 			type: Number,
 			required: false
+		},
+		count: {
+			type: Number,
+			required: false
 		}
 	},
 	data() {
 		return {
 			limitNumber: this.limit,
 			rangeNumber: this.range,
+			countNumber: this.count,
 		};
 	},
 	created() {
@@ -42,6 +47,14 @@ export default Vue.extend({
 
 				if (!Number.isNaN(rangeNumber)) {
 					this.rangeNumber = Number(query.range);
+				}
+			}
+
+			if ('count' in query) {
+				const countNumber = Number(query.count);
+
+				if (!Number.isNaN(countNumber)) {
+					this.countNumber = Number(query.count);
 				}
 			}
 		}

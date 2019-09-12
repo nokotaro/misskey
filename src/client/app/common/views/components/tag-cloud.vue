@@ -32,6 +32,10 @@ export default Vue.extend({
 		range: {
 			type: Number,
 			default: 6048e5
+		},
+		count: {
+			type: Number,
+			default: 1e2
 		}
 	},
 	components: {
@@ -53,7 +57,7 @@ export default Vue.extend({
 	},
 	computed: {
 		words() {
-			return this.tags.slice(0, 100).map(x => [x.name, x.count]);
+			return this.tags.slice(0, this.count).map(x => [x.name, x.count]);
 		}
 	},
 	methods: {
