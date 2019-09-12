@@ -1,6 +1,7 @@
 import $ from 'cafy';
 import define from '../../define';
 import Hashtag from '../../../../models/hashtag';
+import fetchMeta from '../../../../misc/fetch-meta';
 
 export const meta = {
 	tags: ['hashtags'],
@@ -24,6 +25,11 @@ export const meta = {
 		},
 
 		attachedToRemoteUserOnly: {
+			validator: $.optional.bool,
+			default: false
+		},
+
+		applyHiddenRules: {
 			validator: $.optional.bool,
 			default: false
 		},
@@ -70,6 +76,8 @@ const sort: any = {
 };
 
 export default define(meta, async (ps, me) => {
+	const instance = await fetchMeta();
+	const hidedTags = instance.hidedTags.map(t => t.toLowerCase());
 	const q = {} as any;
 	if (ps.attachedToUserOnly) q.attachedUsersCount = { $ne: 0 };
 	if (ps.attachedToLocalUserOnly) q.attachedLocalUsersCount = { $ne: 0 };
@@ -89,5 +97,5 @@ export default define(meta, async (ps, me) => {
 			}
 		});
 
-	return tags;
+	return ps.applyHiddenRules ? tags.filter(x => !hidedTags.includes(x.tag.toLowerCase())) : tags;
 });
