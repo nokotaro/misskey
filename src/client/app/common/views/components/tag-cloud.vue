@@ -14,8 +14,8 @@
 			</template>
 		</vue-word-cloud>
 		<div class="progress" v-if="completed !== total">
-			<div><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.rendering') }}<mk-ellipsis/></div>
-			<div><span>{{ pad }}</span><span>{{ completed }} / {{ total }}</span></div>
+			<span><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.rendering') }}<mk-ellipsis/></span>
+			<span><span>{{ pad }}</span><span>{{ completed }} / {{ total }}</span></span>
 		</div>
 	</div>
 </div>
@@ -174,14 +174,12 @@ export default Vue.extend({
 				color inherit
 
 			&.progress
-				align-items center
 				color var(--text)
 				display flex
-				flex-flow column wrap
 				justify-content center
 
 				> :first-child > [data-icon]
-					margin-right 4px
+					margin-inline-end 4px
 
 				> :last-child
 					-webkit-font-feature-settings 'tnum'
@@ -190,5 +188,6 @@ export default Vue.extend({
 					font-variant-numeric tabular-nums
 
 					> :first-child
+						margin-inline-start 4px
 						visibility hidden
 </style>
