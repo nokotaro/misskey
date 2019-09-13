@@ -249,6 +249,7 @@ common:
   search: "Search"
   delete: "Delete"
   loading: "Loading"
+  rendering: "Rendering"
   ok: "Confirm"
   cancel: "Cancel"
   update-available-title: "Update available"

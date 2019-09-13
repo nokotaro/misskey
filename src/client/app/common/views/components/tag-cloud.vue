@@ -7,11 +7,16 @@
 				:words="words"
 				:color="color"
 				:spacing="1"
+				@update:progress="updateProgress"
 				font-family="kan412typos-std">
 			<template slot-scope="{word, text, weight}">
 				<router-link :to="`/tags/${text}`" style="cursor:pointer" :title="weight">{{ text }}</router-link>
 			</template>
 		</vue-word-cloud>
+		<div class="progress" v-if="completed !== total">
+			<div><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.rendering') }}<mk-ellipsis/></div>
+			<div><span>{{ pad }}</span><span>{{ completed }} / {{ total }}</span></div>
+		</div>
 	</div>
 </div>
 </template>
@@ -21,6 +26,19 @@ import Vue from 'vue';
 import i18n from '../../../i18n';
 import * as VueWordCloud from 'vuewordcloud';
 import { lab } from 'color-convert';
+
+declare class UpdateProgressEventArgs {
+	public get completedWords();
+	public set completedWords(value: number);
+	public get totalWords();
+	public set totalWords(value: number);
+}
+
+function numberLength(value: number) {
+	const string = value.toString();
+
+	return string.includes('e') ? -~string.substr(string.indexOf('e')) : string.length;
+}
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/tag-cloud.vue'),
@@ -43,6 +61,8 @@ export default Vue.extend({
 	},
 	data() {
 		return {
+			completed: 0,
+			total: 0,
 			tags: [],
 			fetching: true,
 			clock: null
@@ -56,7 +76,19 @@ export default Vue.extend({
 		clearInterval(this.clock);
 	},
 	computed: {
-		words() {
+		pad(this: {
+			completed: number;
+			total: number;
+		}) {
+			return '0'.repeat(numberLength(this.total) - numberLength(this.completed));
+		},
+		words(this: {
+			count: number;
+			tags: {
+				name: string;
+				count: number;
+			}[];
+		}) {
 			return this.tags.slice(0, this.count).map(x => [x.name, x.count]);
 		}
 	},
@@ -69,6 +101,13 @@ export default Vue.extend({
 				this.tags = tags;
 				this.fetching = false;
 			});
+		},
+		updateProgress(this: {
+			completed: number;
+			total: number;
+		}, value: UpdateProgressEventArgs) {
+			this.completed = value.completedWords;
+			this.total = value.totalWords;
 		},
 		color([, weight]: [string, number]): string {
 			const peak = Math.max(...this.tags.map(x => x.count));
@@ -100,9 +139,34 @@ export default Vue.extend({
 			margin-right 4px
 
 	> div
+		display grid
+		grid-template 1fr/1fr
 		height 100%
 		width 100%
 
-		a
-			color inherit
+		> *
+			grid-column 1/1
+			grid-row 1/1
+
+			a
+				color inherit
+
+			&.progress
+				align-items center
+				color var(--text)
+				display flex
+				flex-flow column wrap
+				justify-content center
+
+				> :first-child > [data-icon]
+					margin-right 4px
+
+				> :last-child
+					-webkit-font-feature-settings 'tnum'
+					-moz-font-feature-settings 'tnum'
+					font-feature-settings 'tnum'
+					font-variant-numeric tabular-nums
+
+					> :first-child
+						visibility hidden
 </style>
