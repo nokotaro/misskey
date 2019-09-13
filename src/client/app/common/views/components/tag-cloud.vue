@@ -93,14 +93,36 @@ export default Vue.extend({
 		}
 	},
 	methods: {
-		fetch() {
-			this.$root.api('aggregation/hashtags', {
-				limit: this.limit
-				rangeMilliseconds: this.range
-			}).then(tags => {
-				this.tags = tags;
-				this.fetching = false;
-			});
+		fetch(this: Vue & {
+			$root: {
+				api(endpoint: 'aggregation/hashtags', parameters: {
+					limit: number;
+					rangeMilliseconds: number;
+				}): Promise<{
+					name: string;
+					count: number;
+				}[]>
+			};
+			completed: number;
+			count: number;
+			fetching: boolean;
+			limit: number;
+			range: number;
+			tags: {
+				name: string;
+				count: number;
+			}[];
+			total: number;
+		}) {
+			if (this.completed == this.total) {
+				this.$root.api('aggregation/hashtags', {
+					limit: this.limit,
+					rangeMilliseconds: this.range
+				}).then(tags => {
+					this.tags = tags;
+					this.fetching = false;
+				});
+			}
 		},
 		updateProgress(this: {
 			completed: number;
