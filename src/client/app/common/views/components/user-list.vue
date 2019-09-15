@@ -152,7 +152,7 @@ export default Vue.extend({
 
 				> .username
 					display block
-					margin 0
+					margin 4px 0 0
 					font-size 13px
 					line-height 13px
 					color var(--text)
