@@ -323,7 +323,7 @@ async function searchInternal(me: ILocalUser, query: string, limit: number, offs
 
 	for (const [key, value] of Object.entries(await getIndexer({ text: words.join(' ') }))) {
 		if (value.length) {
-			noteQuery[`mecabIndex.${key}`] = { $in: value };
+			noteQuery[`mecabIndex.${key}`] = { $all: value };
 		}
 	}
 
