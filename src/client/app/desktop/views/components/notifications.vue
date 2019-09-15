@@ -316,6 +316,9 @@ export default Vue.extend({
 						[data-icon], .mk-reaction-icon, .emoji
 							margin-right 4px
 
+					> a
+						margin 4px 0 0
+
 				.note-preview
 					color var(--noteText)
 					display inline-block
