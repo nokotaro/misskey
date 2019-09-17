@@ -19,7 +19,9 @@ import { registerOrFetchInstanceDoc } from '../register-or-fetch-instance-doc';
 import Instance from '../../models/instance';
 import instanceChart from '../../services/chart/instance';
 import Favorite from '../../models/favorite';
+/*
 import { imasHosts } from './create';
+*/
 
 /**
  * 投稿を削除します。
@@ -137,9 +139,11 @@ export default async function(user: IUser, note: INote, quiet = false) {
 				'_follower.host': { $ne: null }
 			});
 
+/*
 			for (const imasHost of imasHosts) {
 				deliver(user, content, `https://${imasHost}/inbox`);
 			}
+*/
 
 			for (const following of followings) {
 				deliver(user, content, following._follower.inbox);

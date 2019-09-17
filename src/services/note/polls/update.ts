@@ -39,7 +39,7 @@ export async function deliverQuestionUpdate(noteId: mongo.ObjectID) {
 		followeeId: user._id
 	});
 
-	const queue = imasHosts.map(x => `https://${x}/inbox`);
+	const queue: string[] = []; // imasHosts.map(x => `https://${x}/inbox`);
 
 	// フォロワーがリモートユーザーかつ投稿者がローカルユーザーならUpdateを配信
 	if (isLocalUser(user)) {
