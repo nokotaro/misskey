@@ -146,8 +146,9 @@ export const imasHosts = [
 	'imastodon.blue',
 	'imastodon.net',
 	'imastodon.org',
-	// 'mstdn.imastags.com', (inbox disabled)
-	'twista.nokotaro.work',
+	'mstdn.imastags.com', // (inbox disabled)
+	'akanechan.love',
+	// 'twista.nokotaro.work', (closed)
 	'twista.283.cloud'
 ].filter(x => x !== config.hostname);
 
@@ -687,7 +688,9 @@ async function publish(user: IUser, note: INote, noteObj: any, reply: INote, ren
 		}
 
 		if (note.visibility === 'public') {
+			/* @everyone あるしもはや送りつける必要はない
 			deliverNoteToImasHosts(user, noteObj);
+			*/
 		}
 
 		if (['followers', 'specified'].includes(note.visibility)) {
@@ -1007,6 +1010,7 @@ function deliverNoteToMentionedRemoteUsers(mentionedUsers: IUser[], user: ILocal
 	}
 }
 
+// @ts-ignore
 function deliverNoteToImasHosts(user: ILocalUser, noteActivity: any) {
 	for (const x of imasHosts.map(x => `https://${x}/inbox`)) {
 		deliver(user, noteActivity, x);
