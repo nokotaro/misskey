@@ -3,6 +3,10 @@
 	<p class="fetching" v-if="fetching"><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.loading') }}<mk-ellipsis/></p>
 	<p class="empty" v-else-if="!tags.length"><fa :icon="['fal', 'exclamation-circle']"/>{{ $t('empty') }}</p>
 	<div v-else>
+		<div class="progress" v-if="completed !== total">
+			<span><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.rendering') }}<mk-ellipsis/></span>
+			<span><span>{{ pad }}</span><span>{{ completed }} / {{ total }}</span></span>
+		</div>
 		<vue-word-cloud
 				:words="words"
 				:color="color"
@@ -13,10 +17,6 @@
 				<router-link :to="`/tags/${text}`" style="cursor:pointer" :title="weight">{{ text }}</router-link>
 			</template>
 		</vue-word-cloud>
-		<div class="progress" v-if="completed !== total">
-			<span><fa :icon="['fal', 'spinner']" pulse fixed-width/>{{ $t('@.rendering') }}<mk-ellipsis/></span>
-			<span><span>{{ pad }}</span><span>{{ completed }} / {{ total }}</span></span>
-		</div>
 	</div>
 </div>
 </template>
