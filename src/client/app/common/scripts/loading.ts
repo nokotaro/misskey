@@ -4,7 +4,7 @@ NProgress.configure({
 	showSpinner: false
 });
 
-const root = document.getElementsByTagName('html')[0];
+const root = document.documentElement;
 
 export default {
 	start: () => {
