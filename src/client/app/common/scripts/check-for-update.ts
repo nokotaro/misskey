@@ -1,6 +1,7 @@
 import { version as current } from '../../config';
+import MiOS from '../../mios';
 
-export default async function($root: any, force = false, silent = false) {
+export default async function($root: MiOS, force = false, silent = false) {
 	const meta = await $root.getMeta(force);
 	const newer = meta.version;
 
