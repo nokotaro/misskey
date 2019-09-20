@@ -14,7 +14,7 @@ export default class Stream extends EventEmitter {
 	private sharedConnections: SharedConnection[] = [];
 	private nonSharedConnections: NonSharedConnection[] = [];
 
-	constructor(os: MiOS) {
+	constructor(public os: MiOS) {
 		super();
 
 		this.state = 'initializing';
