@@ -26,7 +26,9 @@ export const mfmLanguage = P.createLanguage({
 	block: r => P.alt(
 		r.title,
 		r.quote,
+		/*
 		r.list,
+		*/
 		r.bubble,
 		r.search,
 		r.codeBlock,
