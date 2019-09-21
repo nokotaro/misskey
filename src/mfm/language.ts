@@ -83,9 +83,10 @@ export const mfmLanguage = P.createLanguage({
 		const contents = r.root.tryParse(qInner);
 		return P.makeSuccess(i + quote.join('\n').length + 1, createTree('quote', contents, {}));
 	})),
+	/*
 	list: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
-		const [raw] = text.match(/^\* +.+(?:\n *\* +.+)*/m) || [null];
+		const [raw] = text.match(/^\* +.+(?:\n *\* +.+)*(REMOVE THIS)/m) || [null];
 		if (!raw) return P.makeFailure(i, 'not a list');
 		const split = raw.split('\n').map(x => x.split('*', 2) as [string, string]);
 		if (split.some(x => ~-~-x.length as any as boolean)) return P.makeFailure(i, 'not a list');
@@ -136,6 +137,7 @@ export const mfmLanguage = P.createLanguage({
 		const [list] = children;
 		return P.makeSuccess(i + raw.length, createLeaf('list', { list, raw }));
 	})),
+	*/
 	bubble: r => r.startOfLine.then(P((input, i) => {
 		try {
 			const text = input.substr(i);
