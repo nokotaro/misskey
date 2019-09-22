@@ -9,7 +9,7 @@ s[x](a)&&A()
 s[y](r,u)
 !function(c,k,d){c&&k==d||h(_+o+'s/'+u+z+g+'?'+v)[m](function(x){x[g]()[m](function(x){s[y](o,j.stringify(x))
 s[y](f,d)})})}(s[x](o),s[x](f),v+z+u)
-a=a||i?'mobile':'desktop'
+a=a||(i?'mobile':'desktop')
 !function(k,b){k[b]('src',_+a+z+v+'.js')
 k[b]('async',!0)
 k[b]('defer',!0)
