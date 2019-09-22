@@ -94,7 +94,7 @@ export default Vue.extend({
 				showCancelButton: true,
 				title: 'confirm',
 				text,
-			}).then(({ canceled }) => canceled ? Promise.resolve() : Promise.reject())
+			}).then(({ canceled }) => canceled ? Promise.reject() : Promise.resolve())
 		},
 
 		execute(action: string, report: IReport) {
@@ -102,7 +102,7 @@ export default Vue.extend({
 				.then(() => this.$root.api(`admin/${action}-user`, { userId: report.user.id }))
 				.then(() => this.removeReport(report))
 				.then(() => this.$root.dialog({ type: 'success', splash: true }))
-				.catch((e: Error) => this.$root.dialog({ type: 'error', text: e.toString() }))
+				.catch((e: Error) => this.$root.dialog({ type: 'error', text: e && e.toString() }))
 		}
 	}
 });
