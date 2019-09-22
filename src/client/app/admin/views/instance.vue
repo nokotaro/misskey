@@ -90,6 +90,10 @@
 			<ui-input v-model="summalyProxy">URL</ui-input>
 		</section>
 		<section>
+			<header><fa :icon="faRobot"/> {{ $t('anti-spam') }}</header>
+			<ui-input v-model="spamBioRegExp"><template #prefix>/</template>{{ $t('spam-bio-regular-expression') }}<template #suffix>/</template></ui-input>
+		</section>
+		<section>
 			<header><fa :icon="faUserPlus"/> {{ $t('user-recommendation-config') }}</header>
 			<ui-switch v-model="enableExternalUserRecommendation">{{ $t('enable-external-user-recommendation') }}</ui-switch>
 			<ui-input v-model="externalUserRecommendationEngine" :disabled="!enableExternalUserRecommendation">{{ $t('external-user-recommendation-engine') }}<template #desc>{{ $t('external-user-recommendation-engine-desc') }}</template></ui-input>
@@ -201,6 +205,7 @@ export default Vue.extend({
 			externalUserRecommendationEngine: null,
 			externalUserRecommendationTimeout: null,
 			summalyProxy: null,
+			spamBioRegExp: null,
 			enableEmail: false,
 			email: null,
 			smtpSecure: false,
@@ -262,6 +267,7 @@ export default Vue.extend({
 			this.externalUserRecommendationEngine = meta.externalUserRecommendationEngine;
 			this.externalUserRecommendationTimeout = meta.externalUserRecommendationTimeout;
 			this.summalyProxy = meta.summalyProxy;
+			this.spamBioRegExp = meta.spamBioRegExp;
 			this.enableEmail = meta.enableEmail;
 			this.email = meta.email;
 			this.smtpSecure = meta.smtpSecure;
@@ -327,6 +333,7 @@ export default Vue.extend({
 				externalUserRecommendationEngine: this.externalUserRecommendationEngine,
 				externalUserRecommendationTimeout: parseInt(this.externalUserRecommendationTimeout, 10),
 				summalyProxy: this.summalyProxy,
+				spamBioRegExp: this.spamBioRegExp,
 				enableEmail: this.enableEmail,
 				email: this.email,
 				smtpSecure: this.smtpSecure,

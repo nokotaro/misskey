@@ -1201,6 +1201,8 @@ admin/views/instance.vue:
   invite: "Invite"
   save: "Save"
   saved: "Saved"
+  anti-spam: "Psychic Arrest"
+  spam-bio-regular-expression: "Regular expression for trigger of bio Psychic Arrest"
   user-recommendation-config: "Recommended users"
   enable-external-user-recommendation: "Enable external user recommendations"
   external-user-recommendation-engine: "Engine"

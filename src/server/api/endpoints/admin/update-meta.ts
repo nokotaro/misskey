@@ -204,6 +204,13 @@ export const meta = {
 			}
 		},
 
+		spamBioRegExp: {
+			validator: $.optional.nullable.str,
+			desc: {
+				'ja-JP': 'プロフィールでサイキック逮捕する正規表現'
+			}
+		},
+
 		enableTwitterIntegration: {
 			validator: $.optional.bool,
 			desc: {
@@ -465,6 +472,10 @@ export default define(meta, async (ps) => {
 
 	if (ps.summalyProxy !== undefined) {
 		set.summalyProxy = ps.summalyProxy;
+	}
+
+	if (ps.spamBioRegExp !== undefined) {
+		set.spamBioRegExp = ps.spamBioRegExp;
 	}
 
 	if (ps.enableTwitterIntegration !== undefined) {

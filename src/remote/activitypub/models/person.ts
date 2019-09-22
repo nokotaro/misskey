@@ -9,6 +9,7 @@ import { resolveImage } from './image';
 import { isCollectionOrOrderedCollection, isCollection, IActor, IObject, validActor, actorIsBot, isOrderedCollection, isPerson, isPropertyValue, IApPropertyValue } from '../type';
 import { IDriveFile } from '../../../models/drive-file';
 import Meta from '../../../models/meta';
+import fetchMeta from '../../../misc/fetch-meta';
 import { fromHtml } from '../../../mfm/fromHtml';
 import usersChart from '../../../services/chart/users';
 import instanceChart from '../../../services/chart/instance';
@@ -26,6 +27,7 @@ import { updateHashtag } from '../../../services/update-hashtag';
 import FollowRequest from '../../../models/follow-request';
 import { toArray, toSingle } from '../../../prelude/array';
 import { tryCreateUrl } from '../../../prelude/url';
+import AbuseUserReport from '../../../models/abuse-user-report';
 const logger = apLogger;
 
 /**
@@ -150,6 +152,18 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 
 	const is = validActor.reduce<Record<string, boolean>>((a, c) => (a[`is${c}`] = person.type == c, a), {});
 
+	const description = fromHtml(person.summary);
+
+	fetchMeta().then(({ spamBioRegExp }) => {
+		if (new RegExp(spamBioRegExp).test(description)) {
+			AbuseUserReport.insert({
+				createdAt: new Date(),
+				userId: user._id,
+				comment: `${description} matches /${spamBioRegExp}/`
+			})
+		}
+	});
+
 	// Create user
 	let user: IRemoteUser;
 	try {
@@ -158,7 +172,7 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 			bannerId: null,
 			createdAt: new Date(),
 			lastFetchedAt: new Date(),
-			description: fromHtml(person.summary),
+			description,
 			followersCount,
 			followingCount,
 			notesCount,
@@ -346,6 +360,18 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: IApP
 
 	const tags = extractHashtags(person.tag).map(tag => tag.toLowerCase());
 
+	const description = fromHtml(person.summary);
+
+	fetchMeta().then(({ spamBioRegExp }) => {
+		if (new RegExp(spamBioRegExp).test(description)) {
+			AbuseUserReport.insert({
+				createdAt: new Date(),
+				userId: exist._id,
+				comment: `${description} matches /${spamBioRegExp}/`
+			})
+		}
+	});
+
 	const updates = {
 		lastFetchedAt: new Date(),
 		inbox: person.inbox,
@@ -353,7 +379,7 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: IApP
 		outbox: person.outbox,
 		featured: person.featured,
 		emojis: emojiNames,
-		description: fromHtml(person.summary),
+		description,
 		followersCount,
 		followingCount,
 		notesCount,

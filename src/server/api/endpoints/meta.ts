@@ -170,6 +170,7 @@ export default define(meta, async (ps, me) => {
 		response.externalUserRecommendationEngine = instance.externalUserRecommendationEngine;
 		response.externalUserRecommendationTimeout = instance.externalUserRecommendationTimeout;
 		response.summalyProxy = instance.summalyProxy;
+		response.spamBioRegExp = instance.spamBioRegExp;
 		response.email = instance.email;
 		response.smtpSecure = instance.smtpSecure;
 		response.smtpHost = instance.smtpHost;

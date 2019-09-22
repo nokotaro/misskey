@@ -229,6 +229,8 @@ export type IMeta = {
 
 	summalyProxy?: string;
 
+	spamBioRegExp?: string;
+
 	enableTwitterIntegration?: boolean;
 	twitterConsumerKey?: string;
 	twitterConsumerSecret?: string;

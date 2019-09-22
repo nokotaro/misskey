@@ -1364,6 +1364,8 @@ admin/views/instance.vue:
   invite: "招待"
   save: "保存"
   saved: "保存しました"
+  anti-spam: "サイキック逮捕"
+  spam-bio-regular-expression: "プロフィールでサイキック逮捕する正規表現"
   user-recommendation-config: "おすすめユーザー"
   enable-external-user-recommendation: "外部ユーザーレコメンデーションを有効にする"
   external-user-recommendation-engine: "エンジン"
