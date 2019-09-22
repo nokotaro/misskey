@@ -9,10 +9,7 @@
 						<ui-input :value="report.user | acct" type="text" readonly>
 							<span>{{ $t('target') }}</span>
 						</ui-input>
-						<ui-input :value="report.reporter | acct" type="text" readonly v-if="report.reporter">
-							<span>{{ $t('reporter') }}</span>
-						</ui-input>
-						<ui-input :value="$t('anti-spam')" type="text" readonly v-else>
+						<ui-input :value="report.reporter ? getAcct(report.reporter) : $t('anti-spam')" type="text" readonly>
 							<span>{{ $t('reporter') }}</span>
 						</ui-input>
 					</ui-horizon-group>
@@ -36,6 +33,7 @@
 import Vue from 'vue';
 import i18n from '../../i18n';
 import { faExclamationCircle, faSnowflake, faMicrophoneSlash, faTrashAlt } from '@fortawesome/pro-light-svg-icons';
+import getAcct from '../../../../misc/acct/render';
 
 interface IReport {
 	id: string;
@@ -57,6 +55,7 @@ export default Vue.extend({
 			faSnowflake,
 			faMicrophoneSlash,
 			faTrashAlt,
+			getAcct,
 		};
 	},
 
