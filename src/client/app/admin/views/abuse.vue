@@ -94,7 +94,7 @@ export default Vue.extend({
 				showCancelButton: true,
 				title: 'confirm',
 				text,
-			}).then(({ canceled }) => canceled ? Promise.reject() : Promise.resolve())
+			}).then(({ canceled }) => canceled ? Promise.reject('canceled') : Promise.resolve())
 		},
 
 		execute(action: string, report: IReport) {
