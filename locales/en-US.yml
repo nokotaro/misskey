@@ -1137,6 +1137,7 @@ admin/views/abuse.vue:
   target: "Target"
   reporter: "Reporter"
   anti-spam: "Psychic Arrest"
+  null: "None Here"
   suspend-user: "Suspend"
   silence-user: "Silence"
   details: "Details"

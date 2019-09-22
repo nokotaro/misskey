@@ -6,7 +6,7 @@
 			<sequential-entrance animation="entranceFromTop" delay="25">
 				<div v-for="report in userReports" :key="report.id" class="haexwsjc">
 					<ui-horizon-group inputs>
-						<ui-input :value="report.user | acct" type="text" readonly>
+						<ui-input :value="report.user ? getAcct(report.user) : $t('null')" type="text" readonly>
 							<span>{{ $t('target') }}</span>
 						</ui-input>
 						<ui-input :value="report.reporter ? getAcct(report.reporter) : $t('anti-spam')" type="text" readonly>
