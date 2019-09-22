@@ -5,7 +5,7 @@
 import * as fs from 'fs';
 import * as webpack from 'webpack';
 import chalk from 'chalk';
-import locales from './locales';
+import locales, { primaries } from './locales';
 const { copyright } = require('./src/const.json'); // import { copyright } from './src/const.json';
 const { version, codename } = require('./package.json'); // import { version, codename } from './package.json';
 import { VueLoaderPlugin } from 'vue-loader';
@@ -136,8 +136,18 @@ module.exports = {
 
 			fs.mkdirSync('./built/client/assets/locales', { recursive: true });
 
-			for (const [lang, locale] of Object.entries(locales))
+			const primaryLanguagesKey = Object.keys(primaries);
+			const primaryLanguagesJoined = Object.entries(primaries).map(x => x.join('-'));
+
+			for (const [lang, locale] of Object.entries(locales)) {
 				fs.writeFileSync(`./built/client/assets/locales/${lang}.json`, JSON.stringify(locale), 'utf-8');
+
+				const index = primaryLanguagesJoined.indexOf(lang);
+
+				if (~index) {
+					fs.writeFileSync(`./built/client/assets/locales/${primaryLanguagesKey[index]}.json`, JSON.stringify(locale), 'utf-8');
+				}
+			}
 		}),
 		new VueLoaderPlugin(),
 		new webpack.optimize.ModuleConcatenationPlugin()
