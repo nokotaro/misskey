@@ -14,7 +14,7 @@ export interface IAbuseUserReport {
 	_id: mongo.ObjectID;
 	createdAt: Date;
 	userId: mongo.ObjectID;
-	reporterId: mongo.ObjectID;
+	reporterId?: mongo.ObjectID;
 	comment: string;
 }
 
@@ -45,7 +45,7 @@ export const pack = (
 	_report.id = _report._id;
 	delete _report._id;
 
-	_report.reporter = await packUser(_report.reporterId, null, { detail: true });
+	_report.reporter = _report.reporterId ? await packUser(_report.reporterId, null, { detail: true }) : null;
 	_report.user = await packUser(_report.userId, null, { detail: true });
 
 	resolve(_report);
