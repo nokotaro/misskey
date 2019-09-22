@@ -1299,6 +1299,8 @@ admin/views/abuse.vue:
   target: "対象"
   reporter: "報告者"
   anti-spam: "サイキック逮捕"
+  suspend-user: "凍結"
+  silence-user: "サイレンス"
   details: "詳細"
   remove-report: "削除"
 
