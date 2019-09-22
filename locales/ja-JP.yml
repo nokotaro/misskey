@@ -1298,6 +1298,7 @@ admin/views/abuse.vue:
   title: "スパム報告"
   target: "対象"
   reporter: "報告者"
+  anti-spam: "サイキック逮捕"
   details: "詳細"
   remove-report: "削除"
 

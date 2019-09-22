@@ -1136,6 +1136,7 @@ admin/views/abuse.vue:
   title: "Abuse"
   target: "Target"
   reporter: "Reporter"
+  anti-spam: "Psychic Arrest"
   details: "Details"
   remove-report: "Remove"
 admin/views/instance.vue:
