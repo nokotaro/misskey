@@ -16,7 +16,11 @@
 					<ui-textarea :value="report.comment" readonly>
 						<span>{{ $t('details') }}</span>
 					</ui-textarea>
-					<ui-button @click="removeReport(report)">{{ $t('remove-report') }}</ui-button>
+					<ui-horizon-group inputs>
+						<ui-button @click="execute('suspend', report)"><fa :icon="faSnowflake"/> {{ $t('suspend-user') }}</ui-button>
+						<ui-button @click="execute('silence', report)"><fa :icon="faMicrophoneSlash"/> {{ $t('silence-user') }}</ui-button>
+						<ui-button @click="removeReport(report)"><fa :icon="faTrashAlt"/> {{ $t('remove-report') }}</ui-button>
+					</ui-horizon-group>
 				</div>
 			</sequential-entrance>
 			<ui-button v-if="existMore" @click="fetchUserReports">{{ $t('@.load-more') }}</ui-button>
@@ -28,7 +32,14 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../i18n';
-import { faExclamationCircle } from '@fortawesome/pro-light-svg-icons';
+import { faExclamationCircle, faSnowflake, faMicrophoneSlash, faTrashAlt } from '@fortawesome/pro-light-svg-icons';
+
+interface IReport {
+	id: string;
+	comment: string;
+	user: { id: string; };
+	reporter: { id: string; };
+}
 
 export default Vue.extend({
 	i18n: i18n('admin/views/abuse.vue'),
@@ -39,7 +50,10 @@ export default Vue.extend({
 			untilId: undefined,
 			userReports: [],
 			existMore: false,
-			faExclamationCircle
+			faExclamationCircle,
+			faSnowflake,
+			faMicrophoneSlash,
+			faTrashAlt,
 		};
 	},
 
@@ -64,12 +78,29 @@ export default Vue.extend({
 			});
 		},
 
-		removeReport(report) {
+		removeReport(report: IReport) {
 			this.$root.api('admin/remove-abuse-user-report', {
 				reportId: report.id
 			}).then(() => {
 				this.userReports = this.userReports.filter(r => r.id != report.id);
 			});
+		},
+
+		confirm(this: Record<'$root', {dialog(options: object): Promise<{ canceled: boolean }> }>, text?: string) {
+			return this.$root.dialog({
+				type: 'warning',
+				showCancelButton: true,
+				title: 'confirm',
+				text,
+			}).then(({ canceled }) => canceled ? Promise.resolve() : Promise.reject())
+		},
+
+		execute(action: string, report: IReport) {
+			this.confirm(action)
+				.then(() => this.$root.api(`admin/${action}-user`, { userId: report.user.id }))
+				.then(() => this.removeReport(report))
+				.then(() => this.$root.dialog({ type: 'success', splash: true }))
+				.catch((e: Error) => this.$root.dialog({ type: 'error', text: e.toString() }))
 		}
 	}
 });
