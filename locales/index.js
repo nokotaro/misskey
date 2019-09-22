@@ -27,8 +27,14 @@ const languages = [
 ];
 
 const primaries = {
+	'cs': 'CZ',
+	'de': 'DE',
 	'en': 'US',
+	'fr': 'FR',
 	'ja': 'JP',
+	'ko': 'KR',
+	'nl': 'NL',
+	'pl': 'PL',
 	'zh': 'CN',
 };
 
@@ -49,3 +55,5 @@ module.exports.default = Object.entries(locales)
 			);
 		}
 	})(), a), {});
+
+module.exports.primaries = primaries;

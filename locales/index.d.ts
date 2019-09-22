@@ -1,3 +1,5 @@
-declare const locales: { [lang: string]: any };
+declare const locales: Record<string, object>;
 
 export default locales;
+
+export const primaries: Record<string, string>;
