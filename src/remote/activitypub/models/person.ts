@@ -28,6 +28,7 @@ import FollowRequest from '../../../models/follow-request';
 import { toArray, toSingle } from '../../../prelude/array';
 import { tryCreateUrl } from '../../../prelude/url';
 import AbuseUserReport from '../../../models/abuse-user-report';
+import { publishAdminStream } from '../../../services/stream';
 const logger = apLogger;
 
 /**
@@ -155,12 +156,25 @@ export async function createPersonFromObject(uri: string, object: IObject, resol
 	const description = fromHtml(person.summary);
 
 	fetchMeta().then(({ spamBioRegExp }) => {
-		if (new RegExp(spamBioRegExp).test(description)) {
+		if (spamBioRegExp && new RegExp(spamBioRegExp).test(description)) {
 			AbuseUserReport.insert({
 				createdAt: new Date(),
 				userId: user._id,
 				comment: `${description} matches /${spamBioRegExp}/`
-			})
+			}).then(report => User.find({
+				$or: [
+					{ isAdmin: true },
+					{ isModerator: true }
+				]
+			}).then(moderators => {
+				for (const moderator of moderators) {
+					publishAdminStream(moderator._id, 'newAbuseUserReport', {
+						id: report._id,
+						userId: report.userId,
+						comment: report.comment
+					});
+				}
+			}));
 		}
 	});
 
@@ -363,12 +377,25 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: IApP
 	const description = fromHtml(person.summary);
 
 	fetchMeta().then(({ spamBioRegExp }) => {
-		if (new RegExp(spamBioRegExp).test(description)) {
+		if (spamBioRegExp && new RegExp(spamBioRegExp).test(description)) {
 			AbuseUserReport.insert({
 				createdAt: new Date(),
 				userId: exist._id,
 				comment: `${description} matches /${spamBioRegExp}/`
-			})
+			}).then(report => User.find({
+				$or: [
+					{ isAdmin: true },
+					{ isModerator: true }
+				]
+			}).then(moderators => {
+				for (const moderator of moderators) {
+					publishAdminStream(moderator._id, 'newAbuseUserReport', {
+						id: report._id,
+						userId: report.userId,
+						comment: report.comment
+					});
+				}
+			}));
 		}
 	});
 

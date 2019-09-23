@@ -95,5 +95,5 @@ export default define(meta, async (ps, me) => {
 				comment: report.comment
 			});
 		}
-	}, 1);
+	}, 0);
 });
