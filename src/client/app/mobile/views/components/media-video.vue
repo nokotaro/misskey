@@ -38,7 +38,7 @@ export default Vue.extend({
 	},
 	computed: {
 		href(): string {
-			return window[Symbol.for(':urn:x:twista:is:on:ios')] && (!this.$store.getters.isSignedIn || this.$store.state.device.useVlc) ?
+			return window[Symbol.for(':urn:x:twista:is:on:ios:like')] && (!this.$store.getters.isSignedIn || this.$store.state.device.useVlc) ?
 				`vlc-x-callback://x-callback-url/stream?${query({ url: this.video.url })}` :
 				this.video.url;
 		},

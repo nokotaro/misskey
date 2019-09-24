@@ -400,8 +400,11 @@ html.setAttribute('lang', lang);
 
 // Detect platform
 window[Symbol.for(':urn:x:twista:is:on:apple')] = navigator.vendor === 'Apple Computer, Inc.';
-window[Symbol.for(':urn:x:twista:is:on:macos')] = window[Symbol.for(':urn:x:twista:is:on:apple')] && navigator.platform.includes('Mac');
-window[Symbol.for(':urn:x:twista:is:on:ios')] = window[Symbol.for(':urn:x:twista:is:on:apple')] && !window[Symbol.for(':urn:x:twista:is:on:macos')];
+window[Symbol.for(':urn:x:twista:is:on:macos:like')] = window[Symbol.for(':urn:x:twista:is:on:apple')] && navigator.platform.includes('Mac');
+window[Symbol.for(':urn:x:twista:is:on:ipados')] = window[Symbol.for(':urn:x:twista:is:on:macos:like')] && !navigator.maxTouchPoints;
+window[Symbol.for(':urn:x:twista:is:on:macos')] = window[Symbol.for(':urn:x:twista:is:on:macos:like')] && !window[Symbol.for(':urn:x:twista:is:on:ipados')];
+window[Symbol.for(':urn:x:twista:is:on:ios')] = window[Symbol.for(':urn:x:twista:is:on:apple')] && !window[Symbol.for(':urn:x:twista:is:on:macos:like')];
+window[Symbol.for(':urn:x:twista:is:on:ios:like')] = window[Symbol.for(':urn:x:twista:is:on:ios')] || window[Symbol.for(':urn:x:twista:is:on:ipados')];
 
 // iOSでプライベートモードだとlocalStorageが使えないので既存のメソッドを上書きする
 try {

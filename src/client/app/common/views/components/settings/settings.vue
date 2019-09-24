@@ -370,7 +370,7 @@ export default Vue.extend({
 		},
 
 		oniOS(): boolean {
-			return window[Symbol.for(':urn:x:twista:is:on:ios')];
+			return window[Symbol.for(':urn:x:twista:is:on:ios:like')];
 		},
 
 		useOsDefaultEmojis: {
