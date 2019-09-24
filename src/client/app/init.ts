@@ -172,8 +172,7 @@ import {
 	faCalendar,
 	faHdd,
 	faPlayCircle,
-	faLightbulb,
-	faCctv,
+	faLightbulb
 } from '@fortawesome/pro-light-svg-icons';
 
 import {
@@ -337,7 +336,6 @@ library.add(
 	faHdd,
 	faPlayCircle,
 	faLightbulb,
-	faCctv,
 
 	fFaStar,
 
