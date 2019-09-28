@@ -79,7 +79,7 @@ export default Vue.extend({
 			return file.type.startsWith('image');
 		},
 		isVideo(file: { type: string }) {
-			return file.type.startsWith('video');
+			return file.type.startsWith('video') || file.type.startsWith('audio');
 		},
 		previewable(file: { type: string }) {
 			return this.isImage(file) || this.isVideo(file);
