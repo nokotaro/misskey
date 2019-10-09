@@ -6,7 +6,7 @@ import getReactionEmoji from './get-reaction-emoji';
  * 通知を表す文字列を取得します。
  * @param notification 通知
  */
-export default function(notification: any): string {
+export default function getNotificationSummary(notification: any): string {
 	switch (notification.type) {
 		case 'follow':
 			return `Follow ${getUserName(notification.user)}`;

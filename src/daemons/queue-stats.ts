@@ -12,7 +12,7 @@ const interval = 3000;
 /**
  * Report queue stats regularly
  */
-export default function() {
+export default function queueStats() {
 	const workers = program.disableClustering ? 1 : Math.min(config.clusterLimit || Infinity, os.cpus().length);
 
 	const deliverConcurrencyPerWorker = config.deliverJobConcurrency || 32;

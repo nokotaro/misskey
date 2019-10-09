@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import isSvg from 'is-svg';
 
-export default function(path: string) {
+export default function checkSvg(path: string) {
 	try {
 		const size = fs.statSync(path).size;
 		if (size > 1 * 1024 * 1024) return false;

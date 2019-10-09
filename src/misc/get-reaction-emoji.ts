@@ -1,4 +1,4 @@
-export default function(reaction: string): string {
+export default function getReactionEmoji(reaction: string): string {
 	switch (reaction) {
 		case 'like': return '👍';
 		case 'love': return '❤️';

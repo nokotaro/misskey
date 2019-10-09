@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-export default function <T extends object>(data: {
+export default function defineWidget<T extends object>(data: {
 	name: string;
 	props?: () => T;
 }) {

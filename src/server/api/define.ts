@@ -12,7 +12,7 @@ type Params<T extends IEndpointMeta> = {
 
 export type Response = Record<string, any> | void;
 
-export default function <T extends IEndpointMeta>(meta: T, cb: (params: Params<T>, user: T['requireCredential'] extends true ? ILocalUser : ILocalUser | undefined, app: IApp, file?: any, cleanup?: Function) => Promise<Response>): (params: any, user: Parameters<typeof cb>[1], app: IApp, file?: any) => Promise<any> {
+export default function define<T extends IEndpointMeta>(meta: T, cb: (params: Params<T>, user: T['requireCredential'] extends true ? ILocalUser : ILocalUser | undefined, app: IApp, file?: any, cleanup?: Function) => Promise<Response>): (params: any, user: Parameters<typeof cb>[1], app: IApp, file?: any) => Promise<any> {
 	return (params: any, user: Parameters<typeof cb>[1], app: IApp, file?: any) => {
 		function cleanup() {
 			fs.unlink(file.path, () => {});

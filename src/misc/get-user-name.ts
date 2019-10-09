@@ -1,5 +1,5 @@
 import { IUser } from '../models/user';
 
-export default function(user: IUser): string {
+export default function getUserName(user: IUser): string {
 	return user.name || user.username;
 }

@@ -2,7 +2,7 @@
 /**
  * Format like the uptime command
  */
-export default function(sec) {
+export default function formatUptime(sec) {
 	if (!sec) return sec;
 
 	const day = Math.floor(sec / 86400);

@@ -16,7 +16,7 @@ const requestCreate = (date: Date) => (date.setHours(7, 0, 0, 0), date.getTime()
 
 let lastCreatedAt: Date = null;
 
-export default function() {
+export default function futabaAnzuBot() {
 	scheduleJob('futaba-anzu-bot', {
 		hour: 7,
 		minute: 0,

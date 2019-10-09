@@ -11,7 +11,7 @@ type Notification = {
 
 // TODO: i18n
 
-export default function(type, data): Notification {
+export default function composeNottification(type, data): Notification {
 	switch (type) {
 		case 'driveFileCreated':
 			return {

@@ -1,7 +1,7 @@
 import { IDriveFile } from '../models/drive-file';
 import config from '../config';
 
-export default function(file: IDriveFile, thumbnail = false): string {
+export default function getDriveFileUrl(file: IDriveFile, thumbnail = false): string {
 	if (file == null) return null;
 
 	const isImage = file.contentType && file.contentType.startsWith('image/');

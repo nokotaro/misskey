@@ -12,7 +12,7 @@ const interval = 3000;
 /**
  * Report server stats regularly
  */
-export default function() {
+export default function serverStats() {
 	const log = new Deque<any>();
 
 	ev.on('requestServerStatsLog', x => {
