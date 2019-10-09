@@ -96,7 +96,7 @@ export async function deliverPinnedChange(userId: mongo.ObjectID, noteId: mongo.
 
 	if (!isLocalUser(user)) return;
 
-	const queue = await CreateRemoteInboxes(user);
+	const queue = await createRemoteInboxes(user);
 
 	if (queue.length < 1) return;
 
@@ -113,7 +113,7 @@ export async function deliverPinnedChange(userId: mongo.ObjectID, noteId: mongo.
  * ローカルユーザーのリモートフォロワーのinboxリストを作成する
  * @param user ローカルユーザー
  */
-async function CreateRemoteInboxes(user: ILocalUser): Promise<string[]> {
+async function createRemoteInboxes(user: ILocalUser): Promise<string[]> {
 	const followers = await Following.find({
 		followeeId: user._id
 	});

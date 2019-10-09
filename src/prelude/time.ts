@@ -3,7 +3,7 @@ const dateTimeIntervals = {
 	'hours': 36e5,
 };
 
-export function DateUTC(time: number[]): Date {
+export function dateUTC(time: number[]): Date {
 	const r = new Date(0);
 	r.setUTCFullYear(time[0], time[1], time[2]);
 	if (time[3]) r.setUTCHours(time[3], ...time.slice(4));

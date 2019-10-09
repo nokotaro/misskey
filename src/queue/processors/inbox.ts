@@ -41,7 +41,7 @@ export default async (job: Bull.Job): Promise<void> => {
 
 		// アクティビティ内のホストの検証
 		try {
-			ValidateActivity(activity, host);
+			validateActivity(activity, host);
 		} catch (e) {
 			logger.warn(e.message);
 			return;
@@ -60,7 +60,7 @@ export default async (job: Bull.Job): Promise<void> => {
 		// アクティビティ内のホストの検証
 		const host = toUnicode(new URL(signature.keyId).hostname.toLowerCase());
 		try {
-			ValidateActivity(activity, host);
+			validateActivity(activity, host);
 		} catch (e) {
 			logger.warn(e.message);
 			return;
@@ -156,7 +156,7 @@ export default async (job: Bull.Job): Promise<void> => {
  * @param activity Activity
  * @param host Expect host
  */
-function ValidateActivity(activity: any, host: string) {
+function validateActivity(activity: any, host: string) {
 	// id (if exists)
 	if (typeof activity.id === 'string') {
 		const uriHost = toUnicode(new URL(activity.id).hostname.toLowerCase());
