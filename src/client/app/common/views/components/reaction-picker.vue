@@ -229,7 +229,7 @@ export default Vue.extend({
 		pickEmoji() {
 			const axes = ['x', 'y', 'z'] as const;
 			type Axes = typeof axes[number];
-			const { clientWidth, clientHeight } = document.documentElement;
+			const { clientWidth, clientHeight } = this.$root.isMobile ? document.documentElement : document.body;
 			const { width, height } = emojiPickerComponentSize;
 			const { left, top } = (this.$refs.popover as HTMLElement).style;
 			const limit: Record<Axes, number> = {
@@ -300,15 +300,15 @@ export default Vue.extend({
 
 		&.patlabor
 			> aside > div
-				bottom 0
 				left 0
 				position fixed
 				right 0
+				top 0
 				transform translateY(0)
 
 			&.await > aside > div
 			&.close > aside > div
-				transform translateY(48px)
+				transform translateY(-48px)
 
 		&:not(.patlabor)
 		&:not(.patlabor) > aside > div
