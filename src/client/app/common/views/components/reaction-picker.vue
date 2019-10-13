@@ -1,7 +1,7 @@
 <template>
 <div class="age14b83" v-hotkey.global="keymap">
 	<div class="backdrop" ref="backdrop" @click="close"></div>
-	<div class="popover await" :class="{ 'prefer-sushi': $store.getters.isSignedIn && $store.state.settings.iLikeSushi }" ref="popover">
+	<div class="popover await" :class="{ 'prefer-sushi': $store.getters.isSignedIn && $store.state.settings.iLikeSushi, patlabor: $root.isMobile }" ref="popover">
 		<div class="emoji" :class="{ hidden: !enableEmojiReaction }" key="emoji">
 			<div @click="pickEmoji"><fa :icon="['fal', 'icons']"/></div>
 		</div>
@@ -32,6 +32,11 @@ import anime from 'animejs';
 import EmojiPicker from '../../../desktop/views/components/emoji-picker-dialog.vue';
 import emojiRegex from '../../../../../misc/emoji-regex';
 import { lib } from 'emojilib';
+
+const emojiPickerComponentSize = {
+	width: 350,
+	height: 336
+};
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/reaction-picker.vue'),
@@ -222,9 +227,19 @@ export default Vue.extend({
 		},
 
 		pickEmoji() {
+			const axes = ['x', 'y', 'z'] as const;
+			type Axes = typeof axes[number];
+			const { clientWidth, clientHeight } = document.documentElement;
+			const { width, height } = emojiPickerComponentSize;
 			const { left, top } = (this.$refs.popover as HTMLElement).style;
-			const [x, y, z] = [...([left, top].map(x => parseInt(x.match(/(\d+)/)[1]))), 10002];
-			const vm = this.$root.new(EmojiPicker, { x, y, z });
+			const limit: Record<Axes, number> = {
+				x: Math.max(0, clientWidth - width),
+				y: Math.max(0, clientHeight - height),
+				z: Infinity
+			};
+			const composed = [...([left, top].map(x => parseInt(x.match(/(\d+)/)[1]))), 10002];
+			const vm = this.$root.new(EmojiPicker, axes.reduce<Partial<Record<Axes, number>>>((a, c, i) =>
+				(a[c] = Math.min(composed[i], limit[c]), a), {}));
 			vm.$once('chosen', this.react);
 		},
 
@@ -248,7 +263,7 @@ export default Vue.extend({
 </script>
 
 <style lang="stylus" scoped>
-@css{.age14b83>.popover>aside{-webkit-mask:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><path d="M196-100C87.752-100,0-12.248,0,96S87.752,292,196,292,392,204.248,392,96,304.248-100,196-100Zm92,296A100,100,0,1,1,388,96,100,100,0,0,1,288,196Z"/></svg>');mask:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><path d="M196-100C87.752-100,0-12.248,0,96S87.752,292,196,292,392,204.248,392,96,304.248-100,196-100Zm92,296A100,100,0,1,1,388,96,100,100,0,0,1,288,196Z"/></svg>')}.age14b83>.popover>div{-webkit-mask:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><path d="M96,0a96,96,0,1,0,96,96A96,96,0,0,0,96,0Zm0,152a56,56,0,1,1,56-56A56,56,0,0,1,96,152Z"/></svg>');mask:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><path d="M96,0a96,96,0,1,0,96,96A96,96,0,0,0,96,0Zm0,152a56,56,0,1,1,56-56A56,56,0,0,1,96,152Z"/></svg>')}}
+@css{.age14b83>.popover:not(.patlabor)>aside{-webkit-mask:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><path d="M196-100C87.752-100,0-12.248,0,96S87.752,292,196,292,392,204.248,392,96,304.248-100,196-100Zm92,296A100,100,0,1,1,388,96,100,100,0,0,1,288,196Z"/></svg>');mask:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><path d="M196-100C87.752-100,0-12.248,0,96S87.752,292,196,292,392,204.248,392,96,304.248-100,196-100Zm92,296A100,100,0,1,1,388,96,100,100,0,0,1,288,196Z"/></svg>')}.age14b83>.popover>div{-webkit-mask:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><path d="M96,0a96,96,0,1,0,96,96A96,96,0,0,0,96,0Zm0,152a56,56,0,1,1,56-56A56,56,0,0,1,96,152Z"/></svg>');mask:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><path d="M96,0a96,96,0,1,0,96,96A96,96,0,0,0,96,0Zm0,152a56,56,0,1,1,56-56A56,56,0,0,1,96,152Z"/></svg>')}}
 
 @keyframes x
 	0%
@@ -281,18 +296,80 @@ export default Vue.extend({
 		pointer-events none
 		position absolute
 		width 192px
-		will-change transform
 		z-index 10001
 
-		&.await > aside > div
-			transform translateX(192px)
+		&.patlabor
+			> aside > div
+				bottom 0
+				left 0
+				position fixed
+				right 0
+				transform translateY(0)
+
+			&.await > aside > div
+			&.close > aside > div
+				transform translateY(48px)
+
+		&:not(.patlabor)
+		&:not(.patlabor) > aside > div
+		> div
+			will-change transform
+
+			> aside
+				right 192px
+				transform-origin right
+				> div
+					margin 72px 0
+					transition-delay .12s
+					transform translateX(0)
+
+			&.await > aside > div
+				transform translateX(192px)
+
+			&.close
+				> aside > div
+					pointer-events none
+					transform translateX(192px)
+
+				> div
+					&:nth-child(1)
+						transition-delay .25s
+
+					&:nth-child(2)
+						transition-delay .26s
+
+					&:nth-child(3)
+						transition-delay .27s
+
+					&:nth-child(4)
+						transition-delay .28s
+
+					&:nth-child(5)
+						transition-delay .29s
+
+					&:nth-child(6)
+						transition-delay .3s
+
+					&:nth-child(7)
+						transition-delay .31s
+
+					&:nth-child(8)
+						transition-delay .32s
+
+					&:nth-child(9)
+						transition-delay .33s
+
+					&:nth-child(10)
+						transition-delay .34s
+
+					&:nth-child(11)
+						transition-delay .35s
+
+					&:nth-child(12)
+						transition-delay .36s
 
 		&.await > div
 			transform rotate(-90deg) scale(.0001) // Avoid the Servo bug
-
-		&.close > aside > div
-			pointer-events none
-			transform translateX(192px)
 
 		&.close > div
 			transform rotate(90deg) scale(.0001) // Avoid the Servo bug
@@ -303,42 +380,6 @@ export default Vue.extend({
 
 				> div::before
 					background-color var(--primary)
-
-			&:nth-child(1)
-				transition-delay .25s
-
-			&:nth-child(2)
-				transition-delay .26s
-
-			&:nth-child(3)
-				transition-delay .27s
-
-			&:nth-child(4)
-				transition-delay .28s
-
-			&:nth-child(5)
-				transition-delay .29s
-
-			&:nth-child(6)
-				transition-delay .3s
-
-			&:nth-child(7)
-				transition-delay .31s
-
-			&:nth-child(8)
-				transition-delay .32s
-
-			&:nth-child(9)
-				transition-delay .33s
-
-			&:nth-child(10)
-				transition-delay .34s
-
-			&:nth-child(11)
-				transition-delay .35s
-
-			&:nth-child(12)
-				transition-delay .36s
 
 			> div
 				pointer-events none
@@ -353,19 +394,13 @@ export default Vue.extend({
 		> aside > div
 		> div
 			transition transform .25s cubic-bezier(.08,.82,.17,1)
-			will-change transform
 
 		> aside
 			display grid
-			right 192px
-			transform-origin right
 
 			> div
 				background-color var(--infoBg)
-				margin 72px 0
 				pointer-events auto
-				transition-delay .12s
-				transform translateX(0)
 
 				> div
 					margin 8px
