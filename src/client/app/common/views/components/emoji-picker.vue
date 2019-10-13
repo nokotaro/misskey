@@ -55,11 +55,6 @@ import i18n from '../../../i18n';
 import { lib } from 'emojilib';
 import { faAsterisk, faLeaf, faUtensils, faFutbol, faCity, faDice, faShieldAlt, faFlag } from '@fortawesome/pro-light-svg-icons';
 
-export const componentSize = {
-	width: 350,
-	height: 336
-};
-
 export default Vue.extend({
 	i18n: i18n('common/views/components/emoji-picker.vue'),
 
