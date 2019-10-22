@@ -255,6 +255,9 @@ export default Vue.extend({
 				overflow-x hidden
 				text-decoration none
 				text-overflow ellipsis
+				text-overflow -webkit-fade
+				text-overflow -moz-fade
+				text-overflow fade
 				white-space nowrap
 
 				margin 0 16px // gap fallbacking

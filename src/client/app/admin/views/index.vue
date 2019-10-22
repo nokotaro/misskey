@@ -196,6 +196,9 @@ export default Vue.extend({
 				color #fff
 				overflow hidden
 				text-overflow ellipsis
+				text-overflow -webkit-fade
+				text-overflow -moz-fade
+				text-overflow fade
 				white-space nowrap
 				font-size 15px
 

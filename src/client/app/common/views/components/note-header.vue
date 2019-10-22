@@ -77,6 +77,9 @@ export default Vue.extend({
 		font-weight 600
 		text-decoration none
 		text-overflow ellipsis
+		text-overflow -webkit-fade
+		text-overflow -moz-fade
+		text-overflow fade
 
 		&:hover
 			text-decoration underline
@@ -102,6 +105,9 @@ export default Vue.extend({
 		margin 0 .5em 0 0
 		overflow hidden
 		text-overflow ellipsis
+		text-overflow -webkit-fade
+		text-overflow -moz-fade
+		text-overflow fade
 		color var(--noteHeaderAcct)
 		flex-shrink 2147483647
 

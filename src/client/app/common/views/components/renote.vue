@@ -74,6 +74,9 @@ export default Vue.extend({
 		overflow hidden
 		flex-shrink 1
 		text-overflow ellipsis
+		text-overflow -webkit-fade
+		text-overflow -moz-fade
+		text-overflow fade
 		white-space nowrap
 
 		> .name

@@ -308,6 +308,9 @@ export default Vue.extend({
 						overflow hidden
 						white-space nowrap
 						text-overflow ellipsis
+						text-overflow -webkit-fade
+						text-overflow -moz-fade
+						text-overflow fade
 						font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif
 						font-weight 600
 						color var(--mobileUserPageStatusHighlight)
@@ -319,6 +322,9 @@ export default Vue.extend({
 						overflow hidden
 						white-space nowrap
 						text-overflow ellipsis
+						text-overflow -webkit-fade
+						text-overflow -moz-fade
+						text-overflow fade
 						color var(--mobileUserPageStatusHighlight)
 
 			> .info

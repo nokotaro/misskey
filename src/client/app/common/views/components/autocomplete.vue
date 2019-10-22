@@ -367,6 +367,9 @@ export default Vue.extend({
 			*
 				overflow hidden
 				text-overflow ellipsis
+				text-overflow -webkit-fade
+				text-overflow -moz-fade
+				text-overflow fade
 
 			&:hover
 				background var(--autocompleteItemHoverBg)

@@ -86,6 +86,9 @@ export default define({
 				border-bottom dashed var(--lineWidth) var(--faceDivider)
 				white-space nowrap
 				text-overflow ellipsis
+				text-overflow -webkit-fade
+				text-overflow -moz-fade
+				text-overflow fade
 				overflow hidden
 
 				&:last-child

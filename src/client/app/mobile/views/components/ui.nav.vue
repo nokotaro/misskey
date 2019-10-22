@@ -280,6 +280,9 @@ export default Vue.extend({
 					line-height 96px
 					overflow hidden
 					text-overflow ellipsis
+					text-overflow -webkit-fade
+					text-overflow -moz-fade
+					text-overflow fade
 					white-space nowrap
 
 			ul

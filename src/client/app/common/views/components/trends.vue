@@ -92,6 +92,9 @@ export default Vue.extend({
 					white-space nowrap
 					overflow hidden
 					text-overflow ellipsis
+					text-overflow -webkit-fade
+					text-overflow -moz-fade
+					text-overflow fade
 					color inherit
 
 				> p

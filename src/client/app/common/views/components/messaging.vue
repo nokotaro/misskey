@@ -369,6 +369,9 @@ export default Vue.extend({
 						padding 0
 						overflow hidden
 						text-overflow ellipsis
+						text-overflow -webkit-fade
+						text-overflow -moz-fade
+						text-overflow fade
 						font-size 1em
 						color var(--noteHeaderName)
 						font-family fot-rodin-pron, a-otf-ud-shin-go-pr6n, sans-serif

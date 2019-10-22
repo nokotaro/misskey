@@ -572,6 +572,9 @@ export default Vue.extend({
 					overflow hidden
 					height $header-height
 					text-overflow ellipsis
+					text-overflow -webkit-fade
+					text-overflow -moz-fade
+					text-overflow fade
 					text-align center
 					font-size 1em
 					line-height $header-height

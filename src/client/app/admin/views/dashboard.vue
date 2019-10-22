@@ -156,6 +156,9 @@ export default Vue.extend({
 			margin 0 32px 0 0
 			overflow hidden
 			text-overflow ellipsis
+			text-overflow -webkit-fade
+			text-overflow -moz-fade
+			text-overflow fade
 
 			> b
 				&:after

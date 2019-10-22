@@ -137,6 +137,20 @@
 							</a>
 						</div>
 					</template>
+
+					<template v-if="notification.type == 'newAbuseUserReport'">
+						<mk-avatar class="avatar" :user="notification.reporter" v-if="notification.reporter"/>
+						<div class="text">
+							<p><fa :icon="['fal', 'cctv']"/>
+								<router-link :to="notification.reporter | userPage" v-user-preview="notification.reporterId" v-if="notification.reporter">
+									<mk-user-name :user="notification.reporter"/>
+								</router-link>
+							</p>
+							<a class="note-preview" :href="notification.note | notePage" :title="getNoteSummary(notification.note)">
+								<mfm :text="getNoteSummary(notification.note)" :plain="true" :custom-emojis="notification.note.emojis"/>
+							</a>
+						</div>
+					</template>
 				</div>
 
 				<p class="date" v-if="i != notifications.length - 1 && notification._date != _notifications[i + 1]._date" :key="notification.id + '-time'">
@@ -169,13 +183,20 @@ export default Vue.extend({
 			notifications: [],
 			moreNotifications: false,
 			connection: null,
+			adminConnection: null,
 			getNoteSummary
 		};
 	},
 
 	computed: {
-		_notifications(): any[] {
-			return (this.notifications as any).map(notification => {
+		_notifications(this: {
+			notifications: {
+				createdAt: string;
+				_date: number;
+				_datetext: string;
+			}[]
+		}) {
+			return this.notifications.map(notification => {
 				const date = new Date(notification.createdAt).getDate();
 				const month = new Date(notification.createdAt).getMonth() + 1;
 				notification._date = date;
@@ -331,6 +352,9 @@ export default Vue.extend({
 					overflow hidden
 					white-space nowrap
 					text-overflow ellipsis
+					text-overflow -webkit-fade
+					text-overflow -moz-fade
+					text-overflow fade
 
 					[data-icon]
 						font-size 1em

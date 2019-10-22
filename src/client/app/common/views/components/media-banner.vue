@@ -76,6 +76,9 @@ export default Vue.extend({
 		> b
 			overflow hidden
 			text-overflow ellipsis
+			text-overflow -webkit-fade
+			text-overflow -moz-fade
+			text-overflow fade
 
 		> *:not(:last-child)
 			margin-right .2em

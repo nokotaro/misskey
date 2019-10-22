@@ -174,6 +174,9 @@ export default Vue.extend({
 				white-space nowrap
 				overflow hidden
 				text-overflow ellipsis
+				text-overflow -webkit-fade
+				text-overflow -moz-fade
+				text-overflow fade
 				opacity 0.7
 				font-size 14px
 				padding-right 40px

@@ -148,6 +148,9 @@ export default Vue.extend({
 					color var(--primaryAlpha07)
 					white-space nowrap
 					text-overflow ellipsis
+					text-overflow -webkit-fade
+					text-overflow -moz-fade
+					text-overflow fade
 					overflow hidden
 					flex-shrink 1
 
