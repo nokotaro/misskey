@@ -60,7 +60,7 @@ export default Vue.extend({
 	white-space nowrap
 
 	> .avatar
-		flex-shrink 0
+		flex 0 0 auto
 		margin-right 8px
 		width 20px
 		height 20px

@@ -240,6 +240,7 @@ export default Vue.extend({
 			// gap 16px
 
 			> .avatar
+				flex 0 0 auto
 				width 60px
 				height 60px
 				border-radius 8px
@@ -247,11 +248,14 @@ export default Vue.extend({
 			> .name
 				color var(--noteHeaderName)
 				display inline-block
-				flex 1 0 auto
+				flex 1 1 auto
 				font-size 18px
 				line-height 24px
 				margin 0
+				overflow-x hidden
 				text-decoration none
+				text-overflow ellipsis
+				white-space nowrap
 
 				margin 0 16px // gap fallbacking
 
@@ -265,6 +269,7 @@ export default Vue.extend({
 					margin 0
 
 			> .info
+				flex 0 0 auto
 				font-size 1em
 
 				> .time

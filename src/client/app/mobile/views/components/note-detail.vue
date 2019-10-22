@@ -248,6 +248,7 @@ export default Vue.extend({
 
 			> .avatar
 				display block
+				flex 0 0 auto
 				margin 0 12px 0 0
 				width 54px
 				height 54px
