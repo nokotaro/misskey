@@ -1,0 +1,37 @@
+name: Deploy
+
+on:
+  push:
+    paths:
+    - '.twista-version'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: yarn install, build, and deploy
+      run: |
+        yarn install --flozen-lockfile
+        yarn build
+
+        key=$(mktemp)
+        dispose() {
+          test -n "$key" && rm -f "$key"
+        }
+        trap dispose EXIT
+        trap 'rc=$?; trap - EXIT; dispose; exit $?' INT PIPE TERM
+        echo "$DEPLOY_SSH_KEY" > "$key"
+        rsync -lprtuze "ssh -i $key" "$DEPLOY_SSH_USER@$DEPLOY_SSH_HOST:$DEPLOY_SSH_PATH/" ./
+      env:
+        CI: true
+        NODE_ENV: production
