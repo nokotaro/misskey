@@ -41,10 +41,20 @@ export default Vue.extend({
 		background var(--mfmTitleBg)
 		border-radius .25em
 		display inline-block
+		margin 0 0 0 .5em
 		padding .25em .5em
 
 		& + *
 			margin 0 0 0 .5em
+
+	>>> .at-plain
+		background var(--mfmTitleBg)
+		border-radius 2147483647px
+		display inline-block
+		padding .25em .5em
+
+		> :first-child
+			left -.375em
 
 	>>> .quote
 		display block

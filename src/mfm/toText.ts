@@ -4,7 +4,8 @@ const check = (x?: string) => x && x.length;
 
 function visit(tree: MfmTree): string {
 	switch (tree.node.type) {
-		case 'titlePlain': {
+		case 'titlePlain':
+		case 'atPlain': {
 			return tree.node.props.raw;
 		}
 

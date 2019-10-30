@@ -1,6 +1,7 @@
 import Vue, { VNode } from 'vue';
 import { length } from 'stringz';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faAt } from '@fortawesome/pro-light-svg-icons';
 import { MfmForest } from '../../../../../mfm/prelude';
 import { parse, parsePlain } from '../../../../../mfm/parse';
 import MkUrl from './url.vue';
@@ -382,6 +383,23 @@ export default Vue.component('mochimochi-fuwafuwa-markup', {
 							].join(';')
 						}
 					}, genEl(token.children))];
+				}
+
+				case 'atPlain': {
+					return [createElement('span', {
+						attrs: {
+							class: 'at-plain'
+						}
+					}, [
+						createElement(FontAwesomeIcon, {
+							key: Math.random(),
+							props: {
+								icon: faAt,
+								fixedWidth: true
+							}
+						}),
+						createElement('span', {}, genEl(token.children))
+					])];
 				}
 
 				case 'emoji': {

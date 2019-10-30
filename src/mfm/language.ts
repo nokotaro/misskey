@@ -22,7 +22,8 @@ export function removeOrphanedBrackets(s: string): string {
 
 export const mfmLanguage = P.createLanguage({
 	root: r => P.alt(r.block, r.inline).atLeast(1),
-	plain: r => P.alt(r.emoji, r.titlePlain, r.text).atLeast(1),
+	plain: r => P.alt(r.emoji, r.titlePlain, r.atPlain, r.text).atLeast(1),
+	truePlain: r => P.alt(r.emoji, r.text).atLeast(1),
 	block: r => P.alt(
 		r.title,
 		r.quote,
@@ -76,6 +77,7 @@ export const mfmLanguage = P.createLanguage({
 		const raw = match[1].trim() + remote.map(x => x.node.props.text).join('') + match[5].trim();
 		return P.makeSuccess(i + match[0].length, createTree('titlePlain', contents, { raw, background, foreground }));
 	})),
+	atPlain: r => P.regexp(/^@([^@]+?)$/, 1).map(x => createTree('atPlain', r.truePlain.tryParse(x.trim()), { raw: `@${x}` })),
 	quote: r => r.startOfLine.then(P((input, i) => {
 		const text = input.substr(i);
 		if (!text.match(/^>[\s\S]+?/)) return P.makeFailure(i, 'not a quote');
