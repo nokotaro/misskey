@@ -56,6 +56,9 @@ export default Vue.extend({
 		> :first-child
 			left -.375em
 
+		> :last-child
+			left -.125em
+
 	>>> .quote
 		display block
 		margin 8px
