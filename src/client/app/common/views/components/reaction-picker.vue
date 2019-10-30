@@ -153,7 +153,7 @@ export default Vue.extend({
 
 				popover.classList.remove('await');
 
-				this.$nextTick(() => this.$refs.atlas.focusQuietly());
+				this.$nextTick(() => this.$root.isMobile || this.$refs.atlas.focusQuietly());
 			});
 		})
 	},
