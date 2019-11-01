@@ -52,12 +52,11 @@ export default Vue.extend({
 		border-radius 2147483647px
 		display inline-block
 		padding .25em .5em
+		margin 0 0 0 .25em
 
 		> :first-child
-			left -.375em
-
-		> :last-child
-			left -.125em
+			left -.25em
+			width 1em
 
 	>>> .quote
 		display block

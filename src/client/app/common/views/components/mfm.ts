@@ -394,8 +394,7 @@ export default Vue.component('mochimochi-fuwafuwa-markup', {
 						createElement(FontAwesomeIcon, {
 							key: Math.random(),
 							props: {
-								icon: faAt,
-								fixedWidth: true
+								icon: faAt
 							}
 						}),
 						createElement('span', {}, genEl(token.children))
