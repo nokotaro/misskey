@@ -41,7 +41,6 @@ export default Vue.extend({
 		background var(--mfmTitleBg)
 		border-radius .25em
 		display inline-block
-		margin 0 0 0 .5em
 		padding .25em .5em
 
 		& + *
@@ -52,7 +51,7 @@ export default Vue.extend({
 		border-radius 2147483647px
 		display inline-block
 		padding .25em .5em
-		margin 0 0 0 .25em
+		margin 0 0 0 .5em
 
 		> :first-child
 			left -.25em
