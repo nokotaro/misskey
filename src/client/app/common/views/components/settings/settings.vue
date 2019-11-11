@@ -295,6 +295,9 @@
 				<ui-switch v-model="debug" v-if="isAdvanced">
 					{{ $t('@._settings.debug-mode') }}<template #desc>{{ $t('@._settings.debug-mode-desc') }}</template>
 				</ui-switch>
+				<ui-switch v-model="forceDesktop" v-if="isAdvanced">
+					{{ $t('@._settings.force-desktop-mode') }}<template #desc>{{ $t('@._settings.force-desktop-mode-desc') }}</template>
+				</ui-switch>
 				<ui-switch v-model="showAdvancedSettings">
 					Show advanced settings
 				</ui-switch>
@@ -436,6 +439,11 @@ export default Vue.extend({
 		debug: {
 			get() { return this.$store.state.device.debug; },
 			set(value) { this.$store.commit('device/set', { key: 'debug', value }); }
+		},
+
+		forceDesktop: {
+			get() { return !~localStorage.getItem('forceDesktop'); },
+			set(value: boolean) { localStorage.setItem('forceDesktop', ''+-value); }
 		},
 
 		showAdvancedSettings: {
