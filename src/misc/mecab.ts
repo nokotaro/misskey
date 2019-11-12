@@ -16,11 +16,13 @@ export const containerMap = {
 	'フィラー': 'filler' as const,
 	'感動詞': 'interjection' as const,
 	'形容詞': 'adjective' as const,
+	'連体詞': 'adnominal' as const,
 	'動詞': 'verb' as const,
+	'副詞': 'adverb' as const,
 	'名詞': 'noun' as const,
 };
 
-export const mecabIndexVersion = 3;
+export const mecabIndexVersion = 4;
 
 export const droppedndexVersion = -1;
 
@@ -33,7 +35,9 @@ function parse(stdout: string) {
 		filler: [],
 		interjection: [],
 		adjective: [],
+		adnominal: [],
 		verb: [],
+		adverb: [],
 		noun: [],
 	};
 
@@ -78,7 +82,9 @@ export async function getIndexer(note: Partial<Record<'text' | 'cw', string>>) {
 		filler: [],
 		interjection: [],
 		adjective: [],
+		adnominal: [],
 		verb: [],
+		adverb: [],
 		noun: [],
 	};
 
