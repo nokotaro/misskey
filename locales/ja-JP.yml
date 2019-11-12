@@ -243,6 +243,8 @@ common:
     advanced-settings: "高度な設定"
     debug-mode: "デバッグモードを有効にする"
     debug-mode-desc: "この設定はブラウザに記憶されます。"
+    force-desktop-mode: "強制デスクトップモードを有効にする"
+    force-desktop-mode-desc: "この設定はブラウザに記憶されます。"
     navbar-position: "ナビゲーションバーの位置"
     navbar-position-top: "上"
     navbar-position-left: "左"
@@ -1266,6 +1268,9 @@ desktop/views/components/users-list-item.vue:
 desktop/views/components/window.vue:
   popout: "ポップアウト"
   close: "閉じる"
+
+desktop/views/home/favorites.vue:
+  target: "対象"
 
 admin/views/index.vue:
   dashboard: "ダッシュボード"

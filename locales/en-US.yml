@@ -232,6 +232,8 @@ common:
     advanced-settings: "Advanced Settings"
     debug-mode: "Enable debug mode"
     debug-mode-desc: "This setting is stored in the browser."
+    force-desktop-mode: "Enable force desktop mode"
+    force-desktop-mode-desc: "This setting is stored in the browser."
     navbar-position: "Navbar position"
     navbar-position-top: "Top"
     navbar-position-left: "Left"
@@ -1108,6 +1110,8 @@ desktop/views/components/users-list-item.vue:
 desktop/views/components/window.vue:
   popout: "Pop-out"
   close: "Close"
+desktop/views/home/favorites.vue:
+  target: "Target"
 admin/views/index.vue:
   dashboard: "Dashboard"
   instance: "Instance"
