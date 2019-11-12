@@ -358,6 +358,12 @@ export default Vue.extend({
 	data() {
 		return {
 			meta: null,
+			get forceDesktop() {
+				return !~localStorage.getItem('forceDesktop');
+			},
+			set forceDesktop(value) {
+				localStorage.setItem('forceDesktop', ''+-value);
+			},
 			version,
 			latestVersion: undefined,
 			checkingForUpdate: false
@@ -439,11 +445,6 @@ export default Vue.extend({
 		debug: {
 			get() { return this.$store.state.device.debug; },
 			set(value) { this.$store.commit('device/set', { key: 'debug', value }); }
-		},
-
-		forceDesktop: {
-			get() { return !~localStorage.getItem('forceDesktop'); },
-			set(value: boolean) { localStorage.setItem('forceDesktop', ''+-value); }
 		},
 
 		showAdvancedSettings: {
