@@ -104,9 +104,12 @@ export default define(meta, async (ps, me) => {
 	return await packMany(notes, me);
 });
 
+const escapeChars = ['\\', '*', '+', '.', '?', '{', '}', '(', ')', '[', ']', '^', '$', '-', '|'];
+
 async function searchInternal(me: ILocalUser, query: string, limit: number, offset: number) {
 	// extract tokens
-	const tokens = query.trim().split(/\s+/);
+	const strictWords = [...query.trim().match(/"[^"]*"/g)].map(x => new RegExp([...x].reduce((a, c) => a + (escapeChars.includes(c) ? '\\' : '') + c, '')));
+	const tokens = query.trim().replace(/"[^"]*"/g, '').split(/\s+/);
 	const words: string[] = [];
 	let from: IUser = null;
 	let since: Date = null;
@@ -325,6 +328,10 @@ async function searchInternal(me: ILocalUser, query: string, limit: number, offs
 		if (value.length) {
 			noteQuery[`mecabIndex.${key}`] = { $all: value };
 		}
+	}
+
+	for (const $regex of strictWords) {
+		noteQuery.$and.push({ $or: [{ text: { $regex } }, { cw: { $regex } }] });
 	}
 
 	// note - userId
