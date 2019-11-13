@@ -4,6 +4,10 @@ declare const _VERSION_: string;
 declare const _CODENAME_: string;
 declare const _ENV_: string;
 
+declare global {
+	var lang: string;
+}
+
 const address = new URL(location.href);
 
 export const host = address.host;
