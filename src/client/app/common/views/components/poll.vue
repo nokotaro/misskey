@@ -5,7 +5,7 @@
 			<div class="backdrop" :style="{ 'width': `${showResult ? (choice.votes / total * 100) : 0}%` }"></div>
 			<span>
 				<template v-if="choice.isVoted"><fa :icon="['fal', 'check']"/></template>
-				<mfm :text="choice.text" :plain="true" :custom-emojis="note.emojis"/>
+				<mfm :text="choice.text" :plain="true" :true-plain="true" :custom-emojis="note.emojis"/>
 				<span class="votes" v-if="showResult">({{ $t('vote-count').replace('{}', choice.votes) }})</span>
 			</span>
 		</li>

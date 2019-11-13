@@ -3,7 +3,7 @@ import { length } from 'stringz';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faAt } from '@fortawesome/pro-light-svg-icons';
 import { MfmForest } from '../../../../../mfm/prelude';
-import { parse, parsePlain } from '../../../../../mfm/parse';
+import { parse, parsePlain, parseTruePlain } from '../../../../../mfm/parse';
 import MkUrl from './url.vue';
 import MkMention from './mention.vue';
 import { concat, sum } from '../../../../../prelude/array';
@@ -27,6 +27,10 @@ export default Vue.component('mochimochi-fuwafuwa-markup', {
 			required: true
 		},
 		plain: {
+			type: Boolean,
+			default: false
+		},
+		truePlain: {
 			type: Boolean,
 			default: false
 		},
@@ -54,7 +58,7 @@ export default Vue.component('mochimochi-fuwafuwa-markup', {
 	render(createElement) {
 		if (this.text == null || this.text == '') return;
 
-		const ast = (this.plain ? parsePlain : parse)(this.text);
+		const ast = (this.plain ? this.truePlain ? parseTruePlain : parsePlain : parse)(this.text);
 
 		let bigCount = 0;
 		let motionCount = 0;

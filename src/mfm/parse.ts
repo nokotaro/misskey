@@ -17,3 +17,11 @@ export function parsePlain(source: string, remote = false): MfmForest {
 
 	return normalize(mfmLanguage.plain.tryParse(source), remote);
 }
+
+export function parseTruePlain(source: string, remote = false): MfmForest {
+	if (source == null || source == '') {
+		return null;
+	}
+
+	return normalize(mfmLanguage.truePlain.tryParse(source), remote);
+}
