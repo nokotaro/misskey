@@ -314,7 +314,7 @@ const create = async (user: IUser, data: Option, silent = false) => new Promise<
 	}
 
 	// 電気通信事業の届出をするまで public 以外禁止
-	if (!['public', 'home'].includes(data.visibility) && isLocalUser(user)) {
+	if (!['public', 'home'].includes(data.visibility) && isLocalUser(user) && !user.isAdmin && !user.isModerator) {
 		return rej('電気通信事業法に基づき、運営者による電気通信事業の届出が受理されるまで公開範囲を限定した投稿を作成することはできません。');
 	}
 
