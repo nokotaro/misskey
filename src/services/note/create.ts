@@ -146,6 +146,7 @@ export const imasHosts = [
 	'imastodon.blue',
 	'imastodon.net',
 	'imastodon.org',
+	'fedimas.com',
 	'mstdn.imastags.com', // (inbox disabled)
 	'akanechan.love',
 	// 'twista.nokotaro.work', (closed)
