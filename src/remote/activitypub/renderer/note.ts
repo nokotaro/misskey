@@ -164,6 +164,7 @@ export default async function renderNote(note: INote, dive = true): Promise<any>
 		_misskey_quote: quote,
 		_misskey_qa: note.qa,
 		_misskey_rating: note.rating,
+		quoteUrl: quote,
 		published: note.createdAt.toISOString(),
 		to,
 		cc,
