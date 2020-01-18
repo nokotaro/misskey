@@ -50,15 +50,6 @@
 				<ui-switch v-model="enableMobileQuickNotificationView">{{ $t('@._settings.enable-quick-notification-view') }}</ui-switch>
 			</section>
 			<section>
-				<header>Instance Ticker</header>
-				<p><small>Powered by <a href="https://wee.jp/">#InstanceTicker</a></small></p>
-				<ui-select v-model="tickerMode">
-					<option value="0">{{ $t('@._settings.instance-ticker-0') }}</option>
-					<option value="1">{{ $t('@._settings.instance-ticker-1') }}</option>
-					<option value="2">{{ $t('@._settings.instance-ticker-2') }}</option>
-				</ui-select>
-			</section>
-			<section>
 				<header>{{ $t('@._settings.line-width') }}</header>
 				<ui-radio v-model="lineWidth" :value="0.5">{{ $t('@._settings.line-width-thin') }}</ui-radio>
 				<ui-radio v-model="lineWidth" :value="1">{{ $t('@._settings.line-width-normal') }}</ui-radio>
@@ -122,6 +113,10 @@
 				<ui-textarea v-model="reactions">
 					{{ $t('@._settings.reactions') }}<template #desc>{{ $t('@._settings.reactions-description') }}</template>
 				</ui-textarea>
+				<ui-horizon-group>
+					<ui-button @click="save('reactions', reactions.trim().split('\n'))" primary><fa :icon="faSave"/> {{ $t('@._settings.save') }}</ui-button>
+					<ui-button @click="previewReaction()" ref="reactionsPreviewButton"><fa :icon="faEye"/> {{ $t('@._settings.preview') }}</ui-button>
+				</ui-horizon-group>
 			</section> -->
 
 			<section>
@@ -246,6 +241,14 @@
 
 		<x-language/>
 		<x-app-type/>
+
+		<ui-card>
+			<template #title><fa icon="skull"/> {{ $t('@._settings.f--king-features') }}</template>
+			<section>
+				<ui-info warn>{{ $t('@._settings.f--king-features-warn') }}</ui-info>
+				<ui-switch v-model="enableJei">{{ $t('@._settings.enable-jei') }}</ui-switch>
+			</section>
+		</ui-card>
 	</template>
 
 	<template v-if="page == null || page == 'notification'">
@@ -356,11 +359,12 @@ import XApi from './api.vue';
 import XLanguage from './language.vue';
 import XAppType from './app-type.vue';
 import XNotification from './notification.vue';
+import MkReactionPicker from '../reaction-picker.vue';
 
 import { url, version } from '../../../../config';
 import checkForUpdate from '../../../scripts/check-for-update';
 import { formatTimeString } from '../../../../../../misc/format-time-string';
-import { faSave } from '@fortawesome/free-regular-svg-icons';
+import { faSave, faEye } from '@fortawesome/free-regular-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n(),
@@ -391,11 +395,11 @@ export default Vue.extend({
 		return {
 			meta: null,
 			version,
+			reactions: this.$store.state.settings.reactions.join('\n'),
 			webSearchEngine: this.$store.state.settings.webSearchEngine,
 			pastedFileName : this.$store.state.settings.pastedFileName,
 			latestVersion: undefined,
 			checkingForUpdate: false,
-			tickerMode: localStorage.getItem('tickerMode') || '0',
 			visibilities: [
 				'public',
 				'home',
@@ -406,13 +410,8 @@ export default Vue.extend({
 				'local-home',
 				'local-followers',
 			],
-			faSave
+			faSave, faEye
 		};
-	},
-	watch: {
-		tickerMode(val) {
-			localStorage.setItem('tickerMode', val);
-		},
 	},
 	computed: {
 		useOsDefaultEmojis: {
@@ -465,6 +464,11 @@ export default Vue.extend({
 			set(value) { this.$store.commit('device/set', { key: 'enableSpeech', value }); }
 		},
 
+		enableJei: {
+			get() { return this.$store.state.device.enableJei; },
+			set(value) { this.$store.commit('device/set', { key: 'enableJei', value }); }
+		},
+
 		soundVolume: {
 			get() { return this.$store.state.device.soundVolume; },
 			set(value) { this.$store.commit('device/set', { key: 'soundVolume', value }); }
@@ -488,11 +492,6 @@ export default Vue.extend({
 		disableViaMobile: {
 			get() { return this.$store.state.settings.disableViaMobile; },
 			set(value) { this.$store.dispatch('settings/set', { key: 'disableViaMobile', value }); }
-		},
-
-		reactions: {
-			get() { return this.$store.state.settings.reactions.join('\n'); },
-			set(value: string) { this.$store.dispatch('settings/set', { key: 'reactions', value: value.split('\n') }); }
 		},
 
 		useShadow: {
@@ -756,6 +755,16 @@ export default Vue.extend({
 		pastedFileNamePreview() {
 			return `${formatTimeString(new Date(), this.pastedFileName).replace(/{{number}}/g, `1`)}.png`
 		},
+		previewReaction() {
+			const picker = this.$root.new(MkReactionPicker, {
+				source: this.$refs.reactionsPreviewButton.$el,
+				reactions: this.reactions.trim().split('\n'),
+				showFocus: false,
+			});
+			picker.$once('chosen', reaction => {
+				picker.close();
+			});
+		}
 	}
 });
 </script>

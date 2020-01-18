@@ -253,9 +253,6 @@ common:
     reduce-motion: "UIの動きを減らす"
     this-setting-is-this-device-only: "このデバイスのみ"
     use-os-default-emojis: "OS標準の絵文字を使用"
-    instance-ticker-0: "使わない"
-    instance-ticker-1: "Type-0 (代替アイコン)を使う"
-    instance-ticker-2: "Type-1 (ファビコン)を使う"
     line-width: "線の太さ"
     line-width-thin: "細い"
     line-width-normal: "普通"
@@ -330,6 +327,7 @@ common:
     sync: "同期"
     save: "保存"
     saved: "保存しました"
+    preview: "プレビュー"
     home-profile: "クラシックモードのプロファイル"
     deck-profile: "デッキモードのプロファイル"
     room: "ルーム"
@@ -342,6 +340,9 @@ common:
         low: "低"
         cheep: "最低"
       useOrthographicCamera: "平行投影カメラを使用"
+    f--king-features: "クソ機能"
+    f--king-features-warn: "これらは、冗談まがいに作られたクソみたいな機能です。突然削除されることもあれば、勝手に仕様が変わったり変わらなかったりすることもあります。この機能についての質問や苦情は一切受け付けていません。文字通りクソ機能なので、クソみたいな心で臨んでください。クソが！"
+    enable-jei: "アバター画像を強制的にじぇいにする"
 
   search: "検索"
   delete: "削除"
@@ -713,7 +714,9 @@ common/views/components/reaction-picker.vue:
   input-reaction-placeholder: "または絵文字を入力"
 
 common/views/components/emoji-picker.vue:
+  recent-emoji: "最近使った絵文字"
   custom-emoji: "カスタム絵文字"
+  no-category: "カテゴリなし"
   people: "人"
   animals-and-nature: "動物&自然"
   food-and-drink: "食べ物&飲み物"
@@ -1540,6 +1543,7 @@ admin/views/instance.vue:
   vapid-publickey: "VAPID公開鍵"
   vapid-privatekey: "VAPID秘密鍵"
   vapid-info: "ServiceWorkerを有効にする場合、VAPIDキーペアを生成する必要があります。シェルで次のようにします:"
+  hide-server-information: "サーバー情報を隠す"
 
 admin/views/charts.vue:
   title: "チャート"
@@ -1673,6 +1677,7 @@ admin/views/emoji.vue:
     title: "絵文字の登録"
     name: "絵文字名"
     name-desc: "a~z 0~9 _ の文字が使えます。"
+    category: "カテゴリ"
     aliases: "エイリアス"
     aliases-desc: "スペースで区切って複数設定できます。"
     url: "絵文字画像URL"

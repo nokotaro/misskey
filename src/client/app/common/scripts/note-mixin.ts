@@ -43,7 +43,7 @@ export default (opts: Opts = {}) => ({
 				'ctrl+q': this.renoteDirectly,
 				'up|k|shift+tab': this.focusBefore,
 				'down|j|tab': this.focusAfter,
-				'esc': this.blur,
+				//'esc': this.blur,
 				'm|o': () => this.menu(true),
 				's': this.toggleShowContent,
 				'1': () => this.reactDirectly('like'),
@@ -145,13 +145,18 @@ export default (opts: Opts = {}) => ({
 			this.blur();
 			const w = this.$root.new(MkReactionPicker, {
 				source: this.$refs.reactButton,
-				note: this.appearNote,
 				showFocus: viaKeyboard,
 				animation: !viaKeyboard
-			}).$once('closed', this.focus);
-			this.$once('hook:beforeDestroy', () => {
-				w.close();
 			});
+			w.$once('chosen', reaction => {
+				this.$root.api('notes/reactions/create', {
+					noteId: this.appearNote.id,
+					reaction: reaction
+				}).then(() => {
+					w.close();
+				});
+			});
+			w.$once('closed', this.focus);
 		},
 
 		reactDirectly(reaction) {

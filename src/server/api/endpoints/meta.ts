@@ -3,7 +3,6 @@ import * as os from 'os';
 import config from '../../../config';
 import define from '../define';
 import { fetchMeta } from '../../../misc/fetch-meta';
-import * as pkg from '../../../../package.json';
 import { Emojis } from '../../../models';
 import { getConnection } from 'typeorm';
 import redis from '../../../db/redis';
@@ -36,7 +35,7 @@ export const meta = {
 				type: 'string' as const,
 				optional: false as const, nullable: false as const,
 				description: 'The version of Groundpolis of this instance.',
-				example: pkg.version
+				example: config.version
 			},
 			name: {
 				type: 'string' as const,
@@ -89,6 +88,11 @@ export const meta = {
 				optional: false as const, nullable: false as const,
 				description: 'Whether enabled emoji reaction.',
 			},
+			hideServerInformation: {
+				type: 'boolean' as const,
+				optional: false as const, nullable: false as const,
+				description: 'Whether server information is hidden.',
+			},
 		}
 	}
 };
@@ -96,13 +100,27 @@ export const meta = {
 export default define(meta, async (ps, me) => {
 	const instance = await fetchMeta(true);
 
-	const emojis = await Emojis.find({ where: { host: null }, cache: { id: 'meta_emojis', milliseconds: 3600000 } }); // 1 hour
+	const emojis = await Emojis.find({
+		where: {
+			host: null
+		},
+		order: {
+			category: 'ASC',
+			name: 'ASC'
+		},
+		cache: {
+			id: 'meta_emojis',
+			milliseconds: 3600000	// 1 hour
+		}
+	});
+
+	const hide = instance.hideServerInformation;
 
 	const response: any = {
 		maintainerName: instance.maintainerName,
 		maintainerEmail: instance.maintainerEmail,
 
-		version: pkg.version,
+		version: config.version,
 
 		name: instance.name,
 		uri: config.url,
@@ -113,13 +131,13 @@ export default define(meta, async (ps, me) => {
 		feedbackUrl: instance.feedbackUrl,
 
 		secure: config.https != null,
-		machine: os.hostname(),
-		os: os.platform(),
-		node: process.version,
-		psql: await getConnection().query('SHOW server_version').then(x => x[0].server_version),
-		redis: redis.server_info.redis_version,
+		machine: hide ? undefined : os.hostname(),
+		os: hide ? undefined : os.platform(),
+		node: hide ? undefined : process.version,
+		psql: hide ? undefined : await getConnection().query('SHOW server_version').then(x => x[0].server_version),
+		redis: hide ? undefined : redis.server_info.redis_version,
 
-		cpu: {
+		cpu: hide ? undefined : {
 			model: os.cpus()[0].model,
 			cores: os.cpus().length
 		},
@@ -145,6 +163,7 @@ export default define(meta, async (ps, me) => {
 			id: e.id,
 			aliases: e.aliases,
 			name: e.name,
+			category: e.category,
 			url: e.url,
 		})),
 		enableEmail: instance.enableEmail,
@@ -154,6 +173,8 @@ export default define(meta, async (ps, me) => {
 		enableDiscordIntegration: instance.enableDiscordIntegration,
 
 		enableServiceWorker: instance.enableServiceWorker,
+
+		hideServerInformation: hide,
 	};
 
 	if (ps.detail) {
