@@ -194,7 +194,7 @@ router.get('/notes/:note', async ctx => {
 			// use attached
 			if (_note.files) {
 				imageUrl = _note.files
-					.filter((file: any) => file.type.match(/^(image|video)\//) && !file.isSensitive)
+					.filter((file: any) => file.type?.match(/^(image|video)\//) && !file.isSensitive)
 					.map((file: any) => file.thumbnailUrl)
 					.shift();
 			}
