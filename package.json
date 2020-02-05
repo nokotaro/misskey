@@ -262,7 +262,7 @@
 		"tslint": "^5.20.1",
 		"tslint-sonarts": "^1.9.0",
 		"twit": "^2.2.11",
-		"typescript": "^3.7.3",
+		"typescript": "^3.8.0-dev.20200205",
 		"uglify-es": "^3.3.9",
 		"url-join": "^4.0.1",
 		"url-loader": "^2.1.0",
