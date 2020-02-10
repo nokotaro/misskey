@@ -32,8 +32,6 @@ export type Source = {
 		ssl?: boolean;
 	};
 
-	autoAdmin?: boolean;
-
 	proxy?: string;
 	proxySmtp?: string;
 
@@ -47,6 +45,10 @@ export type Source = {
 
 	deliverJobConcurrency?: number;
 	inboxJobConcurrency?: number;
+	deliverJobPerSec?: number;
+	inboxJobPerSec?: number;
+	deliverJobMaxAttempts?: number;
+	inboxJobMaxAttempts?: number;
 
 	syslog: {
 		host: string;

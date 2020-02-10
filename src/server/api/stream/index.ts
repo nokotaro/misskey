@@ -9,6 +9,7 @@ import { EventEmitter } from 'events';
 import { User } from '../../../models/entities/user';
 import { App } from '../../../models/entities/app';
 import { Users, Followings, Mutings } from '../../../models';
+import { ApiError } from '../error';
 
 /**
  * Main stream connection
@@ -59,8 +60,9 @@ export default class Connection {
 		switch (type) {
 			case 'api': this.onApiRequest(body); break;
 			case 'readNotification': this.onReadNotification(body); break;
-			case 'subNote': this.onSubscribeNote(body); break;
-			case 'sn': this.onSubscribeNote(body); break; // alias
+			case 'subNote': this.onSubscribeNote(body, true); break;
+			case 'sn': this.onSubscribeNote(body, true); break; // alias
+			case 's': this.onSubscribeNote(body, false); break;
 			case 'unsubNote': this.onUnsubscribeNote(body); break;
 			case 'un': this.onUnsubscribeNote(body); break; // alias
 			case 'connect': this.onChannelConnectRequested(body); break;
@@ -83,8 +85,16 @@ export default class Connection {
 		// 呼び出し
 		call(endpoint, user, this.app, payload.data).then(res => {
 			this.sendMessageToWs(`api:${payload.id}`, { res });
-		}).catch(e => {
-			this.sendMessageToWs(`api:${payload.id}`, { e });
+		}).catch((e: ApiError) => {
+			this.sendMessageToWs(`api:${payload.id}`, {
+				error: {
+					message: e.message,
+					code: e.code,
+					id: e.id,
+					kind: e.kind,
+					...(e.info ? { info: e.info } : {})
+				}
+			});
 		});
 	}
 
@@ -98,7 +108,7 @@ export default class Connection {
 	 * 投稿購読要求時
 	 */
 	@autobind
-	private onSubscribeNote(payload: any) {
+	private onSubscribeNote(payload: any, read: boolean) {
 		if (!payload.id) return;
 
 		if (this.subscribingNotes[payload.id] == null) {
@@ -111,7 +121,7 @@ export default class Connection {
 			this.subscriber.on(`noteStream:${payload.id}`, this.onNoteStreamMessage);
 		}
 
-		if (payload.read && this.user) {
+		if (this.user && read) {
 			readNote(this.user.id, payload.id);
 		}
 	}

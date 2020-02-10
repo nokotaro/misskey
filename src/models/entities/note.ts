@@ -1,10 +1,10 @@
 import { Entity, Index, JoinColumn, Column, PrimaryColumn, ManyToOne } from 'typeorm';
 import { User } from './user';
-import { App } from './app';
 import { DriveFile } from './drive-file';
 import { id } from '../id';
 
 @Entity()
+@Index('IDX_NOTE_TAGS', { synchronize: false })
 export class Note {
 	@PrimaryColumn(id())
 	public id: string;
@@ -57,18 +57,6 @@ export class Note {
 		length: 512, nullable: true
 	})
 	public cw: string | null;
-
-	@Column({
-		...id(),
-		nullable: true
-	})
-	public appId: App['id'] | null;
-
-	@ManyToOne(type => App, {
-		onDelete: 'SET NULL'
-	})
-	@JoinColumn()
-	public app: App | null;
 
 	@Index()
 	@Column({
@@ -176,11 +164,6 @@ export class Note {
 		default: false
 	})
 	public hasPoll: boolean;
-
-	@Column('jsonb', {
-		nullable: true, default: null
-	})
-	public geo: any | null;
 
 	//#region Denormalized fields
 	@Index()
