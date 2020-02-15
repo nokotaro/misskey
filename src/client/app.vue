@@ -25,6 +25,7 @@
 				<input type="search" :placeholder="$t('search')" v-model="searchQuery" v-autocomplete="{ model: 'searchQuery' }" :disabled="searchWait" @keypress="searchKeypress"/>
 			</div>
 			<button v-if="$store.getters.isSignedIn" class="post _buttonPrimary" @click="post()"><fa :icon="faPencilAlt"/></button>
+			<x-clock v-if="isDesktop" class="clock"/>
 		</div>
 	</header>
 
@@ -107,7 +108,7 @@
 
 		<div class="widgets">
 			<div ref="widgets" :class="{ edit: widgetsEditMode }">
-				<template v-if="enableWidgets && $store.getters.isSignedIn">
+				<template v-if="isDesktop && $store.getters.isSignedIn">
 					<template v-if="widgetsEditMode">
 						<mk-button primary @click="addWidget" class="add"><fa :icon="faPlus"/></mk-button>
 						<x-draggable
@@ -166,6 +167,7 @@ export default Vue.extend({
 	i18n,
 
 	components: {
+		XClock: () => import('./components/header-clock.vue').then(m => m.default),
 		XNotifications: () => import('./components/notifications.vue').then(m => m.default),
 		MkButton: () => import('./components/ui/button.vue').then(m => m.default),
 		XDraggable: () => import('vuedraggable'),
@@ -184,7 +186,7 @@ export default Vue.extend({
 			searchQuery: '',
 			searchWait: false,
 			widgetsEditMode: false,
-			enableWidgets: window.innerWidth >= 1100,
+			isDesktop: window.innerWidth >= 1100,
 			canBack: false,
 			disconnectedDialog: null as Promise<void> | null,
 			faGripVertical, faChevronLeft, faComments, faHashtag, faBroadcastTower, faFireAlt, faEllipsisH, faPencilAlt, faBars, faTimes, faBell, faSearch, faUserCog, faCog, faUser, faHome, faStar, faCircle, faAt, faEnvelope, faListUl, faPlus, faUserClock, faLaugh, faUsers, faTachometerAlt, faExchangeAlt, faGlobe, faChartBar, faCloud, faServer
@@ -273,7 +275,7 @@ export default Vue.extend({
 
 	mounted() {
 		// https://stackoverflow.com/questions/33891709/when-flexbox-items-wrap-in-column-mode-container-does-not-grow-its-width
-		if (this.enableWidgets) {
+		if (this.isDesktop) {
 			const adjustWidgetsWidth = () => {
 				const lastChild = this.$refs.widgets.children[this.$refs.widgets.children.length - 1];
 				if (lastChild == null) return;
@@ -293,7 +295,7 @@ export default Vue.extend({
 		const ro = new ResizeObserver((entries, observer) => {
 			adjustTitlePosition();
 		});
-		
+
 		ro.observe(this.$refs.contents);
 
 		window.addEventListener('resize', adjustTitlePosition);
@@ -348,7 +350,7 @@ export default Vue.extend({
 			const accountItems = accounts.map(account => ({
 				type: 'user',
 				user: account,
-				action: () => { this.switchAccount(account) }
+				action: () => { this.switchAccount(account); }
 			}));
 
 			this.$root.menu({
@@ -362,12 +364,28 @@ export default Vue.extend({
 					text: this.$t('settings'),
 					to: '/my/settings',
 					icon: faCog,
-				}, null, {
+				}, null, ...accountItems, {
 					type: 'item',
-					text: this.$t('addAcount'),
 					icon: faPlus,
-					action: () => { this.addAcount() },
-				}], ...accountItems],
+					text: this.$t('addAcount'),
+					action: () => {
+						this.$root.menu({
+							items: [{
+								type: 'item',
+								text: this.$t('existingAcount'),
+								action: () => { this.addAcount(); },
+							}, {
+								type: 'item',
+								text: this.$t('createAccount'),
+								action: () => { this.createAccount(); },
+							}],
+							align: 'left',
+							fixed: true,
+							width: 240,
+							source: ev.currentTarget || ev.target,
+						});
+					},
+				}]],
 				align: 'left',
 				fixed: true,
 				width: 240,
@@ -507,9 +525,25 @@ export default Vue.extend({
 			});
 		},
 
-		async switchAccount(account) {
-			const token = this.$store.state.device.accounts.find(x => x.id === account.id).token;
-			this.$root.api('i', {}, token).then(i => {
+		async createAccount() {
+			this.$root.new(await import('./components/signup-dialog.vue').then(m => m.default)).$once('signup', res => {
+				this.$store.dispatch('addAcount', res);
+				this.switchAccountWithToken(res.i);
+			});
+		},
+
+		async switchAccount(account: any) {
+			const token = this.$store.state.device.accounts.find((x: any) => x.id === account.id).token;
+			this.switchAccountWithToken(token);
+		},
+
+		switchAccountWithToken(token: string) {
+			this.$root.dialog({
+				type: 'waiting',
+				iconOnly: true
+			});
+
+			this.$root.api('i', {}, token).then((i: any) => {
 				this.$store.dispatch('switchAccount', {
 					...i,
 					token: token
@@ -556,6 +590,7 @@ export default Vue.extend({
 				'calendar',
 				'rss',
 				'trends',
+				'clock'
 			];
 
 			this.$root.menu({
@@ -753,7 +788,7 @@ export default Vue.extend({
 				position: relative;
 
 				> input {
-					width: 210px;
+					width: 220px;
 					box-sizing: border-box;
 					margin-right: 8px;
 					padding: 0 12px 0 42px;
@@ -785,6 +820,10 @@ export default Vue.extend({
 				margin-left: $post-button-margin;
 				border-radius: 100%;
 				font-size: 16px;
+			}
+
+			> .clock {
+				margin-left: 8px;
 			}
 		}
 	}
