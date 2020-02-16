@@ -87,6 +87,9 @@
 					<fa :icon="faEllipsisH" fixed-width/><span class="text">{{ $t('more') }}</span>
 					<i v-if="$store.getters.isSignedIn && ($store.state.i.hasUnreadMentions || $store.state.i.hasUnreadSpecifiedNotes)"><fa :icon="faCircle"/></i>
 				</button>
+				<router-link class="item" active-class="active" to="/settings">
+					<fa :icon="faCog" fixed-width/><span class="text">{{ $t('settings') }}</span>
+				</router-link>
 			</div>
 		</nav>
 	</transition>
@@ -377,21 +380,18 @@ export default Vue.extend({
 					avatar: this.$store.state.i,
 				}, {
 					type: 'link',
-					text: this.$t('settings'),
+					text: this.$t('accountSettings'),
 					to: '/my/settings',
 					icon: faCog,
 				}, null, ...accountItems, {
-					type: 'item',
 					icon: faPlus,
 					text: this.$t('addAcount'),
 					action: () => {
 						this.$root.menu({
 							items: [{
-								type: 'item',
 								text: this.$t('existingAcount'),
 								action: () => { this.addAcount(); },
 							}, {
-								type: 'item',
 								text: this.$t('createAccount'),
 								action: () => { this.createAccount(); },
 							}],
@@ -413,9 +413,14 @@ export default Vue.extend({
 			this.$root.menu({
 				items: [{
 					type: 'link',
-					text: this.$t('statistics'),
-					to: '/instance/stats',
-					icon: faChartBar,
+					text: this.$t('dashboard'),
+					to: '/instance',
+					icon: faTachometerAlt,
+				}, null, {
+					type: 'link',
+					text: this.$t('settings'),
+					to: '/instance/settings',
+					icon: faCog,
 				}, {
 					type: 'link',
 					text: this.$t('customEmojis'),
@@ -433,11 +438,6 @@ export default Vue.extend({
 					icon: faCloud,
 				}, {
 					type: 'link',
-					text: this.$t('monitor'),
-					to: '/instance/monitor',
-					icon: faTachometerAlt,
-				}, {
-					type: 'link',
 					text: this.$t('jobQueue'),
 					to: '/instance/queue',
 					icon: faExchangeAlt,
@@ -451,11 +451,6 @@ export default Vue.extend({
 					text: this.$t('announcements'),
 					to: '/instance/announcements',
 					icon: faBroadcastTower,
-				}, null, {
-					type: 'link',
-					text: this.$t('general'),
-					to: '/instance',
-					icon: faCog,
 				}],
 				align: 'left',
 				fixed: true,
@@ -886,6 +881,7 @@ export default Vue.extend({
 			width: $nav-width;
 			height: 100vh;
 			padding: 16px 0;
+			padding-bottom: calc(3.7rem + 24px);
 			box-sizing: border-box;
 			overflow: auto;
 			background: var(--navBg);
@@ -899,6 +895,7 @@ export default Vue.extend({
 			@media (max-width: $nav-icon-only-threshold) and (min-width: $nav-hide-threshold + 1px) {
 				width: $nav-icon-only-width;
 				padding: 8px 0;
+				padding-bottom: calc(3.7rem + 24px);
 
 				> .divider {
 					margin: 8px auto;
@@ -946,10 +943,22 @@ export default Vue.extend({
 
 				&:hover {
 					text-decoration: none;
+					color: var(--navHoverFg);
 				}
 
 				&.active {
 					color: var(--navActive);
+				}
+
+				&:last-child {
+					position: fixed;
+					bottom: 0;
+					width: inherit;
+					padding-top: 8px;
+					padding-bottom: 8px;
+					background: var(--navBg);
+					border-top: solid 1px var(--divider);
+					border-right: solid 1px var(--divider);
 				}
 
 				@media (max-width: $nav-icon-only-threshold) and (min-width: $nav-hide-threshold + 1px) {
@@ -1188,7 +1197,7 @@ export default Vue.extend({
 					position: absolute;
 					top: 0;
 					left: 0;
-					color: var(--accent);
+					color: var(--indicator);
 					font-size: 16px;
 					animation: blink 1s infinite;
 				}
