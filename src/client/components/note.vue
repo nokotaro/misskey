@@ -58,7 +58,7 @@
 					<template v-else><fa :icon="faReply"/></template>
 					<p class="count" v-if="appearNote.repliesCount > 0">{{ appearNote.repliesCount }}</p>
 				</button>
-				<button v-if="['public', 'home'].includes(appearNote.visibility)" @click="renote()" class="button _button" ref="renoteButton">
+				<button v-if="canRenote" @click="renote()" class="button _button" ref="renoteButton">
 					<fa :icon="faRetweet"/><p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
 				</button>
 				<button v-else class="button _button">
@@ -190,14 +190,14 @@ export default Vue.extend({
 			return this.$store.getters.isSignedIn && (this.$store.state.i.id === this.appearNote.userId);
 		},
 
+		canRenote(): boolean {
+			return ['public', 'home'].includes(this.appearNote.visibility) || this.isMyNote;
+		},
+
 		reactionsCount(): number {
 			return this.appearNote.reactions
 				? sum(Object.values(this.appearNote.reactions))
 				: 0;
-		},
-
-		title(): string {
-			return '';
 		},
 
 		urls(): string[] {

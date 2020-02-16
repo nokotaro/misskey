@@ -13,7 +13,6 @@ const defaultSettings = {
 	defaultNoteLocalOnly: false,
 	uploadFolder: null,
 	pastedFileName: 'yyyy-MM-dd HH-mm-ss [{{number}}]',
-	wallpaper: null,
 	memo: null,
 	reactions: ['👍', '❤️', '😆', '🤔', '😮', '🎉', '💢', '😥', '😇', '🍮'],
 };
@@ -39,6 +38,7 @@ const defaultDeviceSettings = {
 	theme: 'light',
 	animation: true,
 	animatedMfm: true,
+	imageNewTab: false,
 	userData: {},
 };
 

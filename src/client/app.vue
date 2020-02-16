@@ -58,12 +58,12 @@
 					<fa :icon="faComments" fixed-width/><span class="text">{{ $t('messaging') }}</span>
 					<i v-if="$store.state.i.hasUnreadMessagingMessage"><fa :icon="faCircle"/></i>
 				</router-link>
-				<router-link class="item" active-class="active" to="/my/follow-requests" v-if="$store.getters.isSignedIn && $store.state.i.isLocked">
-					<fa :icon="faUserClock" fixed-width/><span class="text">{{ $t('followRequests') }}</span>
-					<i v-if="$store.state.i.pendingReceivedFollowRequestsCount"><fa :icon="faCircle"/></i>
-				</router-link>
 				<router-link class="item" active-class="active" to="/my/drive" v-if="$store.getters.isSignedIn">
 					<fa :icon="faCloud" fixed-width/><span class="text">{{ $t('drive') }}</span>
+				</router-link>
+				<router-link class="item" active-class="active" to="/my/follow-requests" v-if="$store.getters.isSignedIn && $store.state.i.isLocked">
+					<fa :icon="faUserClock" fixed-width/><span class="text">{{ $t('followRequests') }}</span>
+					<i v-if="$store.state.i.hasPendingReceivedFollowRequest"><fa :icon="faCircle"/></i>
 				</router-link>
 				<div class="divider"></div>
 				<router-link class="item" active-class="active" to="/featured">
@@ -91,7 +91,7 @@
 		</nav>
 	</transition>
 
-	<div class="contents" ref="contents">
+	<div class="contents" ref="contents" :class="{ wallpaper }">
 		<main ref="main">
 			<div class="content">
 				<transition :name="$store.state.device.animation ? 'page' : ''" mode="out-in" @enter="onTransition">
@@ -137,7 +137,7 @@
 	</div>
 
 	<div class="buttons">
-		<button v-if="$store.getters.isSignedIn" class="button nav _button" @click="showNav = true" ref="navButton"><fa :icon="faBars"/><i v-if="$store.state.i.hasUnreadSpecifiedNotes || $store.state.i.pendingReceivedFollowRequestsCount || $store.state.i.hasUnreadMessagingMessage || $store.state.i.hasUnreadAnnouncement"><fa :icon="faCircle"/></i></button>
+		<button v-if="$store.getters.isSignedIn" class="button nav _button" @click="showNav = true" ref="navButton"><fa :icon="faBars"/><i v-if="$store.state.i.hasUnreadSpecifiedNotes || $store.state.i.hasPendingReceivedFollowRequest || $store.state.i.hasUnreadMessagingMessage || $store.state.i.hasUnreadAnnouncement"><fa :icon="faCircle"/></i></button>
 		<button v-if="$store.getters.isSignedIn" class="button home _button" :disabled="$route.path === '/'" @click="$router.push('/')"><fa :icon="faHome"/></button>
 		<button v-if="$store.getters.isSignedIn" class="button notifications _button" @click="notificationsOpen = !notificationsOpen" ref="notificationButton2"><fa :icon="notificationsOpen ? faTimes : faBell"/><i v-if="$store.state.i.hasUnreadNotification"><fa :icon="faCircle"/></i></button>
 		<button v-if="$store.getters.isSignedIn" class="button post _buttonPrimary" @click="post()"><fa :icon="faPencilAlt"/></button>
@@ -163,6 +163,8 @@ import { search } from './scripts/search';
 import contains from './scripts/contains';
 import MkToast from './components/toast.vue';
 
+const DESKTOP_THRESHOLD = 1100;
+
 export default Vue.extend({
 	i18n,
 
@@ -186,9 +188,10 @@ export default Vue.extend({
 			searchQuery: '',
 			searchWait: false,
 			widgetsEditMode: false,
-			isDesktop: window.innerWidth >= 1100,
+			isDesktop: window.innerWidth >= DESKTOP_THRESHOLD,
 			canBack: false,
 			disconnectedDialog: null as Promise<void> | null,
+			wallpaper: localStorage.getItem('wallpaper') != null,
 			faGripVertical, faChevronLeft, faComments, faHashtag, faBroadcastTower, faFireAlt, faEllipsisH, faPencilAlt, faBars, faTimes, faBell, faSearch, faUserCog, faCog, faUser, faHome, faStar, faCircle, faAt, faEnvelope, faListUl, faPlus, faUserClock, faLaugh, faUsers, faTachometerAlt, faExchangeAlt, faGlobe, faChartBar, faCloud, faServer
 		};
 	},
@@ -226,6 +229,10 @@ export default Vue.extend({
 					el.removeEventListener('mousedown', this.onMousedown);
 				}
 			}
+		},
+
+		isDesktop() {
+			if (this.isDesktop) this.adjustWidgetsWidth();
 		}
 	},
 
@@ -274,17 +281,7 @@ export default Vue.extend({
 	},
 
 	mounted() {
-		// https://stackoverflow.com/questions/33891709/when-flexbox-items-wrap-in-column-mode-container-does-not-grow-its-width
-		if (this.isDesktop) {
-			const adjustWidgetsWidth = () => {
-				const lastChild = this.$refs.widgets.children[this.$refs.widgets.children.length - 1];
-				if (lastChild == null) return;
-
-				const width = lastChild.offsetLeft + 300 + 16;
-				this.$refs.widgets.style.width = width + 'px';
-			};
-			setInterval(adjustWidgetsWidth, 1000);
-		}
+		if (this.isDesktop) this.adjustWidgetsWidth();
 
 		const adjustTitlePosition = () => {
 			this.$refs.title.style.left = (this.$refs.main.getBoundingClientRect().left - this.$refs.nav.offsetWidth) + 'px';
@@ -298,10 +295,29 @@ export default Vue.extend({
 
 		ro.observe(this.$refs.contents);
 
-		window.addEventListener('resize', adjustTitlePosition);
+		window.addEventListener('resize', adjustTitlePosition, { passive: true });
+
+		if (!this.isDesktop) {
+			window.addEventListener('resize', () => {
+				if (window.innerWidth >= DESKTOP_THRESHOLD) this.isDesktop = true;
+			}, { passive: true });
+		}
 	},
 
 	methods: {
+		adjustWidgetsWidth() {
+			// https://stackoverflow.com/questions/33891709/when-flexbox-items-wrap-in-column-mode-container-does-not-grow-its-width
+			const adjust = () => {
+				const lastChild = this.$refs.widgets.children[this.$refs.widgets.children.length - 1];
+				if (lastChild == null) return;
+
+				const width = lastChild.offsetLeft + 300 + 16;
+				this.$refs.widgets.style.width = width + 'px';
+			};
+			setInterval(adjust, 1000);
+			setTimeout(adjust, 100);
+		},
+
 		help() {
 			this.$router.push('/docs/keyboard-shortcut');
 		},
@@ -971,6 +987,10 @@ export default Vue.extend({
 		display: flex;
 		margin: 0 auto;
 		min-width: 0;
+
+		&.wallpaper {
+			background: var(--wallpaperOverlay);
+		}
 
 		> main {
 			width: $main-width;
