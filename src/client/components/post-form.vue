@@ -6,7 +6,7 @@
 	@drop.stop="onDrop"
 >
 	<header>
-		<button class="cancel _button" @click="cancel"><fa :icon="faTimes"/></button>
+		<button v-if="!fixed" class="cancel _button" @click="cancel"><fa :icon="faTimes"/></button>
 		<div>
 			<span class="text-count" :class="{ over: trimmedLength(text) > max }">{{ max - trimmedLength(text) }}</span>
 			<button class="_button visibility" @click="setVisibility" ref="visibilityButton">
@@ -18,7 +18,7 @@
 			<button class="submit _buttonPrimary" :disabled="!canPost" @click="post">{{ submitText }}<fa :icon="reply ? faReply : renote ? faQuoteRight : faPaperPlane"/></button>
 		</div>
 	</header>
-	<div class="form">
+	<div class="form" :class="{ fixed }">
 		<x-note-preview class="preview" v-if="reply" :note="reply"/>
 		<x-note-preview class="preview" v-if="renote" :note="renote"/>
 		<div class="with-quote" v-if="quoteId"><fa icon="quote-left"/> {{ $t('quoteAttached') }}<button @click="quoteId = null"><fa icon="times"/></button></div>
@@ -105,6 +105,11 @@ export default Vue.extend({
 			required: false
 		},
 		instant: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		fixed: {
 			type: Boolean,
 			required: false,
 			default: false
@@ -582,7 +587,6 @@ export default Vue.extend({
 .gafaadew {
 	background: var(--panel);
 	border-radius: var(--radius);
-	box-shadow: 0 0 2px rgba(#000, 0.1);
 
 	> header {
 		z-index: 1000;
@@ -650,6 +654,10 @@ export default Vue.extend({
 	> .form {
 		max-width: 500px;
 		margin: 0 auto;
+
+		&.fixed {
+			max-width: unset;
+		}
 
 		> .preview {
 			padding: 16px;

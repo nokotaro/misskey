@@ -39,6 +39,8 @@ const defaultDeviceSettings = {
 	animation: true,
 	animatedMfm: true,
 	imageNewTab: false,
+	showFixedPostForm: false,
+	useNotificationsPopup: true,
 	userData: {},
 };
 
