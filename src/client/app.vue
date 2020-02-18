@@ -44,11 +44,11 @@
 					<mk-avatar :user="$store.state.i" class="avatar"/><mk-acct class="text" :user="$store.state.i"/>
 				</button>
 				<div class="divider"></div>
-				<router-link class="item index" active-class="active" to="/" exact v-if="$store.getters.isSignedIn">
-					<fa :icon="faHome" fixed-width/><span class="text">{{ $t('timeline') }}</span>
-				</router-link>
+				<button class="item _button index active" @click="top()" v-if="$route.name === 'index'">
+					<fa :icon="faHome" fixed-width/><span class="text">{{ $store.getters.isSignedIn ? $t('timeline') : $t('home') }}</span>
+				</button>
 				<router-link class="item index" active-class="active" to="/" exact v-else>
-					<fa :icon="faHome" fixed-width/><span class="text">{{ $t('home') }}</span>
+					<fa :icon="faHome" fixed-width/><span class="text">{{ $store.getters.isSignedIn ? $t('timeline') : $t('home') }}</span>
 				</router-link>
 				<button class="item _button notifications" @click="notificationsOpen = !notificationsOpen" ref="notificationButton" v-if="$store.getters.isSignedIn">
 					<fa :icon="faBell" fixed-width/><span class="text">{{ $t('notifications') }}</span>
@@ -140,8 +140,9 @@
 	</div>
 
 	<div class="buttons">
-		<button v-if="$store.getters.isSignedIn" class="button nav _button" @click="showNav = true" ref="navButton"><fa :icon="faBars"/><i v-if="$store.state.i.hasUnreadSpecifiedNotes || $store.state.i.hasPendingReceivedFollowRequest || $store.state.i.hasUnreadMessagingMessage || $store.state.i.hasUnreadAnnouncement"><fa :icon="faCircle"/></i></button>
-		<button v-if="$store.getters.isSignedIn" class="button home _button" :disabled="$route.path === '/'" @click="$router.push('/')"><fa :icon="faHome"/></button>
+		<button class="button nav _button" @click="showNav = true" ref="navButton"><fa :icon="faBars"/><i v-if="$store.getters.isSignedIn && ($store.state.i.hasUnreadSpecifiedNotes || $store.state.i.hasPendingReceivedFollowRequest || $store.state.i.hasUnreadMessagingMessage || $store.state.i.hasUnreadAnnouncement)"><fa :icon="faCircle"/></i></button>
+		<button v-if="$route.name === 'index'" class="button home _button" @click="top()"><fa :icon="faHome"/></button>
+		<button v-else class="button home _button" @click="$router.push('/')"><fa :icon="faHome"/></button>
 		<button v-if="$store.getters.isSignedIn" class="button notifications _button" @click="notificationsOpen = !notificationsOpen" ref="notificationButton2"><fa :icon="notificationsOpen ? faTimes : faBell"/><i v-if="$store.state.i.hasUnreadNotification"><fa :icon="faCircle"/></i></button>
 		<button v-if="$store.getters.isSignedIn" class="button post _buttonPrimary" @click="post()"><fa :icon="faPencilAlt"/></button>
 	</div>
@@ -319,6 +320,10 @@ export default Vue.extend({
 			};
 			setInterval(adjust, 1000);
 			setTimeout(adjust, 100);
+		},
+
+		top() {
+			window.scroll({ top: 0, behavior: 'smooth' });
 		},
 
 		help() {
@@ -601,7 +606,9 @@ export default Vue.extend({
 				'calendar',
 				'rss',
 				'trends',
-				'clock'
+				'clock',
+				'activity',
+				'photos',
 			];
 
 			this.$root.menu({

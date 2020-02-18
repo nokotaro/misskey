@@ -10,6 +10,8 @@ import { generateVisibilityQuery } from '../../common/generate-visibility-query'
 import { generateMuteQuery } from '../../common/generate-mute-query';
 import { activeUsersChart } from '../../../../services/chart';
 import { generateRepliesQuery } from '../../common/generate-replies-query';
+import { injectPromo } from '../../common/inject-promo';
+import { injectFeatured } from '../../common/inject-featured';
 
 export const meta = {
 	desc: {
@@ -168,6 +170,9 @@ export default define(meta, async (ps, user) => {
 	//#endregion
 
 	const timeline = await query.take(ps.limit!).getMany();
+
+	await injectPromo(timeline, user);
+	await injectFeatured(timeline, user);
 
 	process.nextTick(() => {
 		if (user) {

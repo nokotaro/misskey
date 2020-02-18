@@ -196,6 +196,8 @@ export class NoteRepository extends Repository<Note> {
 			renoteId: note.renoteId,
 			mentions: note.mentions.length > 0 ? note.mentions : undefined,
 			uri: note.uri || undefined,
+			_featuredId_: (note as any)._featuredId_ || undefined,
+			_prId_: (note as any)._prId_ || undefined,
 
 			...(opts.detail ? {
 				reply: note.replyId ? this.pack(note.replyId, meId, {
