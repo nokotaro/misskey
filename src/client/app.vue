@@ -93,7 +93,7 @@
 					<fa :icon="faEllipsisH" fixed-width/><span class="text">{{ $t('more') }}</span>
 					<i v-if="$store.getters.isSignedIn && ($store.state.i.hasUnreadMentions || $store.state.i.hasUnreadSpecifiedNotes)"><fa :icon="faCircle"/></i>
 				</button>
-				<router-link class="item" active-class="active" to="/settings">
+				<router-link class="item" active-class="active" to="/preferences">
 					<fa :icon="faCog" fixed-width/><span class="text">{{ $t('settings') }}</span>
 				</router-link>
 			</div>
@@ -159,6 +159,8 @@
 	<transition name="zoom-in-top">
 		<x-notifications v-if="notificationsOpen" class="notifications" ref="notifications"/>
 	</transition>
+
+	<stream-indicator v-if="$store.getters.isSignedIn"/>
 </div>
 </template>
 
@@ -201,7 +203,6 @@ export default Vue.extend({
 			widgetsEditMode: false,
 			isDesktop: window.innerWidth >= DESKTOP_THRESHOLD,
 			canBack: false,
-			disconnectedDialog: null as Promise<void> | null,
 			wallpaper: localStorage.getItem('wallpaper') != null,
 			faGripVertical, faChevronLeft, faComments, faHashtag, faBroadcastTower, faFireAlt, faEllipsisH, faPencilAlt, faBars, faTimes, faBell, faSearch, faUserCog, faCog, faUser, faHome, faStar, faCircle, faAt, faEnvelope, faListUl, faPlus, faUserClock, faLaugh, faUsers, faTachometerAlt, faExchangeAlt, faGlobe, faChartBar, faCloud, faServer
 		};
@@ -265,30 +266,6 @@ export default Vue.extend({
 				}]);
 			}
 		}
-
-		this.$root.stream.on('_disconnected_', () => {
-			if (this.disconnectedDialog) return;
-			if (this.$store.state.device.autoReload) {
-				location.reload();
-				return;
-			}
-
-			setTimeout(() => {
-				if (this.$root.stream.state !== 'reconnecting') return;
-
-				this.disconnectedDialog = this.$root.dialog({
-					type: 'warning',
-					showCancelButton: true,
-					title: this.$t('disconnectedFromServer'),
-					text: this.$t('reloadConfirm'),
-				}).then(({ canceled }) => {
-					if (!canceled) {
-						location.reload();
-					}
-					this.disconnectedDialog = null;
-				});
-			}, 150)
-		});
 	},
 
 	mounted() {
@@ -578,13 +555,17 @@ export default Vue.extend({
 
 		onNotification(notification) {
 			// TODO: ユーザーが画面を見てないと思われるとき(ブラウザやタブがアクティブじゃないなど)は送信しない
-			this.$root.stream.send('readNotification', {
-				id: notification.id
-			});
+			if (true) {
+				this.$root.stream.send('readNotification', {
+					id: notification.id
+				});
 
-			this.$root.new(MkToast, {
-				notification
-			});
+				this.$root.new(MkToast, {
+					notification
+				});
+			}
+
+			this.$root.sound('notification');
 		},
 
 		onMousedown(e) {
@@ -645,18 +626,6 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-.header-enter-active, .header-leave-active {
-	transition: opacity 0.5s, transform 0.5s !important;
-}
-.header-enter {
-	opacity: 0;
-	transform: scale(0.9);
-}
-.header-leave-to {
-	opacity: 0;
-	transform: scale(0.9);
-}
-
 .nav-enter-active,
 .nav-leave-active {
 	opacity: 1;

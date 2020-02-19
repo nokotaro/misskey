@@ -19,7 +19,7 @@
 	<x-tutorial class="tutorial" v-if="$store.state.settings.tutorial != -1"/>
 
 	<x-post-form class="post-form _panel" fixed v-if="$store.state.device.showFixedPostForm"/>
-	<x-timeline ref="tl" :key="src === 'list' ? `list:${list.id}` : src === 'antenna' ? `antenna:${antenna.id}` : src" :src="src" :list="list" :antenna="antenna" @before="before()" @after="after()" @queue="queueUpdated"/>
+	<x-timeline ref="tl" :key="src === 'list' ? `list:${list.id}` : src === 'antenna' ? `antenna:${antenna.id}` : src" :src="src" :list="list" :antenna="antenna" :sound="true" @before="before()" @after="after()" @queue="queueUpdated"/>
 </div>
 </template>
 
@@ -98,6 +98,10 @@ export default Vue.extend({
 		}
 	},
 
+	mounted() {
+		this.width = this.$el.offsetWidth;
+	},
+
 	methods: {
 		before() {
 			Progress.start();
@@ -108,7 +112,7 @@ export default Vue.extend({
 		},
 
 		queueUpdated(q) {
-			this.width = this.$el.offsetWidth;
+			if (this.$el.offsetWidth !== 0) this.width = this.$el.offsetWidth;
 			this.queue = q;
 		},
 
@@ -192,7 +196,7 @@ export default Vue.extend({
 		> button {
 			display: block;
 			margin: 0 auto;
-			padding: 8px 12px;
+			padding: 8px 16px;
 			border-radius: 32px;
 		}
 	}

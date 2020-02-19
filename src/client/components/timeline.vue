@@ -21,6 +21,11 @@ export default Vue.extend({
 		},
 		antenna: {
 			required: false
+		},
+		sound: {
+			type: Boolean,
+			required: false,
+			default: false,
 		}
 	},
 
@@ -46,6 +51,10 @@ export default Vue.extend({
 
 		const prepend = note => {
 			(this.$refs.tl as any).prepend(note);
+
+			if (this.sound) {
+				this.$root.sound(note.userId === this.$store.state.i.id ? 'noteMy' : 'note');
+			}
 		};
 
 		const onUserAdded = () => {
