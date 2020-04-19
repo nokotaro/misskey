@@ -100,7 +100,8 @@ export class ASEvaluator {
 							responsive: false,
 							title: {
 								display: opts.value.has('title'),
-								text: opts.value.has('title') ? opts.value.get('title').value : ''
+								text: opts.value.has('title') ? opts.value.get('title').value : '',
+								fontSize: 14,
 							},
 							layout: {
 								padding: {
@@ -126,14 +127,19 @@ export class ASEvaluator {
 							...(opts.value.get('type').value === 'radar' ? {
 								scale: {
 									ticks: {
-										beginAtZero: opts.value.has('begin_at_zero') ? opts.value.get('begin_at_zero') : false
+										min: opts.value.has('min') ? opts.value.get('min').value : undefined,
+										max: opts.value.has('max') ? opts.value.get('max').value : undefined,
+									},
+									pointLabels: {
+										fontSize: 12
 									}
 								}
 							} : {
 								scales: {
 									yAxes: [{
 										ticks: {
-											beginAtZero: opts.value.has('begin_at_zero') ? opts.value.get('begin_at_zero') : false
+											min: opts.value.has('min') ? opts.value.get('min').value : undefined,
+											max: opts.value.has('max') ? opts.value.get('max').value : undefined,
 										}
 									}]
 								}
