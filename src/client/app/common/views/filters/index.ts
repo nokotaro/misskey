@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import * as JSON5 from 'json5';
+import './append';
 
 Vue.filter('json5', x => {
 	return JSON5.stringify(x, null, 2);
