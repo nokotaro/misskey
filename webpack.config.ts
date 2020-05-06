@@ -166,7 +166,14 @@ module.exports = {
 		modules: ['node_modules']
 	},
 	optimization: {
-		minimizer: [new TerserPlugin()]
+		minimizer: [new TerserPlugin({
+			parallel: 1,
+			exclude: [
+				/admin/,
+				/dev/,
+				/test/
+			]
+		})]
 	},
 	cache: true,
 	devtool: false, //'source-map',
