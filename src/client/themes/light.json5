@@ -2,12 +2,12 @@
 	id: 'light',
 
 	name: 'Light',
-	author: 'syuilo',
-	desc: 'Default light theme',
+	author: 'takenoko',
+	desc: 'Default light theme for Meisskey.nokotaro.com',
 	kind: 'light',
 
 	vars: {
-		primary: '#fb4e4e',
+		primary: '#f44358',
 		secondary: '#fff',
 		text: '#666',
 	},
