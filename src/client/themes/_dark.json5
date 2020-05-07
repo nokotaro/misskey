@@ -19,7 +19,7 @@
 		indicator: '@accent',
 		panel: '#202020',
 		shadow: 'rgba(0, 0, 0, 0.1)',
-		header: 'rgba(20, 20, 20, 0.75)',
+		header: '#202020',
 		pageBg: ':lighten<5<@bg',
 		navBg: '@panel',
 		navFg: '@fg',
