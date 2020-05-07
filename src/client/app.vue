@@ -973,7 +973,8 @@ export default Vue.extend({
 			> .content {
 				> * {
 					&:not(.full) {
-						padding: var(--margin) 0;
+						// padding: var(--margin) 0;
+						padding: 0;
 					}
 
 					&:not(.naked) {

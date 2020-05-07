@@ -92,7 +92,8 @@ export default Vue.extend({
 .mk-notes {
 	> .notes {
 		> ::v-deep *:not(:last-child) {
-			margin-bottom: var(--marginFull);
+			//margin-bottom: var(--marginFull);
+			margin-bottom: 0;
 		}
 	}
 
