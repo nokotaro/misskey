@@ -51,7 +51,7 @@ const defaultDeviceSettings = Object.assign({
 	roundedCorners: true,
 	reduceMotion: false,
 	darkmode: true,
-	darkTheme: 'tweet-deck',
+	darkTheme: '06f82fb4-0dad-4d70-8a3f-56cae91e1163',
 	lightTheme: 'light',
 	themes: [],
 	enableSounds: true,
