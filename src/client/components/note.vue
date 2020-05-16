@@ -875,7 +875,7 @@ export default Vue.extend({
 
 	> .article {
 		display: flex;
-		padding: 28px 32px 18px;
+		padding: 26px 30px 16px;
 
 		> .avatar {
 			flex-shrink: 0;
