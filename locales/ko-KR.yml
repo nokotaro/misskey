@@ -499,9 +499,13 @@ removeAllFollowingDescription: "{host}(으)로부터 모든 팔로잉을 해제�
 userSuspended: "이 계정은 정지된 상태입니다."
 userSilenced: "이 계정은 사일런스된 상태입니다."
 sidebar: "사이드바"
-divider: "분할선"
+divider: "구분선"
 addItem: "항목 추가"
 rooms: "방"
+relays: "릴레이"
+addRelay: "릴레이 추가"
+inboxUrl: "Inbox 주소"
+addedRelays: "추가된 릴레이"
 _theme:
   explore: "테마 찾아보기"
   install: "테마 설치"
@@ -628,7 +632,6 @@ _cw:
   show: "더 보기"
   chars: "{count} 문자"
   files: "{count} 파일"
-  poll: "투표"
 _poll:
   noOnlyOneChoice: "투표 항목이 최소 2개 필요합니다"
   choiceN: "선택지 {n}"
@@ -776,6 +779,8 @@ _rooms:
     cup-noodle: "컵라면"
     holo-display: "홀로그램"
     energy-drink: "에너지 드링크"
+    doll-ai: "아이쨩 인형"
+    banknote: "지폐뭉치"
 _pages:
   newPage: "페이지 만들기"
   editPage: "페이지 수정"
@@ -1057,3 +1062,11 @@ _pages:
     enviromentVariables: "환경 변수"
     pageVariables: "페이지 요소"
     argVariables: "입력 슬롯"
+_relayStatus:
+  requesting: "대기 중"
+  accepted: "승인됨"
+  rejected: "거절됨"
+_notification:
+  youWereFollowed: "새로운 팔로워가 있습니다"
+  youWereInvitedToGroup: "그룹에 초대되었습니다"
+
