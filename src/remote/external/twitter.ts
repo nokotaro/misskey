@@ -293,7 +293,7 @@ export async function createNoteFromTwitter(value: any, resolver: Resolver, sile
 		let text = '';
 
 		for (let i = 0, p = i; i < raw.length; p = i) {
-			text += replacers[i] ? (i = replacers[i].next, replacers[p].to) : raw[i++];
+			text += replacers[i] ? (i = -~replacers[i].next, replacers[p].to) : raw[i++];
 		}
 
 		text = textContent(text);
