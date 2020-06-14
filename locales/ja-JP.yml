@@ -82,8 +82,10 @@ common:
   follow-requests: "フォロー申請"
   following: "フォロー中"
   followers: "フォロワー"
+  all: すべて
   only-not-followed: "フォローされてないユーザーのみ"
   only-not-following: "フォローしてないユーザーのみ"
+  only-moved: "引っ越したユーザーのみ"
   desktop-mode: 'デスクトップ版'
   mobile-mode: 'モバイル版'
 
@@ -1129,7 +1131,7 @@ desktop/views/components/post-form.vue:
   attach-media-from-drive: "ドライブからメディアを添付"
   insert-a-kao: "ﾌｸﾞﾊﾟﾝﾁガチャ"
   create-poll: "アンケートを作成"
-  use-jpeg: "アップロード時にJPEGに変換する"
+  use-jpeg: "アップロード前にJPEG変換とリサイズを行う"
   text-remain: "残り{}文字"
   recent-tags: "最近"
   click-to-tagging: "クリックでタグ付け"
@@ -1580,6 +1582,16 @@ admin/views/emoji.vue:
   remove-emoji:
     are-you-sure: "「$1」を削除しますか？"
     removed: "削除しました"
+  remoteEmojis: "リモート絵文字"
+  copy: "コピーする"
+  copied: "コピーしました"
+  name: "絵文字名"
+  host: "ホスト"
+  loadNext: "次のページ"
+  loadFirst: "最初のページ"
+  origin: "対象"
+  all: "全て"
+  newer: "未追加"
 
 admin/views/announcements.vue:
   announcements: "お知らせ"
