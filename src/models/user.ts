@@ -59,6 +59,11 @@ type IUserBase = {
 	pinnedNoteIds: mongo.ObjectID[];
 	emojis?: string[];
 	tags?: string[];
+	profile?: {
+		location?: string;
+		birthday?: string; // 'YYYY-MM-DD'
+		tags?: string[];
+	};
 
 	isDeleted: boolean;
 
@@ -158,11 +163,6 @@ export interface ILocalUser extends IUserBase {
 		username: string;
 		discriminator: string;
 	};
-	profile: {
-		location: string;
-		birthday: string; // 'YYYY-MM-DD'
-		tags: string[];
-	};
 	fields?: {
 		name: string;
 		value: string;
@@ -185,6 +185,7 @@ export interface ILocalUser extends IUserBase {
 }
 
 export interface IRemoteUser extends IUserBase {
+	host: string;
 	inbox: string;
 	sharedInbox?: string;
 	outbox?: string;

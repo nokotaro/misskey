@@ -3,7 +3,6 @@ import { createSystemUser } from './create-system-user';
 import Emoji, { IEmoji } from '../models/emoji';
 import { uploadFromUrl } from './drive/upload-from-url';
 import getDriveFileUrl from '../misc/get-drive-file-url';
-import fetchMeta from '../misc/fetch-meta';
 
 const ACTOR_USERNAME = 'system.1' as const;
 
@@ -25,14 +24,8 @@ export async function tryStockEmoji(emoji: IEmoji) {
 		return;
 	}
 
-	if (emoji.saved) {
+	if (emoji.saved && emoji.md5 != null) {
 		//console.log(`saved`);
-		return;
-	}
-
-	const instance = await fetchMeta();
-	if (!instance.cacheRemoteFiles) {
-		//console.log(`!cacheRemoteFiles`);
 		return;
 	}
 
@@ -55,6 +48,7 @@ export async function stockEmoji(emoji: IEmoji) {
 	await Emoji.update({ _id: emoji._id }, {
 		$set: {
 			url,
+			md5: file.md5,
 			saved: true
 		}
 	});

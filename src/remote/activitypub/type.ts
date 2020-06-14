@@ -224,6 +224,8 @@ export interface IApPerson extends IObject {
 	featured?: any;
 	outbox: any;
 	endpoints: any;
+	'vcard:bday'?: string;
+	'vcard:Address'?: string;
 }
 
 export const valiedActor = ['Person', 'Service', 'Group', 'Organization', 'Application'];
@@ -233,11 +235,13 @@ export const isActor = (object: IObject): object is IApPerson =>
 
 export interface IApEmoji extends IObject {
 	type: 'Emoji';
-	updated: Date;
+	name: string;
+	icon: IApImage | IApImage[];
+	updated?: Date;
 }
 
 export const isEmoji = (object: IObject): object is IApEmoji =>
-	object.type === 'Emoji' && !Array.isArray(object.icon) && object.icon.url != null;
+	object.type === 'Emoji' && typeof object.name === 'string' && object.icon != null;
 
 export const isCollection = (object: IObject): object is ICollection =>
 	object.type === 'Collection';
