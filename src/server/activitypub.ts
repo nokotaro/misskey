@@ -20,6 +20,7 @@ import { isSelfHost } from '../misc/convert-host';
 import NoteReaction from '../models/note-reaction';
 import { renderLike } from '../remote/activitypub/renderer/like';
 import { inspect } from 'util';
+import config from '../config';
 
 // Init router
 const router = new Router();
@@ -27,6 +28,8 @@ const router = new Router();
 //#region Routing
 
 function inbox(ctx: Router.RouterContext) {
+	if (config.disableFederation) ctx.throw(404);
+
 	let signature;
 
 	try {
@@ -37,7 +40,9 @@ function inbox(ctx: Router.RouterContext) {
 		return;
 	}
 
-	processInbox(ctx.request.body, signature);
+	processInbox(ctx.request.body, signature, {
+		ip: ctx.request.ip
+	});
 
 	ctx.status = 202;
 }
@@ -78,6 +83,8 @@ const isNoteUserAvailable = async (note: INote) => {
 router.get('/notes/:note', async (ctx, next) => {
 	if (!isActivityPubReq(ctx)) return await next();
 
+	if (config.disableFederation) ctx.throw(404);
+
 	if (!ObjectID.isValid(ctx.params.note)) {
 		ctx.status = 404;
 		return;
@@ -113,6 +120,8 @@ router.get('/notes/:note', async (ctx, next) => {
 
 // note activity
 router.get('/notes/:note/activity', async ctx => {
+	if (config.disableFederation) ctx.throw(404);
+
 	if (!ObjectID.isValid(ctx.params.note)) {
 		ctx.status = 404;
 		return;
@@ -151,6 +160,8 @@ router.get('/users/:user/collections/featured', Featured);
 
 // publickey
 router.get('/users/:user/publickey', async ctx => {
+	if (config.disableFederation) ctx.throw(404);
+
 	if (!ObjectID.isValid(ctx.params.user)) {
 		ctx.status = 404;
 		return;
@@ -195,6 +206,8 @@ async function userInfo(ctx: Router.RouterContext, user?: IUser | null) {
 router.get('/users/:user', async (ctx, next) => {
 	if (!isActivityPubReq(ctx)) return await next();
 
+	if (config.disableFederation) ctx.throw(404);
+
 	if (!ObjectID.isValid(ctx.params.user)) {
 		ctx.status = 404;
 		return;
@@ -216,6 +229,8 @@ router.get('/users/:user', async (ctx, next) => {
 router.get('/@:user', async (ctx, next) => {
 	if (!isActivityPubReq(ctx)) return await next();
 
+	if (config.disableFederation) ctx.throw(404);
+
 	const user = await User.findOne({
 		usernameLower: ctx.params.user.toLowerCase(),
 		isDeleted: { $ne: true },
@@ -230,6 +245,8 @@ router.get('/@:user', async (ctx, next) => {
 
 // emoji
 router.get('/emojis/:emoji', async ctx => {
+	if (config.disableFederation) ctx.throw(404);
+
 	const emoji = await Emoji.findOne({
 		host: null,
 		name: ctx.params.emoji
@@ -247,6 +264,8 @@ router.get('/emojis/:emoji', async ctx => {
 
 // like
 router.get('/likes/:like', async ctx => {
+	if (config.disableFederation) ctx.throw(404);
+
 	if (!ObjectID.isValid(ctx.params.like)) {
 		ctx.status = 404;
 		return;

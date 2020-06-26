@@ -51,6 +51,7 @@ const defaultDeviceSettings = Object.assign({
 	roundedCorners: true,
 	reduceMotion: false,
 	darkmode: true,
+	visibilityColoring: 'left',
 	darkTheme: 'dark',
 	lightTheme: 'light',
 	themes: [],
