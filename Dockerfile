@@ -75,9 +75,6 @@ RUN set -x \
         /tmp/mecab-[0-9]* \
         /tmp/mecab-ipadic-* \
         /tmp/mecab-ipadic-neologd \
-    ## user/dir/permmsion
-    && adduser -D  -g '' -s /sbin/nologin -u 1000 docker \
-    && adduser -D  -g '' -s /sbin/nologin mecab 
 
 RUN npm i -g web-push
 ENTRYPOINT ["/sbin/tini", "--"]
