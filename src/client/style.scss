@@ -279,17 +279,12 @@ hr {
 	position: relative;
 	background: var(--panel);
 	border-radius: var(--radius);
-	box-shadow: 0 0 0 1px var(--divider);
 }
 
-main ._panel {
-	border-radius: 0;
+._widget ._list_ ._panel {
 	box-shadow: 0 1px 0 0 var(--divider), 0 -1px 0 0 var(--divider);
-}
-
-._panel ._panel {
 	border-radius: 0;
-	box-shadow: 0 1px 0 0 var(--divider), 0 -1px 0 0 var(--divider);
+	margin: 0 !important;
 }
 
 .__panelButton {
@@ -382,33 +377,6 @@ main ._panel {
 		@media (max-width: 500px) {
 			padding: 16px;
 		}
-	}
-}
-
-._frame {
-	position: relative;
-	border: solid 1px var(--divider);
-	border-radius: var(--radius);
-	margin: var(--margin);
-
-	> ._title {
-		margin: 0;
-		padding: 16px;
-		border-bottom: solid 1px var(--divider);
-		font-weight: bold;
-	}
-
-	> ._content {
-		padding: 16px;
-
-		& + ._content {
-			border-top: solid 1px var(--divider);
-		}
-	}
-
-	> ._footer {
-		border-top: solid 1px var(--divider);
-		padding: 16px;
 	}
 }
 
