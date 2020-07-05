@@ -188,8 +188,11 @@ export default Vue.extend({
 				return {
 					left: [],
 					right: [{
-						name: 'calendar',
+						name: 'welcome',
 						id: 'a', place: 'right', data: {}
+					}, {
+						name: 'calendar',
+						id: 'b', place: 'right', data: {}
 					}, {
 						name: 'trends',
 						id: 'c', place: 'right', data: {}
@@ -874,7 +877,7 @@ export default Vue.extend({
 					z-index: 1;
 					padding-top: 8px;
 					padding-bottom: 8px;
-					background: var(--wboyroyc);
+					background: var(--X14);
 					-webkit-backdrop-filter: blur(8px);
 					backdrop-filter: blur(8px);
 				}
@@ -929,6 +932,7 @@ export default Vue.extend({
 
 		&.wallpaper {
 			background: var(--wallpaperOverlay);
+			backdrop-filter: blur(4px);
 		}
 
 		> main {
@@ -1078,7 +1082,7 @@ export default Vue.extend({
 		display: flex;
 		width: 100%;
 		box-sizing: border-box;
-		background: linear-gradient(0deg, var(--bg), var(--bonzsgfz));
+		background: linear-gradient(0deg, var(--bg), var(--X1));
 
 		@media (max-width: 500px) {
 			padding: 0 16px 16px 16px;
@@ -1122,7 +1126,7 @@ export default Vue.extend({
 				color: var(--fg);
 
 				&:hover {
-					background: var(--pcncwizz);
+					background: var(--X2);
 				}
 
 				> i {
