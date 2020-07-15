@@ -15,6 +15,8 @@
 					<option value="rss">{{ $t('@.widgets.rss') }}</option>
 					<option value="slideshow">{{ $t('@.widgets.slideshow') }}</option>
 					<option value="hashtags">{{ $t('@.widgets.hashtags') }}</option>
+					<option value="words">{{ $t('@.widgets.words') }}</option>
+					<option value="posts-monitor">{{ $t('@.widgets.posts-monitor') }}</option>
 					<option value="version">{{ $t('@.widgets.version') }}</option>
 					<option value="server">{{ $t('@.widgets.server') }}</option>
 					<option value="queue">{{ $t('@.widgets.queue') }}</option>
@@ -50,7 +52,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
-import * as XDraggable from 'vuedraggable';
+import XDraggable from 'vuedraggable';
 import { v4 as uuid } from 'uuid';
 
 export default Vue.extend({

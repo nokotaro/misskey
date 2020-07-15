@@ -22,6 +22,8 @@
 					<option value="messaging">{{ $t('@.widgets.messaging') }}</option>
 					<option value="memo">{{ $t('@.widgets.memo') }}</option>
 					<option value="hashtags">{{ $t('@.widgets.hashtags') }}</option>
+					<option value="words">{{ $t('@.widgets.words') }}</option>
+					<option value="posts-monitor">{{ $t('@.widgets.posts-monitor') }}</option>
 					<option value="server">{{ $t('@.widgets.server') }}</option>
 					<option value="queue">{{ $t('@.widgets.queue') }}</option>
 					<option value="nav">{{ $t('@.widgets.nav') }}</option>
@@ -50,7 +52,7 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import XColumn from './deck.column.vue';
-import * as XDraggable from 'vuedraggable';
+import XDraggable from 'vuedraggable';
 import { v4 as uuid } from 'uuid';
 
 export default Vue.extend({

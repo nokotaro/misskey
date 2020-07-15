@@ -23,6 +23,8 @@
 						<option value="messaging">{{ $t('@.messaging') }}</option>
 						<option value="memo">{{ $t('@.widgets.memo') }}</option>
 						<option value="hashtags">{{ $t('@.widgets.hashtags') }}</option>
+						<option value="words">{{ $t('@.widgets.words') }}</option>
+						<option value="posts-monitor">{{ $t('@.widgets.posts-monitor') }}</option>
 						<option value="server">{{ $t('@.widgets.server') }}</option>
 						<option value="queue">{{ $t('@.widgets.queue') }}</option>
 						<option value="nav">{{ $t('@.widgets.nav') }}</option>
@@ -77,7 +79,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
-import * as XDraggable from 'vuedraggable';
+import XDraggable from 'vuedraggable';
 import { v4 as uuid } from 'uuid';
 import XWelcome from '../pages/welcome.vue';
 
@@ -164,7 +166,7 @@ export default Vue.extend({
 					'profile',
 					'calendar',
 					'hashtags',
-					'rss',
+					'words',
 					'version'
 				],
 				right: [
