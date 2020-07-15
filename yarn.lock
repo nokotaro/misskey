@@ -513,10 +513,10 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
-"@types/mocha@7.0.2":
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-7.0.2.tgz#b17f16cf933597e10d6d78eae3251e692ce8b0ce"
-  integrity sha512-ZvO2tAcjmMi8V/5Z3JsyofMe3hasRcaw88cto5etSVMwVQfeivGAlEYmaQgceUSVYFofVjT+ioHsATjdWcFt1w==
+"@types/mocha@8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-8.0.0.tgz#b0ba1c5b4cb3880c51a6b488ad007a657d1be888"
+  integrity sha512-jWeYcTo3sCH/rMgsdYXDTO85GNRyTCII5dayMIu/ZO4zbEot1E3iNGaOwpLReLUHjeNQFkgeNNVYlY4dX6azQQ==
 
 "@types/mongodb@3.5.25":
   version "3.5.25"
@@ -539,10 +539,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.18.tgz#5111b2285659442f9f95697386a2b42b875bd7e9"
   integrity sha512-0Z3nS5acM0cIV4JPzrj9g/GH0Et5vmADWtip3YOXOp1NpOLU8V3KoZDc8ny9c1pe/YSYYzQkAWob6dyV/EWg4g==
 
-"@types/node@14.0.20":
-  version "14.0.20"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.20.tgz#0da05cddbc761e1fa98af88a17244c8c1ff37231"
-  integrity sha512-MRn/NP3dee8yL5QhbSA6riuwkS+UOcsPUMOIOG3KMUQpuor/2TopdRBu8QaaB4fGU+gz/bzyDWt0FtUbeJ8H1A==
+"@types/node@14.0.23":
+  version "14.0.23"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.23.tgz#676fa0883450ed9da0bb24156213636290892806"
+  integrity sha512-Z4U8yDAl5TFkmYsZdFPdjeMa57NOvnaf1tljHzhouaPEp7LCj2JKkejpI1ODviIAQuW4CcQmxkQ77rnLsOOoKw==
 
 "@types/node@^10.12.18":
   version "10.17.19"
@@ -612,10 +612,17 @@
   dependencies:
     "@types/redis" "*"
 
-"@types/redis@*", "@types/redis@2.8.24":
+"@types/redis@*":
   version "2.8.24"
   resolved "https://registry.yarnpkg.com/@types/redis/-/redis-2.8.24.tgz#164d1d1b9f628d089e63874b072100c30d9d1c1a"
   integrity sha512-I5LivNsNdEvBDJnBthjL4YAqD888eSf/k8kM5ROzgRHy7UE7n+ijwFVKqCSM4Ekujfb+3SDz/GbEhXWjnuI04w==
+  dependencies:
+    "@types/node" "*"
+
+"@types/redis@2.8.25":
+  version "2.8.25"
+  resolved "https://registry.yarnpkg.com/@types/redis/-/redis-2.8.25.tgz#046bfff24b82effa59d74744c6fcf8995be17479"
+  integrity sha512-e5N5Dg712aZ1CPi1Li0XalukPSWd2RTLYzmrMsQ84NkYQ7cqKHC+HroXM1WP65O1zRGfzld72/u9ikumEe+ylA==
   dependencies:
     "@types/node" "*"
 
@@ -1541,10 +1548,10 @@ autwh@0.1.0:
   dependencies:
     oauth "0.9.15"
 
-aws-sdk@2.712.0:
-  version "2.712.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.712.0.tgz#828d6ef7556f4b5098c880469ff72195a83f9d66"
-  integrity sha512-C3SLWanFydoWJwtKNi73BG9uB6UzrUuECaAiplOEVBltO/R4sBsHWhwTBuxS02eTNdRrgulu19bJ5RWt+OuXiA==
+aws-sdk@2.713.0:
+  version "2.713.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.713.0.tgz#e87404ddcba093d36afafb48f119ec66f654a83f"
+  integrity sha512-axR1eOVn134KXJc1IT+Au2TXcK6oswY+4nvGe5GfU3pXeehhe0xNeP9Bw9yF36TRBxuvu4IJ2hRHDKma05smgA==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -5413,10 +5420,10 @@ jschardet@^2.1.0:
   resolved "https://registry.yarnpkg.com/jschardet/-/jschardet-2.1.1.tgz#af6f8fd0b3b0f5d46a8fd9614a4fce490575c184"
   integrity sha512-pA5qG9Zwm8CBpGlK/lo2GE9jPxwqRgMV7Lzc/1iaPccw6v4Rhj8Zg2BTyrdmHmxlJojnbLupLeRnaPLsq03x6Q==
 
-jsdom@16.2.2:
-  version "16.2.2"
-  resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-16.2.2.tgz#76f2f7541646beb46a938f5dc476b88705bedf2b"
-  integrity sha512-pDFQbcYtKBHxRaP55zGXCJWgFHkDAYbKcsXEK/3Icu9nKYZkutUXfLBwbD+09XDutkYSHcgfQLZ0qvpAAm9mvg==
+jsdom@16.3.0:
+  version "16.3.0"
+  resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-16.3.0.tgz#75690b7dac36c67be49c336dcd7219bbbed0810c"
+  integrity sha512-zggeX5UuEknpdZzv15+MS1dPYG0J/TftiiNunOeNxSl3qr8Z6cIlQpN0IdJa44z9aFxZRIVqRncvEhQ7X5DtZg==
   dependencies:
     abab "^2.0.3"
     acorn "^7.1.1"
@@ -5438,7 +5445,7 @@ jsdom@16.2.2:
     tough-cookie "^3.0.1"
     w3c-hr-time "^1.0.2"
     w3c-xmlserializer "^2.0.0"
-    webidl-conversions "^6.0.0"
+    webidl-conversions "^6.1.0"
     whatwg-encoding "^1.0.5"
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
@@ -6184,6 +6191,13 @@ mdn-data@2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/mdn-data/-/mdn-data-2.0.6.tgz#852dc60fcaa5daa2e8cf6c9189c440ed3e042978"
   integrity sha512-rQvjv71olwNHgiTbfPZFkJtjNMciWgswYeciZhtvWLO8bmX3TnhyA62I6sTWOyZssWHJJjY6/KiWwqQsWWsqOA==
+
+mecab-async@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/mecab-async/-/mecab-async-0.1.2.tgz#69efb838729216709597a57da2df03922f9b593a"
+  integrity sha512-/hruCkDWB+jM1bYMFM53HLzG6ENKVtC3n45qD1qxQUW99pz3rrsU4HKEqlYPVCr+/wv0ErBR0vNlVwAv92f2Wg==
+  dependencies:
+    shell-quote "*"
 
 media-typer@0.3.0:
   version "0.3.0"
@@ -8828,6 +8842,11 @@ shebang-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-1.0.0.tgz#da42f49740c0b42db2ca9728571cb190c98efea3"
   integrity sha1-2kL0l0DAtC2yypcoVxyxkMmO/qM=
 
+shell-quote@*:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/shell-quote/-/shell-quote-1.7.2.tgz#67a7d02c76c9da24f99d20808fcaded0e0e04be2"
+  integrity sha512-mRz/m/JVscCrkMyPqHc/bczi3OQHkLTqXHEFu0zDhK/qfv3UcOA4SVmRCLmos4bhjr9ekVQubj/R7waKapmiQg==
+
 showdown-highlightjs-extension@0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/showdown-highlightjs-extension/-/showdown-highlightjs-extension-0.1.2.tgz#0fc90190283c1ae03fc4cccce3f1be6a5a58e4ce"
@@ -10484,10 +10503,10 @@ webidl-conversions@^5.0.0:
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-5.0.0.tgz#ae59c8a00b121543a2acc65c0434f57b0fc11aff"
   integrity sha512-VlZwKPCkYKxQgeSbH5EyngOmRp7Ww7I9rQLERETtf5ofd9pGeswWiOtogpEO850jziPRarreGxn5QIiTqpb2wA==
 
-webidl-conversions@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-6.0.0.tgz#ff41d921371f43e772dba311b146ab6c0ef0ead4"
-  integrity sha512-jTZAeJnc6D+yAOjygbJOs33kVQIk5H6fj9SFDOhIKjsf9HiAzL/c+tAJsc8ASWafvhNkH+wJZms47pmajkhatA==
+webidl-conversions@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-6.1.0.tgz#9111b4d7ea80acd40f5270d666621afa78b69514"
+  integrity sha512-qBIvFLGiBpLjfwmYAaHPXsn+ho5xZnGvyGvsarywGNc8VyQJUMHJ8OBKGGrPER0okBeMDaan4mNBlgBROxuI8w==
 
 webpack-cli@3.3.12:
   version "3.3.12"
