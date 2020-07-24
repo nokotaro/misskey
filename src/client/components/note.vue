@@ -15,11 +15,11 @@
 	<div class="renote" v-if="isRenote">
 		<mk-avatar class="avatar" :user="note.user"/>
 		<fa :icon="faRetweet"/>
-		<i18n path="renotedBy" tag="span">
+		<i18n-t path="renotedBy" tag="span">
 			<router-link class="name" :to="note.user | userPage" v-user-preview="note.userId" place="user">
 				<mk-user-name :user="note.user"/>
 			</router-link>
-		</i18n>
+		</i18n-t>
 		<div class="info">
 			<button class="_button time" @click="showRenoteMenu()" ref="renoteTime">
 				<fa class="dropdownIcon" v-if="isMyRenote" :icon="faEllipsisH"/>
@@ -88,7 +88,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { faBolt, faTimes, faBullhorn, faStar, faLink, faExternalLinkSquareAlt, faPlus, faMinus, faRetweet, faReply, faReplyAll, faEllipsisH, faHome, faUnlock, faEnvelope, faThumbtack, faBan, faQuoteRight, faInfoCircle, faBiohazard, faPlug } from '@fortawesome/free-solid-svg-icons';
 import { faCopy, faTrashAlt, faEdit, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { parse } from '../../mfm/parse';
@@ -107,7 +107,7 @@ import { focusPrev, focusNext } from '../scripts/focus';
 import { url } from '../config';
 import copyToClipboard from '../scripts/copy-to-clipboard';
 
-export default Vue.extend({
+export default defineComponent({
 	components: {
 		XSub,
 		XNoteHeader,
