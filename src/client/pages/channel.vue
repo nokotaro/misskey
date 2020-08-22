@@ -1,7 +1,6 @@
 <template>
 <div v-if="channel">
-	<portal to="icon"><fa :icon="faSatelliteDish"/></portal>
-	<portal to="title">{{ channel.name }}</portal>
+	<teleport to="#_teleport_header"><fa :icon="faSatelliteDish"/>{{ channel.name }}</teleport>
 
 	<div class="wpgynlbz _panel _vMargin" :class="{ hide: !showBanner }">
 		<x-channel-follow-button :channel="channel" :full="true" class="subscribe"/>
@@ -30,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { faSatelliteDish, faUsers, faPencilAlt, faAngleUp, faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import {  } from '@fortawesome/free-regular-svg-icons';
 import MkContainer from '../components/ui/container.vue';
@@ -38,7 +37,7 @@ import XPostForm from '../components/post-form.vue';
 import XTimeline from '../components/timeline.vue';
 import XChannelFollowButton from '../components/channel-follow-button.vue';
 
-export default Vue.extend({
+export default defineComponent({
 	metaInfo() {
 		return {
 			title: this.$t('channel') as string

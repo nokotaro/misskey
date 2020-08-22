@@ -6,15 +6,7 @@
 				<button class="_button back" v-if="canBack" @click="back()"><fa :icon="faChevronLeft"/></button>
 			</transition>
 			<transition :name="$store.state.device.animation ? 'header' : ''" mode="out-in" appear>
-				<div class="body" :key="pageKey">
-					<div class="default">
-						<portal-target name="avatar" slim/>
-						<h1 class="title"><portal-target name="icon" slim/><portal-target name="title" slim/></h1>
-					</div>
-					<div class="custom">
-						<portal-target name="header" slim/>
-					</div>
-				</div>
+				<div class="body" :key="pageKey" id="_teleport_header"></div>
 			</transition>
 		</div>
 		<div class="sub">
@@ -275,7 +267,10 @@ export default defineComponent({
 			if (!this.isDesktop) return;
 			if (this.$store.state.device.fixedWidgetsPosition) return;
 
-			const stickyWidgetColumns = this.$refs.widgets.map(w => new StickySidebar(w.children[1], w.children[0], w.offsetTop));
+			// NOTE: Vue3の仕様かどうか知らんけど this.$refs.widgets が要素が一つしかない場合に配列ではないので配列にする
+			const widgets = Array.isArray(this.$refs.widgets) ? this.$refs.widgets : [this.$refs.widgets];
+
+			const stickyWidgetColumns = widgets.map(w => new StickySidebar(w.children[1], w.children[0], w.offsetTop));
 			window.addEventListener('scroll', () => {
 				for (const stickyWidgetColumn of stickyWidgetColumns) {
 					stickyWidgetColumn.calc(window.scrollY);
