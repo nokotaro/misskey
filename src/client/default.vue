@@ -6,7 +6,7 @@
 				<button class="_button back" v-if="canBack" @click="back()"><fa :icon="faChevronLeft"/></button>
 			</transition>
 			<transition :name="$store.state.device.animation ? 'header' : ''" mode="out-in" appear>
-				<div class="body" :key="pageKey" id="_teleport_header"></div>
+				<portal-target class="body" :key="pageKey" name="header"></portal-target>
 			</transition>
 		</div>
 		<div class="sub">
@@ -325,6 +325,10 @@ export default defineComponent({
 		},
 
 		async onNotification(notification) {
+			const t = this.$store.state.i.includingNotificationTypes;
+			if (!!t && !t.includes(notification.type)) {
+				return;
+			}
 			if (document.visibilityState === 'visible') {
 				this.$root.stream.send('readNotification', {
 					id: notification.id
