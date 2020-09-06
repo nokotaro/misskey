@@ -2,12 +2,12 @@
 <form class="eppvobhk" :class="{ signing, totpLogin }" @submit.prevent="onSubmit">
 	<div class="avatar" :style="{ backgroundImage: user ? `url('${ user.avatarUrl }')` : null }" v-show="withAvatar"></div>
 	<div class="normal-signin" v-if="!totpLogin">
-		<mk-input v-model="username" type="text" pattern="^[a-zA-Z0-9_]+$" spellcheck="false" autofocus required @input="onUsernameChange">
+		<mk-input v-model:value="username" type="text" pattern="^[a-zA-Z0-9_]+$" spellcheck="false" autofocus required @onUpdate:value="onUsernameChange">
 			<span>{{ $t('username') }}</span>
 			<template #prefix>@</template>
 			<template #suffix>@{{ host }}</template>
 		</mk-input>
-		<mk-input v-model="password" type="password" :with-password-toggle="true" v-if="!user || user && !user.usePasswordLessLogin" required>
+		<mk-input v-model:value="password" type="password" :with-password-toggle="true" v-if="!user || user && !user.usePasswordLessLogin" required>
 			<span>{{ $t('password') }}</span>
 			<template #prefix><fa :icon="faLock"/></template>
 		</mk-input>
@@ -28,11 +28,11 @@
 		</div>
 		<div class="twofa-group totp-group">
 			<p style="margin-bottom:0;">{{ $t('twoStepAuthentication') }}</p>
-			<mk-input v-model="password" type="password" :with-password-toggle="true" v-if="user && user.usePasswordLessLogin" required>
+			<mk-input v-model:value="password" type="password" :with-password-toggle="true" v-if="user && user.usePasswordLessLogin" required>
 				<span>{{ $t('password') }}</span>
 				<template #prefix><fa :icon="faLock"/></template>
 			</mk-input>
-			<mk-input v-model="token" type="text" pattern="^[0-9]{6}$" autocomplete="off" spellcheck="false" required>
+			<mk-input v-model:value="token" type="text" pattern="^[0-9]{6}$" autocomplete="off" spellcheck="false" required>
 				<span>{{ $t('token') }}</span>
 				<template #prefix><fa :icon="faGavel"/></template>
 			</mk-input>
@@ -49,8 +49,9 @@ import { faLock, faGavel } from '@fortawesome/free-solid-svg-icons';
 import { faTwitter, faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons';
 import MkButton from './ui/button.vue';
 import MkInput from './ui/input.vue';
-import { apiUrl, host } from '../config';
-import { byteify, hexify } from '../scripts/2fa';
+import { apiUrl, host } from '@/config';
+import { byteify, hexify } from '@/scripts/2fa';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -105,7 +106,7 @@ export default defineComponent({
 
 	methods: {
 		onUsernameChange() {
-			this.$root.api('users/show', {
+			os.api('users/show', {
 				username: this.username
 			}).then(user => {
 				this.user = user;
@@ -132,7 +133,7 @@ export default defineComponent({
 			}).then(credential => {
 				this.queryingKey = false;
 				this.signing = true;
-				return this.$root.api('signin', {
+				return os.api('signin', {
 					username: this.username,
 					password: this.password,
 					signature: hexify(credential.response.signature),
@@ -145,7 +146,7 @@ export default defineComponent({
 				this.$emit('login', res);
 			}).catch(err => {
 				if (err === null) return;
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: this.$t('signinFailed')
 				});
@@ -157,7 +158,7 @@ export default defineComponent({
 			this.signing = true;
 			if (!this.totpLogin && this.user && this.user.twoFactorEnabled) {
 				if (window.PublicKeyCredential && this.user.securityKeys) {
-					this.$root.api('signin', {
+					os.api('signin', {
 						username: this.username,
 						password: this.password
 					}).then(res => {
@@ -166,7 +167,7 @@ export default defineComponent({
 						this.challengeData = res;
 						return this.queryKey();
 					}).catch(() => {
-						this.$root.dialog({
+						os.dialog({
 							type: 'error',
 							text: this.$t('signinFailed')
 						});
@@ -179,14 +180,14 @@ export default defineComponent({
 					this.signing = false;
 				}
 			} else {
-				this.$root.api('signin', {
+				os.api('signin', {
 					username: this.username,
 					password: this.password,
 					token: this.user && this.user.twoFactorEnabled ? this.token : undefined
 				}).then(res => {
 					this.$emit('login', res);
 				}).catch(() => {
-					this.$root.dialog({
+					os.dialog({
 						type: 'error',
 						text: this.$t('loginFailed')
 					});

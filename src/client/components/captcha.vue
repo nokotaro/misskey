@@ -28,6 +28,7 @@ declare global {
 	interface Window extends CaptchaContainer {
 	}
 }
+import * as os from '@/os';
 
 export default defineComponent({
 	props: {
@@ -110,7 +111,7 @@ export default defineComponent({
 			}
 		},
 		callback(response?: string) {
-			this.$emit('input', typeof response == 'string' ? response : null);
+			this.$emit('update:value', typeof response == 'string' ? response : null);
 		},
 	},
 });

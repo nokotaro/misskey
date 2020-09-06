@@ -66,6 +66,8 @@ import XReactionIcon from './reaction-icon.vue';
 import MkFollowButton from './follow-button.vue';
 import notePage from '../filters/note';
 import { userPage } from '../filters/user';
+import { locale } from '../i18n';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -89,7 +91,7 @@ export default defineComponent({
 	},
 	data() {
 		return {
-			getNoteSummary: (text: string) => noteSummary(text, this.$root.i18n.messages[this.$root.i18n.locale]),
+			getNoteSummary: (text: string) => noteSummary(text, locale),
 			followRequestDone: false,
 			groupInviteDone: false,
 			connection: null,
@@ -102,7 +104,7 @@ export default defineComponent({
 		if (!this.notification.isRead) {
 			this.readObserver = new IntersectionObserver((entries, observer) => {
 				if (!entries.some(entry => entry.isIntersecting)) return;
-				this.$root.stream.send('readNotification', {
+				os.stream.send('readNotification', {
 					id: this.notification.id
 				});
 				entries.map(({ target }) => observer.unobserve(target));
@@ -110,7 +112,7 @@ export default defineComponent({
 
 			this.readObserver.observe(this.$el);
 
-			this.connection = this.$root.stream.useSharedConnection('main');
+			this.connection = os.stream.useSharedConnection('main');
 			this.connection.on('readAllNotifications', () => this.readObserver.unobserve(this.$el));
 		}
 	},
@@ -125,23 +127,23 @@ export default defineComponent({
 	methods: {
 		acceptFollowRequest() {
 			this.followRequestDone = true;
-			this.$root.api('following/requests/accept', { userId: this.notification.user.id });
+			os.api('following/requests/accept', { userId: this.notification.user.id });
 		},
 		rejectFollowRequest() {
 			this.followRequestDone = true;
-			this.$root.api('following/requests/reject', { userId: this.notification.user.id });
+			os.api('following/requests/reject', { userId: this.notification.user.id });
 		},
 		acceptGroupInvitation() {
 			this.groupInviteDone = true;
-			this.$root.api('users/groups/invitations/accept', { invitationId: this.notification.invitation.id });
-			this.$root.dialog({
+			os.api('users/groups/invitations/accept', { invitationId: this.notification.invitation.id });
+			os.dialog({
 				type: 'success',
 				iconOnly: true, autoClose: true
 			});
 		},
 		rejectGroupInvitation() {
 			this.groupInviteDone = true;
-			this.$root.api('users/groups/invitations/reject', { invitationId: this.notification.invitation.id });
+			os.api('users/groups/invitations/reject', { invitationId: this.notification.invitation.id });
 		},
 		notePage,
 		userPage

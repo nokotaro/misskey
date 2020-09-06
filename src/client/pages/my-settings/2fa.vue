@@ -20,7 +20,7 @@
 					</div>
 				</div>
 
-				<mk-switch v-model="usePasswordLessLogin" @change="updatePasswordLessLogin" v-if="$store.state.i.securityKeysList.length > 0">{{ $t('passwordLessLogin') }}</mk-switch>
+				<mk-switch v-model:value="usePasswordLessLogin" @update:value="updatePasswordLessLogin" v-if="$store.state.i.securityKeysList.length > 0">{{ $t('passwordLessLogin') }}</mk-switch>
 
 				<mk-info warn v-if="registration && registration.error">{{ $t('error') }} {{ registration.error }}</mk-info>
 				<mk-button v-if="!registration || registration.error" @click="addSecurityKey">{{ $t('_2fa.registerKey') }}</mk-button>
@@ -32,7 +32,7 @@
 					</li>
 					<li v-if="registration.stage >= 1">
 						<mk-form :disabled="registration.stage != 1 || registration.saving">
-							<mk-input v-model="keyName" :max="30">
+							<mk-input v-model:value="keyName" :max="30">
 								<span>{{ $t('securityKeyName') }}</span>
 							</mk-input>
 							<mk-button @click="registerKey" :disabled="keyName.length == 0">{{ $t('registerSecurityKey') }}</mk-button>
@@ -52,7 +52,7 @@
 				</li>
 				<li>{{ $t('_2fa.step2') }}<br><img :src="data.qr"></li>
 				<li>{{ $t('_2fa.step3') }}<br>
-					<mk-input v-model="token" type="text" pattern="^[0-9]{6}$" autocomplete="off" spellcheck="false">{{ $t('token') }}</mk-input>
+					<mk-input v-model:value="token" type="text" pattern="^[0-9]{6}$" autocomplete="off" spellcheck="false">{{ $t('token') }}</mk-input>
 					<mk-button primary @click="submit">{{ $t('done') }}</mk-button>
 				</li>
 			</ol>
@@ -65,12 +65,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
-import { hostname } from '../../config';
-import { byteify, hexify, stringify } from '../../scripts/2fa';
-import MkButton from '../../components/ui/button.vue';
-import MkInfo from '../../components/ui/info.vue';
-import MkInput from '../../components/ui/input.vue';
-import MkSwitch from '../../components/ui/switch.vue';
+import { hostname } from '@/config';
+import { byteify, hexify, stringify } from '@/scripts/2fa';
+import MkButton from '@/components/ui/button.vue';
+import MkInfo from '@/components/ui/info.vue';
+import MkInput from '@/components/ui/input.vue';
+import MkSwitch from '@/components/ui/switch.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -89,14 +90,14 @@ export default defineComponent({
 	},
 	methods: {
 		register() {
-			this.$root.dialog({
+			os.dialog({
 				title: this.$t('password'),
 				input: {
 					type: 'password'
 				}
 			}).then(({ canceled, result: password }) => {
 				if (canceled) return;
-				this.$root.api('i/2fa/register', {
+				os.api('i/2fa/register', {
 					password: password
 				}).then(data => {
 					this.data = data;
@@ -105,20 +106,20 @@ export default defineComponent({
 		},
 
 		unregister() {
-			this.$root.dialog({
+			os.dialog({
 				title: this.$t('password'),
 				input: {
 					type: 'password'
 				}
 			}).then(({ canceled, result: password }) => {
 				if (canceled) return;
-				this.$root.api('i/2fa/unregister', {
+				os.api('i/2fa/unregister', {
 					password: password
 				}).then(() => {
 					this.usePasswordLessLogin = false;
 					this.updatePasswordLessLogin();
 				}).then(() => {
-					this.$root.dialog({
+					os.dialog({
 						type: 'success',
 						iconOnly: true, autoClose: true
 					});
@@ -128,16 +129,16 @@ export default defineComponent({
 		},
 
 		submit() {
-			this.$root.api('i/2fa/done', {
+			os.api('i/2fa/done', {
 				token: this.token
 			}).then(() => {
-				this.$root.dialog({
+				os.dialog({
 					type: 'success',
 					iconOnly: true, autoClose: true
 				});
 				this.$store.state.i.twoFactorEnabled = true;
 			}).catch(e => {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					iconOnly: true, autoClose: true
 				});
@@ -146,7 +147,7 @@ export default defineComponent({
 
 		registerKey() {
 			this.registration.saving = true;
-			this.$root.api('i/2fa/key-done', {
+			os.api('i/2fa/key-done', {
 				password: this.registration.password,
 				name: this.keyName,
 				challengeId: this.registration.challengeId,
@@ -156,7 +157,7 @@ export default defineComponent({
 			}).then(key => {
 				this.registration = null;
 				key.lastUsed = new Date();
-				this.$root.dialog({
+				os.dialog({
 					type: 'success',
 					iconOnly: true, autoClose: true
 				});
@@ -164,21 +165,21 @@ export default defineComponent({
 		},
 
 		unregisterKey(key) {
-			this.$root.dialog({
+			os.dialog({
 				title: this.$t('password'),
 				input: {
 					type: 'password'
 				}
 			}).then(({ canceled, result: password }) => {
 				if (canceled) return;
-				return this.$root.api('i/2fa/remove-key', {
+				return os.api('i/2fa/remove-key', {
 					password,
 					credentialId: key.id
 				}).then(() => {
 					this.usePasswordLessLogin = false;
 					this.updatePasswordLessLogin();
 				}).then(() => {
-					this.$root.dialog({
+					os.dialog({
 						type: 'success',
 						iconOnly: true, autoClose: true
 					});
@@ -187,14 +188,14 @@ export default defineComponent({
 		},
 
 		addSecurityKey() {
-			this.$root.dialog({
+			os.dialog({
 				title: this.$t('password'),
 				input: {
 					type: 'password'
 				}
 			}).then(({ canceled, result: password }) => {
 				if (canceled) return;
-				this.$root.api('i/2fa/register-key', {
+				os.api('i/2fa/register-key', {
 					password
 				}).then(registration => {
 					this.registration = {
@@ -233,7 +234,7 @@ export default defineComponent({
 			});
 		},
 		updatePasswordLessLogin() {
-			this.$root.api('i/2fa/password-less', {
+			os.api('i/2fa/password-less', {
 				value: !!this.usePasswordLessLogin
 			});
 		}

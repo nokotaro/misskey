@@ -4,10 +4,11 @@
 
 <script lang="ts">
 import { defineComponent, defineAsyncComponent } from 'vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
-		XCode: defineAsyncComponent(() => import('./code-core.vue').then(m => m.default))
+		XCode: defineAsyncComponent(() => import('./code-core.vue'))
 	},
 	props: {
 		code: {

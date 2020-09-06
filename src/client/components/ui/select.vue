@@ -26,6 +26,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import * as os from '@/os';
 
 export default defineComponent({
 	props: {
@@ -58,7 +59,7 @@ export default defineComponent({
 				return this.value;
 			},
 			set(v) {
-				this.$emit('input', v);
+				this.$emit('update:value', v);
 			}
 		},
 		filled(): boolean {

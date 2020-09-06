@@ -38,12 +38,13 @@ import { defineComponent } from 'vue';
 import { faPlus, faPencilAlt, faChevronLeft, faBars, faCircle } from '@fortawesome/free-solid-svg-icons';
 import {  } from '@fortawesome/free-regular-svg-icons';
 import { v4 as uuid } from 'uuid';
-import { host } from './config';
-import { search } from './scripts/search';
-import DeckColumnCore from './components/deck/column-core.vue';
-import DeckColumn from './components/deck/column.vue';
-import XSidebar from './components/sidebar.vue';
-import { getScrollContainer } from './scripts/scroll';
+import { host } from '@/config';
+import { search } from '@/scripts/search';
+import DeckColumnCore from '@/components/deck/column-core.vue';
+import DeckColumn from '@/components/deck/column.vue';
+import XSidebar from '@/components/sidebar.vue';
+import { getScrollContainer } from '@/scripts/scroll';
+import * as os from './os';
 
 export default defineComponent({
 	components: {
@@ -107,7 +108,7 @@ export default defineComponent({
 		window.addEventListener('wheel', this.onWheel);
 
 		if (this.$store.getters.isSignedIn) {
-			this.connection = this.$root.stream.useSharedConnection('main');
+			this.connection = os.stream.useSharedConnection('main');
 			this.connection.on('notification', this.onNotification);
 		}
 	},
@@ -141,7 +142,7 @@ export default defineComponent({
 		search() {
 			if (this.searching) return;
 
-			this.$root.dialog({
+			os.dialog({
 				title: this.$t('search'),
 				input: true
 			}).then(async ({ canceled, result: query }) => {
@@ -161,11 +162,11 @@ export default defineComponent({
 			}
 
 			if (document.visibilityState === 'visible') {
-				this.$root.stream.send('readNotification', {
+				os.stream.send('readNotification', {
 					id: notification.id
 				});
 
-				this.$root.new(await import('./components/toast.vue').then(m => m.default), {
+				os.popup(await import('@/components/toast.vue'), {
 					notification
 				});
 			}
@@ -183,7 +184,7 @@ export default defineComponent({
 				'direct',
 			];
 
-			const { canceled, result: column } = await this.$root.dialog({
+			const { canceled, result: column } = await os.dialog({
 				title: this.$t('_deck.addColumn'),
 				type: null,
 				select: {

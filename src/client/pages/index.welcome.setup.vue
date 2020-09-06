@@ -3,12 +3,12 @@
 	<h1>Welcome to Misskey!</h1>
 	<div>
 		<p>{{ $t('intro') }}</p>
-		<mk-input v-model="username" pattern="^[a-zA-Z0-9_]{1,20}$" spellcheck="false" required>
+		<mk-input v-model:value="username" pattern="^[a-zA-Z0-9_]{1,20}$" spellcheck="false" required>
 			<span>{{ $t('username') }}</span>
 			<template #prefix>@</template>
 			<template #suffix>@{{ host }}</template>
 		</mk-input>
-		<mk-input v-model="password" type="password">
+		<mk-input v-model:value="password" type="password">
 			<span>{{ $t('password') }}</span>
 			<template #prefix><fa :icon="faLock"/></template>
 		</mk-input>
@@ -22,9 +22,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
-import MkButton from '../components/ui/button.vue';
-import MkInput from '../components/ui/input.vue';
-import { host } from '../config';
+import MkButton from '@/components/ui/button.vue';
+import MkInput from '@/components/ui/input.vue';
+import { host } from '@/config';
+import * as os from '@/os';
 
 export default defineComponent({
 	
@@ -48,7 +49,7 @@ export default defineComponent({
 			if (this.submitting) return;
 			this.submitting = true;
 
-			this.$root.api('admin/accounts/create', {
+			os.api('admin/accounts/create', {
 				username: this.username,
 				password: this.password,
 			}).then(res => {
@@ -57,7 +58,7 @@ export default defineComponent({
 			}).catch(() => {
 				this.submitting = false;
 
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: this.$t('error')
 				});

@@ -4,13 +4,13 @@
 	<mk-button @click="add()" primary style="margin: 0 auto 16px auto;"><fa :icon="faPlus"/> {{ $t('add') }}</mk-button>
 	<section class="_card announcements">
 		<div class="_content announcement" v-for="announcement in announcements">
-			<mk-input v-model="announcement.title">
+			<mk-input v-model:value="announcement.title">
 				<span>{{ $t('title') }}</span>
 			</mk-input>
-			<mk-textarea v-model="announcement.text">
+			<mk-textarea v-model:value="announcement.text">
 				<span>{{ $t('text') }}</span>
 			</mk-textarea>
-			<mk-input v-model="announcement.imageUrl">
+			<mk-input v-model:value="announcement.imageUrl">
 				<span>{{ $t('imageUrl') }}</span>
 			</mk-input>
 			<p v-if="announcement.reads">{{ $t('nUsersRead', { n: announcement.reads }) }}</p>
@@ -27,9 +27,10 @@
 import { defineComponent } from 'vue';
 import { faBroadcastTower, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faSave, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
-import MkButton from '../../components/ui/button.vue';
-import MkInput from '../../components/ui/input.vue';
-import MkTextarea from '../../components/ui/textarea.vue';
+import MkButton from '@/components/ui/button.vue';
+import MkInput from '@/components/ui/input.vue';
+import MkTextarea from '@/components/ui/textarea.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	metaInfo() {
@@ -52,7 +53,7 @@ export default defineComponent({
 	},
 
 	created() {
-		this.$root.api('admin/announcements/list').then(announcements => {
+		os.api('admin/announcements/list').then(announcements => {
 			this.announcements = announcements;
 		});
 	},
@@ -68,38 +69,38 @@ export default defineComponent({
 		},
 
 		remove(announcement) {
-			this.$root.dialog({
+			os.dialog({
 				type: 'warning',
 				text: this.$t('removeAreYouSure', { x: announcement.title }),
 				showCancelButton: true
 			}).then(({ canceled }) => {
 				if (canceled) return;
 				this.announcements = this.announcements.filter(x => x != announcement);
-				this.$root.api('admin/announcements/delete', announcement);
+				os.api('admin/announcements/delete', announcement);
 			});
 		},
 
 		save(announcement) {
 			if (announcement.id == null) {
-				this.$root.api('admin/announcements/create', announcement).then(() => {
-					this.$root.dialog({
+				os.api('admin/announcements/create', announcement).then(() => {
+					os.dialog({
 						type: 'success',
 						text: this.$t('saved')
 					});
 				}).catch(e => {
-					this.$root.dialog({
+					os.dialog({
 						type: 'error',
 						text: e
 					});
 				});
 			} else {
-				this.$root.api('admin/announcements/update', announcement).then(() => {
-					this.$root.dialog({
+				os.api('admin/announcements/update', announcement).then(() => {
+					os.dialog({
 						type: 'success',
 						text: this.$t('saved')
 					});
 				}).catch(e => {
-					this.$root.dialog({
+					os.dialog({
 						type: 'error',
 						text: e
 					});

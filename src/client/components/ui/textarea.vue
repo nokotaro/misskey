@@ -20,6 +20,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	props: {
@@ -74,7 +75,7 @@ export default defineComponent({
 		},
 		onInput(ev) {
 			this.changed = true;
-			this.$emit('input', ev.target.value);
+			this.$emit('update:value', ev.target.value);
 		}
 	}
 });

@@ -22,10 +22,10 @@
 				</label>
 			</div>
 		</div>
-		<mk-switch v-model="syncDeviceDarkMode">{{ $t('syncDeviceDarkMode') }}</mk-switch>
+		<mk-switch v-model:value="syncDeviceDarkMode">{{ $t('syncDeviceDarkMode') }}</mk-switch>
 	</div>
 	<div class="_content">
-		<mk-select v-model="lightTheme">
+		<mk-select v-model:value="lightTheme">
 			<template #label>{{ $t('themeForLightMode') }}</template>
 			<optgroup :label="$t('lightThemes')">
 				<option v-for="x in lightThemes" :value="x.id" :key="x.id">{{ x.name }}</option>
@@ -34,7 +34,7 @@
 				<option v-for="x in darkThemes" :value="x.id" :key="x.id">{{ x.name }}</option>
 			</optgroup>
 		</mk-select>
-		<mk-select v-model="darkTheme">
+		<mk-select v-model:value="darkTheme">
 			<template #label>{{ $t('themeForDarkMode') }}</template>
 			<optgroup :label="$t('darkThemes')">
 				<option v-for="x in darkThemes" :value="x.id" :key="x.id">{{ x.name }}</option>
@@ -52,7 +52,7 @@
 	<div class="_content">
 		<details>
 			<summary><fa :icon="faDownload"/> {{ $t('_theme.install') }}</summary>
-			<mk-textarea v-model="installThemeCode">
+			<mk-textarea v-model:value="installThemeCode">
 				<span>{{ $t('_theme.code') }}</span>
 			</mk-textarea>
 			<mk-button @click="() => install(installThemeCode)" :disabled="installThemeCode == null" primary inline><fa :icon="faCheck"/> {{ $t('install') }}</mk-button>
@@ -62,7 +62,7 @@
 	<div class="_content">
 		<details>
 			<summary><fa :icon="faFolderOpen"/> {{ $t('_theme.manage') }}</summary>
-			<mk-select v-model="selectedThemeId">
+			<mk-select v-model:value="selectedThemeId">
 				<option v-for="x in installedThemes" :value="x.id" :key="x.id">{{ x.name }}</option>
 			</mk-select>
 			<template v-if="selectedTheme">
@@ -81,14 +81,15 @@
 import { defineComponent } from 'vue';
 import { faPalette, faDownload, faFolderOpen, faCheck, faTrashAlt, faEye } from '@fortawesome/free-solid-svg-icons';
 import * as JSON5 from 'json5';
-import MkButton from '../../components/ui/button.vue';
-import MkSelect from '../../components/ui/select.vue';
-import MkSwitch from '../../components/ui/switch.vue';
-import MkTextarea from '../../components/ui/textarea.vue';
-import { Theme, builtinThemes, applyTheme, validateTheme } from '../../scripts/theme';
-import { selectFile } from '../../scripts/select-file';
-import { isDeviceDarkmode } from '../../scripts/is-device-darkmode';
-import copyToClipboard from '../../scripts/copy-to-clipboard';
+import MkButton from '@/components/ui/button.vue';
+import MkSelect from '@/components/ui/select.vue';
+import MkSwitch from '@/components/ui/switch.vue';
+import MkTextarea from '@/components/ui/textarea.vue';
+import { Theme, builtinThemes, applyTheme, validateTheme } from '@/scripts/theme';
+import { selectFile } from '@/scripts/select-file';
+import { isDeviceDarkmode } from '@/scripts/is-device-darkmode';
+import copyToClipboard from '@/scripts/copy-to-clipboard';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -194,7 +195,7 @@ export default defineComponent({
 
 		copyThemeCode() {
 			copyToClipboard(this.selectedThemeCode);
-			this.$root.dialog({
+			os.dialog({
 				type: 'success',
 				iconOnly: true, autoClose: true
 			});
@@ -206,21 +207,21 @@ export default defineComponent({
 			try {
 				theme = JSON5.parse(code);
 			} catch (e) {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: this.$t('_theme.invalid')
 				});
 				return false;
 			}
 			if (!validateTheme(theme)) {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: this.$t('_theme.invalid')
 				});
 				return false;
 			}
 			if (this.$store.state.device.themes.some(t => t.id === theme.id)) {
-				this.$root.dialog({
+				os.dialog({
 					type: 'info',
 					text: this.$t('_theme.alreadyInstalled')
 				});
@@ -242,7 +243,7 @@ export default defineComponent({
 			this.$store.commit('device/set', {
 				key: 'themes', value: themes
 			});
-			this.$root.dialog({
+			os.dialog({
 				type: 'success',
 				text: this.$t('_theme.installed', { name: theme.name })
 			});
@@ -254,7 +255,7 @@ export default defineComponent({
 			this.$store.commit('device/set', {
 				key: 'themes', value: themes
 			});
-			this.$root.dialog({
+			os.dialog({
 				type: 'success',
 				iconOnly: true, autoClose: true
 			});

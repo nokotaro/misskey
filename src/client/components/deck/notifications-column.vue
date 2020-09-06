@@ -12,6 +12,7 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { faBell } from '@fortawesome/free-regular-svg-icons';
 import XColumn from './column.vue';
 import XNotifications from '../notifications.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -42,7 +43,7 @@ export default defineComponent({
 			icon: faCog,
 			text: this.$t('notificationSetting'),
 			action: async () => {
-				this.$root.new(await import('../notification-setting-window.vue').then(m => m.default), {
+				os.popup(await import('../notification-setting-window.vue'), {
 					includingTypes: this.column.includingTypes,
 				}).$on('ok', async ({ includingTypes }) => {
 					this.$set(this.column, 'includingTypes', includingTypes);

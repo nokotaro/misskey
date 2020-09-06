@@ -9,10 +9,10 @@
 	<section class="_card _vMargin">
 		<div class="_title"><fa :icon="faCog"/> {{ $t('general') }}</div>
 		<div class="_content">
-			<mk-switch v-model="$store.state.i.autoWatch" @change="onChangeAutoWatch">
+			<mk-switch v-model:value="$store.state.i.autoWatch" @update:value="onChangeAutoWatch">
 				{{ $t('autoNoteWatch') }}<template #desc>{{ $t('autoNoteWatchDescription') }}</template>
 			</mk-switch>
-			<mk-switch v-model="$store.state.i.injectFeaturedNote" @change="onChangeInjectFeaturedNote">
+			<mk-switch v-model:value="$store.state.i.injectFeaturedNote" @update:value="onChangeInjectFeaturedNote">
 				{{ $t('showFeaturedNotesInTimeline') }}
 			</mk-switch>
 		</div>
@@ -55,8 +55,9 @@ import XSecurity from './security.vue';
 import X2fa from './2fa.vue';
 import XIntegration from './integration.vue';
 import XApi from './api.vue';
-import MkButton from '../../components/ui/button.vue';
-import MkSwitch from '../../components/ui/switch.vue';
+import MkButton from '@/components/ui/button.vue';
+import MkSwitch from '@/components/ui/switch.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	metaInfo() {
@@ -89,40 +90,40 @@ export default defineComponent({
 
 	methods: {
 		onChangeAutoWatch(v) {
-			this.$root.api('i/update', {
+			os.api('i/update', {
 				autoWatch: v
 			});
 		},
 
 		onChangeInjectFeaturedNote(v) {
-			this.$root.api('i/update', {
+			os.api('i/update', {
 				injectFeaturedNote: v
 			});
 		},
 
 		readAllUnreadNotes() {
-			this.$root.api('i/read-all-unread-notes');
+			os.api('i/read-all-unread-notes');
 		},
 
 		readAllMessagingMessages() {
-			this.$root.api('i/read-all-messaging-messages');
+			os.api('i/read-all-messaging-messages');
 		},
 
 		readAllNotifications() {
-			this.$root.api('notifications/mark-all-as-read');
+			os.api('notifications/mark-all-as-read');
 		},
 
 		async configure() {
-			this.$root.new(await import('../../components/notification-setting-window.vue').then(m => m.default), {
+			os.popup(await import('@/components/notification-setting-window.vue'), {
 				includingTypes: this.$store.state.i.includingNotificationTypes,
 				showGlobalToggle: false,
 			}).$on('ok', async ({ includingTypes: value }: any) => {
-				await this.$root.api('i/update', {
+				await os.api('i/update', {
 					includingNotificationTypes: value,
 				}).then(i => {
 					this.$store.state.i.includingNotificationTypes = i.includingNotificationTypes;
 				}).catch(err => {
-					this.$root.dialog({
+					os.dialog({
 						type: 'error',
 						text: err.message
 					});

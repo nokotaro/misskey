@@ -72,7 +72,7 @@
 			<div class="header">
 				<span class="label">{{ $t('charts') }}</span>
 				<div class="selects">
-					<mk-select v-model="chartSrc" style="margin: 0; flex: 1;">
+					<mk-select v-model:value="chartSrc" style="margin: 0; flex: 1;">
 						<option value="requests">{{ $t('_instanceCharts.requests') }}</option>
 						<option value="users">{{ $t('_instanceCharts.users') }}</option>
 						<option value="users-total">{{ $t('_instanceCharts.usersTotal') }}</option>
@@ -85,7 +85,7 @@
 						<option value="drive-files">{{ $t('_instanceCharts.files') }}</option>
 						<option value="drive-files-total">{{ $t('_instanceCharts.filesTotal') }}</option>
 					</mk-select>
-					<mk-select v-model="chartSpan" style="margin: 0;">
+					<mk-select v-model:value="chartSpan" style="margin: 0;">
 						<option value="hour">{{ $t('perHour') }}</option>
 						<option value="day">{{ $t('perDay') }}</option>
 					</mk-select>
@@ -97,8 +97,8 @@
 		</div>
 		<div class="operations">
 			<span class="label">{{ $t('operations') }}</span>
-			<mk-switch v-model="isSuspended" class="switch">{{ $t('stopActivityDelivery') }}</mk-switch>
-			<mk-switch :value="isBlocked" class="switch" @change="changeBlock">{{ $t('blockThisInstance') }}</mk-switch>
+			<mk-switch v-model:value="isSuspended" class="switch">{{ $t('stopActivityDelivery') }}</mk-switch>
+			<mk-switch :value="isBlocked" class="switch" @update:value="changeBlock">{{ $t('blockThisInstance') }}</mk-switch>
 			<details>
 				<summary>{{ $t('deleteAllFiles') }}</summary>
 				<mk-button @click="deleteAllFiles()" style="margin: 0.5em 0 0.5em 0;"><fa :icon="faTrashAlt"/> {{ $t('deleteAllFiles') }}</mk-button>
@@ -121,12 +121,12 @@
 import { defineComponent } from 'vue';
 import Chart from 'chart.js';
 import { faTimes, faCrosshairs, faCloudDownloadAlt, faCloudUploadAlt, faUsers, faPencilAlt, faFileImage, faDatabase, faTrafficLight, faLongArrowAltUp, faLongArrowAltDown, faMinusCircle, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import XWindow from '../../components/window.vue';
-import MkUsersDialog from '../../components/users-dialog.vue';
-import MkSelect from '../../components/ui/select.vue';
-import MkButton from '../../components/ui/button.vue';
-import MkSwitch from '../../components/ui/switch.vue';
-import MkInfo from '../../components/ui/info.vue';
+import XWindow from '@/components/window.vue';
+import MkUsersDialog from '@/components/users-dialog.vue';
+import MkSelect from '@/components/ui/select.vue';
+import MkButton from '@/components/ui/button.vue';
+import MkSwitch from '@/components/ui/switch.vue';
+import MkInfo from '@/components/ui/info.vue';
 import bytes from '../../filters/bytes';
 import number from '../../filters/number';
 
@@ -140,6 +140,7 @@ const alpha = hex => {
 	const b = parseInt(result[3], 16);
 	return `rgba(${r}, ${g}, ${b}, 0.1)`;
 };
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -207,7 +208,7 @@ export default defineComponent({
 
 	watch: {
 		isSuspended() {
-			this.$root.api('admin/federation/update-instance', {
+			os.api('admin/federation/update-instance', {
 				host: this.instance.host,
 				isSuspended: this.isSuspended
 			});
@@ -226,8 +227,8 @@ export default defineComponent({
 		this.now = new Date();
 
 		const [perHour, perDay] = await Promise.all([
-			this.$root.api('charts/instance', { host: this.instance.host, limit: chartLimit, span: 'hour' }),
-			this.$root.api('charts/instance', { host: this.instance.host, limit: chartLimit, span: 'day' }),
+			os.api('charts/instance', { host: this.instance.host, limit: chartLimit, span: 'hour' }),
+			os.api('charts/instance', { host: this.instance.host, limit: chartLimit, span: 'day' }),
 		]);
 
 		const chart = {
@@ -242,7 +243,7 @@ export default defineComponent({
 
 	methods: {
 		changeBlock(e) {
-			this.$root.api('admin/update-meta', {
+			os.api('admin/update-meta', {
 				blockedHosts: this.isBlocked ? this.meta.blockedHosts.concat([this.instance.host]) : this.meta.blockedHosts.filter(x => x !== this.instance.host)
 			});
 		},
@@ -252,10 +253,10 @@ export default defineComponent({
 		},
 
 		removeAllFollowing() {
-			this.$root.api('admin/federation/remove-all-following', {
+			os.api('admin/federation/remove-all-following', {
 				host: this.instance.host
 			}).then(() => {
-				this.$root.dialog({
+				os.dialog({
 					type: 'success',
 					iconOnly: true, autoClose: true
 				});
@@ -263,10 +264,10 @@ export default defineComponent({
 		},
 
 		deleteAllFiles() {
-			this.$root.api('admin/federation/delete-all-files', {
+			os.api('admin/federation/delete-all-files', {
 				host: this.instance.host
 			}).then(() => {
-				this.$root.dialog({
+				os.dialog({
 					type: 'success',
 					iconOnly: true, autoClose: true
 				});
@@ -438,7 +439,7 @@ export default defineComponent({
 		},
 
 		showFollowing() {
-			this.$root.new(MkUsersDialog, {
+			os.popup(MkUsersDialog, {
 				title: this.$t('instanceFollowing'),
 				pagination: {
 					endpoint: 'federation/following',
@@ -452,7 +453,7 @@ export default defineComponent({
 		},
 
 		showFollowers() {
-			this.$root.new(MkUsersDialog, {
+			os.popup(MkUsersDialog, {
 				title: this.$t('instanceFollowers'),
 				pagination: {
 					endpoint: 'federation/followers',
@@ -466,7 +467,7 @@ export default defineComponent({
 		},
 
 		showUsers() {
-			this.$root.new(MkUsersDialog, {
+			os.popup(MkUsersDialog, {
 				title: this.$t('instanceUsers'),
 				pagination: {
 					endpoint: 'federation/users',

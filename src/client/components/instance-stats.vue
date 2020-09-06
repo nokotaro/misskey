@@ -87,7 +87,7 @@
 		<div class="_title" style="position: relative;"><fa :icon="faChartBar"/> {{ $t('statistics') }}<button @click="fetchChart" class="_button" style="position: absolute; right: 0; bottom: 0; top: 0; padding: inherit;"><fa :icon="faSync"/></button></div>
 		<div class="_content" style="margin-top: -8px;">
 			<div class="selects" style="display: flex;">
-				<mk-select v-model="chartSrc" style="margin: 0; flex: 1;">
+				<mk-select v-model:value="chartSrc" style="margin: 0; flex: 1;">
 					<optgroup :label="$t('federation')">
 						<option value="federation-instances">{{ $t('_charts.federationInstancesIncDec') }}</option>
 						<option value="federation-instances-total">{{ $t('_charts.federationInstancesTotal') }}</option>
@@ -110,7 +110,7 @@
 						<option value="drive-total">{{ $t('_charts.storageUsageTotal') }}</option>
 					</optgroup>
 				</mk-select>
-				<mk-select v-model="chartSpan" style="margin: 0;">
+				<mk-select v-model:value="chartSpan" style="margin: 0;">
 					<option value="hour">{{ $t('perHour') }}</option>
 					<option value="day">{{ $t('perDay') }}</option>
 				</mk-select>
@@ -137,6 +137,7 @@ const alpha = (hex, a) => {
 	const b = parseInt(result[3], 16);
 	return `rgba(${r}, ${g}, ${b}, ${a})`;
 };
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -217,7 +218,7 @@ export default defineComponent({
 	},
 
 	async created() {
-		this.info = await this.$root.api('stats');
+		this.info = await os.api('stats');
 
 		this.now = new Date();
 
@@ -227,17 +228,17 @@ export default defineComponent({
 	methods: {
 		async fetchChart() {
 			const [perHour, perDay] = await Promise.all([Promise.all([
-				this.$root.api('charts/federation', { limit: this.chartLimit, span: 'hour' }),
-				this.$root.api('charts/users', { limit: this.chartLimit, span: 'hour' }),
-				this.$root.api('charts/active-users', { limit: this.chartLimit, span: 'hour' }),
-				this.$root.api('charts/notes', { limit: this.chartLimit, span: 'hour' }),
-				this.$root.api('charts/drive', { limit: this.chartLimit, span: 'hour' }),
+				os.api('charts/federation', { limit: this.chartLimit, span: 'hour' }),
+				os.api('charts/users', { limit: this.chartLimit, span: 'hour' }),
+				os.api('charts/active-users', { limit: this.chartLimit, span: 'hour' }),
+				os.api('charts/notes', { limit: this.chartLimit, span: 'hour' }),
+				os.api('charts/drive', { limit: this.chartLimit, span: 'hour' }),
 			]), Promise.all([
-				this.$root.api('charts/federation', { limit: this.chartLimit, span: 'day' }),
-				this.$root.api('charts/users', { limit: this.chartLimit, span: 'day' }),
-				this.$root.api('charts/active-users', { limit: this.chartLimit, span: 'day' }),
-				this.$root.api('charts/notes', { limit: this.chartLimit, span: 'day' }),
-				this.$root.api('charts/drive', { limit: this.chartLimit, span: 'day' }),
+				os.api('charts/federation', { limit: this.chartLimit, span: 'day' }),
+				os.api('charts/users', { limit: this.chartLimit, span: 'day' }),
+				os.api('charts/active-users', { limit: this.chartLimit, span: 'day' }),
+				os.api('charts/notes', { limit: this.chartLimit, span: 'day' }),
+				os.api('charts/drive', { limit: this.chartLimit, span: 'day' }),
 			])]);
 
 			const chart = {

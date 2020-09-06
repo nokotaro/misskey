@@ -3,9 +3,9 @@
 	<template #header><fa :icon="faPaperPlane"/> {{ $t('_pages.blocks.post') }}</template>
 
 	<section style="padding: 16px;">
-		<mk-textarea v-model="value.text">{{ $t('_pages.blocks._post.text') }}</mk-textarea>
-		<mk-switch v-model="value.attachCanvasImage"><span>{{ $t('_pages.blocks._post.attachCanvasImage') }}</span></mk-switch>
-		<mk-input v-if="value.attachCanvasImage" v-model="value.canvasId"><span>{{ $t('_pages.blocks._post.canvasId') }}</span></mk-input>
+		<mk-textarea v-model:value="value.text">{{ $t('_pages.blocks._post.text') }}</mk-textarea>
+		<mk-switch v-model:value="value.attachCanvasImage"><span>{{ $t('_pages.blocks._post.attachCanvasImage') }}</span></mk-switch>
+		<mk-input v-if="value.attachCanvasImage" v-model:value="value.canvasId"><span>{{ $t('_pages.blocks._post.canvasId') }}</span></mk-input>
 	</section>
 </x-container>
 </template>
@@ -14,9 +14,10 @@
 import { defineComponent } from 'vue';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import XContainer from '../page-editor.container.vue';
-import MkTextarea from '../../../components/ui/textarea.vue';
-import MkInput from '../../../components/ui/input.vue';
-import MkSwitch from '../../../components/ui/switch.vue';
+import MkTextarea from '@/components/ui/textarea.vue';
+import MkInput from '@/components/ui/input.vue';
+import MkSwitch from '@/components/ui/switch.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {

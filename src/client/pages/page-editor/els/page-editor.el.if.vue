@@ -8,7 +8,7 @@
 	</template>
 
 	<section class="romcojzs">
-		<mk-select v-model="value.var">
+		<mk-select v-model:value="value.var">
 			<template #label>{{ $t('_pages.blocks._if.variable') }}</template>
 			<option v-for="v in hpml.getVarsByType('boolean')" :value="v.name">{{ v.name }}</option>
 			<optgroup :label="$t('_pages.script.pageVariables')">
@@ -19,7 +19,7 @@
 			</optgroup>
 		</mk-select>
 
-		<x-blocks class="children" v-model="value.children" :hpml="hpml"/>
+		<x-blocks class="children" v-model:value="value.children" :hpml="hpml"/>
 	</section>
 </x-container>
 </template>
@@ -29,7 +29,8 @@ import { defineComponent } from 'vue';
 import { v4 as uuid } from 'uuid';
 import { faPlus, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import XContainer from '../page-editor.container.vue';
-import MkSelect from '../../../components/ui/select.vue';
+import MkSelect from '@/components/ui/select.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -64,7 +65,7 @@ export default defineComponent({
 
 	methods: {
 		async add() {
-			const { canceled, result: type } = await this.$root.dialog({
+			const { canceled, result: type } = await os.dialog({
 				type: null,
 				title: this.$t('_pages.chooseBlock'),
 				select: {

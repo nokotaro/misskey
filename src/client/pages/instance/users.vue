@@ -5,7 +5,7 @@
 	<section class="_card _vMargin lookup">
 		<div class="_title"><fa :icon="faSearch"/> {{ $t('lookup') }}</div>
 		<div class="_content">
-			<mk-input class="target" v-model="target" type="text" @enter="showUser()">
+			<mk-input class="target" v-model:value="target" type="text" @enter="showUser()">
 				<span>{{ $t('usernameOrUserId') }}</span>
 			</mk-input>
 			<mk-button @click="showUser()" primary><fa :icon="faSearch"/> {{ $t('lookup') }}</mk-button>
@@ -19,14 +19,14 @@
 		<div class="_title"><fa :icon="faUsers"/> {{ $t('users') }}</div>
 		<div class="_content">
 			<div class="inputs" style="display: flex;">
-				<mk-select v-model="sort" style="margin: 0; flex: 1;">
+				<mk-select v-model:value="sort" style="margin: 0; flex: 1;">
 					<template #label>{{ $t('sort') }}</template>
 					<option value="-createdAt">{{ $t('registeredDate') }} ({{ $t('ascendingOrder') }})</option>
 					<option value="+createdAt">{{ $t('registeredDate') }} ({{ $t('descendingOrder') }})</option>
 					<option value="-updatedAt">{{ $t('lastUsed') }} ({{ $t('ascendingOrder') }})</option>
 					<option value="+updatedAt">{{ $t('lastUsed') }} ({{ $t('descendingOrder') }})</option>
 				</mk-select>
-				<mk-select v-model="state" style="margin: 0; flex: 1;">
+				<mk-select v-model:value="state" style="margin: 0; flex: 1;">
 					<template #label>{{ $t('state') }}</template>
 					<option value="all">{{ $t('all') }}</option>
 					<option value="available">{{ $t('normal') }}</option>
@@ -35,7 +35,7 @@
 					<option value="silenced">{{ $t('silence') }}</option>
 					<option value="suspended">{{ $t('suspend') }}</option>
 				</mk-select>
-				<mk-select v-model="origin" style="margin: 0; flex: 1;">
+				<mk-select v-model:value="origin" style="margin: 0; flex: 1;">
 					<template #label>{{ $t('instance') }}</template>
 					<option value="combined">{{ $t('all') }}</option>
 					<option value="local">{{ $t('local') }}</option>
@@ -43,10 +43,10 @@
 				</mk-select>
 			</div>
 			<div class="inputs" style="display: flex; padding-top: 1.2em;">
-				<mk-input v-model="searchUsername" style="margin: 0; flex: 1;" type="text" spellcheck="false" @input="$refs.users.reload()">
+				<mk-input v-model:value="searchUsername" style="margin: 0; flex: 1;" type="text" spellcheck="false" @onUpdate:value="$refs.users.reload()">
 					<span>{{ $t('username') }}</span>
 				</mk-input>
-				<mk-input v-model="searchHost" style="margin: 0; flex: 1;" type="text" spellcheck="false" @input="$refs.users.reload()" :disabled="pagination.params().origin === 'local'">
+				<mk-input v-model:value="searchHost" style="margin: 0; flex: 1;" type="text" spellcheck="false" @onUpdate:value="$refs.users.reload()" :disabled="pagination.params().origin === 'local'">
 					<span>{{ $t('host') }}</span>
 				</mk-input>
 			</div>
@@ -86,12 +86,13 @@ import { defineComponent } from 'vue';
 import { faPlus, faUsers, faSearch, faBookmark, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
 import { faSnowflake, faBookmark as farBookmark } from '@fortawesome/free-regular-svg-icons';
 import parseAcct from '../../../misc/acct/parse';
-import MkButton from '../../components/ui/button.vue';
-import MkInput from '../../components/ui/input.vue';
-import MkSelect from '../../components/ui/select.vue';
-import MkPagination from '../../components/ui/pagination.vue';
-import MkUserSelect from '../../components/user-select.vue';
+import MkButton from '@/components/ui/button.vue';
+import MkInput from '@/components/ui/input.vue';
+import MkSelect from '@/components/ui/select.vue';
+import MkPagination from '@/components/ui/pagination.vue';
+import MkUserSelect from '@/components/user-select.vue';
 import { acct } from '../../filters/user';
+import * as os from '@/os';
 
 export default defineComponent({
 	metaInfo() {
@@ -147,12 +148,12 @@ export default defineComponent({
 		/** テキストエリアのユーザーを解決する */
 		fetchUser() {
 			return new Promise((res) => {
-				const usernamePromise = this.$root.api('users/show', parseAcct(this.target));
-				const idPromise = this.$root.api('users/show', { userId: this.target });
+				const usernamePromise = os.api('users/show', parseAcct(this.target));
+				const idPromise = os.api('users/show', { userId: this.target });
 				let _notFound = false;
 				const notFound = () => {
 					if (_notFound) {
-						this.$root.dialog({
+						os.dialog({
 							type: 'error',
 							text: this.$t('noSuchUser')
 						});
@@ -179,40 +180,40 @@ export default defineComponent({
 		},
 
 		searchUser() {
-			this.$root.new(MkUserSelect, {}).$once('selected', user => {
+			os.popup(MkUserSelect, {}).$once('selected', user => {
 				this.show(user);
 			});
 		},
 
 		async addUser() {
-			const { canceled: canceled1, result: username } = await this.$root.dialog({
+			const { canceled: canceled1, result: username } = await os.dialog({
 				title: this.$t('username'),
 				input: true
 			});
 			if (canceled1) return;
 
-			const { canceled: canceled2, result: password } = await this.$root.dialog({
+			const { canceled: canceled2, result: password } = await os.dialog({
 				title: this.$t('password'),
 				input: { type: 'password' }
 			});
 			if (canceled2) return;
 
-			const dialog = this.$root.dialog({
+			const dialog = os.dialog({
 				type: 'waiting',
 				iconOnly: true
 			});
 
-			this.$root.api('admin/accounts/create', {
+			os.api('admin/accounts/create', {
 				username: username,
 				password: password,
 			}).then(res => {
 				this.$refs.users.reload();
-				this.$root.dialog({
+				os.dialog({
 					type: 'success',
 					iconOnly: true, autoClose: true
 				});
 			}).catch(e => {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: e.id
 				});

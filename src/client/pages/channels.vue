@@ -2,7 +2,7 @@
 <div>
 	<portal to="header"><fa :icon="faSatelliteDish"/>{{ $t('channel') }}</portal>
 
-	<mk-tab v-model="tab" :items="[{ label: $t('_channel.featured'), value: 'featured', icon: faFireAlt }, { label: $t('_channel.following'), value: 'following', icon: faHeart }, { label: $t('_channel.owned'), value: 'owned', icon: faEdit }]"/>
+	<mk-tab v-model:value="tab" :items="[{ label: $t('_channel.featured'), value: 'featured', icon: faFireAlt }, { label: $t('_channel.following'), value: 'following', icon: faHeart }, { label: $t('_channel.owned'), value: 'owned', icon: faEdit }]"/>
 
 	<div class="grwlizim featured" v-if="tab === 'featured'">
 		<mk-pagination :pagination="featuredPagination" #default="{items}">
@@ -29,10 +29,11 @@
 import { defineComponent } from 'vue';
 import { faSatelliteDish, faPlus, faEdit, faFireAlt } from '@fortawesome/free-solid-svg-icons';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
-import MkChannelPreview from '../components/channel-preview.vue';
-import MkPagination from '../components/ui/pagination.vue';
-import MkButton from '../components/ui/button.vue';
-import MkTab from '../components/tab.vue';
+import MkChannelPreview from '@/components/channel-preview.vue';
+import MkPagination from '@/components/ui/pagination.vue';
+import MkButton from '@/components/ui/button.vue';
+import MkTab from '@/components/tab.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -43,7 +44,7 @@ export default defineComponent({
 			tab: 'featured',
 			featuredPagination: {
 				endpoint: 'channels/featured',
-				limit: 5,
+				noPaging: true,
 			},
 			followingPagination: {
 				endpoint: 'channels/followed',

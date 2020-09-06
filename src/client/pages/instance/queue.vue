@@ -20,8 +20,9 @@
 import { defineComponent } from 'vue';
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
-import MkButton from '../../components/ui/button.vue';
+import MkButton from '@/components/ui/button.vue';
 import XQueue from './queue.chart.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	metaInfo() {
@@ -37,7 +38,7 @@ export default defineComponent({
 
 	data() {
 		return {
-			connection: this.$root.stream.useSharedConnection('queueStats'),
+			connection: os.stream.useSharedConnection('queueStats'),
 			faExchangeAlt, faTrashAlt
 		}
 	},
@@ -57,7 +58,7 @@ export default defineComponent({
 
 	methods: {
 		clear() {
-			this.$root.dialog({
+			os.dialog({
 				type: 'warning',
 				title: this.$t('clearQueueConfirmTitle'),
 				text: this.$t('clearQueueConfirmText'),
@@ -65,8 +66,8 @@ export default defineComponent({
 			}).then(({ canceled }) => {
 				if (canceled) return;
 
-				this.$root.api('admin/queue/clear', {}).then(() => {
-					this.$root.dialog({
+				os.api('admin/queue/clear', {}).then(() => {
+					os.dialog({
 						type: 'success',
 						iconOnly: true, autoClose: true
 					});

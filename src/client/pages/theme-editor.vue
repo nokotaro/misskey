@@ -4,13 +4,13 @@
 
 	<section class="_card">
 		<div class="_content">
-			<mk-input v-model="name" required><span>{{ $t('name') }}</span></mk-input>
-			<mk-input v-model="author" required><span>{{ $t('author') }}</span></mk-input>
-			<mk-textarea v-model="description"><span>{{ $t('description') }}</span></mk-textarea>
+			<mk-input v-model:value="name" required><span>{{ $t('name') }}</span></mk-input>
+			<mk-input v-model:value="author" required><span>{{ $t('author') }}</span></mk-input>
+			<mk-textarea v-model:value="description"><span>{{ $t('description') }}</span></mk-textarea>
 			<div class="_inputs">
 				<div v-text="$t('_theme.base')" />
-				<mk-radio v-model="baseTheme" value="light">{{ $t('light') }}</mk-radio>
-				<mk-radio v-model="baseTheme" value="dark">{{ $t('dark') }}</mk-radio>
+				<mk-radio v-model:value="baseTheme" value="light">{{ $t('light') }}</mk-radio>
+				<mk-radio v-model:value="baseTheme" value="dark">{{ $t('dark') }}</mk-radio>
 			</div>
 		</div>
 		<div class="_content">
@@ -30,25 +30,25 @@
 							<!-- color -->
 							<div v-else-if="typeof v === 'string'" class="color">
 								<input type="color" :value="v" @input="colorChanged($event.target.value, i)"/>
-								<mk-input class="select" :value="v" @input="colorChanged($event, i)"/>
+								<mk-input class="select" :value="v" @onUpdate:value="colorChanged($event, i)"/>
 							</div>
 							<!-- ref const -->
-							<mk-input v-else-if="v.type === 'refConst'" v-model="v.key">
+							<mk-input v-else-if="v.type === 'refConst'" v-model:value="v.key">
 								<template #prefix>$</template>
 								<span>{{ $t('name') }}</span>
 							</mk-input>
 							<!-- ref props -->
-							<mk-select class="select" v-else-if="v.type === 'refProp'" v-model="v.key">
+							<mk-select class="select" v-else-if="v.type === 'refProp'" v-model:value="v.key">
 								<option v-for="key in themeProps" :value="key" :key="key">{{ $t('_theme.keys.' + key) }}</option>
 							</mk-select>
 							<!-- func -->
 							<template v-else-if="v.type === 'func'">
-								<mk-select class="select" v-model="v.name">
+								<mk-select class="select" v-model:value="v.name">
 									<template #label>{{ $t('_theme.funcKind') }}</template>
 									<option v-for="n in ['alpha', 'darken', 'lighten']" :value="n" :key="n">{{ $t('_theme.' + n) }}</option>
 								</mk-select>
-								<mk-input type="number" v-model="v.arg"><span>{{ $t('_theme.argument') }}</span></mk-input>
-								<mk-select class="select" v-model="v.value">
+								<mk-input type="number" v-model:value="v.arg"><span>{{ $t('_theme.argument') }}</span></mk-input>
+								<mk-select class="select" v-model:value="v.value">
 									<template #label>{{ $t('_theme.basedProp') }}</template>
 									<option v-for="key in themeProps" :value="key" :key="key">{{ $t('_theme.keys.' + key) }}</option>
 								</mk-select>
@@ -60,7 +60,7 @@
 			</div>
 		</div>
 		<div class="_content">
-				<mk-textarea v-model="themeToImport">
+				<mk-textarea v-model:value="themeToImport">
 					{{ $t('_theme.importInfo') }}
 				</mk-textarea>
 				<mk-button :disabled="!themeToImport.trim()" @click="importTheme">{{ $t('import') }}</mk-button>
@@ -78,16 +78,17 @@ import { defineComponent } from 'vue';
 import { faPalette, faChevronDown, faKeyboard } from '@fortawesome/free-solid-svg-icons';
 import * as JSON5 from 'json5';
 
-import MkRadio from '../components/ui/radio.vue';
-import MkButton from '../components/ui/button.vue';
-import MkInput from '../components/ui/input.vue';
-import MkTextarea from '../components/ui/textarea.vue';
-import MkSelect from '../components/ui/select.vue';
+import MkRadio from '@/components/ui/radio.vue';
+import MkButton from '@/components/ui/button.vue';
+import MkInput from '@/components/ui/input.vue';
+import MkTextarea from '@/components/ui/textarea.vue';
+import MkSelect from '@/components/ui/select.vue';
 
-import { convertToMisskeyTheme, ThemeValue, convertToViewModel, ThemeViewModel } from '../scripts/theme-editor';
-import { Theme, applyTheme, lightTheme, darkTheme, themeProps, validateTheme } from '../scripts/theme';
+import { convertToMisskeyTheme, ThemeValue, convertToViewModel, ThemeViewModel } from '@/scripts/theme-editor';
+import { Theme, applyTheme, lightTheme, darkTheme, themeProps, validateTheme } from '@/scripts/theme';
 import { toUnicode } from 'punycode';
-import { host } from '../config';
+import { host } from '@/config';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -155,7 +156,7 @@ export default defineComponent({
 		},
 
 		async confirm(): Promise<boolean> {
-			const { canceled } = await this.$root.dialog({
+			const { canceled } = await os.dialog({
 				type: 'warning',
 				text: this.$t('leaveConfirm'),
 				showCancelButton: true
@@ -172,7 +173,7 @@ export default defineComponent({
 		},
 	
 		async del(i: number) {
-			const { canceled } = await this.$root.dialog({ 
+			const { canceled } = await os.dialog({ 
 				type: 'warning',
 				showCancelButton: true,
 				text: this.$t('_theme.deleteConstantConfirm', { const: this.theme[i][0] }),
@@ -182,7 +183,7 @@ export default defineComponent({
 		},
 	
 		async addConst() {
-			const { canceled, result } = await this.$root.dialog({
+			const { canceled, result } = await os.dialog({
 				title: this.$t('_theme.inputConstantName'),
 				input: true
 			});
@@ -196,7 +197,7 @@ export default defineComponent({
 			this.$store.commit('device/set', {
 				key: 'themes', value: themes
 			});
-			this.$root.dialog({
+			os.dialog({
 				type: 'success',
 				text: this.$t('_theme.installed', { name: theme.name })
 			});
@@ -208,7 +209,7 @@ export default defineComponent({
 			try {
 				applyTheme(theme, false);
 			} catch (e) {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: e.message
 				});
@@ -229,7 +230,7 @@ export default defineComponent({
 				this.theme = convertToViewModel(theme);
 				this.themeToImport = '';
 			} catch (e) {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: e.message
 				});
@@ -255,7 +256,7 @@ export default defineComponent({
 	
 		showTypeMenu(e: MouseEvent) {
 			return new Promise<ThemeValue>((resolve) => {
-				this.$root.menu({
+				os.menu({
 					items: [{
 						text: this.$t('_theme.defaultValue'),
 						action: () => resolve(null),

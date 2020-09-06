@@ -18,11 +18,12 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import paging from '../scripts/paging';
+import paging from '@/scripts/paging';
 import XNotification from './notification.vue';
 import XList from './date-separated-list.vue';
 import XNote from './note.vue';
 import { notificationTypes } from '../../types';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -74,7 +75,7 @@ export default defineComponent({
 	},
 
 	mounted() {
-		this.connection = this.$root.stream.useSharedConnection('main');
+		this.connection = os.stream.useSharedConnection('main');
 		this.connection.on('notification', this.onNotification);
 	},
 
@@ -87,7 +88,7 @@ export default defineComponent({
 			// 
 			const isMuted = !!this.allIncludeTypes && !this.allIncludeTypes.includes(notification.type);
 			if (isMuted || document.visibilityState === 'visible') {
-				this.$root.stream.send('readNotification', {
+				os.stream.send('readNotification', {
 					id: notification.id
 				});
 			}

@@ -2,7 +2,7 @@
 <div>
 	<portal to="header"><fa :icon="faStickyNote"/>{{ $t('pages') }}</portal>
 
-	<mk-tab v-model="tab" :items="[{ label: $t('_pages.my'), value: 'my', icon: faEdit }, { label: $t('_pages.liked'), value: 'liked', icon: faHeart }]"/>
+	<mk-tab v-model:value="tab" :items="[{ label: $t('_pages.my'), value: 'my', icon: faEdit }, { label: $t('_pages.liked'), value: 'liked', icon: faHeart }]"/>
 
 	<div class="rknalgpo my" v-if="tab === 'my'">
 		<mk-button class="new" @click="create()"><fa :icon="faPlus"/></mk-button>
@@ -23,10 +23,11 @@
 import { defineComponent } from 'vue';
 import { faPlus, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { faStickyNote, faHeart } from '@fortawesome/free-regular-svg-icons';
-import MkPagePreview from '../components/page-preview.vue';
-import MkPagination from '../components/ui/pagination.vue';
-import MkButton from '../components/ui/button.vue';
-import MkTab from '../components/tab.vue';
+import MkPagePreview from '@/components/page-preview.vue';
+import MkPagination from '@/components/ui/pagination.vue';
+import MkButton from '@/components/ui/button.vue';
+import MkTab from '@/components/tab.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {

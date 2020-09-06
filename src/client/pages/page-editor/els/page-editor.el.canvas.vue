@@ -3,9 +3,9 @@
 	<template #header><fa :icon="faPaintBrush"/> {{ $t('_pages.blocks.canvas') }}</template>
 
 	<section style="padding: 0 16px 0 16px;">
-		<mk-input v-model="value.name"><template #prefix><fa :icon="faMagic"/></template><span>{{ $t('_pages.blocks._canvas.id') }}</span></mk-input>
-		<mk-input v-model="value.width" type="number"><span>{{ $t('_pages.blocks._canvas.width') }}</span><template #suffix>px</template></mk-input>
-		<mk-input v-model="value.height" type="number"><span>{{ $t('_pages.blocks._canvas.height') }}</span><template #suffix>px</template></mk-input>
+		<mk-input v-model:value="value.name"><template #prefix><fa :icon="faMagic"/></template><span>{{ $t('_pages.blocks._canvas.id') }}</span></mk-input>
+		<mk-input v-model:value="value.width" type="number"><span>{{ $t('_pages.blocks._canvas.width') }}</span><template #suffix>px</template></mk-input>
+		<mk-input v-model:value="value.height" type="number"><span>{{ $t('_pages.blocks._canvas.height') }}</span><template #suffix>px</template></mk-input>
 	</section>
 </x-container>
 </template>
@@ -14,7 +14,8 @@
 import { defineComponent } from 'vue';
 import { faPaintBrush, faMagic } from '@fortawesome/free-solid-svg-icons';
 import XContainer from '../page-editor.container.vue';
-import MkInput from '../../../components/ui/input.vue';
+import MkInput from '@/components/ui/input.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {

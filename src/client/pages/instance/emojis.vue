@@ -22,9 +22,9 @@
 			</mk-pagination>
 		</div>
 		<div class="_content" v-if="selected">
-			<mk-input v-model="name"><span>{{ $t('name') }}</span></mk-input>
-			<mk-input v-model="category" :datalist="categories"><span>{{ $t('category') }}</span></mk-input>
-			<mk-input v-model="aliases"><span>{{ $t('tags') }}</span></mk-input>
+			<mk-input v-model:value="name"><span>{{ $t('name') }}</span></mk-input>
+			<mk-input v-model:value="category" :datalist="categories"><span>{{ $t('category') }}</span></mk-input>
+			<mk-input v-model:value="aliases"><span>{{ $t('tags') }}</span></mk-input>
 			<mk-button inline primary @click="update"><fa :icon="faSave"/> {{ $t('save') }}</mk-button>
 			<mk-button inline :disabled="selected == null" @click="del()"><fa :icon="faTrashAlt"/> {{ $t('delete') }}</mk-button>
 		</div>
@@ -35,7 +35,7 @@
 	<section class="_card _vMargin remote">
 		<div class="_title"><fa :icon="faLaugh"/> {{ $t('customEmojisOfRemote') }}</div>
 		<div class="_content">
-			<mk-input v-model="host" :debounce="true"><span>{{ $t('host') }}</span></mk-input>
+			<mk-input v-model:value="host" :debounce="true"><span>{{ $t('host') }}</span></mk-input>
 			<mk-pagination :pagination="remotePagination" class="emojis" ref="remoteEmojis">
 				<template #empty><span>{{ $t('noCustomEmojis') }}</span></template>
 				<template #default="{items}">
@@ -60,11 +60,12 @@
 import { defineComponent } from 'vue';
 import { faPlus, faSave } from '@fortawesome/free-solid-svg-icons';
 import { faTrashAlt, faLaugh } from '@fortawesome/free-regular-svg-icons';
-import MkButton from '../../components/ui/button.vue';
-import MkInput from '../../components/ui/input.vue';
-import MkPagination from '../../components/ui/pagination.vue';
-import { selectFile } from '../../scripts/select-file';
+import MkButton from '@/components/ui/button.vue';
+import MkInput from '@/components/ui/input.vue';
+import MkPagination from '@/components/ui/pagination.vue';
+import { selectFile } from '@/scripts/select-file';
 import { unique } from '../../../prelude/array';
+import * as os from '@/os';
 
 export default defineComponent({
 	metaInfo() {
@@ -128,7 +129,7 @@ export default defineComponent({
 		async add(e) {
 			const files = await selectFile(this, e.currentTarget || e.target, null, true);
 
-			const dialog = this.$root.dialog({
+			const dialog = os.dialog({
 				type: 'waiting',
 				text: this.$t('doing') + '...',
 				showOkButton: false,
@@ -136,12 +137,12 @@ export default defineComponent({
 				cancelableByBgClick: false
 			});
 			
-			Promise.all(files.map(file => this.$root.api('admin/emoji/add', {
+			Promise.all(files.map(file => os.api('admin/emoji/add', {
 				fileId: file.id,
 			})))
 			.then(() => {
 				this.$refs.emojis.reload();
-				this.$root.dialog({
+				os.dialog({
 					type: 'success',
 					iconOnly: true, autoClose: true
 				});
@@ -152,14 +153,14 @@ export default defineComponent({
 		},
 
 		async update() {
-			await this.$root.api('admin/emoji/update', {
+			await os.api('admin/emoji/update', {
 				id: this.selected.id,
 				name: this.name,
 				category: this.category,
 				aliases: this.aliases.split(' '),
 			});
 
-			this.$root.dialog({
+			os.dialog({
 				type: 'success',
 				iconOnly: true, autoClose: true
 			});
@@ -168,14 +169,14 @@ export default defineComponent({
 		},
 
 		async del() {
-			const { canceled } = await this.$root.dialog({
+			const { canceled } = await os.dialog({
 				type: 'warning',
 				text: this.$t('removeAreYouSure', { x: this.selected.name }),
 				showCancelButton: true
 			});
 			if (canceled) return;
 
-			this.$root.api('admin/emoji/remove', {
+			os.api('admin/emoji/remove', {
 				id: this.selected.id
 			}).then(() => {
 				this.$refs.emojis.reload();
@@ -183,16 +184,16 @@ export default defineComponent({
 		},
 
 		im() {
-			this.$root.api('admin/emoji/copy', {
+			os.api('admin/emoji/copy', {
 				emojiId: this.selectedRemote.id,
 			}).then(() => {
 				this.$refs.emojis.reload();
-				this.$root.dialog({
+				os.dialog({
 					type: 'success',
 					iconOnly: true, autoClose: true
 				});
 			}).catch(e => {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: e
 				});

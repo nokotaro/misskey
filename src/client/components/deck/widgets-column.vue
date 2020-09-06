@@ -5,7 +5,7 @@
 	<div class="wtdtxvec">
 		<template v-if="edit">
 			<header>
-				<mk-select v-model="widgetAdderSelected" style="margin-bottom: var(--margin)">
+				<mk-select v-model:value="widgetAdderSelected" style="margin-bottom: var(--margin)">
 					<template #label>{{ $t('selectWidget') }}</template>
 					<option v-for="widget in widgets" :value="widget" :key="widget">{{ $t(`_widgets.${widget}`) }}</option>
 				</mk-select>
@@ -33,10 +33,11 @@ import { defineComponent } from 'vue';
 import * as XDraggable from 'vuedraggable';
 import { v4 as uuid } from 'uuid';
 import { faWindowMaximize, faTimes, faCog, faPlus } from '@fortawesome/free-solid-svg-icons';
-import MkSelect from '../../components/ui/select.vue';
-import MkButton from '../../components/ui/button.vue';
+import MkSelect from '@/components/ui/select.vue';
+import MkButton from '@/components/ui/button.vue';
 import XColumn from './column.vue';
 import { widgets } from '../../widgets';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {

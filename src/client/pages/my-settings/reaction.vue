@@ -2,7 +2,7 @@
 <section class="_card">
 	<div class="_title"><fa :icon="faLaugh"/> {{ $t('reaction') }}</div>
 	<div class="_content">
-		<mk-input v-model="reactions" style="font-family: 'Segoe UI Emoji', 'Noto Color Emoji', Roboto, HelveticaNeue, Arial, sans-serif">
+		<mk-input v-model:value="reactions" style="font-family: 'Segoe UI Emoji', 'Noto Color Emoji', Roboto, HelveticaNeue, Arial, sans-serif">
 			{{ $t('reaction') }}<template #desc>{{ $t('reactionSettingDescription') }} <button class="_textButton" @click="chooseEmoji">{{ $t('chooseEmoji') }}</button></template>
 		</mk-input>
 		<mk-button inline @click="setDefault"><fa :icon="faUndo"/> {{ $t('default') }}</mk-button>
@@ -18,11 +18,12 @@
 import { defineComponent } from 'vue';
 import { faLaugh, faSave, faEye } from '@fortawesome/free-regular-svg-icons';
 import { faUndo } from '@fortawesome/free-solid-svg-icons';
-import MkInput from '../../components/ui/input.vue';
-import MkButton from '../../components/ui/button.vue';
-import MkReactionPicker from '../../components/reaction-picker.vue';
+import MkInput from '@/components/ui/input.vue';
+import MkButton from '@/components/ui/button.vue';
+import MkReactionPicker from '@/components/reaction-picker.vue';
 import { emojiRegexWithCustom } from '../../../misc/emoji-regex';
 import { defaultSettings } from '../../store';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -57,7 +58,7 @@ export default defineComponent({
 		},
 
 		preview(ev) {
-			const picker = this.$root.new(MkReactionPicker, {
+			const picker = os.popup(MkReactionPicker, {
 				source: ev.currentTarget || ev.target,
 				reactions: this.splited,
 				showFocus: false,
@@ -72,7 +73,7 @@ export default defineComponent({
 		},
 
 		async chooseEmoji(ev) {
-			const vm = this.$root.new(await import('../../components/emoji-picker.vue').then(m => m.default), {
+			const vm = os.popup(await import('@/components/emoji-picker.vue'), {
 				source: ev.currentTarget || ev.target
 			}).$once('chosen', emoji => {
 				this.reactions += emoji;

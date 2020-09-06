@@ -6,21 +6,21 @@
 			<mk-avatar class="avatar" :user="$store.state.i" :disable-preview="true" :disable-link="true" @click.stop="changeAvatar"/>
 		</div>
 	
-		<mk-input v-model="name" :max="30">
+		<mk-input v-model:value="name" :max="30">
 			<span>{{ $t('_profile.name') }}</span>
 		</mk-input>
 
-		<mk-textarea v-model="description" :max="500">
+		<mk-textarea v-model:value="description" :max="500">
 			<span>{{ $t('_profile.description') }}</span>
 			<template #desc>{{ $t('_profile.youCanIncludeHashtags') }}</template>
 		</mk-textarea>
 
-		<mk-input v-model="location">
+		<mk-input v-model:value="location">
 			<span>{{ $t('location') }}</span>
 			<template #prefix><fa :icon="faMapMarkerAlt"/></template>
 		</mk-input>
 
-		<mk-input v-model="birthday" type="date">
+		<mk-input v-model:value="birthday" type="date">
 			<template #title>{{ $t('birthday') }}</template>
 			<template #prefix><fa :icon="faBirthdayCake"/></template>
 		</mk-input>
@@ -28,25 +28,25 @@
 		<details class="fields">
 			<summary>{{ $t('_profile.metadata') }}</summary>
 			<div class="row">
-				<mk-input v-model="fieldName0">{{ $t('_profile.metadataLabel') }}</mk-input>
-				<mk-input v-model="fieldValue0">{{ $t('_profile.metadataContent') }}</mk-input>
+				<mk-input v-model:value="fieldName0">{{ $t('_profile.metadataLabel') }}</mk-input>
+				<mk-input v-model:value="fieldValue0">{{ $t('_profile.metadataContent') }}</mk-input>
 			</div>
 			<div class="row">
-				<mk-input v-model="fieldName1">{{ $t('_profile.metadataLabel') }}</mk-input>
-				<mk-input v-model="fieldValue1">{{ $t('_profile.metadataContent') }}</mk-input>
+				<mk-input v-model:value="fieldName1">{{ $t('_profile.metadataLabel') }}</mk-input>
+				<mk-input v-model:value="fieldValue1">{{ $t('_profile.metadataContent') }}</mk-input>
 			</div>
 			<div class="row">
-				<mk-input v-model="fieldName2">{{ $t('_profile.metadataLabel') }}</mk-input>
-				<mk-input v-model="fieldValue2">{{ $t('_profile.metadataContent') }}</mk-input>
+				<mk-input v-model:value="fieldName2">{{ $t('_profile.metadataLabel') }}</mk-input>
+				<mk-input v-model:value="fieldValue2">{{ $t('_profile.metadataContent') }}</mk-input>
 			</div>
 			<div class="row">
-				<mk-input v-model="fieldName3">{{ $t('_profile.metadataLabel') }}</mk-input>
-				<mk-input v-model="fieldValue3">{{ $t('_profile.metadataContent') }}</mk-input>
+				<mk-input v-model:value="fieldName3">{{ $t('_profile.metadataLabel') }}</mk-input>
+				<mk-input v-model:value="fieldValue3">{{ $t('_profile.metadataContent') }}</mk-input>
 			</div>
 		</details>
 
-		<mk-switch v-model="isBot">{{ $t('flagAsBot') }}</mk-switch>
-		<mk-switch v-model="isCat">{{ $t('flagAsCat') }}</mk-switch>
+		<mk-switch v-model:value="isBot">{{ $t('flagAsBot') }}</mk-switch>
+		<mk-switch v-model:value="isCat">{{ $t('flagAsCat') }}</mk-switch>
 	</div>
 	<div class="_footer">
 		<mk-button @click="save(true)" primary><fa :icon="faSave"/> {{ $t('save') }}</mk-button>
@@ -58,12 +58,13 @@
 import { defineComponent } from 'vue';
 import { faUnlockAlt, faCogs, faUser, faMapMarkerAlt, faBirthdayCake } from '@fortawesome/free-solid-svg-icons';
 import { faSave } from '@fortawesome/free-regular-svg-icons';
-import MkButton from '../../components/ui/button.vue';
-import MkInput from '../../components/ui/input.vue';
-import MkTextarea from '../../components/ui/textarea.vue';
-import MkSwitch from '../../components/ui/switch.vue';
-import { host } from '../../config';
-import { selectFile } from '../../scripts/select-file';
+import MkButton from '@/components/ui/button.vue';
+import MkInput from '@/components/ui/input.vue';
+import MkTextarea from '@/components/ui/textarea.vue';
+import MkSwitch from '@/components/ui/switch.vue';
+import { host } from '@/config';
+import { selectFile } from '@/scripts/select-file';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -120,7 +121,7 @@ export default defineComponent({
 	methods: {
 		changeAvatar(e) {
 			selectFile(this, e.currentTarget || e.target, this.$t('avatar')).then(file => {
-				this.$root.api('i/update', {
+				os.api('i/update', {
 					avatarId: file.id,
 				});
 			});
@@ -128,7 +129,7 @@ export default defineComponent({
 
 		changeBanner(e) {
 			selectFile(this, e.currentTarget || e.target, this.$t('banner')).then(file => {
-				this.$root.api('i/update', {
+				os.api('i/update', {
 					bannerId: file.id,
 				});
 			});
@@ -144,7 +145,7 @@ export default defineComponent({
 
 			this.saving = true;
 
-			this.$root.api('i/update', {
+			os.api('i/update', {
 				name: this.name || null,
 				description: this.description || null,
 				location: this.location || null,
@@ -160,14 +161,14 @@ export default defineComponent({
 				this.$store.state.i.bannerUrl = i.bannerUrl;
 
 				if (notify) {
-					this.$root.dialog({
+					os.dialog({
 						type: 'success',
 						iconOnly: true, autoClose: true
 					});
 				}
 			}).catch(err => {
 				this.saving = false;
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: err.id
 				});

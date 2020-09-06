@@ -5,28 +5,29 @@
 import { createApp } from 'vue';
 import VueMeta from 'vue-meta';
 import VAnimateCss from 'v-animate-css';
-import { createI18n } from 'vue-i18n';
-//import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { AiScript } from '@syuilo/aiscript';
 import { deserialize } from '@syuilo/aiscript/built/serializer';
 
-import VueHotkey from './scripts/hotkey';
+import VueHotkey from '@/scripts/hotkey';
 import Root from './root.vue';
-import FontAwesomeIcon from './components/fa.vue';
-import Stream from './scripts/stream';
 import widgets from './widgets';
 import directives from './directives';
-import components from './components';
-import { version, langs, getLocale, apiUrl } from './config';
+import components from '@/components';
+import { version, apiUrl } from '@/config';
 import { store } from './store';
 import { router } from './router';
-import { applyTheme, lightTheme } from './scripts/theme';
-import { isDeviceDarkmode } from './scripts/is-device-darkmode';
-import { clientDb, get, count } from './db';
-import { setI18nContexts } from './scripts/set-i18n-contexts';
-import { createPluginEnv } from './scripts/aiscript/api';
+import { applyTheme, lightTheme } from '@/scripts/theme';
+import { isDeviceDarkmode } from '@/scripts/is-device-darkmode';
+import { createPluginEnv } from '@/scripts/aiscript/api';
+import { i18n, lang } from './i18n';
+import { stream, sound, isMobile } from '@/os';
 
 console.info(`Misskey v${version}`);
+
+if (_DEV_) {
+	console.log('Development mode');
+}
 
 if (localStorage.getItem('theme') == null) {
 	applyTheme(lightTheme);
@@ -41,29 +42,6 @@ window.addEventListener('resize', () => {
 	document.documentElement.style.setProperty('--vh', `${vh}px`);
 });
 //#endregion
-
-//#region Detect the user language
-let lang = localStorage.getItem('lang');
-
-if (lang == null) {
-	if (langs.map(x => x[0]).includes(navigator.language)) {
-		lang = navigator.language;
-	} else {
-		lang = langs.map(x => x[0]).find(x => x.split('-')[0] == navigator.language);
-
-		if (lang == null) {
-			// Fallback
-			lang = 'en-US';
-		}
-	}
-
-	localStorage.setItem('lang', lang);
-}
-//#endregion
-
-// Detect the user agent
-const ua = navigator.userAgent.toLowerCase();
-const isMobile = /mobile|iphone|ipad|android/.test(ua);
 
 // Get the <head> element
 const head = document.getElementsByTagName('head')[0];
@@ -115,7 +93,7 @@ const fetchme = (token) => new Promise((done, fail) => {
 if (store.state.i != null) {
 	// TODO: i.token が null になるケースってどんな時だっけ？
 	if (store.state.i.token == null) {
-		this.signout();
+		signout();
 	}
 
 	// 後から新鮮なデータをフェッチ
@@ -134,7 +112,7 @@ if (store.state.i != null) {
 	if (i != null && i !== 'null') {
 		try {
 			const me = await fetchme(i);
-			store.dispatch('login', me);
+			await store.dispatch('login', me);
 		} catch (e) {
 			// Render the error screen
 			// TODO: ちゃんとしたコンポーネントをレンダリングする(v10とかのトラブルシューティングゲーム付きのやつみたいな)
@@ -144,35 +122,16 @@ if (store.state.i != null) {
 }
 //#endregion
 
-const stream = new Stream(store.state.i);
+stream.init(store.state.i);
 
-const app = createApp(Root, {
-	stream
-});
+const app = createApp(Root);
 
 app.use(store);
 app.use(router);
+app.use(i18n);
 app.use(VueHotkey);
 app.use(VAnimateCss);
 app.component('fa', FontAwesomeIcon);
-
-//#region Init i18n
-const locale = await count(clientDb.i18n).then(async n => {
-	if (n === 0) return await setI18nContexts(lang, version);
-	if ((await get('_version_', clientDb.i18n) !== version)) return await setI18nContexts(lang, version, true);
-
-	return await getLocale();
-});
-
-const i18n = createI18n({
-	legacy: true,
-	sync: false,
-	locale: lang,
-	messages: { [lang]: locale }
-});
-
-app.use(i18n);
-//#endregion
 
 widgets(app);
 directives(app);
@@ -195,7 +154,7 @@ window.addEventListener('storage', e => {
 }, false);
 
 store.watch(state => state.device.darkMode, darkMode => {
-	import('./scripts/theme').then(({ builtinThemes }) => {
+	import('@/scripts/theme').then(({ builtinThemes }) => {
 		const themes = builtinThemes.concat(store.state.device.themes);
 		applyTheme(themes.find(x => x.id === (darkMode ? store.state.device.darkTheme : store.state.device.lightTheme)));
 	});
@@ -333,7 +292,7 @@ if (store.getters.isSignedIn) {
 			hasUnreadMessagingMessage: true
 		});
 
-		app.sound('chatBg');
+		sound('chatBg');
 	});
 
 	main.on('readAllAntennas', () => {
@@ -347,7 +306,7 @@ if (store.getters.isSignedIn) {
 			hasUnreadAntenna: true
 		});
 
-		app.sound('antenna');
+		sound('antenna');
 	});
 
 	main.on('readAllAnnouncements', () => {
@@ -367,7 +326,7 @@ if (store.getters.isSignedIn) {
 			hasUnreadChannel: true
 		});
 
-		app.sound('channel');
+		sound('channel');
 	});
 
 	main.on('readAllAnnouncements', () => {

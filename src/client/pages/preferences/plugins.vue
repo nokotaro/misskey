@@ -5,7 +5,7 @@
 		<details>
 			<summary><fa :icon="faDownload"/> {{ $t('install') }}</summary>
 			<mk-info warn>{{ $t('pluginInstallWarn') }}</mk-info>
-			<mk-textarea v-model="script" tall>
+			<mk-textarea v-model:value="script" tall>
 				<span>{{ $t('script') }}</span>
 			</mk-textarea>
 			<mk-button @click="install()" primary><fa :icon="faSave"/> {{ $t('install') }}</mk-button>
@@ -14,12 +14,12 @@
 	<div class="_content">
 		<details>
 			<summary><fa :icon="faFolderOpen"/> {{ $t('manage') }}</summary>
-			<mk-select v-model="selectedPluginId">
+			<mk-select v-model:value="selectedPluginId">
 				<option v-for="x in $store.state.deviceUser.plugins" :value="x.id" :key="x.id">{{ x.name }}</option>
 			</mk-select>
 			<template v-if="selectedPlugin">
 				<div style="margin: -8px 0 8px 0;">
-					<mk-switch :value="selectedPlugin.active" @change="changeActive(selectedPlugin, $event)">{{ $t('makeActive') }}</mk-switch>
+					<mk-switch :value="selectedPlugin.active" @update:value="changeActive(selectedPlugin, $event)">{{ $t('makeActive') }}</mk-switch>
 				</div>
 				<div class="_keyValue">
 					<div>{{ $t('version') }}:</div>
@@ -49,11 +49,12 @@ import { AiScript, parse } from '@syuilo/aiscript';
 import { serialize } from '@syuilo/aiscript/built/serializer';
 import { v4 as uuid } from 'uuid';
 import { faPlug, faSave, faTrashAlt, faFolderOpen, faDownload, faCog } from '@fortawesome/free-solid-svg-icons';
-import MkButton from '../../components/ui/button.vue';
-import MkTextarea from '../../components/ui/textarea.vue';
-import MkSelect from '../../components/ui/select.vue';
-import MkInfo from '../../components/ui/info.vue';
-import MkSwitch from '../../components/ui/switch.vue';
+import MkButton from '@/components/ui/button.vue';
+import MkTextarea from '@/components/ui/textarea.vue';
+import MkSelect from '@/components/ui/select.vue';
+import MkInfo from '@/components/ui/info.vue';
+import MkSwitch from '@/components/ui/switch.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -85,7 +86,7 @@ export default defineComponent({
 			try {
 				ast = parse(this.script);
 			} catch (e) {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: 'Syntax error :('
 				});
@@ -93,7 +94,7 @@ export default defineComponent({
 			}
 			const meta = AiScript.collectMetadata(ast);
 			if (meta == null) {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: 'No metadata found :('
 				});
@@ -101,7 +102,7 @@ export default defineComponent({
 			}
 			const data = meta.get(null);
 			if (data == null) {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: 'No metadata found :('
 				});
@@ -109,7 +110,7 @@ export default defineComponent({
 			}
 			const { name, version, author, description, permissions, config } = data;
 			if (name == null || version == null || author == null) {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: 'Required property not found :('
 				});
@@ -117,13 +118,13 @@ export default defineComponent({
 			}
 
 			const token = permissions == null || permissions.length === 0 ? null : await new Promise(async (res, rej) => {
-				this.$root.new(await import('../../components/token-generate-window.vue').then(m => m.default), {
+				os.popup(await import('@/components/token-generate-window.vue'), {
 					title: this.$t('tokenRequested'),
 					information: this.$t('pluginTokenRequestedDescription'),
 					initialName: name,
 					initialPermissions: permissions
 				}).$on('ok', async ({ name, permissions }) => {
-					const { token } = await this.$root.api('miauth/gen-token', {
+					const { token } = await os.api('miauth/gen-token', {
 						session: null,
 						name: name,
 						permission: permissions,
@@ -142,7 +143,7 @@ export default defineComponent({
 				ast: serialize(ast)
 			});
 
-			this.$root.dialog({
+			os.dialog({
 				type: 'success',
 				iconOnly: true, autoClose: true
 			});
@@ -154,7 +155,7 @@ export default defineComponent({
 
 		uninstall() {
 			this.$store.commit('deviceUser/uninstallPlugin', this.selectedPluginId);
-			this.$root.dialog({
+			os.dialog({
 				type: 'success',
 				iconOnly: true, autoClose: true
 			});

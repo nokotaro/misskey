@@ -12,8 +12,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { faStickyNote } from '@fortawesome/free-solid-svg-icons';
-import MkContainer from '../components/ui/container.vue';
+import MkContainer from '@/components/ui/container.vue';
 import define from './define';
+import * as os from '@/os';
 
 const widget = define({
 	name: 'memo',
@@ -43,7 +44,7 @@ export default defineComponent({
 	created() {
 		this.text = this.$store.state.settings.memo;
 
-		this.$watch('$store.state.settings.memo', text => {
+		this.$watch(() => this.$store.state.settings.memo, text => {
 			this.text = text;
 		});
 	},

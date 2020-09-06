@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import MkIndex from './pages/index.vue';
 import { defineAsyncComponent } from 'vue';
 
-const page = (path: string) => defineAsyncComponent(() => import(`./pages/${path}.vue`).then(m => m.default));
+const page = (path: string) => defineAsyncComponent(() => import(`./pages/${path}.vue`));
 
 let indexScrollPos = 0;
 
@@ -69,6 +69,7 @@ export const router = createRouter({
 		{ path: '/miauth/:session', component: page('miauth') },
 		{ path: '/authorize-follow', component: page('follow') },
 		{ path: '/share', component: page('share') },
+		{ path: '/test', component: page('test') },
 		{ path: '/:catchAll(.*)', component: page('not-found') }
 	],
 	// なんかHacky

@@ -1,39 +1,35 @@
 <template>
-<div class="ulveipgl">
-	<transition :name="$store.state.device.animation ? 'form-fade' : ''" appear @after-leave="$emit('closed');">
-		<div class="bg _modalBg" ref="bg" v-if="show" @click="close()"></div>
-	</transition>
-	<div class="main" ref="main" @click.self="close()" @keydown="onKeydown">
-		<transition :name="$store.state.device.animation ? 'form' : ''" appear
-			@after-leave="destroyDom"
-		>
-			<x-post-form ref="form"
-				v-if="show"
-				:reply="reply"
-				:renote="renote"
-				:mention="mention"
-				:specified="specified"
-				:initial-text="initialText"
-				:initial-note="initialNote"
-				:instant="instant"
-				@posted="onPosted"
-				@cancel="onCanceled"
-				style="border-radius: var(--radius);"/>
-		</transition>
-	</div>
-</div>
+<x-modal @closed="$emit('closed')" @click="onBgClick" :showing="showing">
+	<x-post-form ref="form" class="ulveipgl"
+		:reply="reply"
+		:renote="renote"
+		:mention="mention"
+		:specified="specified"
+		:initial-text="initialText"
+		:initial-note="initialNote"
+		:instant="instant"
+		@posted="onPosted"
+		@cancel="onCanceled"
+	/>
+</x-modal>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import XModal from './modal.vue';
 import XPostForm from './post-form.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
-		XPostForm
+		XModal,
+		XPostForm,
 	},
 
 	props: {
+		showing: {
+			required: true
+		},
 		reply: {
 			type: Object,
 			required: false
@@ -65,38 +61,24 @@ export default defineComponent({
 		}
 	},
 
-	data() {
-		return {
-			show: true
-		};
-	},
-
 	methods: {
 		focus() {
 			this.$refs.form.focus();
 		},
 
-		close() {
-			this.show = false;
-			(this.$refs.bg as any).style.pointerEvents = 'none';
-			(this.$refs.main as any).style.pointerEvents = 'none';
-		},
-
 		onPosted() {
-			this.$emit('posted');
-			this.close();
+			this.$emit('done', 'posted');
 		},
 
 		onCanceled() {
-			this.$emit('cancel');
-			this.close();
+			this.$emit('done', 'canceled');
 		},
 
 		onKeydown(e) {
 			if (e.which === 27) { // Esc
 				e.preventDefault();
 				e.stopPropagation();
-				this.close();
+				this.$emit('done', 'canceled');
 			}
 		},
 	}
@@ -104,48 +86,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.form-enter-active, .form-leave-active {
-	transition: opacity 0.3s, transform 0.3s !important;
-}
-.form-enter, .form-leave-to {
-	opacity: 0;
-	transform: scale(0.9);
-}
-
-.form-fade-enter-active, .form-fade-leave-active {
-	transition: opacity 0.3s !important;
-}
-.form-fade-enter, .form-fade-leave-to {
-	opacity: 0;
-}
-
 .ulveipgl {
-	> .bg {
-		z-index: 10000;
-	}
-
-	> .main {
-		display: block;
-		position: fixed;
-		z-index: 10000;
-		top: 32px;
-		left: 0;
-		right: 0;
-		height: calc(100% - 64px);
-		width: 500px;
-		max-width: calc(100% - 16px);
-		overflow: auto;
-		margin: 0 auto 0 auto;
-
-		@media (max-width: 550px) {
-			top: 16px;
-			height: calc(100% - 32px);
-		}
-
-		@media (max-width: 520px) {
-			top: 8px;
-			height: calc(100% - 16px);
-		}
-	}
+	width: 100%;
+	max-width: 500px;
+	border-radius: var(--radius);
 }
 </style>

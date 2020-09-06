@@ -3,9 +3,9 @@
 	<template #header><fa :icon="faBolt"/> {{ $t('_pages.blocks.counter') }}</template>
 
 	<section style="padding: 0 16px 0 16px;">
-		<mk-input v-model="value.name"><template #prefix><fa :icon="faMagic"/></template><span>{{ $t('_pages.blocks._counter.name') }}</span></mk-input>
-		<mk-input v-model="value.text"><span>{{ $t('_pages.blocks._counter.text') }}</span></mk-input>
-		<mk-input v-model="value.inc" type="number"><span>{{ $t('_pages.blocks._counter.inc') }}</span></mk-input>
+		<mk-input v-model:value="value.name"><template #prefix><fa :icon="faMagic"/></template><span>{{ $t('_pages.blocks._counter.name') }}</span></mk-input>
+		<mk-input v-model:value="value.text"><span>{{ $t('_pages.blocks._counter.text') }}</span></mk-input>
+		<mk-input v-model:value="value.inc" type="number"><span>{{ $t('_pages.blocks._counter.inc') }}</span></mk-input>
 	</section>
 </x-container>
 </template>
@@ -14,7 +14,8 @@
 import { defineComponent } from 'vue';
 import { faBolt, faMagic } from '@fortawesome/free-solid-svg-icons';
 import XContainer from '../page-editor.container.vue';
-import MkInput from '../../../components/ui/input.vue';
+import MkInput from '@/components/ui/input.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {

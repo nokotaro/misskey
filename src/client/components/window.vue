@@ -1,5 +1,5 @@
 <template>
-<x-modal ref="modal" @closed="() => { $emit('closed'); destroyDom(); }" :can-close="canClose">
+<x-modal ref="modal" @closed="$emit('closed')" :can-close="canClose">
 	<div class="ebkgoccj" :class="{ noPadding }" @keydown="onKeydown" :style="{ width: `${width}px`, height: `${height}px` }">
 		<div class="header">
 			<button class="_button" v-if="withOkButton" @click="close()"><fa :icon="faTimes"/></button>
@@ -21,6 +21,7 @@
 import { defineComponent } from 'vue';
 import { faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
 import XModal from './modal.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {

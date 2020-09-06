@@ -4,9 +4,9 @@
 
 	<section class="_card instances">
 		<div class="_content">
-			<mk-input v-model="host" :debounce="true"><span>{{ $t('host') }}</span></mk-input>
+			<mk-input v-model:value="host" :debounce="true"><span>{{ $t('host') }}</span></mk-input>
 			<div class="inputs" style="display: flex;">
-				<mk-select v-model="state" style="margin: 0; flex: 1;">
+				<mk-select v-model:value="state" style="margin: 0; flex: 1;">
 					<template #label>{{ $t('state') }}</template>
 					<option value="all">{{ $t('all') }}</option>
 					<option value="federating">{{ $t('federating') }}</option>
@@ -16,7 +16,7 @@
 					<option value="blocked">{{ $t('blocked') }}</option>
 					<option value="notResponding">{{ $t('notResponding') }}</option>
 				</mk-select>
-				<mk-select v-model="sort" style="margin: 0; flex: 1;">
+				<mk-select v-model:value="sort" style="margin: 0; flex: 1;">
 					<template #label>{{ $t('sort') }}</template>
 					<option value="+pubSub">{{ $t('pubSub') }} ({{ $t('descendingOrder') }})</option>
 					<option value="-pubSub">{{ $t('pubSub') }} ({{ $t('ascendingOrder') }})</option>
@@ -61,11 +61,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { faGlobe, faCircle, faExchangeAlt, faCaretDown, faCaretUp, faTrafficLight } from '@fortawesome/free-solid-svg-icons';
-import MkButton from '../../components/ui/button.vue';
-import MkInput from '../../components/ui/input.vue';
-import MkSelect from '../../components/ui/select.vue';
-import MkPagination from '../../components/ui/pagination.vue';
+import MkButton from '@/components/ui/button.vue';
+import MkInput from '@/components/ui/input.vue';
+import MkSelect from '@/components/ui/select.vue';
+import MkPagination from '@/components/ui/pagination.vue';
 import MkInstanceInfo from './instance.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	metaInfo() {
@@ -124,7 +125,7 @@ export default defineComponent({
 		},
 
 		info(instance) {
-			this.$root.new(MkInstanceInfo, {
+			os.popup(MkInstanceInfo, {
 				instance: instance
 			});
 		}

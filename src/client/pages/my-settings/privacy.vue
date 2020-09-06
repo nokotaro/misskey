@@ -2,19 +2,19 @@
 <section class="_card">
 	<div class="_title"><fa :icon="faLock"/> {{ $t('privacy') }}</div>
 	<div class="_content">
-		<mk-switch v-model="isLocked" @change="save()">{{ $t('makeFollowManuallyApprove') }}</mk-switch>
-		<mk-switch v-model="autoAcceptFollowed" v-if="isLocked" @change="save()">{{ $t('autoAcceptFollowed') }}</mk-switch>
+		<mk-switch v-model:value="isLocked" @update:value="save()">{{ $t('makeFollowManuallyApprove') }}</mk-switch>
+		<mk-switch v-model:value="autoAcceptFollowed" v-if="isLocked" @update:value="save()">{{ $t('autoAcceptFollowed') }}</mk-switch>
 	</div>
 	<div class="_content">
-		<mk-switch v-model="rememberNoteVisibility" @change="save()">{{ $t('rememberNoteVisibility') }}</mk-switch>
-		<mk-select v-model="defaultNoteVisibility" style="margin-bottom: 8px;" v-if="!rememberNoteVisibility">
+		<mk-switch v-model:value="rememberNoteVisibility" @update:value="save()">{{ $t('rememberNoteVisibility') }}</mk-switch>
+		<mk-select v-model:value="defaultNoteVisibility" style="margin-bottom: 8px;" v-if="!rememberNoteVisibility">
 			<template #label>{{ $t('defaultNoteVisibility') }}</template>
 			<option value="public">{{ $t('_visibility.public') }}</option>
 			<option value="home">{{ $t('_visibility.home') }}</option>
 			<option value="followers">{{ $t('_visibility.followers') }}</option>
 			<option value="specified">{{ $t('_visibility.specified') }}</option>
 		</mk-select>
-		<mk-switch v-model="defaultNoteLocalOnly" v-if="!rememberNoteVisibility">{{ $t('_visibility.localOnly') }}</mk-switch>
+		<mk-switch v-model:value="defaultNoteLocalOnly" v-if="!rememberNoteVisibility">{{ $t('_visibility.localOnly') }}</mk-switch>
 	</div>
 </section>
 </template>
@@ -22,8 +22,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
-import MkSelect from '../../components/ui/select.vue';
-import MkSwitch from '../../components/ui/switch.vue';
+import MkSelect from '@/components/ui/select.vue';
+import MkSwitch from '@/components/ui/switch.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -63,7 +64,7 @@ export default defineComponent({
 
 	methods: {
 		save() {
-			this.$root.api('i/update', {
+			os.api('i/update', {
 				isLocked: !!this.isLocked,
 				autoAcceptFollowed: !!this.autoAcceptFollowed,
 			});

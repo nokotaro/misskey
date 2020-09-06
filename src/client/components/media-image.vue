@@ -24,9 +24,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { faExclamationTriangle, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { getStaticImageUrl } from '../scripts/get-static-image-url';
+import { getStaticImageUrl } from '@/scripts/get-static-image-url';
 import ImageViewer from './image-viewer.vue';
 import ImgWithBlurhash from './img-with-blurhash.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -71,7 +72,7 @@ export default defineComponent({
 			if (this.$store.state.device.imageNewTab) {
 				window.open(this.image.url, '_blank');
 			} else {
-				const viewer = this.$root.new(ImageViewer, {
+				const viewer = os.popup(ImageViewer, {
 					image: this.image
 				});
 				this.$once('hook:beforeDestroy', () => {

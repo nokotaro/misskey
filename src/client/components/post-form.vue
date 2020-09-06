@@ -62,21 +62,22 @@ import MkVisibilityChooser from './visibility-chooser.vue';
 import MkUserSelect from './user-select.vue';
 import XNotePreview from './note-preview.vue';
 import { parse } from '../../mfm/parse';
-import { host, url } from '../config';
+import { host, url } from '@/config';
 import { erase, unique } from '../../prelude/array';
 import extractMentions from '../../misc/extract-mentions';
 import getAcct from '../../misc/acct/render';
 import { formatTimeString } from '../../misc/format-time-string';
-import { selectDriveFile } from '../scripts/select-drive-file';
+import { selectDriveFile } from '@/scripts/select-drive-file';
 import { noteVisibilities } from '../../types';
 import { utils } from '@syuilo/aiscript';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
 		XNotePreview,
-		XUploader: defineAsyncComponent(() => import('./uploader.vue').then(m => m.default)),
-		XPostFormAttaches: defineAsyncComponent(() => import('./post-form-attaches.vue').then(m => m.default)),
-		XPollEditor: defineAsyncComponent(() => import('./poll-editor.vue').then(m => m.default))
+		XUploader: defineAsyncComponent(() => import('./uploader.vue')),
+		XPostFormAttaches: defineAsyncComponent(() => import('./post-form-attaches.vue')),
+		XPollEditor: defineAsyncComponent(() => import('./poll-editor.vue'))
 	},
 
 	props: {
@@ -246,14 +247,14 @@ export default defineComponent({
 		if (this.reply && ['home', 'followers', 'specified'].includes(this.reply.visibility)) {
 			this.visibility = this.reply.visibility;
 			if (this.reply.visibility === 'specified') {
-				this.$root.api('users/show', {
+				os.api('users/show', {
 					userIds: this.reply.visibleUserIds.filter(uid => uid !== this.$store.state.i.id && uid !== this.reply.userId)
 				}).then(users => {
 					this.visibleUsers.push(...users);
 				});
 
 				if (this.reply.userId !== this.$store.state.i.id) {
-					this.$root.api('users/show', { userId: this.reply.userId }).then(user => {
+					os.api('users/show', { userId: this.reply.userId }).then(user => {
 						this.visibleUsers.push(user);
 					});
 				}
@@ -346,7 +347,7 @@ export default defineComponent({
 		},
 
 		chooseFileFrom(ev) {
-			this.$root.menu({
+			os.menu({
 				items: [{
 					type: 'label',
 					text: this.$t('attachFile'),
@@ -416,7 +417,7 @@ export default defineComponent({
 				// TODO: information dialog
 				return;
 			}
-			const w = this.$root.new(MkVisibilityChooser, {
+			const w = os.popup(MkVisibilityChooser, {
 				source: this.$refs.visibilityButton,
 				currentVisibility: this.visibility,
 				currentLocalOnly: this.localOnly
@@ -432,7 +433,7 @@ export default defineComponent({
 		},
 
 		addVisibleUser() {
-			const vm = this.$root.new(MkUserSelect, {});
+			const vm = os.popup(MkUserSelect, {});
 			vm.$once('selected', user => {
 				this.visibleUsers.push(user);
 			});
@@ -469,7 +470,7 @@ export default defineComponent({
 			if (!this.renote && !this.quoteId && paste.startsWith(url + '/notes/')) {
 				e.preventDefault();
 
-				this.$root.dialog({
+				os.dialog({
 					type: 'info',
 					text: this.$t('quoteQuestion'),
 					showCancelButton: true
@@ -564,7 +565,7 @@ export default defineComponent({
 				localOnly: this.localOnly,
 				visibility: this.visibility,
 				visibleUserIds: this.visibility == 'specified' ? this.visibleUsers.map(u => u.id) : undefined,
-				viaMobile: this.$root.isMobile
+				viaMobile: os.isMobile
 			};
 
 			// plugin
@@ -575,7 +576,7 @@ export default defineComponent({
 			}
 
 			this.posting = true;
-			this.$root.api('notes/create', data).then(() => {
+			os.api('notes/create', data).then(() => {
 				this.clear();
 				this.deleteDraft();
 				this.$emit('posted');
@@ -596,14 +597,14 @@ export default defineComponent({
 		},
 
 		insertMention() {
-			const vm = this.$root.new(MkUserSelect, {});
+			const vm = os.popup(MkUserSelect, {});
 			vm.$once('selected', user => {
 				insertTextAtCursor(this.$refs.text, getAcct(user) + ' ');
 			});
 		},
 
 		async insertEmoji(ev) {
-			const vm = this.$root.new(await import('./emoji-picker.vue').then(m => m.default), {
+			const vm = os.popup(await import('./emoji-picker.vue'), {
 				source: ev.currentTarget || ev.target
 			}).$once('chosen', emoji => {
 				insertTextAtCursor(this.$refs.text, emoji);
@@ -612,7 +613,7 @@ export default defineComponent({
 		},
 
 		showActions(ev) {
-			this.$root.menu({
+			os.menu({
 				items: this.$store.state.postFormActions.map(action => ({
 					text: action.title,
 					action: () => {
@@ -632,6 +633,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .gafaadew {
+	position: relative;
 	background: var(--panel);
 
 	> header {

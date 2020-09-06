@@ -3,7 +3,7 @@
 	<template #header>{{ $t('notificationSetting') }}</template>
 	<div class="vv94n3oa">
 		<div v-if="showGlobalToggle">
-			<mk-switch v-model="useGlobalSetting">
+			<mk-switch v-model:value="useGlobalSetting">
 				{{ $t('useGlobalSetting') }}
 				<template #desc>{{ $t('useGlobalSettingDesc') }}</template>
 			</mk-switch>
@@ -12,21 +12,22 @@
 			<mk-info>{{ $t('notificationSettingDesc') }}</mk-info>
 			<mk-button inline @click="disableAll">{{ $t('disableAll') }}</mk-button>
 			<mk-button inline @click="enableAll">{{ $t('enableAll') }}</mk-button>
-			<mk-switch v-for="type in notificationTypes" :key="type" v-model="typesMap[type]">{{ $t(`_notification._types.${type}`) }}</mk-switch>
+			<mk-switch v-for="type in notificationTypes" :key="type" v-model:value="typesMap[type]">{{ $t(`_notification._types.${type}`) }}</mk-switch>
 		</div>
 	</div>
 </x-window>
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import XWindow from './window.vue';
 import MkSwitch from './ui/switch.vue';
 import MkInfo from './ui/info.vue';
 import MkButton from './ui/button.vue';
 import { notificationTypes } from '../../types';
+import * as os from '@/os';
 
-export default Vue.extend({
+export default defineComponent({
 	components: {
 		XWindow,
 		MkSwitch,

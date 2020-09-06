@@ -1,12 +1,13 @@
 <template>
 <div class="hkcxmtwj">
-	<mk-switch v-model="v">{{ hpml.interpolate(value.text) }}</mk-switch>
+	<mk-switch v-model:value="v">{{ hpml.interpolate(value.text) }}</mk-switch>
 </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import MkSwitch from '../ui/switch.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {

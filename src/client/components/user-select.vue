@@ -3,8 +3,8 @@
 	<template #header>{{ $t('selectUser') }}</template>
 	<div class="tbhwbxda">
 		<div class="inputs">
-			<mk-input v-model="username" class="input" @input="search" ref="username"><span>{{ $t('username') }}</span><template #prefix>@</template></mk-input>
-			<mk-input v-model="host" class="input" @input="search"><span>{{ $t('host') }}</span><template #prefix>@</template></mk-input>
+			<mk-input v-model:value="username" class="input" @onUpdate:value="search" ref="username"><span>{{ $t('username') }}</span><template #prefix>@</template></mk-input>
+			<mk-input v-model:value="host" class="input" @onUpdate:value="search"><span>{{ $t('host') }}</span><template #prefix>@</template></mk-input>
 		</div>
 		<div class="users">
 			<div class="user" v-for="user in users" :key="user.id" :class="{ selected: selected && selected.id === user.id }" @click="selected = user" @dblclick="ok()">
@@ -24,6 +24,7 @@ import { defineComponent } from 'vue';
 import { faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
 import MkInput from './ui/input.vue';
 import XWindow from './window.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -58,7 +59,7 @@ export default defineComponent({
 				this.users = [];
 				return;
 			}
-			this.$root.api('users/search-by-username-and-host', {
+			os.api('users/search-by-username-and-host', {
 				username: this.username,
 				host: this.host,
 				limit: 10,

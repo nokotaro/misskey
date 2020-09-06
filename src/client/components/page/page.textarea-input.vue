@@ -1,12 +1,13 @@
 <template>
 <div>
-	<mk-textarea v-model="v">{{ hpml.interpolate(value.text) }}</mk-textarea>
+	<mk-textarea v-model:value="v">{{ hpml.interpolate(value.text) }}</mk-textarea>
 </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import MkTextarea from '../ui/textarea.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {

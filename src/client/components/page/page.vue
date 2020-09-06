@@ -1,6 +1,6 @@
 <template>
 <div class="iroscrza" :class="{ center: page.alignCenter, serif: page.font === 'serif' }" v-if="hpml">
-	<x-block v-for="child in page.content" :value="child" @input="v => updateBlock(v)" :page="page" :hpml="hpml" :key="child.id" :h="2"/>
+	<x-block v-for="child in page.content" :value="child" @onUpdate:value="v => updateBlock(v)" :page="page" :hpml="hpml" :key="child.id" :h="2"/>
 </div>
 </template>
 
@@ -10,8 +10,9 @@ import { parse } from '@syuilo/aiscript';
 import { faHeart as faHeartS } from '@fortawesome/free-solid-svg-icons';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import XBlock from './page.block.vue';
-import { Hpml } from '../../scripts/hpml/evaluator';
-import { url } from '../../config';
+import { Hpml } from '@/scripts/hpml/evaluator';
+import { url } from '@/config';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -49,7 +50,7 @@ export default defineComponent({
 					ast = parse(this.page.script);
 				} catch (e) {
 					console.error(e);
-					/*this.$root.dialog({
+					/*os.dialog({
 						type: 'error',
 						text: 'Syntax error :('
 					});*/
@@ -59,7 +60,7 @@ export default defineComponent({
 					this.hpml.eval();
 				}).catch(e => {
 					console.error(e);
-					/*this.$root.dialog({
+					/*os.dialog({
 						type: 'error',
 						text: e
 					});*/

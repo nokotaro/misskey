@@ -1,12 +1,13 @@
 <template>
 <div>
-	<mk-input class="kudkigyw" v-model="v" type="number">{{ hpml.interpolate(value.text) }}</mk-input>
+	<mk-input class="kudkigyw" v-model:value="v" type="number">{{ hpml.interpolate(value.text) }}</mk-input>
 </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import MkInput from '../ui/input.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {

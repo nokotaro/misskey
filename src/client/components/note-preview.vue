@@ -6,7 +6,7 @@
 		<div class="body">
 			<p v-if="note.cw != null" class="cw">
 				<span class="text" v-if="note.cw != ''">{{ note.cw }}</span>
-				<x-cw-button v-model="showContent" :note="note"/>
+				<x-cw-button v-model:value="showContent" :note="note"/>
 			</p>
 			<div class="content" v-show="note.cw == null || showContent">
 				<x-sub-note-content class="text" :note="note"/>
@@ -21,6 +21,7 @@ import { defineComponent } from 'vue';
 import XNoteHeader from './note-header.vue';
 import XSubNoteContent from './sub-note-content.vue';
 import XCwButton from './cw-button.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {

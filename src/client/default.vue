@@ -90,19 +90,20 @@ import { defineComponent, defineAsyncComponent } from 'vue';
 import { faGripVertical, faChevronLeft, faHashtag, faBroadcastTower, faFireAlt, faEllipsisH, faPencilAlt, faBars, faTimes, faSearch, faUserCog, faCog, faUser, faHome, faStar, faCircle, faAt, faListUl, faPlus, faUserClock, faUsers, faTachometerAlt, faExchangeAlt, faGlobe, faChartBar, faCloud, faServer, faInfoCircle, faQuestionCircle, faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
 import { faBell, faEnvelope, faLaugh, faComments } from '@fortawesome/free-regular-svg-icons';
 import { v4 as uuid } from 'uuid';
-import { host } from './config';
-import { search } from './scripts/search';
-import { StickySidebar } from './scripts/sticky-sidebar';
+import { host } from '@/config';
+import { search } from '@/scripts/search';
+import { StickySidebar } from '@/scripts/sticky-sidebar';
 import { widgets } from './widgets';
-import XSidebar from './components/sidebar.vue';
+import XSidebar from '@/components/sidebar.vue';
+import * as os from './os';
 
 const DESKTOP_THRESHOLD = 1100;
 
 export default defineComponent({
 	components: {
 		XSidebar,
-		XClock: defineAsyncComponent(() => import('./components/header-clock.vue').then(m => m.default)),
-		MkButton: defineAsyncComponent(() => import('./components/ui/button.vue').then(m => m.default)),
+		XClock: defineAsyncComponent(() => import('@/components/header-clock.vue')),
+		MkButton: defineAsyncComponent(() => import('@/components/ui/button.vue')),
 		XDraggable: defineAsyncComponent(() => import('vuedraggable')),
 	},
 
@@ -201,7 +202,7 @@ export default defineComponent({
 		document.documentElement.style.overflowY = 'scroll';
 
 		if (this.$store.getters.isSignedIn) {
-			this.connection = this.$root.stream.useSharedConnection('main');
+			this.connection = os.stream.useSharedConnection('main');
 			this.connection.on('notification', this.onNotification);
 
 			if (this.$store.state.deviceUser.widgets.length === 0) {
@@ -295,13 +296,13 @@ export default defineComponent({
 		},
 
 		post() {
-			this.$root.post();
+			os.post();
 		},
 
 		search() {
 			if (this.searching) return;
 
-			this.$root.dialog({
+			os.dialog({
 				title: this.$t('search'),
 				input: true
 			}).then(async ({ canceled, result: query }) => {
@@ -330,11 +331,11 @@ export default defineComponent({
 				return;
 			}
 			if (document.visibilityState === 'visible') {
-				this.$root.stream.send('readNotification', {
+				os.stream.send('readNotification', {
 					id: notification.id
 				});
 
-				this.$root.new(await import('./components/toast.vue').then(m => m.default), {
+				os.popup(await import('@/components/toast.vue'), {
 					notification
 				});
 			}
@@ -351,7 +352,7 @@ export default defineComponent({
 		},
 
 		async addWidget(place) {
-			const { canceled, result: widget } = await this.$root.dialog({
+			const { canceled, result: widget } = await os.dialog({
 				type: null,
 				title: this.$t('chooseWidget'),
 				select: {

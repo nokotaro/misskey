@@ -3,9 +3,9 @@
 	<template #header><fa :icon="faBolt"/> {{ $t('_pages.blocks.button') }}</template>
 
 	<section class="xfhsjczc">
-		<mk-input v-model="value.text"><span>{{ $t('_pages.blocks._button.text') }}</span></mk-input>
-		<mk-switch v-model="value.primary"><span>{{ $t('_pages.blocks._button.colored') }}</span></mk-switch>
-		<mk-select v-model="value.action">
+		<mk-input v-model:value="value.text"><span>{{ $t('_pages.blocks._button.text') }}</span></mk-input>
+		<mk-switch v-model:value="value.primary"><span>{{ $t('_pages.blocks._button.colored') }}</span></mk-switch>
+		<mk-select v-model:value="value.action">
 			<template #label>{{ $t('_pages.blocks._button.action') }}</template>
 			<option value="dialog">{{ $t('_pages.blocks._button._action.dialog') }}</option>
 			<option value="resetRandom">{{ $t('_pages.blocks._button._action.resetRandom') }}</option>
@@ -13,12 +13,12 @@
 			<option value="callAiScript">{{ $t('_pages.blocks._button._action.callAiScript') }}</option>
 		</mk-select>
 		<template v-if="value.action === 'dialog'">
-			<mk-input v-model="value.content"><span>{{ $t('_pages.blocks._button._action._dialog.content') }}</span></mk-input>
+			<mk-input v-model:value="value.content"><span>{{ $t('_pages.blocks._button._action._dialog.content') }}</span></mk-input>
 		</template>
 		<template v-else-if="value.action === 'pushEvent'">
-			<mk-input v-model="value.event"><span>{{ $t('_pages.blocks._button._action._pushEvent.event') }}</span></mk-input>
-			<mk-input v-model="value.message"><span>{{ $t('_pages.blocks._button._action._pushEvent.message') }}</span></mk-input>
-			<mk-select v-model="value.var">
+			<mk-input v-model:value="value.event"><span>{{ $t('_pages.blocks._button._action._pushEvent.event') }}</span></mk-input>
+			<mk-input v-model:value="value.message"><span>{{ $t('_pages.blocks._button._action._pushEvent.message') }}</span></mk-input>
+			<mk-select v-model:value="value.var">
 				<template #label>{{ $t('_pages.blocks._button._action._pushEvent.variable') }}</template>
 				<option :value="null">{{ $t('_pages.blocks._button._action._pushEvent.no-variable') }}</option>
 				<option v-for="v in hpml.getVarsByType()" :value="v.name">{{ v.name }}</option>
@@ -31,7 +31,7 @@
 			</mk-select>
 		</template>
 		<template v-else-if="value.action === 'callAiScript'">
-			<mk-input v-model="value.fn"><span>{{ $t('_pages.blocks._button._action._callAiScript.functionName') }}</span></mk-input>
+			<mk-input v-model:value="value.fn"><span>{{ $t('_pages.blocks._button._action._callAiScript.functionName') }}</span></mk-input>
 		</template>
 	</section>
 </x-container>
@@ -41,9 +41,10 @@
 import { defineComponent } from 'vue';
 import { faBolt } from '@fortawesome/free-solid-svg-icons';
 import XContainer from '../page-editor.container.vue';
-import MkSelect from '../../../components/ui/select.vue';
-import MkInput from '../../../components/ui/input.vue';
-import MkSwitch from '../../../components/ui/switch.vue';
+import MkSelect from '@/components/ui/select.vue';
+import MkInput from '@/components/ui/input.vue';
+import MkSwitch from '@/components/ui/switch.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {

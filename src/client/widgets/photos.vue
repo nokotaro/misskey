@@ -17,9 +17,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { faCamera } from '@fortawesome/free-solid-svg-icons';
-import MkContainer from '../components/ui/container.vue';
+import MkContainer from '@/components/ui/container.vue';
 import define from './define';
-import { getStaticImageUrl } from '../scripts/get-static-image-url';
+import { getStaticImageUrl } from '@/scripts/get-static-image-url';
+import * as os from '@/os';
 
 const widget = define({
 	name: 'photos',
@@ -49,11 +50,11 @@ export default defineComponent({
 		};
 	},
 	mounted() {
-		this.connection = this.$root.stream.useSharedConnection('main');
+		this.connection = os.stream.useSharedConnection('main');
 
 		this.connection.on('driveFileCreated', this.onDriveFileCreated);
 
-		this.$root.api('drive/stream', {
+		os.api('drive/stream', {
 			type: 'image/*',
 			limit: 9
 		}).then(images => {

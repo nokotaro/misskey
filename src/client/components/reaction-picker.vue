@@ -1,27 +1,32 @@
 <template>
-<x-popup :source="source" ref="popup" @closed="() => { $emit('closed'); destroyDom(); }" v-hotkey.global="keymap">
+<XModal :source="source" @closed="$emit('closed')" :showing="showing" @click="close" v-hotkey.global="keymap">
 	<div class="rdfaahpb">
 		<div class="buttons" ref="buttons" :class="{ showFocus }">
 			<button class="_button" v-for="(reaction, i) in rs" :key="reaction" @click="react(reaction)" :tabindex="i + 1" :title="reaction" v-particle><x-reaction-icon :reaction="reaction"/></button>
 		</div>
 		<input class="text" v-model.trim="text" :placeholder="$t('enterEmoji')" @keyup.enter="reactText" @input="tryReactText" v-autocomplete="{ model: 'text' }">
 	</div>
-</x-popup>
+</XModal>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { emojiRegex } from '../../misc/emoji-regex';
 import XReactionIcon from './reaction-icon.vue';
-import XPopup from './popup.vue';
+import XModal from './modal.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
-		XPopup,
+		XModal,
 		XReactionIcon,
 	},
 
 	props: {
+		showing: {
+			required: true
+		},
+
 		source: {
 			required: true
 		},
@@ -80,11 +85,11 @@ export default defineComponent({
 
 	methods: {
 		close() {
-			this.$refs.popup.close();
+			this.$emit('done');
 		},
 	
 		react(reaction) {
-			this.$emit('chosen', reaction);
+			this.$emit('done', reaction);
 		},
 
 		reactText() {
@@ -123,6 +128,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .rdfaahpb {
+	background: var(--panel);
+	border-radius: 8px;
+	box-shadow: 0 3px 12px rgba(27, 31, 35, 0.15);
+
 	> .buttons {
 		padding: 6px 6px 0 6px;
 		width: 212px;

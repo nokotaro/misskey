@@ -40,17 +40,17 @@
 		<input v-model="value.value"/>
 	</section>
 	<section v-else-if="value.type === 'fn'" class="" style="padding:0 16px 16px 16px;">
-		<mk-textarea v-model="slots">
+		<mk-textarea v-model:value="slots">
 			<span>{{ $t('_pages.script.blocks._fn.slots') }}</span>
 			<template #desc>{{ $t('_pages.script.blocks._fn.slots-info') }}</template>
 		</mk-textarea>
-		<x-v v-if="value.value.expression" v-model="value.value.expression" :title="$t(`_pages.script.blocks._fn.arg1`)" :get-expected-type="() => null" :hpml="hpml" :fn-slots="value.value.slots" :name="name"/>
+		<x-v v-if="value.value.expression" v-model:value="value.value.expression" :title="$t(`_pages.script.blocks._fn.arg1`)" :get-expected-type="() => null" :hpml="hpml" :fn-slots="value.value.slots" :name="name"/>
 	</section>
 	<section v-else-if="value.type.startsWith('fn:')" class="" style="padding:16px;">
-		<x-v v-for="(x, i) in value.args" v-model="value.args[i]" :title="hpml.getVarByName(value.type.split(':')[1]).value.slots[i].name" :get-expected-type="() => null" :hpml="hpml" :name="name" :key="i"/>
+		<x-v v-for="(x, i) in value.args" v-model:value="value.args[i]" :title="hpml.getVarByName(value.type.split(':')[1]).value.slots[i].name" :get-expected-type="() => null" :hpml="hpml" :name="name" :key="i"/>
 	</section>
 	<section v-else class="" style="padding:16px;">
-		<x-v v-for="(x, i) in value.args" v-model="value.args[i]" :title="$t(`_pages.script.blocks._${value.type}.arg${i + 1}`)" :get-expected-type="() => _getExpectedType(i)" :hpml="hpml" :name="name" :fn-slots="fnSlots" :key="i"/>
+		<x-v v-for="(x, i) in value.args" v-model:value="value.args[i]" :title="$t(`_pages.script.blocks._${value.type}.arg${i + 1}`)" :get-expected-type="() => _getExpectedType(i)" :hpml="hpml" :name="name" :fn-slots="fnSlots" :key="i"/>
 	</section>
 </x-container>
 </template>
@@ -60,8 +60,9 @@ import { defineComponent } from 'vue';
 import { faPencilAlt, faPlug } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuid } from 'uuid';
 import XContainer from './page-editor.container.vue';
-import MkTextarea from '../../components/ui/textarea.vue';
-import { isLiteralBlock, funcDefs, blockDefs } from '../../scripts/hpml/index';
+import MkTextarea from '@/components/ui/textarea.vue';
+import { isLiteralBlock, funcDefs, blockDefs } from '@/scripts/hpml/index';
+import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -140,7 +141,7 @@ export default defineComponent({
 
 		if (this.value.value && this.value.value.slots) this.slots = this.value.value.slots.map(x => x.name).join('\n');
 
-		this.$watch('value.type', (t) => {
+		this.$watch(() => this.value.type, (t) => {
 			this.warn = null;
 
 			if (this.value.type === 'fn') {
@@ -182,7 +183,7 @@ export default defineComponent({
 			}
 		});
 
-		this.$watch('value.args', (args) => {
+		this.$watch(() => this.value.args, (args) => {
 			if (args == null) {
 				this.warn = null;
 				return;
@@ -199,7 +200,7 @@ export default defineComponent({
 			deep: true
 		});
 
-		this.$watch('hpml.variables', () => {
+		this.$watch(() => this.hpml.variables, () => {
 			if (this.type != null && this.value) {
 				this.error = this.hpml.typeCheck(this.value);
 			}
@@ -210,7 +211,7 @@ export default defineComponent({
 
 	methods: {
 		async changeType() {
-			const { canceled, result: type } = await this.$root.dialog({
+			const { canceled, result: type } = await os.dialog({
 				type: null,
 				title: this.$t('_pages.selectType'),
 				select: {

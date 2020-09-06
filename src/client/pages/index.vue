@@ -5,13 +5,14 @@
 <script lang="ts">
 import { defineComponent, defineAsyncComponent } from 'vue';
 import Home from './index.home.vue';
+import * as os from '@/os';
 
 export default defineComponent({
 	name: 'index',
 
 	components: {
 		Home,
-		Welcome: defineAsyncComponent(() => import('./index.welcome.vue').then(m => m.default)),
+		Welcome: defineAsyncComponent(() => import('./index.welcome.vue')),
 	},
 
 	data() {

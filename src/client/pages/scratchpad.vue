@@ -3,7 +3,7 @@
 	<portal to="header"><fa :icon="faTerminal"/>{{ $t('scratchpad') }}</portal>
 
 	<div class="_panel">
-		<prism-editor class="_code" v-model="code" :highlight="highlighter" :line-numbers="false"/>
+		<prism-editor class="_code" v-model:value="code" :highlight="highlighter" :line-numbers="false"/>
 		<mk-button style="position: absolute; top: 8px; right: 8px;" @click="run()" primary><fa :icon="faPlay"/></mk-button>
 	</div>
 
@@ -31,9 +31,10 @@ import 'prismjs/themes/prism-okaidia.css';
 import { PrismEditor } from 'vue-prism-editor';
 import 'vue-prism-editor/dist/prismeditor.min.css';
 import { AiScript, parse, utils, values } from '@syuilo/aiscript';
-import MkContainer from '../components/ui/container.vue';
-import MkButton from '../components/ui/button.vue';
-import { createAiScriptEnv } from '../scripts/aiscript/api';
+import MkContainer from '@/components/ui/container.vue';
+import MkButton from '@/components/ui/button.vue';
+import { createAiScriptEnv } from '@/scripts/aiscript/api';
+import * as os from '@/os';
 
 export default defineComponent({
 	metaInfo() {
@@ -77,7 +78,7 @@ export default defineComponent({
 			}), {
 				in: (q) => {
 					return new Promise(ok => {
-						this.$root.dialog({
+						os.dialog({
 							title: q,
 							input: {}
 						}).then(({ canceled, result: a }) => {
@@ -108,7 +109,7 @@ export default defineComponent({
 			try {
 				ast = parse(this.code);
 			} catch (e) {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: 'Syntax error :('
 				});
@@ -117,7 +118,7 @@ export default defineComponent({
 			try {
 				await aiscript.exec(ast);
 			} catch (e) {
-				this.$root.dialog({
+				os.dialog({
 					type: 'error',
 					text: e
 				});
