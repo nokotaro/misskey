@@ -4,7 +4,7 @@
 		<li v-for="user in users" @click="complete(type, user)" @keydown="onKeydown" tabindex="-1" class="user">
 			<img class="avatar" :src="user.avatarUrl"/>
 			<span class="name">
-				<mk-user-name :user="user" :key="user.id"/>
+				<MkUserName :user="user" :key="user.id"/>
 			</span>
 			<span class="username">@{{ acct(user) }}</span>
 		</li>
@@ -33,8 +33,8 @@ import { emojilist } from '../../misc/emojilist';
 import contains from '@/scripts/contains';
 import { twemojiSvgBase } from '../../misc/twemoji-base';
 import { getStaticImageUrl } from '@/scripts/get-static-image-url';
-import MkUserSelect from './user-select.vue';
-import { acct } from '../filters/user';
+import { acct } from '@/filters/user';
+import * as os from '@/os';
 
 type EmojiDef = {
 	emoji: string;
@@ -74,7 +74,6 @@ for (const x of lib) {
 }
 
 emjdb.sort((a, b) => a.name.length - b.name.length);
-import * as os from '@/os';
 
 export default defineComponent({
 	props: {
@@ -93,11 +92,6 @@ export default defineComponent({
 			required: true,
 		},
 
-		complete: {
-			type: Function,
-			required: true,
-		},
-
 		close: {
 			type: Function,
 			required: true,
@@ -113,6 +107,8 @@ export default defineComponent({
 			required: true,
 		},
 	},
+
+	emits: ['done', 'closed'],
 
 	data() {
 		return {
@@ -191,7 +187,7 @@ export default defineComponent({
 		});
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		this.textarea.removeEventListener('keydown', this.onKeydown);
 
 		for (const el of Array.from(document.querySelectorAll('body *'))) {
@@ -200,6 +196,11 @@ export default defineComponent({
 	},
 
 	methods: {
+		complete(type, value) {
+			this.$emit('done', { type, value });
+			this.$emit('closed');
+		},
+
 		setPosition() {
 			if (this.x + this.$el.offsetWidth > window.innerWidth) {
 				this.$el.style.left = (window.innerWidth - this.$el.offsetWidth) + 'px';
@@ -376,11 +377,8 @@ export default defineComponent({
 
 		chooseUser() {
 			this.close();
-			const vm = os.modal(MkUserSelect, {});
-			vm.$once('selected', user => {
+			os.selectUser().then(user => {
 				this.complete('user', user);
-			});
-			vm.$once('closed', () => {
 				this.textarea.focus();
 			});
 		},

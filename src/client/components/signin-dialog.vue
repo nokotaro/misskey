@@ -1,8 +1,8 @@
 <template>
-<x-window ref="window" @closed="() => { $emit('closed'); destroyDom(); }">
+<XWindow @close="$emit('done')">
 	<template #header>{{ $t('login') }}</template>
-	<mk-signin :auto-set="autoSet" @login="onLogin"/>
-</x-window>
+	<MkSignin :auto-set="autoSet" @login="onLogin"/>
+</XWindow>
 </template>
 
 <script lang="ts">
@@ -25,10 +25,11 @@ export default defineComponent({
 		}
 	},
 
+	emits: ['done'],
+
 	methods: {
 		onLogin(res) {
-			this.$emit('login', res);
-			this.$refs.window.close();
+			this.$emit('done', res);
 		}
 	}
 });

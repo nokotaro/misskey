@@ -1,15 +1,15 @@
 <template>
 <section class="_card">
-	<div class="_title"><fa :icon="faLaugh"/> {{ $t('reaction') }}</div>
+	<div class="_title"><Fa :icon="faLaugh"/> {{ $t('reaction') }}</div>
 	<div class="_content">
-		<mk-input v-model:value="reactions" style="font-family: 'Segoe UI Emoji', 'Noto Color Emoji', Roboto, HelveticaNeue, Arial, sans-serif">
+		<MkInput v-model:value="reactions" style="font-family: 'Segoe UI Emoji', 'Noto Color Emoji', Roboto, HelveticaNeue, Arial, sans-serif">
 			{{ $t('reaction') }}<template #desc>{{ $t('reactionSettingDescription') }} <button class="_textButton" @click="chooseEmoji">{{ $t('chooseEmoji') }}</button></template>
-		</mk-input>
-		<mk-button inline @click="setDefault"><fa :icon="faUndo"/> {{ $t('default') }}</mk-button>
+		</MkInput>
+		<MkButton inline @click="setDefault"><Fa :icon="faUndo"/> {{ $t('default') }}</MkButton>
 	</div>
 	<div class="_footer">
-		<mk-button @click="save()" primary inline :disabled="!changed"><fa :icon="faSave"/> {{ $t('save') }}</mk-button>
-		<mk-button inline @click="preview"><fa :icon="faEye"/> {{ $t('preview') }}</mk-button>
+		<MkButton @click="save()" primary inline :disabled="!changed"><Fa :icon="faSave"/> {{ $t('save') }}</MkButton>
+		<MkButton inline @click="preview"><Fa :icon="faEye"/> {{ $t('preview') }}</MkButton>
 	</div>
 </section>
 </template>
@@ -20,7 +20,6 @@ import { faLaugh, faSave, faEye } from '@fortawesome/free-regular-svg-icons';
 import { faUndo } from '@fortawesome/free-solid-svg-icons';
 import MkInput from '@/components/ui/input.vue';
 import MkButton from '@/components/ui/button.vue';
-import MkReactionPicker from '@/components/reaction-picker.vue';
 import { emojiRegexWithCustom } from '../../../misc/emoji-regex';
 import { defaultSettings } from '../../store';
 import * as os from '@/os';
@@ -46,8 +45,11 @@ export default defineComponent({
 	},
 
 	watch: {
-		reactions() {
-			this.changed = true;
+		reactions: {
+			handler() {
+				this.changed = true;
+			},
+			deep: true
 		}
 	},
 
@@ -57,14 +59,12 @@ export default defineComponent({
 			this.changed = false;
 		},
 
-		preview(ev) {
-			const picker = os.modal(MkReactionPicker, {
-				source: ev.currentTarget || ev.target,
+		async preview(ev) {
+			os.modal(await import('@/components/reaction-picker.vue'), {
 				reactions: this.splited,
 				showFocus: false,
-			});
-			picker.$once('chosen', reaction => {
-				picker.close();
+			}, {}, {
+				source: ev.currentTarget || ev.target,
 			});
 		},
 
@@ -73,11 +73,11 @@ export default defineComponent({
 		},
 
 		async chooseEmoji(ev) {
-			const vm = os.modal(await import('@/components/emoji-picker.vue'), {
+			os.modal(await import('@/components/emoji-picker.vue'), {}, {}, {
 				source: ev.currentTarget || ev.target
-			}).$once('chosen', emoji => {
+			}).then(emoji => {
+				if (emoji == null) return;
 				this.reactions += emoji;
-				vm.close();
 			});
 		}
 	}

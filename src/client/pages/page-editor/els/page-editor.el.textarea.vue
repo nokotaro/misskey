@@ -1,11 +1,11 @@
 <template>
-<x-container @remove="() => $emit('remove')" :draggable="true">
-	<template #header><fa :icon="faAlignLeft"/> {{ $t('_pages.blocks.textarea') }}</template>
+<XContainer @remove="() => $emit('remove')" :draggable="true">
+	<template #header><Fa :icon="faAlignLeft"/> {{ $t('_pages.blocks.textarea') }}</template>
 
 	<section class="ihymsbbe">
 		<textarea v-model="value.text"></textarea>
 	</section>
-</x-container>
+</XContainer>
 </template>
 
 <script lang="ts">
@@ -32,7 +32,7 @@ export default defineComponent({
 	},
 
 	created() {
-		if (this.value.text == null) Vue.set(this.value, 'text', '');
+		if (this.value.text == null) this.value.text = '';
 	},
 });
 </script>

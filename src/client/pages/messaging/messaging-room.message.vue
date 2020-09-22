@@ -1,13 +1,13 @@
 <template>
-<div class="thvuemwp" :data-is-me="isMe">
-	<mk-avatar class="avatar" :user="message.user"/>
+<div class="thvuemwp" :class="{ isMe }">
+	<MkAvatar class="avatar" :user="message.user"/>
 	<div class="content">
-		<div class="balloon" :data-no-text="message.text == null">
+		<div class="balloon" :class="{ noText: message.text == null }" >
 			<button class="delete-button" v-if="isMe" :title="$t('delete')" @click="del">
 				<img src="/assets/remove.png" alt="Delete"/>
 			</button>
 			<div class="content" v-if="!message.isDeleted">
-				<mfm class="text" v-if="message.text" ref="text" :text="message.text" :i="$store.state.i"/>
+				<Mfm class="text" v-if="message.text" ref="text" :text="message.text" :i="$store.state.i"/>
 				<div class="file" v-if="message.file">
 					<a :href="message.file.url" rel="noopener" target="_blank" :title="message.file.name">
 						<img v-if="message.file.type.split('/')[0] == 'image'" :src="message.file.url" :alt="message.file.name"/>
@@ -20,7 +20,7 @@
 			</div>
 		</div>
 		<div></div>
-		<mk-url-preview v-for="url in urls" :url="url" :key="url" style="margin: 8px 0;"/>
+		<MkUrlPreview v-for="url in urls" :url="url" :key="url" style="margin: 8px 0;"/>
 		<footer>
 			<template v-if="isGroup">
 				<span class="read" v-if="message.reads.length > 0">{{ $t('messageRead') }} {{ message.reads.length }}</span>
@@ -28,8 +28,8 @@
 			<template v-else>
 				<span class="read" v-if="isMe && message.isRead">{{ $t('messageRead') }}</span>
 			</template>
-			<mk-time :time="message.createdAt"/>
-			<template v-if="message.is_edited"><fa icon="pencil-alt"/></template>
+			<MkTime :time="message.createdAt"/>
+			<template v-if="message.is_edited"><Fa icon="pencil-alt"/></template>
 		</footer>
 	</div>
 </div>
@@ -241,7 +241,7 @@ export default defineComponent({
 		}
 	}
 
-	&:not([data-is-me]) {
+	&:not(.isMe) {
 		padding-left: var(--margin);
 
 		> .content {
@@ -252,11 +252,11 @@ export default defineComponent({
 				$color: var(--messageBg);
 				background: $color;
 
-				&[data-no-text] {
+				&.noText {
 					background: transparent;
 				}
 
-				&:not([data-no-text]):before {
+				&:not(.noText):before {
 					left: -14px;
 					border-top: solid 8px transparent;
 					border-right: solid 8px $color;
@@ -277,7 +277,7 @@ export default defineComponent({
 		}
 	}
 
-	&[data-is-me] {
+	&.isMe {
 		flex-direction: row-reverse;
 		padding-right: var(--margin);
 
@@ -290,11 +290,11 @@ export default defineComponent({
 				background: $me-balloon-color;
 				text-align: left;
 
-				&[data-no-text] {
+				&.noText {
 					background: transparent;
 				}
 
-				&:not([data-no-text]):before {
+				&:not(.noText):before {
 					right: -14px;
 					left: auto;
 					border-top: solid 8px transparent;
@@ -324,12 +324,6 @@ export default defineComponent({
 					user-select: none;
 				}
 			}
-		}
-	}
-
-	&[data-is-deleted] {
-		> .balloon {
-			opacity: 0.5;
 		}
 	}
 }

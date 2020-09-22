@@ -21,7 +21,7 @@ import { applyTheme, lightTheme } from '@/scripts/theme';
 import { isDeviceDarkmode } from '@/scripts/is-device-darkmode';
 import { createPluginEnv } from '@/scripts/aiscript/api';
 import { i18n, lang } from './i18n';
-import { stream, sound, isMobile } from '@/os';
+import { stream, sound, isMobile, dialog } from '@/os';
 
 console.info(`Misskey v${version}`);
 
@@ -122,16 +122,26 @@ if (store.state.i != null) {
 }
 //#endregion
 
+store.dispatch('instance/fetch').then(() => {
+	// Init service worker
+	//if (this.store.state.instance.meta.swPublickey) this.registerSw(this.store.state.instance.meta.swPublickey);
+});
+
 stream.init(store.state.i);
 
 const app = createApp(Root);
+
+if (_DEV_) {
+	app.config.performance = true;
+}
 
 app.use(store);
 app.use(router);
 app.use(i18n);
 app.use(VueHotkey);
 app.use(VAnimateCss);
-app.component('fa', FontAwesomeIcon);
+// eslint-disable-next-line vue/component-definition-name-casing
+app.component('Fa', FontAwesomeIcon);
 
 widgets(app);
 directives(app);
@@ -204,13 +214,13 @@ stream.on('emojiAdded', data => {
 for (const plugin of store.state.deviceUser.plugins.filter(p => p.active)) {
 	console.info('Plugin installed:', plugin.name, 'v' + plugin.version);
 
-	const aiscript = new AiScript(createPluginEnv(app, {
+	const aiscript = new AiScript(createPluginEnv({
 		plugin: plugin,
 		storageKey: 'plugins:' + plugin.id
 	}), {
 		in: (q) => {
 			return new Promise(ok => {
-				app.dialog({
+				dialog({
 					title: q,
 					input: {}
 				}).then(({ canceled, result: a }) => {

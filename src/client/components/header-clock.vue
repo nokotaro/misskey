@@ -8,7 +8,7 @@
 		</time>
 	</div>
 	<div class="content _panel _ghost">
-		<mk-clock/>
+		<MkClock/>
 	</div>
 </div>
 </template>
@@ -49,7 +49,7 @@ export default defineComponent({
 		this.tick();
 		this.clock = setInterval(this.tick, 1000);
 	},
-	beforeDestroy() {
+	beforeUnmount() {
 		clearInterval(this.clock);
 	},
 	methods: {

@@ -1,9 +1,9 @@
 <template>
 <section class="_card">
-	<div class="_title"><fa :icon="faKey"/> API</div>
+	<div class="_title"><Fa :icon="faKey"/> API</div>
 	<div class="_content">
-		<mk-button @click="generateToken">{{ $t('generateAccessToken') }}</mk-button>
-		<mk-button @click="regenerateToken"><fa :icon="faSyncAlt"/> {{ $t('regenerate') }}</mk-button>
+		<MkButton @click="generateToken">{{ $t('generateAccessToken') }}</MkButton>
+		<MkButton @click="regenerateToken"><Fa :icon="faSyncAlt"/> {{ $t('regenerate') }}</MkButton>
 	</div>
 </section>
 </template>
@@ -26,8 +26,9 @@ export default defineComponent({
 	},
 	methods: {
 		async generateToken() {
-			os.modal(await import('@/components/token-generate-window.vue'), {
-			}).$on('ok', async ({ name, permissions }) => {
+			os.modal(await import('@/components/token-generate-window.vue'), {}).then(async result => {
+				if (result == null) return;
+				const { name, permissions } = result;
 				const { token } = await os.api('miauth/gen-token', {
 					session: null,
 					name: name,

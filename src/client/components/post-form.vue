@@ -6,45 +6,45 @@
 	@drop.stop="onDrop"
 >
 	<header>
-		<button v-if="!fixed" class="cancel _button" @click="cancel"><fa :icon="faTimes"/></button>
+		<button v-if="!fixed" class="cancel _button" @click="cancel"><Fa :icon="faTimes"/></button>
 		<div>
 			<span class="local-only" v-if="localOnly" v-text="$t('_visibility.localOnly')" />
 			<span class="text-count" :class="{ over: trimmedLength(text) > max }">{{ max - trimmedLength(text) }}</span>
 			<button class="_button visibility" @click="setVisibility" ref="visibilityButton" v-tooltip="$t('visibility')" :disabled="channel != null">
-				<span v-if="visibility === 'public'"><fa :icon="faGlobe"/></span>
-				<span v-if="visibility === 'home'"><fa :icon="faHome"/></span>
-				<span v-if="visibility === 'followers'"><fa :icon="faUnlock"/></span>
-				<span v-if="visibility === 'specified'"><fa :icon="faEnvelope"/></span>
+				<span v-if="visibility === 'public'"><Fa :icon="faGlobe"/></span>
+				<span v-if="visibility === 'home'"><Fa :icon="faHome"/></span>
+				<span v-if="visibility === 'followers'"><Fa :icon="faUnlock"/></span>
+				<span v-if="visibility === 'specified'"><Fa :icon="faEnvelope"/></span>
 			</button>
-			<button class="submit _buttonPrimary" :disabled="!canPost" @click="post">{{ submitText }}<fa :icon="reply ? faReply : renote ? faQuoteRight : faPaperPlane"/></button>
+			<button class="submit _buttonPrimary" :disabled="!canPost" @click="post">{{ submitText }}<Fa :icon="reply ? faReply : renote ? faQuoteRight : faPaperPlane"/></button>
 		</div>
 	</header>
 	<div class="form" :class="{ fixed }">
-		<x-note-preview class="preview" v-if="reply" :note="reply"/>
-		<x-note-preview class="preview" v-if="renote" :note="renote"/>
-		<div class="with-quote" v-if="quoteId"><fa icon="quote-left"/> {{ $t('quoteAttached') }}<button @click="quoteId = null"><fa icon="times"/></button></div>
+		<XNotePreview class="preview" v-if="reply" :note="reply"/>
+		<XNotePreview class="preview" v-if="renote" :note="renote"/>
+		<div class="with-quote" v-if="quoteId"><Fa icon="quote-left"/> {{ $t('quoteAttached') }}<button @click="quoteId = null"><Fa icon="times"/></button></div>
 		<div v-if="visibility === 'specified'" class="to-specified">
 			<span style="margin-right: 8px;">{{ $t('recipient') }}</span>
 			<div class="visibleUsers">
 				<span v-for="u in visibleUsers" :key="u.id">
-					<mk-acct :user="u"/>
-					<button class="_button" @click="removeVisibleUser(u)"><fa :icon="faTimes"/></button>
+					<MkAcct :user="u"/>
+					<button class="_button" @click="removeVisibleUser(u)"><Fa :icon="faTimes"/></button>
 				</span>
-				<button @click="addVisibleUser" class="_buttonPrimary"><fa :icon="faPlus" fixed-width/></button>
+				<button @click="addVisibleUser" class="_buttonPrimary"><Fa :icon="faPlus" fixed-width/></button>
 			</div>
 		</div>
-		<input v-show="useCw" ref="cw" class="cw" v-model="cw" :placeholder="$t('annotation')" v-autocomplete="{ model: 'cw' }">
-		<textarea v-model="text" class="text" :class="{ withCw: useCw }" ref="text" :disabled="posting" :placeholder="placeholder" v-autocomplete="{ model: 'text' }" @keydown="onKeydown" @paste="onPaste"></textarea>
-		<x-post-form-attaches class="attaches" :files="files"/>
-		<x-poll-editor v-if="poll" ref="poll" @destroyed="poll = false" @updated="onPollUpdate()"/>
-		<x-uploader ref="uploader" @uploaded="attachMedia" @change="onChangeUploadings"/>
+		<input v-show="useCw" ref="cw" class="cw" v-model="cw" :placeholder="$t('annotation')">
+		<textarea v-model="text" class="text" :class="{ withCw: useCw }" ref="text" :disabled="posting" :placeholder="placeholder" @keydown="onKeydown" @paste="onPaste"></textarea>
+		<XPostFormAttaches class="attaches" :files="files" @updated="updateMedia" @detach="detachMedia"/>
+		<XPollEditor v-if="poll" :poll="poll" @destroyed="poll = null" @updated="onPollUpdate"/>
+		<XUploader ref="uploader" @uploaded="attachMedia" @change="onChangeUploadings"/>
 		<footer>
-			<button class="_button" @click="chooseFileFrom" v-tooltip="$t('attachFile')"><fa :icon="faPhotoVideo"/></button>
-			<button class="_button" @click="poll = !poll" :class="{ active: poll }" v-tooltip="$t('poll')"><fa :icon="faPollH"/></button>
-			<button class="_button" @click="useCw = !useCw" :class="{ active: useCw }" v-tooltip="$t('useCw')"><fa :icon="faEyeSlash"/></button>
-			<button class="_button" @click="insertMention" v-tooltip="$t('mention')"><fa :icon="faAt"/></button>
-			<button class="_button" @click="insertEmoji" v-tooltip="$t('emoji')"><fa :icon="faLaughSquint"/></button>
-			<button class="_button" @click="showActions" v-tooltip="$t('plugin')" v-if="$store.state.postFormActions.length > 0"><fa :icon="faPlug"/></button>
+			<button class="_button" @click="chooseFileFrom" v-tooltip="$t('attachFile')"><Fa :icon="faPhotoVideo"/></button>
+			<button class="_button" @click="togglePoll" :class="{ active: poll }" v-tooltip="$t('poll')"><Fa :icon="faPollH"/></button>
+			<button class="_button" @click="useCw = !useCw" :class="{ active: useCw }" v-tooltip="$t('useCw')"><Fa :icon="faEyeSlash"/></button>
+			<button class="_button" @click="insertMention" v-tooltip="$t('mention')"><Fa :icon="faAt"/></button>
+			<button class="_button" @click="insertEmoji" v-tooltip="$t('emoji')"><Fa :icon="faLaughSquint"/></button>
+			<button class="_button" @click="showActions" v-tooltip="$t('plugin')" v-if="$store.state.postFormActions.length > 0"><Fa :icon="faPlug"/></button>
 		</footer>
 		<input ref="file" class="file _button" type="file" multiple="multiple" @change="onChangeFile"/>
 	</div>
@@ -58,8 +58,6 @@ import { faEyeSlash, faLaughSquint } from '@fortawesome/free-regular-svg-icons';
 import insertTextAtCursor from 'insert-text-at-cursor';
 import { length } from 'stringz';
 import { toASCII } from 'punycode';
-import MkVisibilityChooser from './visibility-chooser.vue';
-import MkUserSelect from './user-select.vue';
 import XNotePreview from './note-preview.vue';
 import { parse } from '../../mfm/parse';
 import { host, url } from '@/config';
@@ -67,7 +65,7 @@ import { erase, unique } from '../../prelude/array';
 import extractMentions from '../../misc/extract-mentions';
 import getAcct from '../../misc/acct/render';
 import { formatTimeString } from '../../misc/format-time-string';
-import { selectDriveFile } from '@/scripts/select-drive-file';
+import { Autocomplete } from '@/scripts/autocomplete';
 import { noteVisibilities } from '../../types';
 import { utils } from '@syuilo/aiscript';
 import * as os from '@/os';
@@ -123,16 +121,15 @@ export default defineComponent({
 		}
 	},
 
+	emits: ['posted', 'done'],
+
 	data() {
 		return {
 			posting: false,
 			text: '',
 			files: [],
 			uploadings: [],
-			poll: false,
-			pollChoices: [],
-			pollMultiple: false,
-			pollExpiration: [],
+			poll: null,
 			useCw: false,
 			cw: null,
 			localOnly: false,
@@ -193,7 +190,7 @@ export default defineComponent({
 			return !this.posting &&
 				(1 <= this.text.length || 1 <= this.files.length || this.poll || this.renote) &&
 				(length(this.text.trim()) <= this.max) &&
-				(!this.poll || this.pollChoices.length >= 2);
+				(!this.poll || this.poll.choices.length >= 2);
 		},
 
 		max(): number {
@@ -280,6 +277,10 @@ export default defineComponent({
 			this.focus();
 		});
 
+		// TODO: detach when unmount
+		new Autocomplete(this.$refs.text, this, { model: 'text' });
+		new Autocomplete(this.$refs.cw, this, { model: 'cw' });
+
 		this.$nextTick(() => {
 			// 書きかけの投稿を復元
 			if (!this.instant && !this.mention) {
@@ -292,10 +293,7 @@ export default defineComponent({
 					this.localOnly = draft.data.localOnly;
 					this.files = (draft.data.files || []).filter(e => e);
 					if (draft.data.poll) {
-						this.poll = true;
-						this.$nextTick(() => {
-							(this.$refs.poll as any).set(draft.data.poll);
-						});
+						this.poll = draft.data.poll;
 					}
 				}
 			}
@@ -308,13 +306,7 @@ export default defineComponent({
 				this.cw = init.cw;
 				this.useCw = init.cw != null;
 				if (init.poll) {
-					this.poll = true;
-					this.$nextTick(() => {
-						(this.$refs.poll as any).set({
-							choices: init.poll.choices.map(c => c.text),
-							multiple: init.poll.multiple
-						});
-					});
+					this.poll = init.poll;
 				}
 				this.visibility = init.visibility;
 				this.localOnly = init.localOnly;
@@ -331,9 +323,22 @@ export default defineComponent({
 			this.$watch('useCw', () => this.saveDraft());
 			this.$watch('cw', () => this.saveDraft());
 			this.$watch('poll', () => this.saveDraft());
-			this.$watch('files', () => this.saveDraft());
+			this.$watch('files', () => this.saveDraft(), { deep: true });
 			this.$watch('visibility', () => this.saveDraft());
 			this.$watch('localOnly', () => this.saveDraft());
+		},
+
+		togglePoll() {
+			if (this.poll) {
+				this.poll = null;
+			} else {
+				this.poll = {
+					choices: ['', ''],
+					multiple: false,
+					expiresAt: null,
+					expiredAfter: null,
+				};
+			}
 		},
 
 		trimmedLength(text: string) {
@@ -366,7 +371,8 @@ export default defineComponent({
 					icon: faLink,
 					action: () => { this.chooseFileFromUrl() }
 				}],
-				source: ev.currentTarget || ev.target
+			}, {
+				source: ev.currentTarget || ev.target,
 			});
 		},
 
@@ -375,7 +381,7 @@ export default defineComponent({
 		},
 
 		chooseFileFromDrive() {
-			selectDriveFile(this.$root, true).then(files => {
+			os.selectDriveFile(true).then(files => {
 				for (const file of files) {
 					this.attachMedia(file);
 				}
@@ -391,7 +397,7 @@ export default defineComponent({
 		},
 
 		updateMedia(file) {
-			Vue.set(this.files, this.files.findIndex(x => x.id === file.id), file);
+			this.files[this.files.findIndex(x => x.id === file.id)] = file;
 		},
 
 		onChangeFile() {
@@ -406,27 +412,28 @@ export default defineComponent({
 			this.$emit('change-uploadings', uploads);
 		},
 
-		onPollUpdate() {
-			const got = this.$refs.poll.get();
-			this.pollChoices = got.choices;
-			this.pollMultiple = got.multiple;
-			this.pollExpiration = [got.expiration, got.expiresAt || got.expiredAfter];
+		onPollUpdate(poll) {
+			this.poll = poll;
 			this.saveDraft();
 		},
 
-		setVisibility() {
+		async setVisibility() {
 			if (this.channel) {
 				// TODO: information dialog
 				return;
 			}
-			const w = os.modal(MkVisibilityChooser, {
-				source: this.$refs.visibilityButton,
+			os.modal(await import('./visibility-picker.vue'), {
 				currentVisibility: this.visibility,
 				currentLocalOnly: this.localOnly
-			});
-			w.$once('chosen', ({ visibility, localOnly }) => {
-				this.applyVisibility(visibility);
-				this.localOnly = localOnly;
+			}, {
+				'change-visibility': visibility => {
+					this.applyVisibility(visibility);
+				},
+				'change-local-only': localOnly => {
+					this.localOnly = localOnly;
+				}
+			}, {
+				source: this.$refs.visibilityButton
 			});
 		},
 
@@ -435,8 +442,7 @@ export default defineComponent({
 		},
 
 		addVisibleUser() {
-			const vm = os.modal(MkUserSelect, {});
-			vm.$once('selected', user => {
+			os.selectUser().then(user => {
 				this.visibleUsers.push(user);
 			});
 		},
@@ -448,7 +454,7 @@ export default defineComponent({
 		clear() {
 			this.text = '';
 			this.files = [];
-			this.poll = false;
+			this.poll = null;
 			this.quoteId = null;
 		},
 
@@ -490,7 +496,7 @@ export default defineComponent({
 		onDragover(e) {
 			if (!e.dataTransfer.items[0]) return;
 			const isFile = e.dataTransfer.items[0].kind == 'file';
-			const isDriveFile = e.dataTransfer.types[0] == 'mk_drive_file';
+			const isDriveFile = e.dataTransfer.types[0] == _DATA_TRANSFER_DRIVE_FILE_;
 			if (isFile || isDriveFile) {
 				e.preventDefault();
 				this.draghover = true;
@@ -517,7 +523,7 @@ export default defineComponent({
 			}
 
 			//#region ドライブのファイル
-			const driveFile = e.dataTransfer.getData('mk_drive_file');
+			const driveFile = e.dataTransfer.getData(_DATA_TRANSFER_DRIVE_FILE_);
 			if (driveFile != null && driveFile != '') {
 				const file = JSON.parse(driveFile);
 				this.files.push(file);
@@ -540,7 +546,7 @@ export default defineComponent({
 					visibility: this.visibility,
 					localOnly: this.localOnly,
 					files: this.files,
-					poll: this.poll && this.$refs.poll ? (this.$refs.poll as any).get() : undefined
+					poll: this.poll
 				}
 			};
 
@@ -562,7 +568,7 @@ export default defineComponent({
 				replyId: this.reply ? this.reply.id : undefined,
 				renoteId: this.renote ? this.renote.id : this.quoteId ? this.quoteId : undefined,
 				channelId: this.channel ? this.channel.id : undefined,
-				poll: this.poll ? (this.$refs.poll as any).get() : undefined,
+				poll: this.poll,
 				cw: this.useCw ? this.cw || '' : undefined,
 				localOnly: this.localOnly,
 				visibility: this.visibility,
@@ -599,18 +605,17 @@ export default defineComponent({
 		},
 
 		insertMention() {
-			const vm = os.modal(MkUserSelect, {});
-			vm.$once('selected', user => {
+			os.selectUser().then(user => {
 				insertTextAtCursor(this.$refs.text, getAcct(user) + ' ');
 			});
 		},
 
 		async insertEmoji(ev) {
-			const vm = os.modal(await import('./emoji-picker.vue'), {
+			os.modal(defineAsyncComponent(() => import('@/components/emoji-picker.vue')), {}, {}, {
 				source: ev.currentTarget || ev.target
-			}).$once('chosen', emoji => {
+			}).then(emoji => {
+				if (emoji == null) return;
 				insertTextAtCursor(this.$refs.text, emoji);
-				vm.close();
 			});
 		},
 
@@ -626,6 +631,7 @@ export default defineComponent({
 						});
 					}
 				})),
+			}, {
 				source: ev.currentTarget || ev.target,
 			});
 		}

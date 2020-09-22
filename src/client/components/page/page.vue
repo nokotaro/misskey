@@ -1,6 +1,6 @@
 <template>
 <div class="iroscrza" :class="{ center: page.alignCenter, serif: page.font === 'serif' }" v-if="hpml">
-	<x-block v-for="child in page.content" :value="child" @onUpdate:value="v => updateBlock(v)" :page="page" :hpml="hpml" :key="child.id" :h="2"/>
+	<XBlock v-for="child in page.content" :value="child" @update:value="v => updateBlock(v)" :page="page" :hpml="hpml" :key="child.id" :h="2"/>
 </div>
 </template>
 
@@ -34,7 +34,7 @@ export default defineComponent({
 	},
 
 	created() {
-		this.hpml = new Hpml(this, this.page, {
+		this.hpml = new Hpml(this.page, {
 			randomSeed: Math.random(),
 			visitor: this.$store.state.i,
 			url: url,
@@ -71,7 +71,7 @@ export default defineComponent({
 		});
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		if (this.hpml.aiscript) this.hpml.aiscript.abort();
 	},
 });

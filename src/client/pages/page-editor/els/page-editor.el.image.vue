@@ -1,16 +1,16 @@
 <template>
-<x-container @remove="() => $emit('remove')" :draggable="true">
-	<template #header><fa :icon="faImage"/> {{ $t('_pages.blocks.image') }}</template>
+<XContainer @remove="() => $emit('remove')" :draggable="true">
+	<template #header><Fa :icon="faImage"/> {{ $t('_pages.blocks.image') }}</template>
 	<template #func>
 		<button @click="choose()">
-			<fa :icon="faFolderOpen"/>
+			<Fa :icon="faFolderOpen"/>
 		</button>
 	</template>
 
 	<section class="oyyftmcf">
-		<mk-file-thumbnail class="preview" v-if="file" :file="file" fit="contain" @click="choose()"/>
+		<MkFileThumbnail class="preview" v-if="file" :file="file" fit="contain" @click="choose()"/>
 	</section>
-</x-container>
+</XContainer>
 </template>
 
 <script lang="ts">
@@ -19,7 +19,6 @@ import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { faImage, faFolderOpen } from '@fortawesome/free-regular-svg-icons';
 import XContainer from '../page-editor.container.vue';
 import MkFileThumbnail from '@/components/drive-file-thumbnail.vue';
-import { selectDriveFile } from '@/scripts/select-drive-file';
 import * as os from '@/os';
 
 export default defineComponent({
@@ -41,7 +40,7 @@ export default defineComponent({
 	},
 
 	created() {
-		if (this.value.fileId === undefined) Vue.set(this.value, 'fileId', null);
+		if (this.value.fileId === undefined) this.value.fileId = null;
 	},
 
 	mounted() {
@@ -58,7 +57,7 @@ export default defineComponent({
 
 	methods: {
 		async choose() {
-			selectDriveFile(this.$root, false).then(file => {
+			os.selectDriveFile(false).then(file => {
 				this.file = file;
 				this.value.fileId = file.id;
 			});

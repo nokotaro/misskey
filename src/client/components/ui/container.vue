@@ -5,8 +5,8 @@
 		<div class="sub">
 			<slot name="func"></slot>
 			<button class="_button" v-if="bodyTogglable" @click="() => showBody = !showBody">
-				<template v-if="showBody"><fa :icon="faAngleUp"/></template>
-				<template v-else><fa :icon="faAngleDown"/></template>
+				<template v-if="showBody"><Fa :icon="faAngleUp"/></template>
+				<template v-else><Fa :icon="faAngleDown"/></template>
 			</button>
 		</div>
 	</header>
@@ -110,7 +110,7 @@ export default defineComponent({
 	overflow-y: hidden;
 	transition: opacity 0.5s, height 0.5s !important;
 }
-.container-toggle-enter {
+.container-toggle-enter-from {
 	opacity: 0;
 }
 .container-toggle-leave-to {

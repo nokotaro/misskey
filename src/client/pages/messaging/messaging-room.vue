@@ -4,30 +4,30 @@
 	@drop.prevent.stop="onDrop"
 >
 	<template v-if="!fetching && user">
-		<portal to="header"><mk-avatar class="avatar" :user="user" :disable-preview="true"/><mk-user-name :user="user" :nowrap="false" class="name"/></portal>
+		<portal to="header"><MkAvatar class="avatar" :user="user" :disable-preview="true"/><MkUserName :user="user" :nowrap="false" class="name"/></portal>
 	</template>
 	<template v-if="!fetching && group">
-		<portal to="header"><fa :icon="faUsers"/>{{ group.name }}</portal>
+		<portal to="header"><Fa :icon="faUsers"/>{{ group.name }}</portal>
 	</template>
 
 	<div class="body">
-		<mk-loading v-if="fetching"/>
-		<p class="empty" v-if="!fetching && messages.length == 0"><fa :icon="faInfoCircle"/>{{ $t('noMessagesYet') }}</p>
-		<p class="no-history" v-if="!fetching && messages.length > 0 && !existMoreMessages"><fa :icon="faFlag"/>{{ $t('noMoreHistory') }}</p>
+		<MkLoading v-if="fetching"/>
+		<p class="empty" v-if="!fetching && messages.length == 0"><Fa :icon="faInfoCircle"/>{{ $t('noMessagesYet') }}</p>
+		<p class="no-history" v-if="!fetching && messages.length > 0 && !existMoreMessages"><Fa :icon="faFlag"/>{{ $t('noMoreHistory') }}</p>
 		<button class="more _button" ref="loadMore" :class="{ fetching: fetchingMoreMessages }" v-show="existMoreMessages" @click="fetchMoreMessages" :disabled="fetchingMoreMessages">
-			<template v-if="fetchingMoreMessages"><fa icon="spinner" pulse fixed-width/></template>{{ fetchingMoreMessages ? $t('loading') : $t('loadMore') }}
+			<template v-if="fetchingMoreMessages"><Fa icon="spinner" pulse fixed-width/></template>{{ fetchingMoreMessages ? $t('loading') : $t('loadMore') }}
 		</button>
-		<x-list class="messages" :items="messages" v-slot="{ item: message }" direction="up" reversed>
-			<x-message :message="message" :is-group="group != null" :key="message.id"/>
-		</x-list>
+		<XList class="messages" :items="messages" v-slot="{ item: message }" direction="up" reversed>
+			<XMessage :message="message" :is-group="group != null" :key="message.id"/>
+		</XList>
 	</div>
 	<footer>
 		<transition name="fade">
 			<div class="new-message" v-show="showIndicator">
-				<button class="_buttonPrimary" @click="onIndicatorClick"><i><fa :icon="faArrowCircleDown"/></i>{{ $t('newMessageExists') }}</button>
+				<button class="_buttonPrimary" @click="onIndicatorClick"><i><Fa :icon="faArrowCircleDown"/></i>{{ $t('newMessageExists') }}</button>
 			</div>
 		</transition>
-		<x-form v-if="!fetching" :user="user" :group="group" ref="form"/>
+		<XForm v-if="!fetching" :user="user" :group="group" ref="form"/>
 	</footer>
 </div>
 </template>
@@ -88,7 +88,7 @@ export default defineComponent({
 		}
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		this.connection.dispose();
 
 		document.removeEventListener('visibilitychange', this.onVisibilitychange);
@@ -130,7 +130,7 @@ export default defineComponent({
 
 		onDragover(e) {
 			const isFile = e.dataTransfer.items[0].kind == 'file';
-			const isDriveFile = e.dataTransfer.types[0] == 'mk_drive_file';
+			const isDriveFile = e.dataTransfer.types[0] == _DATA_TRANSFER_DRIVE_FILE_;
 
 			if (isFile || isDriveFile) {
 				e.dataTransfer.dropEffect = e.dataTransfer.effectAllowed == 'all' ? 'copy' : 'move';
@@ -153,7 +153,7 @@ export default defineComponent({
 			}
 
 			//#region ドライブのファイル
-			const driveFile = e.dataTransfer.getData('mk_drive_file');
+			const driveFile = e.dataTransfer.getData(_DATA_TRANSFER_DRIVE_FILE_);
 			if (driveFile != null && driveFile != '') {
 				const file = JSON.parse(driveFile);
 				this.form.file = file;
@@ -192,7 +192,7 @@ export default defineComponent({
 		},
 
 		onMessage(message) {
-			this.$root.sound('chat');
+			os.sound('chat');
 
 			const _isBottom = isBottom(this.$el, 64);
 
@@ -383,7 +383,7 @@ export default defineComponent({
 	transition: opacity 0.1s;
 }
 
-.fade-enter, .fade-leave-to {
+.fade-enter-from, .fade-leave-to {
 	transition: opacity 0.5s;
 	opacity: 0;
 }

@@ -1,28 +1,27 @@
 <template>
 <div class="mk-messaging" v-size="{ max: [400] }">
-	<portal to="header"><fa :icon="faComments"/>{{ $t('messaging') }}</portal>
+	<portal to="header"><Fa :icon="faComments"/>{{ $t('messaging') }}</portal>
 
-	<mk-button @click="start" primary class="start"><fa :icon="faPlus"/> {{ $t('startMessaging') }}</mk-button>
+	<MkButton @click="start" primary class="start"><Fa :icon="faPlus"/> {{ $t('startMessaging') }}</MkButton>
 
 	<div class="history" v-if="messages.length > 0">
 		<router-link v-for="(message, i) in messages"
 			class="message _panel"
+			:class="{ isMe: isMe(message), isRead: message.groupId ? message.reads.includes($store.state.i.id) : message.isRead }"
 			:to="message.groupId ? `/my/messaging/group/${message.groupId}` : `/my/messaging/${getAcct(isMe(message) ? message.recipient : message.user)}`"
-			:data-is-me="isMe(message)"
-			:data-is-read="message.groupId ? message.reads.includes($store.state.i.id) : message.isRead"
 			:data-index="i"
 			:key="message.id"
 		>
 			<div>
-				<mk-avatar class="avatar" :user="message.groupId ? message.user : isMe(message) ? message.recipient : message.user"/>
+				<MkAvatar class="avatar" :user="message.groupId ? message.user : isMe(message) ? message.recipient : message.user"/>
 				<header v-if="message.groupId">
 					<span class="name">{{ message.group.name }}</span>
-					<mk-time :time="message.createdAt"/>
+					<MkTime :time="message.createdAt"/>
 				</header>
 				<header v-else>
-					<span class="name"><mk-user-name :user="isMe(message) ? message.recipient : message.user"/></span>
+					<span class="name"><MkUserName :user="isMe(message) ? message.recipient : message.user"/></span>
 					<span class="username">@{{ acct(isMe(message) ? message.recipient : message.user) }}</span>
-					<mk-time :time="message.createdAt"/>
+					<MkTime :time="message.createdAt"/>
 				</header>
 				<div class="body">
 					<p class="text"><span class="me" v-if="isMe(message)">{{ $t('you') }}:</span>{{ message.text }}</p>
@@ -34,7 +33,7 @@
 		<img src="https://xn--931a.moe/assets/info.jpg" class="_ghost"/>
 		<div>{{ $t('noHistory') }}</div>
 	</div>
-	<mk-loading v-if="fetching"/>
+	<MkLoading v-if="fetching"/>
 </div>
 </template>
 
@@ -43,7 +42,6 @@ import { defineComponent } from 'vue';
 import { faUser, faUsers, faComments, faPlus } from '@fortawesome/free-solid-svg-icons';
 import getAcct from '../../../misc/acct/render';
 import MkButton from '@/components/ui/button.vue';
-import MkUserSelect from '@/components/user-select.vue';
 import { acct } from '../../filters/user';
 import * as os from '@/os';
 
@@ -78,7 +76,7 @@ export default defineComponent({
 		});
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		this.connection.dispose();
 	},
 
@@ -127,12 +125,13 @@ export default defineComponent({
 					action: () => { this.startGroup() }
 				}],
 				noCenter: true,
+			}, {
 				source: ev.currentTarget || ev.target,
 			});
 		},
 
 		async startUser() {
-			os.modal(MkUserSelect, {}).$once('selected', user => {
+			os.selectUser().then(user => {
 				this.$router.push(`/my/messaging/${getAcct(user)}`);
 			});
 		},
@@ -194,12 +193,12 @@ export default defineComponent({
 			&:active {
 			}
 
-			&[data-is-read],
-			&[data-is-me] {
+			&.isRead,
+			&.isMe {
 				opacity: 0.8;
 			}
 
-			&:not([data-is-me]):not([data-is-read]) {
+			&:not(.isMe):not(.isRead) {
 				> div {
 					background-image: url("/assets/unread.svg");
 					background-repeat: no-repeat;
@@ -286,7 +285,7 @@ export default defineComponent({
 	&.max-width_400px {
 		> .history {
 			> .message {
-				&:not([data-is-me]):not([data-is-read]) {
+				&:not(.isMe):not(.isRead) {
 					> div {
 						background-image: none;
 						border-left: solid 4px #3aa2dc;

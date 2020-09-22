@@ -42,8 +42,12 @@ export default (opts) => ({
 			this.init();
 		},
 
-		queue() {
-			this.$emit('queue', this.queue.length);
+		queue: {
+			handler(a, b) {
+				if (a.length === 0 && b.length === 0) return;
+				this.$emit('queue', this.queue.length);
+			},
+			deep: true
 		}
 	},
 
@@ -70,7 +74,7 @@ export default (opts) => ({
 		});
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		this.ilObserver.disconnect();
 		if (this.$refs.loadMore) this.loadMoreElement.removeEventListener('click', this.fetchMore);
 	},

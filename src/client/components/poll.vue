@@ -1,11 +1,11 @@
 <template>
-<div class="tivcixzd" :data-done="closed || isVoted">
+<div class="tivcixzd" :class="{ done: closed || isVoted }">
 	<ul>
 		<li v-for="(choice, i) in poll.choices" :key="i" @click="vote(i)" :class="{ voted: choice.voted }">
 			<div class="backdrop" :style="{ 'width': `${showResult ? (choice.votes / total * 100) : 0}%` }"></div>
 			<span>
-				<template v-if="choice.isVoted"><fa :icon="faCheck"/></template>
-				<mfm :text="choice.text" :plain="true" :custom-emojis="note.emojis"/>
+				<template v-if="choice.isVoted"><Fa :icon="faCheck"/></template>
+				<Mfm :text="choice.text" :plain="true" :custom-emojis="note.emojis"/>
 				<span class="votes" v-if="showResult">({{ $t('_poll.votesCount', { n: choice.votes }) }})</span>
 			</span>
 		</li>
@@ -154,7 +154,7 @@ export default defineComponent({
 		}
 	}
 
-	&[data-done] {
+	&.done {
 		> ul > li {
 			cursor: default;
 

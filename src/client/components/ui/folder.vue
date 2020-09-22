@@ -4,8 +4,8 @@
 		<div class="title"><slot name="header"></slot></div>
 		<div class="divider"></div>
 		<button class="_button">
-			<template v-if="showBody"><fa :icon="faAngleUp"/></template>
-			<template v-else><fa :icon="faAngleDown"/></template>
+			<template v-if="showBody"><Fa :icon="faAngleUp"/></template>
+			<template v-else><Fa :icon="faAngleDown"/></template>
 		</button>
 	</header>
 	<transition name="folder-toggle"
@@ -72,7 +72,7 @@ export default defineComponent({
 	overflow-y: hidden;
 	transition: opacity 0.5s, height 0.5s !important;
 }
-.folder-toggle-enter {
+.folder-toggle-enter-from {
 	opacity: 0;
 }
 .folder-toggle-leave-to {

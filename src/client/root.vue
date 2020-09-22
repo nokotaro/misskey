@@ -2,19 +2,33 @@
 <DeckUI v-if="deckmode"/>
 <DefaultUI v-else/>
 
-<XModal v-for="modal in $store.state.popups.filter(x => x.type === 'modal')" :key="modal.id" @closed="modal.closed" @click="modal.bgClick" :showing="modal.showing" :source="modal.source">
-	<component :is="modal.component" v-bind="modal.props" @done="modal.done"/>
+<XModal v-for="modal in $store.state.popups.filter(x => x.type === 'modal')"
+	:key="modal.id"
+	@closed="modal.closed"
+	@click="modal.bgClick"
+	:showing="modal.showing"
+	:source="modal.source"
+	:position="modal.position"
+>
+	<component :is="modal.component" v-bind="modal.props" v-on="modal.events" @done="modal.done"/>
 </XModal>
 
-<component v-for="popup in $store.state.popups.filter(x => x.type === 'popup')" :key="popup.id" :is="popup.component" v-bind="popup.props" @done="popup.done" @closed="popup.closed"/>
+<component v-for="popup in $store.state.popups.filter(x => x.type === 'popup')"
+	:key="popup.id"
+	:is="popup.component"
+	v-bind="popup.props"
+	:showing="popup.showing"
+	v-on="popup.events"
+	@closed="popup.closed"
+/>
 
 <div id="wait" v-if="$store.state.pendingApiRequestsCount > 0"></div>
 </template>
 
 <script lang="ts">
 import { defineAsyncComponent, defineComponent } from 'vue';
-import DefaultUI from './default.vue';
-import DeckUI from './deck.vue';
+import DefaultUI from '@/ui/default.vue';
+import DeckUI from '@/ui/deck.vue';
 import { instanceName, deckmode } from '@/config';
 
 export default defineComponent({

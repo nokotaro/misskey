@@ -1,8 +1,8 @@
 <template>
-<x-window ref="window" :width="366" :height="506" @closed="() => { $emit('closed'); destroyDom(); }">
+<XWindow :width="366" :height="506" @close="$emit('done')">
 	<template #header>{{ $t('signup') }}</template>
-	<x-signup :auto-set="autoSet" @signup="onSignup"/>
-</x-window>
+	<XSignup :auto-set="autoSet" @signup="onSignup"/>
+</XWindow>
 </template>
 
 <script lang="ts">
@@ -25,10 +25,11 @@ export default defineComponent({
 		}
 	},
 
+	emits: ['done'],
+
 	methods: {
 		onSignup(res) {
-			this.$emit('signup', res);
-			this.$refs.window.close();
+			this.$emit('done', res);
 		}
 	}
 });

@@ -12,31 +12,31 @@
 		<nav class="nav" :class="{ iconOnly, hidden }" v-show="showing">
 			<div>
 				<button class="item _button account" @click="openAccountMenu" v-if="$store.getters.isSignedIn">
-					<mk-avatar :user="$store.state.i" class="avatar"/><mk-acct class="text" :user="$store.state.i"/>
+					<MkAvatar :user="$store.state.i" class="avatar"/><MkAcct class="text" :user="$store.state.i"/>
 				</button>
 				<button class="item _button index active" @click="top()" v-if="$route.name === 'index'">
-					<fa :icon="faHome" fixed-width/><span class="text">{{ $store.getters.isSignedIn ? $t('timeline') : $t('home') }}</span>
+					<Fa :icon="faHome" fixed-width/><span class="text">{{ $store.getters.isSignedIn ? $t('timeline') : $t('home') }}</span>
 				</button>
 				<router-link class="item index" active-class="active" to="/" exact v-else>
-					<fa :icon="faHome" fixed-width/><span class="text">{{ $store.getters.isSignedIn ? $t('timeline') : $t('home') }}</span>
+					<Fa :icon="faHome" fixed-width/><span class="text">{{ $store.getters.isSignedIn ? $t('timeline') : $t('home') }}</span>
 				</router-link>
 				<template v-for="item in menu">
 					<div v-if="item === '-'" class="divider"></div>
 					<component v-else-if="menuDef[item] && (menuDef[item].show !== false)" :is="menuDef[item].to ? 'router-link' : 'button'" class="item _button" :class="item" active-class="active" @click="() => { if (menuDef[item].action) menuDef[item].action() }" :to="menuDef[item].to">
-						<fa :icon="menuDef[item].icon" fixed-width/><span class="text">{{ $t(menuDef[item].title) }}</span>
-						<i v-if="menuDef[item].indicated"><fa :icon="faCircle"/></i>
+						<Fa :icon="menuDef[item].icon" fixed-width/><span class="text">{{ $t(menuDef[item].title) }}</span>
+						<i v-if="menuDef[item].indicated"><Fa :icon="faCircle"/></i>
 					</component>
 				</template>
 				<div class="divider"></div>
 				<button class="item _button" :class="{ active: $route.path === '/instance' || $route.path.startsWith('/instance/') }" v-if="$store.getters.isSignedIn && ($store.state.i.isAdmin || $store.state.i.isModerator)" @click="oepnInstanceMenu">
-					<fa :icon="faServer" fixed-width/><span class="text">{{ $t('instance') }}</span>
+					<Fa :icon="faServer" fixed-width/><span class="text">{{ $t('instance') }}</span>
 				</button>
 				<button class="item _button" @click="more">
-					<fa :icon="faEllipsisH" fixed-width/><span class="text">{{ $t('more') }}</span>
-					<i v-if="otherNavItemIndicated"><fa :icon="faCircle"/></i>
+					<Fa :icon="faEllipsisH" fixed-width/><span class="text">{{ $t('more') }}</span>
+					<i v-if="otherNavItemIndicated"><Fa :icon="faCircle"/></i>
 				</button>
 				<router-link class="item" active-class="active" to="/preferences">
-					<fa :icon="faCog" fixed-width/><span class="text">{{ $t('settings') }}</span>
+					<Fa :icon="faCog" fixed-width/><span class="text">{{ $t('settings') }}</span>
 				</router-link>
 			</div>
 		</nav>
@@ -176,6 +176,7 @@ export default defineComponent({
 							align: 'left',
 							fixed: true,
 							width: 240,
+						}, {
 							source: ev.currentTarget || ev.target,
 						});
 					},
@@ -183,6 +184,7 @@ export default defineComponent({
 				align: 'left',
 				fixed: true,
 				width: 240,
+			}, {
 				source: ev.currentTarget || ev.target,
 			});
 		},
@@ -238,6 +240,7 @@ export default defineComponent({
 				align: 'left',
 				fixed: true,
 				width: 200,
+			}, {
 				source: ev.currentTarget || ev.target,
 			});
 		},
@@ -271,12 +274,14 @@ export default defineComponent({
 				align: 'left',
 				fixed: true,
 				width: 200,
+			}, {
 				source: ev.currentTarget || ev.target,
 			});
 		},
 
 		async addAcount() {
-			os.modal(await import('./signin-dialog.vue')).$once('login', res => {
+			os.modal(await import('./signin-dialog.vue')).then(res => {
+				if (res == null) return;
 				this.$store.dispatch('addAcount', res);
 				os.dialog({
 					type: 'success',
@@ -286,7 +291,8 @@ export default defineComponent({
 		},
 
 		async createAccount() {
-			os.modal(await import('./signup-dialog.vue')).$once('signup', res => {
+			os.modal(await import('./signup-dialog.vue')).then(res => {
+				if (res == null) return;
 				this.$store.dispatch('addAcount', res);
 				this.switchAccountWithToken(res.i);
 			});
@@ -325,7 +331,7 @@ export default defineComponent({
 	transform: translateX(0);
 	transition: transform 300ms cubic-bezier(0.23, 1, 0.32, 1), opacity 300ms cubic-bezier(0.23, 1, 0.32, 1);
 }
-.nav-enter,
+.nav-enter-from,
 .nav-leave-active {
 	opacity: 0;
 	transform: translateX(-240px);
@@ -336,7 +342,7 @@ export default defineComponent({
 	opacity: 1;
 	transition: opacity 300ms cubic-bezier(0.23, 1, 0.32, 1);
 }
-.nav-back-enter,
+.nav-back-enter-from,
 .nav-back-leave-active {
 	opacity: 0;
 }

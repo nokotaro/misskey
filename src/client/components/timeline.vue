@@ -1,5 +1,5 @@
 <template>
-<x-notes ref="tl" :pagination="pagination" @before="$emit('before')" @after="e => $emit('after', e)" @queue="$emit('queue', $event)"/>
+<XNotes ref="tl" :pagination="pagination" @before="$emit('before')" @after="e => $emit('after', e)" @queue="$emit('queue', $event)"/>
 </template>
 
 <script lang="ts">
@@ -10,6 +10,12 @@ import * as os from '@/os';
 export default defineComponent({
 	components: {
 		XNotes
+	},
+
+	provide() {
+		return {
+			inChannel: this.src === 'channel'
+		};
 	},
 
 	props: {
@@ -36,11 +42,7 @@ export default defineComponent({
 		}
 	},
 
-	provide() {
-		return {
-			inChannel: this.src === 'channel'
-		};
-	},
+	emits: ['note', 'queue', 'before', 'after'],
 
 	data() {
 		return {
@@ -63,7 +65,7 @@ export default defineComponent({
 			this.$emit('note');
 
 			if (this.sound) {
-				this.$root.sound(note.userId === this.$store.state.i.id ? 'noteMy' : 'note');
+				os.sound(note.userId === this.$store.state.i.id ? 'noteMy' : 'note');
 			}
 		};
 

@@ -1,13 +1,13 @@
 <template>
-<x-container @remove="() => $emit('remove')" :draggable="true">
-	<template #header><fa :icon="faBolt"/> {{ $t('_pages.blocks.numberInput') }}</template>
+<XContainer @remove="() => $emit('remove')" :draggable="true">
+	<template #header><Fa :icon="faBolt"/> {{ $t('_pages.blocks.numberInput') }}</template>
 
 	<section style="padding: 0 16px 0 16px;">
-		<mk-input v-model:value="value.name"><template #prefix><fa :icon="faMagic"/></template><span>{{ $t('_pages.blocks._numberInput.name') }}</span></mk-input>
-		<mk-input v-model:value="value.text"><span>{{ $t('_pages.blocks._numberInput.text') }}</span></mk-input>
-		<mk-input v-model:value="value.default" type="number"><span>{{ $t('_pages.blocks._numberInput.default') }}</span></mk-input>
+		<MkInput v-model:value="value.name"><template #prefix><Fa :icon="faMagic"/></template><span>{{ $t('_pages.blocks._numberInput.name') }}</span></MkInput>
+		<MkInput v-model:value="value.text"><span>{{ $t('_pages.blocks._numberInput.text') }}</span></MkInput>
+		<MkInput v-model:value="value.default" type="number"><span>{{ $t('_pages.blocks._numberInput.default') }}</span></MkInput>
 	</section>
-</x-container>
+</XContainer>
 </template>
 
 <script lang="ts">
@@ -35,7 +35,7 @@ export default defineComponent({
 	},
 
 	created() {
-		if (this.value.name == null) Vue.set(this.value, 'name', '');
+		if (this.value.name == null) this.value.name = '';
 	},
 });
 </script>

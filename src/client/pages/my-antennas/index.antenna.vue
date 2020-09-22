@@ -2,45 +2,45 @@
 <div class="shaynizk _card">
 	<div class="_title" v-if="antenna.name">{{ antenna.name }}</div>
 	<div class="_content body">
-		<mk-input v-model:value="name">
+		<MkInput v-model:value="name">
 			<span>{{ $t('name') }}</span>
-		</mk-input>
-		<mk-select v-model:value="src">
+		</MkInput>
+		<MkSelect v-model:value="src">
 			<template #label>{{ $t('antennaSource') }}</template>
 			<option value="all">{{ $t('_antennaSources.all') }}</option>
 			<option value="home">{{ $t('_antennaSources.homeTimeline') }}</option>
 			<option value="users">{{ $t('_antennaSources.users') }}</option>
 			<option value="list">{{ $t('_antennaSources.userList') }}</option>
 			<option value="group">{{ $t('_antennaSources.userGroup') }}</option>
-		</mk-select>
-		<mk-select v-model:value="userListId" v-if="src === 'list'">
+		</MkSelect>
+		<MkSelect v-model:value="userListId" v-if="src === 'list'">
 			<template #label>{{ $t('userList') }}</template>
 			<option v-for="list in userLists" :value="list.id" :key="list.id">{{ list.name }}</option>
-		</mk-select>
-		<mk-select v-model:value="userGroupId" v-else-if="src === 'group'">
+		</MkSelect>
+		<MkSelect v-model:value="userGroupId" v-else-if="src === 'group'">
 			<template #label>{{ $t('userGroup') }}</template>
 			<option v-for="group in userGroups" :value="group.id" :key="group.id">{{ group.name }}</option>
-		</mk-select>
-		<mk-textarea v-model:value="users" v-else-if="src === 'users'">
+		</MkSelect>
+		<MkTextarea v-model:value="users" v-else-if="src === 'users'">
 			<span>{{ $t('users') }}</span>
 			<template #desc>{{ $t('antennaUsersDescription') }} <button class="_textButton" @click="addUser">{{ $t('addUser') }}</button></template>
-		</mk-textarea>
-		<mk-switch v-model:value="withReplies">{{ $t('withReplies') }}</mk-switch>
-		<mk-textarea v-model:value="keywords">
+		</MkTextarea>
+		<MkSwitch v-model:value="withReplies">{{ $t('withReplies') }}</MkSwitch>
+		<MkTextarea v-model:value="keywords">
 			<span>{{ $t('antennaKeywords') }}</span>
 			<template #desc>{{ $t('antennaKeywordsDescription') }}</template>
-		</mk-textarea>
-		<mk-textarea v-model:value="excludeKeywords">
+		</MkTextarea>
+		<MkTextarea v-model:value="excludeKeywords">
 			<span>{{ $t('antennaExcludeKeywords') }}</span>
 			<template #desc>{{ $t('antennaKeywordsDescription') }}</template>
-		</mk-textarea>
-		<mk-switch v-model:value="caseSensitive">{{ $t('caseSensitive') }}</mk-switch>
-		<mk-switch v-model:value="withFile">{{ $t('withFileAntenna') }}</mk-switch>
-		<mk-switch v-model:value="notify">{{ $t('notifyAntenna') }}</mk-switch>
+		</MkTextarea>
+		<MkSwitch v-model:value="caseSensitive">{{ $t('caseSensitive') }}</MkSwitch>
+		<MkSwitch v-model:value="withFile">{{ $t('withFileAntenna') }}</MkSwitch>
+		<MkSwitch v-model:value="notify">{{ $t('notifyAntenna') }}</MkSwitch>
 	</div>
 	<div class="_footer">
-		<mk-button inline @click="saveAntenna()" primary><fa :icon="faSave"/> {{ $t('save') }}</mk-button>
-		<mk-button inline @click="deleteAntenna()" v-if="antenna.id != null"><fa :icon="faTrash"/> {{ $t('delete') }}</mk-button>
+		<MkButton inline @click="saveAntenna()" primary><Fa :icon="faSave"/> {{ $t('save') }}</MkButton>
+		<MkButton inline @click="deleteAntenna()" v-if="antenna.id != null"><Fa :icon="faTrash"/> {{ $t('delete') }}</MkButton>
 	</div>
 </div>
 </template>
@@ -53,7 +53,6 @@ import MkInput from '@/components/ui/input.vue';
 import MkTextarea from '@/components/ui/textarea.vue';
 import MkSelect from '@/components/ui/select.vue';
 import MkSwitch from '@/components/ui/switch.vue';
-import MkUserSelect from '@/components/user-select.vue';
 import getAcct from '../../../misc/acct/render';
 import * as os from '@/os';
 
@@ -177,7 +176,7 @@ export default defineComponent({
 		},
 
 		addUser() {
-			os.modal(MkUserSelect, {}).$once('selected', user => {
+			os.selectUser().then(user => {
 				this.users = this.users.trim();
 				this.users += '\n@' + getAcct(user);
 				this.users = this.users.trim();

@@ -1,6 +1,6 @@
 <template>
 <div class="ncvczrfv"
-	:data-is-selected="isSelected"
+	:class="{ isSelected }"
 	@click="onClick"
 	draggable="true"
 	@dragstart="onDragstart"
@@ -20,7 +20,7 @@
 		<p>{{ $t('nsfw') }}</p>
 	</div>
 
-	<x-file-thumbnail class="thumbnail" :file="file" fit="contain"/>
+	<XFileThumbnail class="thumbnail" :file="file" fit="contain"/>
 
 	<p class="name">
 		<span>{{ file.name.lastIndexOf('.') != -1 ? file.name.substr(0, file.name.lastIndexOf('.')) : file.name }}</span>
@@ -32,11 +32,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
-import copyToClipboard from '@/scripts/copy-to-clipboard';
-//import updateAvatar from '../api/update-avatar';
-//import updateBanner from '../api/update-banner';
-import XFileThumbnail from './drive-file-thumbnail.vue';
 import { faDownload, faLink, faICursor, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import copyToClipboard from '@/scripts/copy-to-clipboard';
+import XFileThumbnail from './drive-file-thumbnail.vue';
 import bytes from '../filters/bytes';
 import * as os from '@/os';
 
@@ -61,6 +59,8 @@ export default defineComponent({
 			default: false,
 		}
 	},
+
+	emits: ['chosen'],
 
 	data() {
 		return {
@@ -108,6 +108,7 @@ export default defineComponent({
 						icon: faTrashAlt,
 						action: this.deleteFile
 					}],
+				}, {
 					source: ev.currentTarget || ev.target,
 				});
 			}
@@ -115,7 +116,7 @@ export default defineComponent({
 
 		onDragstart(e) {
 			e.dataTransfer.effectAllowed = 'move';
-			e.dataTransfer.setData('mk_drive_file', JSON.stringify(this.file));
+			e.dataTransfer.setData(_DATA_TRANSFER_DRIVE_FILE_, JSON.stringify(this.file));
 			this.isDragging = true;
 
 			// 親ブラウザに対して、ドラッグが開始されたフラグを立てる
@@ -161,11 +162,11 @@ export default defineComponent({
 		},
 
 		setAsAvatar() {
-			updateAvatar(this.$root)(this.file);
+			os.updateAvatar(this.file);
 		},
 
 		setAsBanner() {
-			updateBanner(this.$root)(this.file);
+			os.updateBanner(this.file);
 		},
 
 		addApp() {
@@ -237,7 +238,7 @@ export default defineComponent({
 		}
 	}
 
-	&[data-is-selected] {
+	&.isSelected {
 		background: var(--accent);
 
 		&:hover {

@@ -1,18 +1,18 @@
 <template>
 <div class="mfcuwfyp">
-	<x-list class="notifications" :items="items" v-slot="{ item: notification }">
-		<x-note v-if="['reply', 'quote', 'mention'].includes(notification.type)" :note="notification.note" @updated="noteUpdated(notification.note, $event)" :key="notification.id"/>
-		<x-notification v-else :notification="notification" :with-time="true" :full="true" class="_panel notification" :key="notification.id"/>
-	</x-list>
+	<XList class="notifications" :items="items" v-slot="{ item: notification }">
+		<XNote v-if="['reply', 'quote', 'mention'].includes(notification.type)" :note="notification.note" @updated="noteUpdated(notification.note, $event)" :key="notification.id"/>
+		<XNotification v-else :notification="notification" :with-time="true" :full="true" class="_panel notification" :key="notification.id"/>
+	</XList>
 
 	<button class="_panel _button" ref="loadMore" v-show="more" :disabled="moreFetching" :style="{ cursor: moreFetching ? 'wait' : 'pointer' }">
 		<template v-if="!moreFetching">{{ $t('loadMore') }}</template>
-		<template v-if="moreFetching"><mk-loading inline/></template>
+		<template v-if="moreFetching"><MkLoading inline/></template>
 	</button>
 
 	<p class="empty" v-if="empty">{{ $t('noNotifications') }}</p>
 
-	<mk-error v-if="error" @retry="init()"/>
+	<MkError v-if="error" @retry="init()"/>
 </div>
 </template>
 
@@ -59,18 +59,24 @@ export default defineComponent({
 
 	computed: {
 		allIncludeTypes() {
-			return this.includeTypes ?? this.$store.state.i.includingNotificationTypes;
+			return this.includeTypes ?? notificationTypes.filter(x => !this.$store.state.i.mutingNotificationTypes.includes(x));
 		}
 	},
 
 	watch: {
-		includeTypes() {
-			this.reload();
-		},
-		'$store.state.i.includingNotificationTypes'() {
-			if (this.includeTypes === null) {
+		includeTypes: {
+			handler() {
 				this.reload();
-			}
+			},
+			deep: true
+		},
+		'$store.state.i.mutingNotificationTypes': {
+			handler() {
+				if (this.includeTypes === null) {
+					this.reload();
+				}
+			},
+			deep: true
 		}
 	},
 
@@ -79,14 +85,13 @@ export default defineComponent({
 		this.connection.on('notification', this.onNotification);
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		this.connection.dispose();
 	},
 
 	methods: {
 		onNotification(notification) {
-			// 
-			const isMuted = !!this.allIncludeTypes && !this.allIncludeTypes.includes(notification.type);
+			const isMuted = !this.allIncludeTypes.includes(notification.type);
 			if (isMuted || document.visibilityState === 'visible') {
 				os.stream.send('readNotification', {
 					id: notification.id
@@ -103,10 +108,10 @@ export default defineComponent({
 
 		noteUpdated(oldValue, newValue) {
 			const i = this.items.findIndex(n => n.note === oldValue);
-			Vue.set(this.items, i, {
+			this.items[i] = {
 				...this.items[i],
 				note: newValue
-			});
+			};
 		},
 	}
 });

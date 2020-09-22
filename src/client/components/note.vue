@@ -8,88 +8,88 @@
 	v-hotkey="keymap"
 	v-size="{ max: [500, 450, 350, 300] }"
 >
-	<x-sub v-for="note in conversation" class="reply-to-more" :key="note.id" :note="note"/>
-	<x-sub :note="appearNote.reply" class="reply-to" v-if="appearNote.reply"/>
-	<div class="info" v-if="pinned"><fa :icon="faThumbtack"/> {{ $t('pinnedNote') }}</div>
-	<div class="info" v-if="appearNote._prId_"><fa :icon="faBullhorn"/> {{ $t('promotion') }}<button class="_textButton hide" @click="readPromo()">{{ $t('hideThisNote') }} <fa :icon="faTimes"/></button></div>
-	<div class="info" v-if="appearNote._featuredId_"><fa :icon="faBolt"/> {{ $t('featured') }}</div>
+	<XSub v-for="note in conversation" class="reply-to-more" :key="note.id" :note="note"/>
+	<XSub :note="appearNote.reply" class="reply-to" v-if="appearNote.reply"/>
+	<div class="info" v-if="pinned"><Fa :icon="faThumbtack"/> {{ $t('pinnedNote') }}</div>
+	<div class="info" v-if="appearNote._prId_"><Fa :icon="faBullhorn"/> {{ $t('promotion') }}<button class="_textButton hide" @click="readPromo()">{{ $t('hideThisNote') }} <Fa :icon="faTimes"/></button></div>
+	<div class="info" v-if="appearNote._featuredId_"><Fa :icon="faBolt"/> {{ $t('featured') }}</div>
 	<div class="renote" v-if="isRenote">
-		<mk-avatar class="avatar" :user="note.user"/>
-		<fa :icon="faRetweet"/>
+		<MkAvatar class="avatar" :user="note.user"/>
+		<Fa :icon="faRetweet"/>
 		<i18n-t path="renotedBy" tag="span">
 			<router-link class="name" :to="userPage(note.user)" v-user-preview="note.userId" place="user">
-				<mk-user-name :user="note.user"/>
+				<MkUserName :user="note.user"/>
 			</router-link>
 		</i18n-t>
 		<div class="info">
 			<button class="_button time" @click="showRenoteMenu()" ref="renoteTime">
-				<fa class="dropdownIcon" v-if="isMyRenote" :icon="faEllipsisH"/>
-				<mk-time :time="note.createdAt"/>
+				<Fa class="dropdownIcon" v-if="isMyRenote" :icon="faEllipsisH"/>
+				<MkTime :time="note.createdAt"/>
 			</button>
 			<span class="visibility" v-if="note.visibility !== 'public'">
-				<fa v-if="note.visibility === 'home'" :icon="faHome"/>
-				<fa v-if="note.visibility === 'followers'" :icon="faUnlock"/>
-				<fa v-if="note.visibility === 'specified'" :icon="faEnvelope"/>
+				<Fa v-if="note.visibility === 'home'" :icon="faHome"/>
+				<Fa v-if="note.visibility === 'followers'" :icon="faUnlock"/>
+				<Fa v-if="note.visibility === 'specified'" :icon="faEnvelope"/>
 			</span>
-			<span class="localOnly" v-if="note.localOnly"><fa :icon="faBiohazard"/></span>
+			<span class="localOnly" v-if="note.localOnly"><Fa :icon="faBiohazard"/></span>
 		</div>
 	</div>
 	<article class="article">
-		<mk-avatar class="avatar" :user="appearNote.user"/>
+		<MkAvatar class="avatar" :user="appearNote.user"/>
 		<div class="main">
-			<x-note-header class="header" :note="appearNote" :mini="true"/>
+			<XNoteHeader class="header" :note="appearNote" :mini="true"/>
 			<div class="body" ref="noteBody">
 				<p v-if="appearNote.cw != null" class="cw">
-				<mfm v-if="appearNote.cw != ''" class="text" :text="appearNote.cw" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis"/>
-					<x-cw-button v-model:value="showContent" :note="appearNote"/>
+					<Mfm v-if="appearNote.cw != ''" class="text" :text="appearNote.cw" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis"/>
+					<XCwButton v-model:value="showContent" :note="appearNote"/>
 				</p>
 				<div class="content" v-show="appearNote.cw == null || showContent">
 					<div class="text">
 						<span v-if="appearNote.isHidden" style="opacity: 0.5">({{ $t('private') }})</span>
-						<router-link class="reply" v-if="appearNote.replyId" :to="`/notes/${appearNote.replyId}`"><fa :icon="faReply"/></router-link>
-						<mfm v-if="appearNote.text" :text="appearNote.text" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis"/>
+						<router-link class="reply" v-if="appearNote.replyId" :to="`/notes/${appearNote.replyId}`"><Fa :icon="faReply"/></router-link>
+						<Mfm v-if="appearNote.text" :text="appearNote.text" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis"/>
 						<a class="rp" v-if="appearNote.renote != null">RN:</a>
 					</div>
 					<div class="files" v-if="appearNote.files.length > 0">
-						<x-media-list :media-list="appearNote.files" :parent-element="noteBody"/>
+						<XMediaList :media-list="appearNote.files" :parent-element="noteBody"/>
 					</div>
-					<x-poll v-if="appearNote.poll" :note="appearNote" ref="pollViewer" class="poll"/>
-					<mk-url-preview v-for="url in urls" :url="url" :key="url" :compact="true" :detail="detail" class="url-preview"/>
-					<div class="renote" v-if="appearNote.renote"><x-note-preview :note="appearNote.renote"/></div>
+					<XPoll v-if="appearNote.poll" :note="appearNote" ref="pollViewer" class="poll"/>
+					<MkUrlPreview v-for="url in urls" :url="url" :key="url" :compact="true" :detail="detail" class="url-preview"/>
+					<div class="renote" v-if="appearNote.renote"><XNotePreview :note="appearNote.renote"/></div>
 				</div>
-				<router-link v-if="appearNote.channel && !inChannel" class="channel" :to="`/channels/${appearNote.channel.id}`"><fa :icon="faSatelliteDish"/> {{ appearNote.channel.name }}</router-link>
+				<router-link v-if="appearNote.channel && !inChannel" class="channel" :to="`/channels/${appearNote.channel.id}`"><Fa :icon="faSatelliteDish"/> {{ appearNote.channel.name }}</router-link>
 			</div>
 			<footer class="footer">
-				<x-reactions-viewer :note="appearNote" ref="reactionsViewer"/>
+				<XReactionsViewer :note="appearNote" ref="reactionsViewer"/>
 				<button @click="reply()" class="button _button">
-					<template v-if="appearNote.reply"><fa :icon="faReplyAll"/></template>
-					<template v-else><fa :icon="faReply"/></template>
+					<template v-if="appearNote.reply"><Fa :icon="faReplyAll"/></template>
+					<template v-else><Fa :icon="faReply"/></template>
 					<p class="count" v-if="appearNote.repliesCount > 0">{{ appearNote.repliesCount }}</p>
 				</button>
 				<button v-if="canRenote" @click="renote()" class="button _button" ref="renoteButton">
-					<fa :icon="faRetweet"/><p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
+					<Fa :icon="faRetweet"/><p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
 				</button>
 				<button v-else class="button _button">
-					<fa :icon="faBan"/>
+					<Fa :icon="faBan"/>
 				</button>
 				<button v-if="appearNote.myReaction == null" class="button _button" @click="react()" ref="reactButton">
-					<fa :icon="faPlus"/>
+					<Fa :icon="faPlus"/>
 				</button>
 				<button v-if="appearNote.myReaction != null" class="button _button reacted" @click="undoReact(appearNote)" ref="reactButton">
-					<fa :icon="faMinus"/>
+					<Fa :icon="faMinus"/>
 				</button>
 				<button class="button _button" @click="menu()" ref="menuButton">
-					<fa :icon="faEllipsisH"/>
+					<Fa :icon="faEllipsisH"/>
 				</button>
 			</footer>
 		</div>
 	</article>
-	<x-sub v-for="note in replies" :key="note.id" :note="note" class="reply" :detail="true"/>
+	<XSub v-for="note in replies" :key="note.id" :note="note" class="reply" :detail="true"/>
 </div>
 <div v-else class="_panel muted" @click="muted = false">
 	<i18n-t path="userSaysSomething" tag="small">
 		<router-link class="name" :to="userPage(appearNote.user)" v-user-preview="appearNote.userId" place="name">
-			<mk-user-name :user="appearNote.user"/>
+			<MkUserName :user="appearNote.user"/>
 		</router-link>
 	</i18n-t>
 </div>
@@ -293,7 +293,7 @@ export default defineComponent({
 		this.noteBody = this.$refs.noteBody;
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		this.decapture(true);
 
 		if (this.$store.getters.isSignedIn) {
@@ -440,7 +440,7 @@ export default defineComponent({
 
 		reply(viaKeyboard = false) {
 			pleaseLogin();
-			this.$root.post({
+			os.post({
 				reply: this.appearNote,
 				animation: !viaKeyboard,
 			}, () => {
@@ -464,13 +464,14 @@ export default defineComponent({
 					text: this.$t('quote'),
 					icon: faQuoteRight,
 					action: () => {
-						this.$root.post({
+						os.post({
 							renote: this.appearNote,
 						});
 					}
-				}]
-				source: this.$refs.renoteButton,
+				}],
 				viaKeyboard
+			}, {
+				source: this.$refs.renoteButton,
 			});
 		},
 
@@ -485,14 +486,14 @@ export default defineComponent({
 			this.blur();
 			os.modal(defineAsyncComponent(() => import('@/components/reaction-picker.vue')), {
 				showFocus: viaKeyboard,
-			}, reaction => {
+			}, {}, {
+				source: this.$refs.reactButton
+			}).then(reaction => {
 				os.api('notes/reactions/create', {
 					noteId: this.appearNote.id,
 					reaction: reaction
 				});
 				this.focus();
-			}, {
-				source: this.$refs.reactButton
 			});
 		},
 
@@ -549,7 +550,7 @@ export default defineComponent({
 					noteId: this.appearNote.id
 				});
 
-				this.$root.post({ initialNote: this.appearNote, renote: this.appearNote.renote, reply: this.appearNote.reply });
+				os.post({ initialNote: this.appearNote, renote: this.appearNote.renote, reply: this.appearNote.reply });
 			});
 		},
 
@@ -684,8 +685,9 @@ export default defineComponent({
 
 			os.menu({
 				items: menu,
-				source: this.$refs.menuButton,
 				viaKeyboard
+			}, {
+				source: this.$refs.menuButton,
 			}).then(this.focus);
 		},
 
@@ -702,8 +704,9 @@ export default defineComponent({
 						this.isDeleted = true;
 					}
 				}],
-				source: this.$refs.renoteTime,
 				viaKeyboard: viaKeyboard
+			}, {
+				source: this.$refs.renoteTime,
 			});
 		},
 

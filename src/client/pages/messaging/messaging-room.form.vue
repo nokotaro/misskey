@@ -9,15 +9,14 @@
 		@keypress="onKeypress"
 		@paste="onPaste"
 		:placeholder="$t('inputMessageHere')"
-		v-autocomplete="{ model: 'text' }"
 	></textarea>
 	<div class="file" @click="file = null" v-if="file">{{ file.name }}</div>
-	<x-uploader ref="uploader" @uploaded="onUploaded"/>
+	<XUploader ref="uploader" @uploaded="onUploaded"/>
 	<button class="send _button" @click="send" :disabled="!canSend || sending" :title="$t('send')">
-		<template v-if="!sending"><fa :icon="faPaperPlane"/></template><template v-if="sending"><fa icon="spinner .spin"/></template>
+		<template v-if="!sending"><Fa :icon="faPaperPlane"/></template><template v-if="sending"><Fa icon="spinner .spin"/></template>
 	</button>
-	<button class="_button" @click="chooseFile"><fa :icon="faPhotoVideo"/></button>
-	<button class="_button" @click="insertEmoji"><fa :icon="faLaughSquint"/></button>
+	<button class="_button" @click="chooseFile"><Fa :icon="faPhotoVideo"/></button>
+	<button class="_button" @click="insertEmoji"><Fa :icon="faLaughSquint"/></button>
 	<input ref="file" type="file" @change="onChangeFile"/>
 </div>
 </template>
@@ -30,6 +29,7 @@ import * as autosize from 'autosize';
 import { formatTimeString } from '../../../misc/format-time-string';
 import { selectFile } from '@/scripts/select-file';
 import * as os from '@/os';
+import { Autocomplete } from '@/scripts/autocomplete';
 
 export default defineComponent({
 	components: {
@@ -79,6 +79,9 @@ export default defineComponent({
 	mounted() {
 		autosize(this.$refs.text);
 
+		// TODO: detach when unmount
+		new Autocomplete(this.$refs.text, this, { model: 'text' });
+
 		// 書きかけの投稿を復元
 		const draft = JSON.parse(localStorage.getItem('message_drafts') || '{}')[this.draftKey];
 		if (draft) {
@@ -120,7 +123,7 @@ export default defineComponent({
 
 		onDragover(e) {
 			const isFile = e.dataTransfer.items[0].kind == 'file';
-			const isDriveFile = e.dataTransfer.types[0] == 'mk_drive_file';
+			const isDriveFile = e.dataTransfer.types[0] == _DATA_TRANSFER_DRIVE_FILE_;
 			if (isFile || isDriveFile) {
 				e.preventDefault();
 				e.dataTransfer.dropEffect = e.dataTransfer.effectAllowed == 'all' ? 'copy' : 'move';
@@ -143,7 +146,7 @@ export default defineComponent({
 			}
 
 			//#region ドライブのファイル
-			const driveFile = e.dataTransfer.getData('mk_drive_file');
+			const driveFile = e.dataTransfer.getData(_DATA_TRANSFER_DRIVE_FILE_);
 			if (driveFile != null && driveFile != '') {
 				this.file = JSON.parse(driveFile);
 				e.preventDefault();
@@ -158,7 +161,7 @@ export default defineComponent({
 		},
 
 		chooseFile(e) {
-			selectFile(this, e.currentTarget || e.target, this.$t('selectFile'), false).then(file => {
+			selectFile(e.currentTarget || e.target, this.$t('selectFile'), false).then(file => {
 				this.file = file;
 			});
 		},
@@ -220,11 +223,11 @@ export default defineComponent({
 		},
 
 		async insertEmoji(ev) {
-			const vm = os.modal(await import('@/components/emoji-picker.vue'), {
+			os.modal(await import('@/components/emoji-picker.vue'), {}, {}, {
 				source: ev.currentTarget || ev.target
-			}).$once('chosen', emoji => {
+			}).then(emoji => {
+				if (emoji == null) return;
 				insertTextAtCursor(this.$refs.text, emoji);
-				vm.close();
 			});
 		}
 	}

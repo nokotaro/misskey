@@ -3,13 +3,13 @@
 	<img-with-blurhash class="bg" :hash="image.blurhash" :title="image.name"/>
 	<div class="text">
 		<div>
-			<b><fa :icon="faExclamationTriangle"/> {{ $t('sensitive') }}</b>
+			<b><Fa :icon="faExclamationTriangle"/> {{ $t('sensitive') }}</b>
 			<span>{{ $t('clickToShow') }}</span>
 		</div>
 	</div>
 </div>
 <div class="gqnyydlz" v-else>
-	<i><fa :icon="faEyeSlash" @click="hide = true"/></i>
+	<i><Fa :icon="faEyeSlash" @click="hide = true"/></i>
 	<a
 		:href="image.url"
 		:title="image.name"
@@ -65,7 +65,13 @@ export default defineComponent({
 		}
 	},
 	created() {
-		this.hide = this.image.isSensitive && !this.$store.state.device.alwaysShowNsfw;
+		// Plugin:register_note_view_interruptor を使って書き換えられる可能性があるためwatchする
+		this.$watch('image', () => {
+			this.hide = this.image.isSensitive && !this.$store.state.device.alwaysShowNsfw;
+		}, {
+			deep: true,
+			immediate: true,
+		});
 	},
 	methods: {
 		onClick() {

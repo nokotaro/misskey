@@ -3,7 +3,7 @@
 	<div class="stats" v-if="info">
 		<div class="_panel">
 			<div>
-				<b><fa :icon="faUser"/>{{ $t('users') }}</b>
+				<b><Fa :icon="faUser"/>{{ $t('users') }}</b>
 				<small>{{ $t('local') }}</small>
 			</div>
 			<div>
@@ -23,7 +23,7 @@
 		</div>
 		<div class="_panel">
 			<div>
-				<b><fa :icon="faUser"/>{{ $t('users') }}</b>
+				<b><Fa :icon="faUser"/>{{ $t('users') }}</b>
 				<small>{{ $t('remote') }}</small>
 			</div>
 			<div>
@@ -43,7 +43,7 @@
 		</div>
 		<div class="_panel">
 			<div>
-				<b><fa :icon="faPencilAlt"/>{{ $t('notes') }}</b>
+				<b><Fa :icon="faPencilAlt"/>{{ $t('notes') }}</b>
 				<small>{{ $t('local') }}</small>
 			</div>
 			<div>
@@ -63,7 +63,7 @@
 		</div>
 		<div class="_panel">
 			<div>
-				<b><fa :icon="faPencilAlt"/>{{ $t('notes') }}</b>
+				<b><Fa :icon="faPencilAlt"/>{{ $t('notes') }}</b>
 				<small>{{ $t('remote') }}</small>
 			</div>
 			<div>
@@ -84,10 +84,10 @@
 	</div>
 
 	<section class="_card">
-		<div class="_title" style="position: relative;"><fa :icon="faChartBar"/> {{ $t('statistics') }}<button @click="fetchChart" class="_button" style="position: absolute; right: 0; bottom: 0; top: 0; padding: inherit;"><fa :icon="faSync"/></button></div>
+		<div class="_title" style="position: relative;"><Fa :icon="faChartBar"/> {{ $t('statistics') }}<button @click="fetchChart" class="_button" style="position: absolute; right: 0; bottom: 0; top: 0; padding: inherit;"><Fa :icon="faSync"/></button></div>
 		<div class="_content" style="margin-top: -8px;">
 			<div class="selects" style="display: flex;">
-				<mk-select v-model:value="chartSrc" style="margin: 0; flex: 1;">
+				<MkSelect v-model:value="chartSrc" style="margin: 0; flex: 1;">
 					<optgroup :label="$t('federation')">
 						<option value="federation-instances">{{ $t('_charts.federationInstancesIncDec') }}</option>
 						<option value="federation-instances-total">{{ $t('_charts.federationInstancesTotal') }}</option>
@@ -109,11 +109,11 @@
 						<option value="drive">{{ $t('_charts.storageUsageIncDec') }}</option>
 						<option value="drive-total">{{ $t('_charts.storageUsageTotal') }}</option>
 					</optgroup>
-				</mk-select>
-				<mk-select v-model:value="chartSpan" style="margin: 0;">
+				</MkSelect>
+				<MkSelect v-model:value="chartSpan" style="margin: 0;">
 					<option value="hour">{{ $t('perHour') }}</option>
 					<option value="day">{{ $t('perDay') }}</option>
-				</mk-select>
+				</MkSelect>
 			</div>
 			<canvas ref="chart"></canvas>
 		</div>
@@ -126,7 +126,7 @@ import { defineComponent } from 'vue';
 import { faChartBar, faUser, faPencilAlt, faSync } from '@fortawesome/free-solid-svg-icons';
 import Chart from 'chart.js';
 import MkSelect from './ui/select.vue';
-import number from '../filters/number';
+import number from '@/filters/number';
 
 const sum = (...arr) => arr.reduce((r, a) => r.map((b, i) => a[i] + b));
 const negate = arr => arr.map(x => -x);

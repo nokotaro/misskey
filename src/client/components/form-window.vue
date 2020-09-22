@@ -1,29 +1,29 @@
 <template>
-<x-window ref="window" :width="400" :height="450" :no-padding="true" @closed="() => { $emit('closed'); destroyDom(); }" :with-ok-button="true" :ok-button-disabled="false" @ok="ok()" :can-close="false">
+<XWindow ref="window" :width="400" :height="450" :no-padding="true" @close="$emit('done')" :with-ok-button="true" :ok-button-disabled="false" @ok="ok()" :can-close="false">
 	<template #header>
 		{{ title }}
 	</template>
 	<div class="xkpnjxcv">
 		<label v-for="item in Object.keys(form).filter(item => !form[item].hidden)" :key="item">
-			<mk-input v-if="form[item].type === 'number'" v-model:value="values[item]" type="number" :step="form[item].step || 1">
+			<MkInput v-if="form[item].type === 'number'" v-model:value="values[item]" type="number" :step="form[item].step || 1">
 				<span v-text="form[item].label || item"></span>
 				<template v-if="form[item].description" #desc>{{ form[item].description }}</template>
-			</mk-input>
-			<mk-input v-else-if="form[item].type === 'string' && !item.multiline" v-model:value="values[item]" type="text">
+			</MkInput>
+			<MkInput v-else-if="form[item].type === 'string' && !item.multiline" v-model:value="values[item]" type="text">
 				<span v-text="form[item].label || item"></span>
 				<template v-if="form[item].description" #desc>{{ form[item].description }}</template>
-			</mk-input>
-			<mk-textarea v-else-if="form[item].type === 'string' && item.multiline" v-model:value="values[item]">
+			</MkInput>
+			<MkTextarea v-else-if="form[item].type === 'string' && item.multiline" v-model:value="values[item]">
 				<span v-text="form[item].label || item"></span>
 				<template v-if="form[item].description" #desc>{{ form[item].description }}</template>
-			</mk-textarea>
-			<mk-switch v-else-if="form[item].type === 'boolean'" v-model:value="values[item]">
+			</MkTextarea>
+			<MkSwitch v-else-if="form[item].type === 'boolean'" v-model:value="values[item]">
 				<span v-text="form[item].label || item"></span>
 				<template v-if="form[item].description" #desc>{{ form[item].description }}</template>
-			</mk-switch>
+			</MkSwitch>
 		</label>
 	</div>
-</x-window>
+</XWindow>
 </template>
 
 <script lang="ts">
@@ -53,6 +53,8 @@ export default defineComponent({
 		},
 	},
 
+	emits: ['done'],
+
 	data() {
 		return {
 			values: {}
@@ -61,14 +63,13 @@ export default defineComponent({
 
 	created() {
 		for (const item in this.form) {
-			Vue.set(this.values, item, this.form[item].hasOwnProperty('default') ? this.form[item].default : null);
+			this.values[item] = this.form[item].hasOwnProperty('default') ? this.form[item].default : null;
 		}
 	},
 
 	methods: {
 		ok() {
-			this.$emit('ok', this.values);
-			this.$refs.window.close();
+			this.$emit('done', this.values);
 		},
 	}
 });

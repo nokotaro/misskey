@@ -1,9 +1,9 @@
 <template>
 <div class="rdfaahpb">
 	<div class="buttons" ref="buttons" :class="{ showFocus }">
-		<button class="_button" v-for="(reaction, i) in rs" :key="reaction" @click="react(reaction)" :tabindex="i + 1" :title="reaction" v-particle><x-reaction-icon :reaction="reaction"/></button>
+		<button class="_button" v-for="(reaction, i) in rs" :key="reaction" @click="react(reaction)" :tabindex="i + 1" :title="reaction" v-particle><XReactionIcon :reaction="reaction"/></button>
 	</div>
-	<input class="text" v-model.trim="text" :placeholder="$t('enterEmoji')" @keyup.enter="reactText" @input="tryReactText" v-autocomplete="{ model: 'text' }">
+	<input class="text" ref="text" v-model.trim="text" :placeholder="$t('enterEmoji')" @keyup.enter="reactText" @input="tryReactText">
 </div>
 </template>
 
@@ -12,6 +12,7 @@ import { defineComponent } from 'vue';
 import { emojiRegex } from '../../misc/emoji-regex';
 import XReactionIcon from './reaction-icon.vue';
 import * as os from '@/os';
+import { Autocomplete } from '@/scripts/autocomplete';
 
 export default defineComponent({
 	components: {
@@ -29,6 +30,8 @@ export default defineComponent({
 			default: false
 		},
 	},
+
+	emits: ['done'],
 
 	data() {
 		return {
@@ -69,6 +72,9 @@ export default defineComponent({
 
 	mounted() {
 		this.focus = 0;
+
+		// TODO: detach when unmount
+		new Autocomplete(this.$refs.text, this, { model: 'text' });
 	},
 
 	methods: {

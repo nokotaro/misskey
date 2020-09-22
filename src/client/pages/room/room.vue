@@ -1,8 +1,8 @@
 <template>
 <div class="hveuntkp">
 	<portal to="header" v-if="user">
-		<mk-avatar class="avatar" :user="user" :disable-preview="true"/>
-		<mfm 
+		<MkAvatar class="avatar" :user="user" :disable-preview="true"/>
+		<Mfm 
 			:text="$t('_rooms.roomOf', { user: user.name || user.username })"
 			:plain="true" :nowrap="true" :custom-emojis="user.emojis" :is-note="false"
 		/>
@@ -11,12 +11,12 @@
 	<div class="controller _card _vMargin" v-if="objectSelected">
 		<div class="_content">
 			<p class="name">{{ selectedFurnitureName }}</p>
-			<x-preview ref="preview"/>
+			<XPreview ref="preview"/>
 			<template v-if="selectedFurnitureInfo.props">
 				<div v-for="k in Object.keys(selectedFurnitureInfo.props)" :key="k">
 					<p>{{ k }}</p>
 					<template v-if="selectedFurnitureInfo.props[k] === 'image'">
-						<mk-button @click="chooseImage(k, $event)">{{ $t('_rooms.chooseImage') }}</mk-button>
+						<MkButton @click="chooseImage(k, $event)">{{ $t('_rooms.chooseImage') }}</MkButton>
 					</template>
 					<template v-else-if="selectedFurnitureInfo.props[k] === 'color'">
 						<input type="color" :value="selectedFurnitureProps ? selectedFurnitureProps[k] : null" @change="updateColor(k, $event)"/>
@@ -25,33 +25,33 @@
 			</template>
 		</div>
 		<div class="_content">
-			<mk-button inline @click="translate()" :primary="isTranslateMode"><fa :icon="faArrowsAlt"/> {{ $t('_rooms.translate') }}</mk-button>
-			<mk-button inline @click="rotate()" :primary="isRotateMode"><fa :icon="faUndo"/> {{ $t('_rooms.rotate') }}</mk-button>
-			<mk-button inline v-if="isTranslateMode || isRotateMode" @click="exit()"><fa :icon="faBan"/> {{ $t('_rooms.exit') }}</mk-button>
+			<MkButton inline @click="translate()" :primary="isTranslateMode"><Fa :icon="faArrowsAlt"/> {{ $t('_rooms.translate') }}</MkButton>
+			<MkButton inline @click="rotate()" :primary="isRotateMode"><Fa :icon="faUndo"/> {{ $t('_rooms.rotate') }}</MkButton>
+			<MkButton inline v-if="isTranslateMode || isRotateMode" @click="exit()"><Fa :icon="faBan"/> {{ $t('_rooms.exit') }}</MkButton>
 		</div>
 		<div class="_content">
-			<mk-button @click="remove()"><fa :icon="faTrashAlt"/> {{ $t('_rooms.remove') }}</mk-button>
+			<MkButton @click="remove()"><Fa :icon="faTrashAlt"/> {{ $t('_rooms.remove') }}</MkButton>
 		</div>
 	</div>
 
 	<div class="menu _card _vMargin" v-if="isMyRoom">
 		<div class="_content">
-			<mk-button @click="add()"><fa :icon="faBoxOpen"/> {{ $t('_rooms.addFurniture') }}</mk-button>
+			<MkButton @click="add()"><Fa :icon="faBoxOpen"/> {{ $t('_rooms.addFurniture') }}</MkButton>
 		</div>
 		<div class="_content">
-			<mk-select :value="roomType" @onUpdate:value="updateRoomType($event)">
+			<MkSelect :value="roomType" @update:value="updateRoomType($event)">
 				<template #label>{{ $t('_rooms.roomType') }}</template>
 				<option value="default">{{ $t('_rooms._roomType.default') }}</option>
 				<option value="washitsu">{{ $t('_rooms._roomType.washitsu') }}</option>
-			</mk-select>
+			</MkSelect>
 			<label v-if="roomType === 'default'">
 				<span>{{ $t('_rooms.carpetColor') }}</span>
 				<input type="color" :value="carpetColor" @change="updateCarpetColor($event)"/>
 			</label>
 		</div>
 		<div class="_content">
-			<mk-button inline :disabled="!changed" primary @click="save()"><fa :icon="faSave"/> {{ $t('save') }}</mk-button>
-			<mk-button inline @click="clear()"><fa :icon="faBroom"/> {{ $t('_rooms.clear') }}</mk-button>
+			<MkButton inline :disabled="!changed" primary @click="save()"><Fa :icon="faSave"/> {{ $t('save') }}</MkButton>
+			<MkButton inline @click="clear()"><Fa :icon="faBroom"/> {{ $t('_rooms.clear') }}</MkButton>
 		</div>
 	</div>
 </div>
@@ -158,7 +158,7 @@ export default defineComponent({
 		}
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		room.destroy();
 		window.removeEventListener('beforeunload', this.beforeunload);
 	},
@@ -224,7 +224,7 @@ export default defineComponent({
 		},
 
 		chooseImage(key, e) {
-			selectFile(this, e.currentTarget || e.target, null, false).then(file => {
+			selectFile(e.currentTarget || e.target, null, false).then(file => {
 				room.updateProp(key, `/proxy/?${urlQuery({ url: file.thumbnailUrl })}`);
 				this.$refs.preview.selected(room.getSelectedObject());
 				this.changed = true;

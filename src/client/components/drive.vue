@@ -2,12 +2,12 @@
 <div class="yfudmmck">
 	<nav>
 		<div class="path" @contextmenu.prevent.stop="() => {}">
-			<x-nav-folder :class="{ current: folder == null }"/>
+			<XNavFolder :class="{ current: folder == null }"/>
 			<template v-for="f in hierarchyFolders">
-				<span class="separator" :key="f.id + ':separator'"><fa :icon="faAngleRight"/></span>
-				<x-nav-folder :folder="f" :key="f.id"/>
+				<span class="separator" :key="f.id + ':separator'"><Fa :icon="faAngleRight"/></span>
+				<XNavFolder :folder="f" :key="f.id"/>
 			</template>
-			<span class="separator" v-if="folder != null"><fa :icon="faAngleRight"/></span>
+			<span class="separator" v-if="folder != null"><Fa :icon="faAngleRight"/></span>
 			<span class="folder current" v-if="folder != null">{{ folder.name }}</span>
 		</div>
 	</nav>
@@ -20,16 +20,16 @@
 	>
 		<div class="contents" ref="contents">
 			<div class="folders" ref="foldersContainer" v-show="folders.length > 0">
-				<x-folder v-for="f in folders" :key="f.id" class="folder" :folder="f" :select-mode="select === 'folder'" :is-selected="selectedFolders.some(x => x.id === f.id)" @chosen="chooseFolder"/>
+				<XFolder v-for="f in folders" :key="f.id" class="folder" :folder="f" :select-mode="select === 'folder'" :is-selected="selectedFolders.some(x => x.id === f.id)" @chosen="chooseFolder"/>
 				<!-- SEE: https://stackoverflow.com/questions/18744164/flex-box-align-last-row-to-grid -->
 				<div class="padding" v-for="(n, i) in 16" :key="i"></div>
-				<mk-button ref="moreFolders" v-if="moreFolders">{{ $t('loadMore') }}</mk-button>
+				<MkButton ref="moreFolders" v-if="moreFolders">{{ $t('loadMore') }}</MkButton>
 			</div>
 			<div class="files" ref="filesContainer" v-show="files.length > 0">
-				<x-file v-for="file in files" :key="file.id" class="file" :file="file" :select-mode="select === 'file'" :is-selected="selectedFiles.some(x => x.id === file.id)" @chosen="chooseFile"/>
+				<XFile v-for="file in files" :key="file.id" class="file" :file="file" :select-mode="select === 'file'" :is-selected="selectedFiles.some(x => x.id === file.id)" @chosen="chooseFile"/>
 				<!-- SEE: https://stackoverflow.com/questions/18744164/flex-box-align-last-row-to-grid -->
 				<div class="padding" v-for="(n, i) in 16" :key="i"></div>
-				<mk-button ref="loadMoreFiles" @click="fetchMoreFiles" v-show="moreFiles">{{ $t('loadMore') }}</mk-button>
+				<MkButton ref="loadMoreFiles" @click="fetchMoreFiles" v-show="moreFiles">{{ $t('loadMore') }}</MkButton>
 			</div>
 			<div class="empty" v-if="files.length == 0 && folders.length == 0 && !fetching">
 				<p v-if="draghover">{{ $t('empty-draghover') }}</p>
@@ -37,10 +37,10 @@
 				<p v-if="!draghover && folder != null">{{ $t('emptyFolder') }}</p>
 			</div>
 		</div>
-		<mk-loading v-if="fetching"/>
+		<MkLoading v-if="fetching"/>
 	</div>
 	<div class="dropzone" v-if="draghover"></div>
-	<x-uploader ref="uploader" @change="onChangeUploaderUploads" @uploaded="onUploaderUploaded"/>
+	<XUploader ref="uploader" @change="onChangeUploaderUploads" @uploaded="onUploaderUploaded"/>
 	<input ref="fileInput" type="file" accept="*/*" multiple="multiple" tabindex="-1" @change="onChangeFileInput"/>
 </div>
 </template>
@@ -85,6 +85,8 @@ export default defineComponent({
 			default: null
 		}
 	},
+
+	emits: ['selected', 'change-selection', 'move-root', 'cd', 'open-folder'],
 
 	data() {
 		return {
@@ -165,7 +167,7 @@ export default defineComponent({
 		}
 	},
 
-	beforeDestroy() {
+	beforeUnmount() {
 		this.connection.dispose();
 		this.ilFilesObserver.disconnect();
 	},
@@ -222,8 +224,8 @@ export default defineComponent({
 			}
 
 			const isFile = e.dataTransfer.items[0].kind == 'file';
-			const isDriveFile = e.dataTransfer.types[0] == 'mk_drive_file';
-			const isDriveFolder = e.dataTransfer.types[0] == 'mk_drive_folder';
+			const isDriveFile = e.dataTransfer.types[0] == _DATA_TRANSFER_DRIVE_FILE_;
+			const isDriveFolder = e.dataTransfer.types[0] == _DATA_TRANSFER_DRIVE_FOLDER_;
 
 			if (isFile || isDriveFile || isDriveFolder) {
 				e.dataTransfer.dropEffect = e.dataTransfer.effectAllowed == 'all' ? 'copy' : 'move';
@@ -254,7 +256,7 @@ export default defineComponent({
 			}
 
 			//#region ドライブのファイル
-			const driveFile = e.dataTransfer.getData('mk_drive_file');
+			const driveFile = e.dataTransfer.getData(_DATA_TRANSFER_DRIVE_FILE_);
 			if (driveFile != null && driveFile != '') {
 				const file = JSON.parse(driveFile);
 				if (this.files.some(f => f.id == file.id)) return;
@@ -267,7 +269,7 @@ export default defineComponent({
 			//#endregion
 
 			//#region ドライブのフォルダ
-			const driveFolder = e.dataTransfer.getData('mk_drive_folder');
+			const driveFolder = e.dataTransfer.getData(_DATA_TRANSFER_DRIVE_FOLDER_);
 			if (driveFolder != null && driveFolder != '') {
 				const folder = JSON.parse(driveFolder);
 
@@ -466,7 +468,7 @@ export default defineComponent({
 
 			if (this.folders.some(f => f.id == folder.id)) {
 				const exist = this.folders.map(f => f.id).indexOf(folder.id);
-				Vue.set(this.folders, exist, folder);
+				this.folders[exist] = folder;
 				return;
 			}
 
@@ -483,7 +485,7 @@ export default defineComponent({
 
 			if (this.files.some(f => f.id == file.id)) {
 				const exist = this.files.map(f => f.id).indexOf(file.id);
-				Vue.set(this.files, exist, file);
+				this.files[exist] = file;
 				return;
 			}
 

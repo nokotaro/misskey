@@ -1,13 +1,13 @@
 <template>
 <div class="skeikyzd" v-show="files.length != 0">
-	<x-draggable class="files" :list="files" animation="150" delay="100" delayOnTouchOnly="true">
+	<XDraggable class="files" :list="files" animation="150" delay="100" delay-on-touch-only="true">
 		<div v-for="file in files" :key="file.id" @click="showFileMenu(file, $event)" @contextmenu.prevent="showFileMenu(file, $event)">
-			<x-file-thumbnail :data-id="file.id" class="thumbnail" :file="file" fit="cover"/>
+			<XFileThumbnail :data-id="file.id" class="thumbnail" :file="file" fit="cover"/>
 			<div class="sensitive" v-if="file.isSensitive">
-				<fa class="icon" :icon="faExclamationTriangle"/>
+				<Fa class="icon" :icon="faExclamationTriangle"/>
 			</div>
 		</div>
-	</x-draggable>
+	</XDraggable>
 	<p class="remain">{{ 4 - files.length }}/4</p>
 </div>
 </template>
@@ -36,6 +36,8 @@ export default defineComponent({
 		}
 	},
 
+	emits: ['updated', 'detach'],
+
 	data() {
 		return {
 			menu: null as Promise<null> | null,
@@ -48,8 +50,8 @@ export default defineComponent({
 		detachMedia(id) {
 			if (this.detachMediaFn) {
 				this.detachMediaFn(id);
-			} else if (this.$parent.detachMedia) {
-				this.$parent.detachMedia(id);
+			} else {
+				this.$emit('detach', id);
 			}
 		},
 		toggleSensitive(file) {
@@ -58,7 +60,7 @@ export default defineComponent({
 				isSensitive: !file.isSensitive
 			}).then(() => {
 				file.isSensitive = !file.isSensitive;
-				this.$parent.updateMedia(file);
+				this.$emit('updated', file);
 			});
 		},
 		async rename(file) {
@@ -75,7 +77,7 @@ export default defineComponent({
 				name: result
 			}).then(() => {
 				file.name = result;
-				this.$parent.updateMedia(file);
+				this.$emit('updated', file);
 			});
 		},
 		showFileMenu(file, ev: MouseEvent) {
@@ -94,7 +96,8 @@ export default defineComponent({
 					icon: faTimesCircle,
 					action: () => { this.detachMedia(file.id) }
 				}],
-				source: ev.currentTarget || ev.target
+			}, {
+				source: ev.currentTarget || ev.target,
 			}).then(() => this.menu = null);
 		}
 	}

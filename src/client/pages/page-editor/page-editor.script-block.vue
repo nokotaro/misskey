@@ -1,9 +1,9 @@
 <template>
-<x-container :removable="removable" @remove="() => $emit('remove')" :error="error" :warn="warn" :draggable="draggable">
-	<template #header><fa v-if="icon" :icon="icon"/> <template v-if="title">{{ title }} <span class="turmquns" v-if="typeText">({{ typeText }})</span></template><template v-else-if="typeText">{{ typeText }}</template></template>
+<XContainer :removable="removable" @remove="() => $emit('remove')" :error="error" :warn="warn" :draggable="draggable">
+	<template #header><Fa v-if="icon" :icon="icon"/> <template v-if="title">{{ title }} <span class="turmquns" v-if="typeText">({{ typeText }})</span></template><template v-else-if="typeText">{{ typeText }}</template></template>
 	<template #func>
 		<button @click="changeType()" class="_button">
-			<fa :icon="faPencilAlt"/>
+			<Fa :icon="faPencilAlt"/>
 		</button>
 	</template>
 
@@ -40,19 +40,19 @@
 		<input v-model="value.value"/>
 	</section>
 	<section v-else-if="value.type === 'fn'" class="" style="padding:0 16px 16px 16px;">
-		<mk-textarea v-model:value="slots">
+		<MkTextarea v-model:value="slots">
 			<span>{{ $t('_pages.script.blocks._fn.slots') }}</span>
 			<template #desc>{{ $t('_pages.script.blocks._fn.slots-info') }}</template>
-		</mk-textarea>
-		<x-v v-if="value.value.expression" v-model:value="value.value.expression" :title="$t(`_pages.script.blocks._fn.arg1`)" :get-expected-type="() => null" :hpml="hpml" :fn-slots="value.value.slots" :name="name"/>
+		</MkTextarea>
+		<XV v-if="value.value.expression" v-model:value="value.value.expression" :title="$t(`_pages.script.blocks._fn.arg1`)" :get-expected-type="() => null" :hpml="hpml" :fn-slots="value.value.slots" :name="name"/>
 	</section>
 	<section v-else-if="value.type.startsWith('fn:')" class="" style="padding:16px;">
-		<x-v v-for="(x, i) in value.args" v-model:value="value.args[i]" :title="hpml.getVarByName(value.type.split(':')[1]).value.slots[i].name" :get-expected-type="() => null" :hpml="hpml" :name="name" :key="i"/>
+		<XV v-for="(x, i) in value.args" v-model:value="value.args[i]" :title="hpml.getVarByName(value.type.split(':')[1]).value.slots[i].name" :get-expected-type="() => null" :hpml="hpml" :name="name" :key="i"/>
 	</section>
 	<section v-else class="" style="padding:16px;">
-		<x-v v-for="(x, i) in value.args" v-model:value="value.args[i]" :title="$t(`_pages.script.blocks._${value.type}.arg${i + 1}`)" :get-expected-type="() => _getExpectedType(i)" :hpml="hpml" :name="name" :fn-slots="fnSlots" :key="i"/>
+		<XV v-for="(x, i) in value.args" v-model:value="value.args[i]" :title="$t(`_pages.script.blocks._${value.type}.arg${i + 1}`)" :get-expected-type="() => _getExpectedType(i)" :hpml="hpml" :name="name" :fn-slots="fnSlots" :key="i"/>
 	</section>
-</x-container>
+</XContainer>
 </template>
 
 <script lang="ts">
@@ -124,11 +124,14 @@ export default defineComponent({
 	},
 
 	watch: {
-		slots() {
-			this.value.value.slots = this.slots.split('\n').map(x => ({
-				name: x,
-				type: null
-			}));
+		slots: {
+			handler() {
+				this.value.value.slots = this.slots.split('\n').map(x => ({
+					name: x,
+					type: null
+				}));
+			},
+			deep: true
 		}
 	},
 
@@ -137,7 +140,7 @@ export default defineComponent({
 	},
 
 	created() {
-		if (this.value.value == null) Vue.set(this.value, 'value', null);
+		if (this.value.value == null) this.value.value = null;
 
 		if (this.value.value && this.value.value.slots) this.slots = this.value.value.slots.map(x => x.name).join('\n');
 
@@ -146,9 +149,10 @@ export default defineComponent({
 
 			if (this.value.type === 'fn') {
 				const id = uuid();
-				this.value.value = {};
-				Vue.set(this.value.value, 'slots', []);
-				Vue.set(this.value.value, 'expression', { id, type: null });
+				this.value.value = {
+					slots: [],
+					expression: { id, type: null }
+				};
 				return;
 			}
 
@@ -161,7 +165,7 @@ export default defineComponent({
 					const id = uuid();
 					empties.push({ id, type: null });
 				}
-				Vue.set(this.value, 'args', empties);
+				this.value.args = empties;
 				return;
 			}
 
@@ -172,7 +176,7 @@ export default defineComponent({
 				const id = uuid();
 				empties.push({ id, type: null });
 			}
-			Vue.set(this.value, 'args', empties);
+			this.value.args = empties;
 
 			for (let i = 0; i < funcDefs[this.value.type].in.length; i++) {
 				const inType = funcDefs[this.value.type].in[i];

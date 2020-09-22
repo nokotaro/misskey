@@ -1,5 +1,5 @@
 <template>
-<x-menu :source="source" :items="items" @closed="$emit('closed')"/>
+<XMenu :source="source" :items="items" @closed="$emit('closed')"/>
 </template>
 
 <script lang="ts">
@@ -30,7 +30,7 @@ export default defineComponent({
 			icon: faEnvelope,
 			text: this.$t('sendMessage'),
 			action: () => {
-				this.$root.post({ specified: this.user });
+				os.post({ specified: this.user });
 			}
 		}, this.$store.state.i.id != this.user.id ? {
 			type: 'link',

@@ -1,13 +1,13 @@
 <template>
-<x-container @remove="() => $emit('remove')" :draggable="true">
-	<template #header><fa :icon="faPaperPlane"/> {{ $t('_pages.blocks.post') }}</template>
+<XContainer @remove="() => $emit('remove')" :draggable="true">
+	<template #header><Fa :icon="faPaperPlane"/> {{ $t('_pages.blocks.post') }}</template>
 
 	<section style="padding: 16px;">
-		<mk-textarea v-model:value="value.text">{{ $t('_pages.blocks._post.text') }}</mk-textarea>
-		<mk-switch v-model:value="value.attachCanvasImage"><span>{{ $t('_pages.blocks._post.attachCanvasImage') }}</span></mk-switch>
-		<mk-input v-if="value.attachCanvasImage" v-model:value="value.canvasId"><span>{{ $t('_pages.blocks._post.canvasId') }}</span></mk-input>
+		<MkTextarea v-model:value="value.text">{{ $t('_pages.blocks._post.text') }}</MkTextarea>
+		<MkSwitch v-model:value="value.attachCanvasImage"><span>{{ $t('_pages.blocks._post.attachCanvasImage') }}</span></MkSwitch>
+		<MkInput v-if="value.attachCanvasImage" v-model:value="value.canvasId"><span>{{ $t('_pages.blocks._post.canvasId') }}</span></MkInput>
 	</section>
-</x-container>
+</XContainer>
 </template>
 
 <script lang="ts">
@@ -37,9 +37,9 @@ export default defineComponent({
 	},
 
 	created() {
-		if (this.value.text == null) Vue.set(this.value, 'text', '');
-		if (this.value.attachCanvasImage == null) Vue.set(this.value, 'attachCanvasImage', false);
-		if (this.value.canvasId == null) Vue.set(this.value, 'canvasId', '');
+		if (this.value.text == null) this.value.text = '';
+		if (this.value.attachCanvasImage == null) this.value.attachCanvasImage = false;
+		if (this.value.canvasId == null) this.value.canvasId = '';
 	},
 });
 </script>

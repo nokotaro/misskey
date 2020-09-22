@@ -1,20 +1,20 @@
 <template>
-<x-window ref="window" :width="800" :height="500" @closed="() => { $emit('closed'); destroyDom(); }" :with-ok-button="true" :ok-button-disabled="(type === 'file') && (selected.length === 0)" @ok="ok()">
+<XWindow :width="800" :height="500" @close="$emit('done')" :with-ok-button="true" :ok-button-disabled="(type === 'file') && (selected.length === 0)" @ok="ok()">
 	<template #header>
 		{{ multiple ? ((type === 'file') ? $t('selectFiles') : $t('selectFolders')) : ((type === 'file') ? $t('selectFile') : $t('selectFolder')) }}
-		<span v-if="selected.length > 0" style="margin-left: 8px; opacity: 0.5;">({{ number(number) }})</span>
+		<span v-if="selected.length > 0" style="margin-left: 8px; opacity: 0.5;">({{ number(selected.length) }})</span>
 	</template>
 	<div>
-		<x-drive :multiple="multiple" @change-selection="onChangeSelection" :select="type"/>
+		<XDrive :multiple="multiple" @change-selection="onChangeSelection" @selected="ok()" :select="type"/>
 	</div>
-</x-window>
+</XWindow>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import XDrive from './drive.vue';
 import XWindow from './window.vue';
-import number from '../filters/number';
+import number from '@/filters/number';
 import * as os from '@/os';
 
 export default defineComponent({
@@ -35,6 +35,8 @@ export default defineComponent({
 		}
 	},
 
+	emits: ['done'],
+
 	data() {
 		return {
 			selected: []
@@ -43,8 +45,7 @@ export default defineComponent({
 
 	methods: {
 		ok() {
-			this.$emit('selected', this.selected);
-			this.$refs.window.close();
+			this.$emit('done', this.selected);
 		},
 
 		onChangeSelection(xs) {

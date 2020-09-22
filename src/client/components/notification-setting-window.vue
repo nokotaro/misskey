@@ -1,21 +1,21 @@
 <template>
-<x-window ref="window" :width="400" :height="450" :no-padding="true" @closed="() => { $emit('closed'); destroyDom(); }" :with-ok-button="true" :ok-button-disabled="false" @ok="ok()">
+<XWindow :width="400" :height="450" :no-padding="true" @close="$emit('done')" :with-ok-button="true" :ok-button-disabled="false" @ok="ok()">
 	<template #header>{{ $t('notificationSetting') }}</template>
 	<div class="vv94n3oa">
 		<div v-if="showGlobalToggle">
-			<mk-switch v-model:value="useGlobalSetting">
+			<MkSwitch v-model:value="useGlobalSetting">
 				{{ $t('useGlobalSetting') }}
 				<template #desc>{{ $t('useGlobalSettingDesc') }}</template>
-			</mk-switch>
+			</MkSwitch>
 		</div>
 		<div v-if="!useGlobalSetting">
-			<mk-info>{{ $t('notificationSettingDesc') }}</mk-info>
-			<mk-button inline @click="disableAll">{{ $t('disableAll') }}</mk-button>
-			<mk-button inline @click="enableAll">{{ $t('enableAll') }}</mk-button>
-			<mk-switch v-for="type in notificationTypes" :key="type" v-model:value="typesMap[type]">{{ $t(`_notification._types.${type}`) }}</mk-switch>
+			<MkInfo>{{ $t('notificationSettingDesc') }}</MkInfo>
+			<MkButton inline @click="disableAll">{{ $t('disableAll') }}</MkButton>
+			<MkButton inline @click="enableAll">{{ $t('enableAll') }}</MkButton>
+			<MkSwitch v-for="type in notificationTypes" :key="type" v-model:value="typesMap[type]">{{ $t(`_notification._types.${type}`) }}</MkSwitch>
 		</div>
 	</div>
-</x-window>
+</XWindow>
 </template>
 
 <script lang="ts">
@@ -49,6 +49,8 @@ export default defineComponent({
 		}
 	},
 
+	emits: ['done'],
+
 	data() {
 		return {
 			typesMap: {} as Record<typeof notificationTypes[number], boolean>,
@@ -61,7 +63,7 @@ export default defineComponent({
 		this.useGlobalSetting = this.includingTypes === null && this.showGlobalToggle;
 
 		for (const type of this.notificationTypes) {
-			Vue.set(this.typesMap, type, this.includingTypes === null || this.includingTypes.includes(type));
+			this.typesMap[type] = this.includingTypes === null || this.includingTypes.includes(type);
 		}
 	},
 
@@ -70,8 +72,7 @@ export default defineComponent({
 			const includingTypes = this.useGlobalSetting ? null : (Object.keys(this.typesMap) as typeof notificationTypes[number][])
 				.filter(type => this.typesMap[type]);
 
-			this.$emit('ok', { includingTypes });
-			this.$refs.window.close();
+			this.$emit('done', { includingTypes });
 		},
 
 		disableAll() {

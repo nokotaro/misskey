@@ -1,19 +1,19 @@
 <template>
 <div>
-	<portal to="header"><fa :icon="faBroadcastTower"/>{{ $t('announcements') }}</portal>
+	<portal to="header"><Fa :icon="faBroadcastTower"/>{{ $t('announcements') }}</portal>
 
-	<mk-pagination :pagination="pagination" #default="{items}" class="ruryvtyk" ref="list">
+	<MkPagination :pagination="pagination" #default="{items}" class="ruryvtyk" ref="list">
 		<section class="_card announcement" v-for="(announcement, i) in items" :key="announcement.id">
 			<div class="_title"><span v-if="$store.getters.isSignedIn && !announcement.isRead">🆕 </span>{{ announcement.title }}</div>
 			<div class="_content">
-				<mfm :text="announcement.text"/>
+				<Mfm :text="announcement.text"/>
 				<img v-if="announcement.imageUrl" :src="announcement.imageUrl"/>
 			</div>
 			<div class="_footer" v-if="$store.getters.isSignedIn && !announcement.isRead">
-				<mk-button @click="read(items, announcement, i)" primary><fa :icon="faCheck"/> {{ $t('gotIt') }}</mk-button>
+				<MkButton @click="read(items, announcement, i)" primary><Fa :icon="faCheck"/> {{ $t('gotIt') }}</MkButton>
 			</div>
 		</section>
-	</mk-pagination>
+	</MkPagination>
 </div>
 </template>
 
@@ -49,10 +49,10 @@ export default defineComponent({
 	methods: {
 		// TODO: これは実質的に親コンポーネントから子コンポーネントのプロパティを変更してるのでなんとかしたい
 		read(items, announcement, i) {
-			Vue.set(items, i, {
+			items[i] = {
 				...announcement,
 				isRead: true,
-			});
+			};
 			os.api('i/read-announcement', { announcementId: announcement.id });
 		},
 	}
