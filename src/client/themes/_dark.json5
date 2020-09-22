@@ -1,12 +1,12 @@
 // ダークテーマのベーステーマ
 // このテーマが直接使われることは無い
 {
-	id: "dark",
+	id: 'dark',
 
-	name: "Dark",
-	author: "syuilo",
-	desc: "Default dark theme",
-	kind: "dark",
+	name: 'Dark',
+	author: 'syuilo',
+	desc: 'Default dark theme',
+	kind: 'dark',
 
 	props: {
 		accent: '#4a69d0',

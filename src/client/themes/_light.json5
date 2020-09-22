@@ -1,12 +1,12 @@
 // ライトテーマのベーステーマ
 // このテーマが直接使われることは無い
 {
-	id: "light",
+	id: 'light',
 
-	name: "Light",
-	author: "syuilo",
-	desc: "Default light theme",
-	kind: "light",
+	name: 'Light',
+	author: 'syuilo',
+	desc: 'Default light theme',
+	kind: 'light',
 
 	props: {
 		accent: '#4a69d0',
