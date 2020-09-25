@@ -16,7 +16,7 @@
 	<div class="renote" v-if="isRenote">
 		<MkAvatar class="avatar" :user="note.user"/>
 		<Fa :icon="faRetweet"/>
-		<i18n-t path="renotedBy" tag="span">
+		<i18n-t keypath="renotedBy" tag="span">
 			<router-link class="name" :to="userPage(note.user)" v-user-preview="note.userId" place="user">
 				<MkUserName :user="note.user"/>
 			</router-link>
@@ -87,7 +87,7 @@
 	<XSub v-for="note in replies" :key="note.id" :note="note" class="reply" :detail="true"/>
 </div>
 <div v-else class="_panel muted" @click="muted = false">
-	<i18n-t path="userSaysSomething" tag="small">
+	<i18n-t keypath="userSaysSomething" tag="small">
 		<router-link class="name" :to="userPage(appearNote.user)" v-user-preview="appearNote.userId" place="name">
 			<MkUserName :user="appearNote.user"/>
 		</router-link>
@@ -118,11 +118,6 @@ import { userPage } from '../filters/user';
 import * as os from '@/os';
 
 export default defineComponent({
-	model: {
-		prop: 'note',
-		event: 'updated'
-	},
-
 	components: {
 		XSub,
 		XNoteHeader,
@@ -156,6 +151,8 @@ export default defineComponent({
 			default: false
 		},
 	},
+
+	emits: ['update:note'],
 
 	data() {
 		return {
@@ -260,7 +257,7 @@ export default defineComponent({
 			for (const interruptor of this.$store.state.noteViewInterruptors) {
 				result = utils.valToJs(await interruptor.handler(JSON.parse(JSON.stringify(result))));
 			}
-			this.$emit('updated', Object.freeze(result));
+			this.$emit('update:note', Object.freeze(result));
 		}
 
 		this.muted = await checkWordMute(this.appearNote, this.$store.state.i, this.$store.state.settings.mutedWords);
@@ -303,7 +300,7 @@ export default defineComponent({
 
 	methods: {
 		updateAppearNote(v) {
-			this.$emit('updated', Object.freeze(this.isRenote ? {
+			this.$emit('update:note', Object.freeze(this.isRenote ? {
 				...this.note,
 				renote: {
 					...this.note.renote,
