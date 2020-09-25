@@ -11,7 +11,7 @@
 	"private": true,
 	"scripts": {
 		"start": "node ./index.js",
-		"start-product": "node node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=production node ./index.js",
+		"start-product": "cross-env NODE_ENV=production node ./index.js",
 		"init": "npm run migrate",
 		"ormconfig": "node ./built/ormconfig.js",
 		"migrate": "ts-node ./node_modules/typeorm/cli.js migration:run",
