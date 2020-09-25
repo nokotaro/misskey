@@ -146,7 +146,7 @@
 				</div>
 			</MkContainer>
 
-			<section class="_card logs">
+			<section class="_section logs">
 				<div class="_title"><Fa :icon="faStream"/> {{ $t('serverLogs') }}</div>
 				<div class="_content">
 					<div class="_inputs">
@@ -266,10 +266,6 @@ export default defineComponent({
 			this.logs = [];
 			this.fetchLogs();
 		}
-	},
-
-	created() {
-		this.$store.commit('setFullView', true);
 	},
 
 	mounted() {
@@ -539,7 +535,6 @@ export default defineComponent({
 		this.connection.off('statsLog', this.onStatsLog);
 		this.connection.dispose();
 		this.queueConnection.dispose();
-		this.$store.commit('setFullView', false);
 	},
 
 	methods: {

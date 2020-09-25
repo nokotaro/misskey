@@ -295,7 +295,8 @@ hr {
 }
 
 ._close_ ._list_ > * {
-	box-shadow: 0 1px 0 0 var(--divider), 0 -1px 0 0 var(--divider);
+	border: none;
+	border-bottom: solid 1px var(--divider);
 	border-radius: 0;
 	margin: 0 !important;
 }
@@ -326,51 +327,39 @@ hr {
 	}
 }
 
-._card {
-	@extend ._panel;
+._section {
+	padding: 32px;
+	border-bottom: solid 1px var(--divider);
+
+	@media (max-width: 500px) {
+		padding: 16px;
+	}
+
+	> ._title, > ._content {
+		max-width: 750px;
+		margin: 0 auto;
+	}
 
 	> ._title {
-		margin: 0;
-		padding: 22px 32px;
-		font-size: 1.1em;
-		border-bottom: solid 1px var(--panelHeaderDivider);
+		margin-bottom: 24px;
+		font-size: 1.25em;
 		font-weight: bold;
-		background: var(--panelHeaderBg);
-		color: var(--panelHeaderFg);
-
-		@media (max-width: 500px) {
-			padding: 16px;
-			font-size: 1em;
-		}
 	}
 
-	> ._content {
-		padding: 32px;
-
-		@media (max-width: 500px) {
-			padding: 16px;
-		}
-
-		&._noPad {
-			padding: 0 !important;
-		}
-
-		& + ._content {
-			border-top: solid 1px var(--divider);
-		}
-	}
-
-	> ._footer {
+	> ._content + ._content {
 		border-top: solid 1px var(--divider);
-		padding: 24px 32px;
+		margin-top: 16px;
+		padding-top: 16px;
+	}
 
-		@media (max-width: 500px) {
-			padding: 16px;
-		}
+	&._fitBottom {
+		padding-bottom: 0;
 	}
 }
 
-._narrow_ ._card {
+._narrow_ ._section {
+	padding: 0;
+
 	> ._title {
 		padding: 16px;
 		font-size: 1em;
@@ -383,6 +372,14 @@ hr {
 	> ._footer {
 		padding: 16px;
 	}
+}
+
+._frame {
+	position: relative;
+	z-index: 1;
+	overflow: hidden;
+	border: solid 1px var(--divider);
+	border-radius: var(--radius);
 }
 
 ._vMargin {
