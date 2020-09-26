@@ -8,9 +8,11 @@
 				<button class="_button back" v-if="canBack" @click="back()"><Fa :icon="faChevronLeft"/></button>
 			</transition>
 			<template v-if="pageInfo">
-				<div class="title" v-for="header in pageInfo.header" :key="header.id" :class="{ clickable: header.onClick, selected: header.selected }" @click="header.onClick">
-					<Fa v-if="header.icon" :icon="header.icon" class="icon"/>
-					<span>{{ header.title }}</span>
+				<div class="titleContainer">
+					<div class="title" v-for="header in pageInfo.header" :key="header.id" :class="{ clickable: header.onClick, selected: header.selected }" @click="header.onClick">
+						<Fa v-if="header.icon" :icon="header.icon" class="icon"/>
+						<span>{{ header.title }}</span>
+					</div>
 				</div>
 				<button class="_button action" v-if="pageInfo.action" @click="pageInfo.action.handler()"><Fa :icon="pageInfo.action.icon"/></button>
 			</template>
@@ -85,6 +87,7 @@ import { StickySidebar } from '@/scripts/sticky-sidebar';
 import { widgets } from '@/widgets';
 import XSidebar from '@/components/sidebar.vue';
 import * as os from '@/os';
+import { sidebarDef } from '@/sidebar';
 
 const DESKTOP_THRESHOLD = 1100;
 
@@ -108,7 +111,7 @@ export default defineComponent({
 			widgetsEditMode: false,
 			isDesktop: window.innerWidth >= DESKTOP_THRESHOLD,
 			canBack: false,
-			menuDef: this.$store.getters.nav({}),
+			menuDef: sidebarDef,
 			navHidden: false,
 			wallpaper: localStorage.getItem('wallpaper') != null,
 			faGripVertical, faChevronLeft, faComments, faHashtag, faBroadcastTower, faFireAlt, faEllipsisH, faPencilAlt, faBars, faTimes, faBell, faSearch, faUserCog, faCog, faUser, faHome, faStar, faCircle, faAt, faEnvelope, faListUl, faPlus, faUserClock, faLaugh, faUsers, faTachometerAlt, faExchangeAlt, faGlobe, faChartBar, faCloud, faServer, faProjectDiagram
@@ -233,7 +236,10 @@ export default defineComponent({
 
 	methods: {
 		async changePage(page) {
-			if (page && page.getPageInfo) {
+			if (page == null) return;
+			if (page.info) {
+				this.pageInfo = page.info;
+			} else if (page.getPageInfo) {
 				this.pageInfo = await page.getPageInfo();
 			}
 		},
@@ -426,29 +432,37 @@ export default defineComponent({
 				width: $header-height;
 			}
 
-			> .title {
-				display: inline-block;
+			> .titleContainer {
+				width: calc(100% - (#{$header-height} * 2));
+				margin: 0 auto;
+				overflow: auto;
 				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				height: $header-height;
-				padding: 0 16px;
 
-				> .icon {
-					margin-right: 8px;
-				}
+				> .title {
+					display: inline-block;
+					vertical-align: bottom;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					height: $header-height;
+					padding: 0 16px;
 
-				&.clickable {
-					cursor: pointer;
+					> .icon {
+						margin-right: 8px;
+					}
 
-					&:hover {
+					&.clickable {
+						cursor: pointer;
+
+						&:hover {
+							color: var(--fgHighlighted);
+						}
+					}
+
+					&.selected {
+						box-shadow: 0 -2px 0 0 var(--accent) inset;
 						color: var(--fgHighlighted);
 					}
-				}
-
-				&.selected {
-					box-shadow: 0 -2px 0 0 var(--accent) inset;
-					color: var(--fgHighlighted);
 				}
 			}
 		}
