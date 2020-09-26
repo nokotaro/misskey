@@ -1,4 +1,4 @@
-FROM node:14.8.0-alpine AS base
+FROM node:14.11.0-alpine AS base
 
 ENV NODE_ENV=production
 
@@ -40,4 +40,4 @@ COPY --from=builder /misskey/node_modules ./node_modules
 COPY --from=builder /misskey/built ./built
 COPY . ./
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start-product"]
