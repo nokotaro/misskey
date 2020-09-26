@@ -40,4 +40,4 @@ COPY --from=builder /misskey/node_modules ./node_modules
 COPY --from=builder /misskey/built ./built
 COPY . ./
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start-product"]
