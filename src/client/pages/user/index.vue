@@ -1,7 +1,5 @@
 <template>
 <div class="mk-user-page" v-if="user" v-size="{ max: [500] }">
-	<portal to="header" v-if="user"><MkAvatar class="avatar" :user="user" :disable-preview="true"/><MkUserName :user="user" :nowrap="false" class="name"/></portal>
-
 	<MkRemoteCaution v-if="user.host != null" :href="user.url" style="margin-bottom: var(--margin)"/>
 
 	<!-- TODO -->
@@ -25,7 +23,7 @@
 				</div>
 				<span class="followed" v-if="$store.getters.isSignedIn && $store.state.i.id != user.id && user.isFollowed">{{ $t('followsYou') }}</span>
 				<div class="actions" v-if="$store.getters.isSignedIn">
-					<button @click="menu" class="menu _button" ref="menu"><Fa :icon="faEllipsisH"/></button>
+					<button @click="menu" class="menu _button"><Fa :icon="faEllipsisH"/></button>
 					<MkFollowButton v-if="$store.state.i.id != user.id" :user="user" :inline="true" :transparent="false" :full="true" class="koudoku"/>
 				</div>
 			</div>
@@ -87,8 +85,10 @@
 
 	<router-view :user="user"></router-view>
 	<template v-if="$route.name == 'user'">
-		<div class="pins">
-			<XNote v-for="note in user.pinnedNotes" class="note" :note="note" @update:note="pinnedNoteUpdated(note, $event)" :key="note.id" :detail="true" :pinned="true"/>
+		<div class="_section" v-if="user.pinnedNotes.length > 0">
+			<div class="_content">
+				<XNote v-for="note in user.pinnedNotes" class="note _vMargin" :note="note" @update:note="pinnedNoteUpdated(note, $event)" :key="note.id" :detail="true" :pinned="true"/>
+			</div>
 		</div>
 		<div class="_section">
 			<MkContainer :body-togglable="true" class="_content">
@@ -117,7 +117,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, defineAsyncComponent } from 'vue';
+import { defineComponent, defineAsyncComponent, computed } from 'vue';
 import { faExclamationTriangle, faEllipsisH, faRobot, faLock, faBookmark, faChartBar, faImage, faBirthdayCake, faMapMarker } from '@fortawesome/free-solid-svg-icons';
 import { faCalendarAlt, faBookmark as farBookmark } from '@fortawesome/free-regular-svg-icons';
 import * as age from 's-age';
@@ -153,6 +153,16 @@ export default defineComponent({
 
 	data() {
 		return {
+			info: computed(() => this.user ? {
+				header: [{
+					userName: this.user,
+					avatar: this.user,
+				}],
+				action: {
+					icon: faEllipsisH,
+					handler: this.menu
+				}
+			} : null),
 			user: null,
 			error: null,
 			parallaxAnimationId: null,
@@ -191,6 +201,7 @@ export default defineComponent({
 
 	methods: {
 		fetch() {
+			if (this.$route.params.user == null) return;
 			Progress.start();
 			os.api('users/show', parseAcct(this.$route.params.user)).then(user => {
 				this.user = user;
@@ -201,10 +212,11 @@ export default defineComponent({
 			});
 		},
 
-		menu() {
+		menu(ev) {
 			os.modal(XUserMenu, {
-				source: this.$refs.menu,
 				user: this.user
+			}, {}, {
+				source: ev.currentTarget || ev.target,
 			});
 		},
 
@@ -445,12 +457,6 @@ export default defineComponent({
 					}
 				}
 			}
-		}
-	}
-
-	> .pins {
-		> .note {
-			margin-bottom: var(--margin);
 		}
 	}
 

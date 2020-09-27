@@ -9,12 +9,14 @@
 			</transition>
 			<template v-if="pageInfo">
 				<div class="titleContainer">
-					<div class="title" v-for="header in pageInfo.header" :key="header.id" :class="{ clickable: header.onClick, selected: header.selected }" @click="header.onClick" v-tooltip="header.tooltip">
+					<div class="title" v-for="header in pageInfo.header" :key="header.id" :class="{ _button: header.onClick, selected: header.selected }" @click="header.onClick" v-tooltip="header.tooltip">
 						<Fa v-if="header.icon" :icon="header.icon" class="icon"/>
-						<span v-if="header.title">{{ header.title }}</span>
+						<MkAvatar v-else-if="header.avatar" class="avatar" :user="header.avatar" :disable-preview="true"/>
+						<span v-if="header.title" class="text">{{ header.title }}</span>
+						<MkUserName v-else-if="header.userName" :user="header.userName" :nowrap="false" class="text"/>
 					</div>
 				</div>
-				<button class="_button action" v-if="pageInfo.action" @click="pageInfo.action.handler()"><Fa :icon="pageInfo.action.icon"/></button>
+				<button class="_button action" v-if="pageInfo.action" @click="pageInfo.action.handler"><Fa :icon="pageInfo.action.icon"/></button>
 			</template>
 		</header>
 		<main ref="main">
@@ -245,6 +247,7 @@ export default defineComponent({
 		},
 
 		calcHeaderWidth() {
+			if (this.$refs.contents == null) return;
 			const width = this.$refs.contents.offsetWidth;
 			this.$refs.header.style.width = `${width}px`;
 		},
@@ -447,13 +450,20 @@ export default defineComponent({
 					height: $header-height;
 					padding: 0 16px;
 
-					> .icon + span {
+					> .icon + .text {
 						margin-left: 8px;
 					}
 
-					&.clickable {
-						cursor: pointer;
+					> .avatar {
+						$size: 32px;
+						display: inline-block;
+						width: $size;
+						height: $size;
+						vertical-align: bottom;
+						margin: (($header-height - $size) / 2) 8px (($header-height - $size) / 2) 0;
+					}
 
+					&._button {
 						&:hover {
 							color: var(--fgHighlighted);
 						}
