@@ -6,10 +6,12 @@
 			<router-link class="item" to="/settings/account/profile"><Fa :icon="faUser" fixed-width class="icon"/>{{ $t('profile') }}</router-link>
 			<router-link class="item" to="/settings/account/privacy"><Fa :icon="faLock" fixed-width class="icon"/>{{ $t('privacy') }}</router-link>
 			<router-link class="item" to="/settings/account/reaction"><Fa :icon="faLaugh" fixed-width class="icon"/>{{ $t('reaction') }}</router-link>
+			<router-link class="item" to="/settings/account/notifications"><Fa :icon="faBell" fixed-width class="icon"/>{{ $t('notifications') }}</router-link>
 			<router-link class="item" to="/settings/account/word-mute"><Fa :icon="faCommentSlash" fixed-width class="icon"/>{{ $t('wordMute') }}</router-link>
 		</div>
 		<div class="menu client">
 			<div class="label">{{ $t('clientSettings') }}</div>
+			<router-link class="item" to="/settings/client/general"><Fa :icon="faCogs" fixed-width class="icon"/>{{ $t('general') }}</router-link>
 			<router-link class="item" to="/settings/client/theme"><Fa :icon="faPalette" fixed-width class="icon"/>{{ $t('theme') }}</router-link>
 			<router-link class="item" to="/settings/client/sidebar"><Fa :icon="faListUl" fixed-width class="icon"/>{{ $t('sidebar') }}</router-link>
 			<router-link class="item" to="/settings/client/sounds"><Fa :icon="faMusic" fixed-width class="icon"/>{{ $t('sounds') }}</router-link>
@@ -31,8 +33,8 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
-import { faCog, faPalette, faPlug, faUser, faListUl, faLock, faCommentSlash, faMusic } from '@fortawesome/free-solid-svg-icons';
-import { faLaugh } from '@fortawesome/free-regular-svg-icons';
+import { faCog, faPalette, faPlug, faUser, faListUl, faLock, faCommentSlash, faMusic, faCogs } from '@fortawesome/free-solid-svg-icons';
+import { faLaugh, faBell } from '@fortawesome/free-regular-svg-icons';
 import * as os from '@/os';
 
 export default defineComponent({
@@ -60,7 +62,7 @@ export default defineComponent({
 			view,
 			el,
 			onInfo,
-			faPalette, faPlug, faUser, faListUl, faLock, faLaugh, faCommentSlash, faMusic,
+			faPalette, faPlug, faUser, faListUl, faLock, faLaugh, faCommentSlash, faMusic, faBell, faCogs,
 		};
 	},
 });
@@ -108,12 +110,12 @@ export default defineComponent({
 
 				&.router-link-active {
 					color: var(--accent);
-					padding-left: 48px;
+					padding-left: 42px;
 				}
 
 				&:hover {
 					text-decoration: none;
-					padding-left: 48px;
+					padding-left: 42px;
 				}
 
 				> .icon {
