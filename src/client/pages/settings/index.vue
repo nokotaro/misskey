@@ -2,21 +2,24 @@
 <div class="vvcocwet" :class="{ wide: !narrow }" ref="el">
 	<div class="nav" v-if="!narrow || $route.name === 'settings'">
 		<div class="menu account">
-			<div class="label">{{ $t('accountSettings') }}</div>
-			<router-link class="item" replace to="/settings/account/profile"><Fa :icon="faUser" fixed-width class="icon"/>{{ $t('profile') }}</router-link>
-			<router-link class="item" replace to="/settings/account/privacy"><Fa :icon="faLock" fixed-width class="icon"/>{{ $t('privacy') }}</router-link>
-			<router-link class="item" replace to="/settings/account/reaction"><Fa :icon="faLaugh" fixed-width class="icon"/>{{ $t('reaction') }}</router-link>
-			<router-link class="item" replace to="/settings/account/notifications"><Fa :icon="faBell" fixed-width class="icon"/>{{ $t('notifications') }}</router-link>
-			<router-link class="item" replace to="/settings/account/word-mute"><Fa :icon="faCommentSlash" fixed-width class="icon"/>{{ $t('wordMute') }}</router-link>
-			<router-link class="item" replace to="/settings/account/other"><Fa :icon="faEllipsisH" fixed-width class="icon"/>{{ $t('other') }}</router-link>
+			<router-link class="item" replace to="/settings/profile"><Fa :icon="faUser" fixed-width class="icon"/>{{ $t('profile') }}</router-link>
+			<router-link class="item" replace to="/settings/privacy"><Fa :icon="faLockOpen" fixed-width class="icon"/>{{ $t('privacy') }}</router-link>
+			<router-link class="item" replace to="/settings/reaction"><Fa :icon="faLaugh" fixed-width class="icon"/>{{ $t('reaction') }}</router-link>
+			<router-link class="item" replace to="/settings/notifications"><Fa :icon="faBell" fixed-width class="icon"/>{{ $t('notifications') }}</router-link>
+			<router-link class="item" replace to="/settings/mute-block"><Fa :icon="faBan" fixed-width class="icon"/>{{ $t('muteAndBlock') }}</router-link>
+			<router-link class="item" replace to="/settings/word-mute"><Fa :icon="faCommentSlash" fixed-width class="icon"/>{{ $t('wordMute') }}</router-link>
+			<router-link class="item" replace to="/settings/integration"><Fa :icon="faShareAlt" fixed-width class="icon"/>{{ $t('integration') }}</router-link>
+			<router-link class="item" replace to="/settings/security"><Fa :icon="faLock" fixed-width class="icon"/>{{ $t('security') }}</router-link>
+			<router-link class="item" replace to="/settings/api"><Fa :icon="faKey" fixed-width class="icon"/>API</router-link>
+			<router-link class="item" replace to="/settings/other"><Fa :icon="faEllipsisH" fixed-width class="icon"/>{{ $t('other') }}</router-link>
 		</div>
 		<div class="menu client">
 			<div class="label">{{ $t('clientSettings') }}</div>
-			<router-link class="item" replace to="/settings/client/general"><Fa :icon="faCogs" fixed-width class="icon"/>{{ $t('general') }}</router-link>
-			<router-link class="item" replace to="/settings/client/theme"><Fa :icon="faPalette" fixed-width class="icon"/>{{ $t('theme') }}</router-link>
-			<router-link class="item" replace to="/settings/client/sidebar"><Fa :icon="faListUl" fixed-width class="icon"/>{{ $t('sidebar') }}</router-link>
-			<router-link class="item" replace to="/settings/client/sounds"><Fa :icon="faMusic" fixed-width class="icon"/>{{ $t('sounds') }}</router-link>
-			<router-link class="item" replace to="/settings/client/plugins"><Fa :icon="faPlug" fixed-width class="icon"/>{{ $t('plugins') }}</router-link>
+			<router-link class="item" replace to="/settings/general"><Fa :icon="faCogs" fixed-width class="icon"/>{{ $t('general') }}</router-link>
+			<router-link class="item" replace to="/settings/theme"><Fa :icon="faPalette" fixed-width class="icon"/>{{ $t('theme') }}</router-link>
+			<router-link class="item" replace to="/settings/sidebar"><Fa :icon="faListUl" fixed-width class="icon"/>{{ $t('sidebar') }}</router-link>
+			<router-link class="item" replace to="/settings/sounds"><Fa :icon="faMusic" fixed-width class="icon"/>{{ $t('sounds') }}</router-link>
+			<router-link class="item" replace to="/settings/plugins"><Fa :icon="faPlug" fixed-width class="icon"/>{{ $t('plugins') }}</router-link>
 		</div>
 		<div class="menu other">
 			<button class="_button item" @click="logout">{{ $t('logout') }}</button>
@@ -34,7 +37,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
-import { faCog, faPalette, faPlug, faUser, faListUl, faLock, faCommentSlash, faMusic, faCogs, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faPalette, faPlug, faUser, faListUl, faLock, faCommentSlash, faMusic, faCogs, faEllipsisH, faBan, faShareAlt, faLockOpen, faKey } from '@fortawesome/free-solid-svg-icons';
 import { faLaugh, faBell } from '@fortawesome/free-regular-svg-icons';
 import * as os from '@/os';
 
@@ -63,7 +66,7 @@ export default defineComponent({
 			view,
 			el,
 			onInfo,
-			faPalette, faPlug, faUser, faListUl, faLock, faLaugh, faCommentSlash, faMusic, faBell, faCogs, faEllipsisH,
+			faPalette, faPlug, faUser, faListUl, faLock, faLaugh, faCommentSlash, faMusic, faBell, faCogs, faEllipsisH, faBan, faShareAlt, faLockOpen, faKey,
 		};
 	},
 });
