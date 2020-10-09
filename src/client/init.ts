@@ -7,8 +7,6 @@ import '@/style.scss';
 import { createApp } from 'vue';
 import VAnimateCss from 'v-animate-css';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { AiScript } from '@syuilo/aiscript';
-import { deserialize } from '@syuilo/aiscript/built/serializer';
 
 import Root from './root.vue';
 import widgets from './widgets';
@@ -19,7 +17,6 @@ import { store } from './store';
 import { router } from './router';
 import { applyTheme, lightTheme } from '@/scripts/theme';
 import { isDeviceDarkmode } from '@/scripts/is-device-darkmode';
-import { createPluginEnv } from '@/scripts/aiscript/api';
 import { i18n, lang } from './i18n';
 import { stream, sound, isMobile, dialog } from '@/os';
 
@@ -240,30 +237,9 @@ stream.on('emojiAdded', data => {
 for (const plugin of store.state.deviceUser.plugins.filter(p => p.active)) {
 	console.info('Plugin installed:', plugin.name, 'v' + plugin.version);
 
-	const aiscript = new AiScript(createPluginEnv({
-		plugin: plugin,
-		storageKey: 'plugins:' + plugin.id
-	}), {
-		in: (q) => {
-			return new Promise(ok => {
-				dialog({
-					title: q,
-					input: {}
-				}).then(({ canceled, result: a }) => {
-					ok(a);
-				});
-			});
-		},
-		out: (value) => {
-			console.log(value);
-		},
-		log: (type, params) => {
-		},
+	import('./plugin').then(({ install }) => {
+		install(plugin);
 	});
-
-	store.commit('initPlugin', { plugin, aiscript });
-
-	aiscript.exec(deserialize(plugin.ast));
 }
 
 if (store.getters.isSignedIn) {
