@@ -17,6 +17,7 @@ export const lavenderTheme: Theme = require('../themes/lavender.json5');
 export const futureTheme: Theme = require('../themes/future.json5');
 export const halloweenTheme: Theme = require('../themes/halloween.json5');
 export const promoTheme: Theme = require('../themes/promo.json5');
+export const mitterTheme: Theme = require('../themes/mitter.json5');
 export const hikaemeTheme: Theme = require('../themes/hikaeme.json5');
 export const cafeTheme: Theme = require('../themes/cafe.json5');
 export const japaneseSushiSetTheme: Theme = require('../themes/japanese-sushi-set.json5');
@@ -38,6 +39,7 @@ export const builtinThemes = [
 	hikaemeTheme,
 	cafeTheme,
 	japaneseSushiSetTheme,
+	mitterTheme,
 	gruvboxDarkTheme,
 	monokaiTheme,
 	colorfulTheme,
