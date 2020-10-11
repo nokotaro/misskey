@@ -94,7 +94,7 @@ export default defineComponent({
 				endpoint: 'admin/emoji/list-remote',
 				limit: 15,
 				params: () => ({
-					queryRemote: (this.queryRemote && this.queryRemote !== '') ? this.queryRemote : null,
+					query: (this.queryRemote && this.queryRemote !== '') ? this.queryRemote : null,
 					host: (this.host && this.host !== '') ? this.host : null
 				})
 			},
@@ -248,6 +248,10 @@ export default defineComponent({
 					padding: 12px;
 					text-align: left;
 
+					&:hover {
+						color: var(--accent);
+					}
+
 					> .img {
 						width: 32px;
 						height: 32px;
@@ -266,6 +270,9 @@ export default defineComponent({
 
 						> .info {
 							opacity: 0.5;
+							display: block;
+							text-overflow: ellipsis;
+							overflow: hidden;
 						}
 					}
 				}

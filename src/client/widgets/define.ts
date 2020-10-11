@@ -1,5 +1,6 @@
 import { defineComponent } from 'vue';
 import { Form } from '@/scripts/form';
+import * as os from '@/os';
 
 export default function <T extends Form>(data: {
 	name: string;
@@ -11,9 +12,8 @@ export default function <T extends Form>(data: {
 				type: Object,
 				required: false
 			},
-			isCustomizeMode: {
-				type: Boolean,
-				default: false
+			settingCallback: {
+				required: false
 			}
 		},
 
@@ -33,6 +33,8 @@ export default function <T extends Form>(data: {
 			this.$watch('props', () => {
 				this.mergeProps();
 			}, { deep: true });
+
+			if (this.settingCallback) this.settingCallback(this.setting);
 		},
 
 		methods: {
