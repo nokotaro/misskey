@@ -284,7 +284,7 @@ export default defineComponent({
 						default:
 							os.dialog({
 								type: 'error',
-								text: this.$t('error')
+								text: this.$t('somethingHappened')
 							});
 					}
 				});
@@ -698,7 +698,7 @@ export default defineComponent({
 	}
 
 	> .main {
-		padding: 8px 0;
+		padding: 10px;
 		overflow: auto;
 
 		&, * {

@@ -1,8 +1,10 @@
 <template>
 <transition :name="$store.state.device.animation ? 'zoom' : ''" appear>
-	<div class="mjndxjch">
-		<img src="https://xn--931a.moe/assets/error.jpg" class="_ghost"/>
-		<p><Fa :icon="faExclamationTriangle"/> {{ $t('error') }}</p>
+	<div class="_section">
+		<div class="mjndxjch _content">
+			<img src="https://xn--931a.moe/assets/error.jpg" class="_ghost"/>
+			<p><Fa :icon="faExclamationTriangle"/> {{ $t('pageLoadError') }}</p>
+		</div>
 	</div>
 </transition>
 </template>
@@ -11,7 +13,6 @@
 import { defineComponent } from 'vue';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import MkButton from '@/components/ui/button.vue';
-import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -19,6 +20,12 @@ export default defineComponent({
 	},
 	data() {
 		return {
+			INFO: {
+				header: [{
+					title: this.$t('error'),
+					icon: faExclamationTriangle
+				}]
+			},
 			faExclamationTriangle
 		};
 	},
@@ -27,7 +34,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .mjndxjch {
-	padding: 32px;
 	text-align: center;
 
 	> p {
