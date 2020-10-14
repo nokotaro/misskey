@@ -1,5 +1,14 @@
 <template>
-<XWindow ref="window" :width="400" @close="$emit('done')" :with-ok-button="true" :ok-button-disabled="false" @ok="ok()" :can-close="false">
+<XModalWindow ref="dialog"
+	:width="400"
+	:can-close="false"
+	:with-ok-button="true"
+	:ok-button-disabled="false"
+	@click="cancel()"
+	@ok="ok()"
+	@close="cancel()"
+	@closed="$emit('closed')"
+>
 	<template #header>
 		{{ title }}
 	</template>
@@ -23,19 +32,19 @@
 			</MkSwitch>
 		</label>
 	</div>
-</XWindow>
+</XModalWindow>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import XWindow from './window.vue';
+import XModalWindow from '@/components/ui/modal-window.vue';
 import MkInput from './ui/input.vue';
 import MkTextarea from './ui/textarea.vue';
 import MkSwitch from './ui/switch.vue';
 
 export default defineComponent({
 	components: {
-		XWindow,
+		XModalWindow,
 		MkInput,
 		MkTextarea,
 		MkSwitch,
@@ -71,7 +80,15 @@ export default defineComponent({
 			this.$emit('done', {
 				result: this.values
 			});
+			this.$refs.dialog.close();
 		},
+
+		cancel() {
+			this.$emit('done', {
+				canceled: true
+			});
+			this.$refs.dialog.close();
+		}
 	}
 });
 </script>

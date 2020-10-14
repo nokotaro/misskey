@@ -1,5 +1,5 @@
 <template>
-<XWindow @close="$emit('done')" :width="370">
+<XModalWindow @close="$emit('done')" :width="370">
 	<template #header v-if="user"><MkUserName class="name" :user="user"/></template>
 	<div class="vrcsvlkm" v-if="user && info">
 		<div class="_section">
@@ -39,7 +39,7 @@
 			</details>
 		</div>
 	</div>
-</XWindow>
+</XModalWindow>
 </template>
 
 <script lang="ts">
@@ -48,7 +48,7 @@ import { faTimes, faBookmark, faKey, faSync, faMicrophoneSlash, faExternalLinkSq
 import { faSnowflake, faTrashAlt, faBookmark as farBookmark  } from '@fortawesome/free-regular-svg-icons';
 import MkButton from '@/components/ui/button.vue';
 import MkSwitch from '@/components/ui/switch.vue';
-import XWindow from '@/components/window.vue';
+import XModalWindow from '@/components/ui/modal-window.vue';
 import Progress from '@/scripts/loading';
 import { acct, userPage } from '../../filters/user';
 import * as os from '@/os';
@@ -57,7 +57,7 @@ export default defineComponent({
 	components: {
 		MkButton,
 		MkSwitch,
-		XWindow,
+		XModalWindow,
 	},
 
 	props: {
@@ -113,34 +113,19 @@ export default defineComponent({
 
 		async updateRemoteUser() {
 			await os.api('admin/update-remote-user', { userId: this.user.id }).then(res => {
-				os.dialog({
-					type: 'success',
-					iconOnly: true, autoClose: true
-				});
+				os.success();
 			});
 			await this.refreshUser();
 		},
 
 		async resetPassword() {
-			const dialog = os.dialog({
-				type: 'waiting',
-				iconOnly: true
-			});
-
-			os.api('admin/reset-password', {
+			os.apiWithDialog('admin/reset-password', {
 				userId: this.user.id,
-			}).then(({ password }) => {
+			}, undefined, ({ password }) => {
 				os.dialog({
 					type: 'success',
 					text: this.$t('newPasswordIs', { password })
 				});
-			}).catch(e => {
-				os.dialog({
-					type: 'error',
-					text: e
-				});
-			}).finally(() => {
-				dialog.cancel();
 			});
 		},
 
@@ -186,10 +171,7 @@ export default defineComponent({
 			if (confirm.canceled) return;
 			const process = async () => {
 				await os.api('admin/delete-all-files-of-a-user', { userId: this.user.id });
-				os.dialog({
-					type: 'success',
-					iconOnly: true, autoClose: true
-				});
+				os.success();
 			};
 			await process().catch(e => {
 				os.dialog({

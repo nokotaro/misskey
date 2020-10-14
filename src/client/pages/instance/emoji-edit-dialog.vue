@@ -1,5 +1,5 @@
 <template>
-<XWindow @close="$emit('done')" :width="370" :with-ok-button="true" @ok="ok()">
+<XModalWindow @close="$emit('done')" :width="370" :with-ok-button="true" @ok="ok()">
 	<template #header>:{{ emoji.name }}:</template>
 
 	<div class="yigymqpb _section">
@@ -12,13 +12,13 @@
 		</MkInput>
 		<MkButton danger @click="del()"><Fa :icon="faTrashAlt"/> {{ $t('delete') }}</MkButton>
 	</div>
-</XWindow>
+</XModalWindow>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
-import XWindow from '@/components/window.vue';
+import XModalWindow from '@/components/ui/modal-window.vue';
 import MkButton from '@/components/ui/button.vue';
 import MkInput from '@/components/ui/input.vue';
 import * as os from '@/os';
@@ -26,7 +26,7 @@ import { unique } from '../../../prelude/array';
 
 export default defineComponent({
 	components: {
-		XWindow,
+		XModalWindow,
 		MkButton,
 		MkInput,
 	},
@@ -61,16 +61,11 @@ export default defineComponent({
 		},
 
 		async update() {
-			await os.api('admin/emoji/update', {
+			await os.apiWithDialog('admin/emoji/update', {
 				id: this.emoji.id,
 				name: this.name,
 				category: this.category,
 				aliases: this.aliases.split(' '),
-			});
-
-			os.dialog({
-				type: 'success',
-				iconOnly: true, autoClose: true
 			});
 
 			this.$emit('done', {

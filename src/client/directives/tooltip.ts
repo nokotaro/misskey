@@ -1,4 +1,4 @@
-import { Directive } from 'vue';
+import { Directive, ref } from 'vue';
 import { isDeviceTouch } from '@/scripts/is-device-touch';
 import { popup } from '@/os';
 
@@ -28,13 +28,15 @@ export default {
 			if (self._close) return;
 			if (self.text == null) return;
 
-			const promise = popup(await import('@/components/ui/tooltip.vue'), {
+			const showing = ref(true);
+			popup(await import('@/components/ui/tooltip.vue'), {
+				showing,
 				text: self.text,
 				source: el
-			});
+			}, {}, 'closed');
 
 			self._close = () => {
-				promise.cancel();
+				showing.value = false;
 			};
 		};
 

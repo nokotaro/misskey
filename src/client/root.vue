@@ -3,24 +3,11 @@
 <DeckUI v-else-if="deckmode"/>
 <DefaultUI v-else/>
 
-<XModal v-for="modal in modals"
-	:key="modal.id"
-	@closed="modal.closed"
-	@click="modal.bgClick"
-	:showing="modal.showing"
-	:source="modal.source"
-	:position="modal.position"
->
-	<component :is="modal.component" v-bind="modal.props" v-on="modal.events" @done="modal.done"/>
-</XModal>
-
 <component v-for="popup in popups"
 	:key="popup.id"
 	:is="popup.component"
 	v-bind="popup.props"
-	:showing="popup.showing"
 	v-on="popup.events"
-	@closed="popup.closed"
 />
 
 <XUpload v-if="uploads.length > 0"/>
@@ -29,26 +16,23 @@
 </template>
 
 <script lang="ts">
-import { computed, defineAsyncComponent, defineComponent } from 'vue';
+import { defineAsyncComponent, defineComponent } from 'vue';
 import { deckmode } from '@/config';
-import { uploads } from '@/os';
-import { store } from '@/store';
+import { popups, uploads } from '@/os';
 
 export default defineComponent({
 	components: {
 		DefaultUI: defineAsyncComponent(() => import('@/ui/default.vue')),
 		DeckUI: defineAsyncComponent(() => import('@/ui/deck.vue')),
 		VisitorUI: defineAsyncComponent(() => import('@/ui/visitor.vue')),
-		XModal: defineAsyncComponent(() => import('@/components/modal.vue')),
 		XUpload: defineAsyncComponent(() => import('@/components/upload.vue')),
 	},
 
 	setup() {
 		return {
-			modals: computed(() => store.state.popups.filter(x => x.type === 'modal')),
-			popups: computed(() => store.state.popups.filter(x => x.type === 'popup')),
 			deckmode,
 			uploads,
+			popups,
 		};
 	},
 });

@@ -12,7 +12,7 @@ export default {
 			const x = rect.left + (el.clientWidth / 2);
 			const y = rect.top + (el.clientHeight / 2);
 
-			popup(Particle, { x, y });
+			popup(Particle, { x, y }, {}, 'end');
 		});
 	}
 };
