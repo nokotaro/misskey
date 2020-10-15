@@ -24,9 +24,9 @@ export class UserPreview {
 
 		const showing = ref(true);
 
-		const { dispose } = popup(await import('@/components/user-preview.vue'), {
+		popup(await import('@/components/user-preview.vue'), {
 			showing,
-			user: this.user,
+			q: this.user,
 			source: this.el
 		}, {
 			mouseover: () => {
@@ -36,8 +36,7 @@ export class UserPreview {
 				clearTimeout(this.showTimer);
 				this.hideTimer = setTimeout(this.close, 500);
 			},
-			closed: () => dispose(),
-		});
+		}, 'closed');
 
 		this.promise = {
 			cancel: () => {
@@ -101,6 +100,8 @@ export class UserPreview {
 
 export default {
 	mounted(el: HTMLElement, binding, vn) {
+		if (binding.value == null) return;
+
 		// TODO: 新たにプロパティを作るのをやめMapを使う
 		// ただメモリ的には↓の方が省メモリかもしれないので検討中
 		const self = (el as any)._userPreviewDirective_ = {} as any;
@@ -109,6 +110,8 @@ export default {
 	},
 
 	unmounted(el, binding, vn) {
+		if (binding.value == null) return;
+
 		const self = el._userPreviewDirective_;
 		self.preview.detach();
 	}
