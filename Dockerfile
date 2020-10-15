@@ -1,4 +1,4 @@
-FROM node:14.11.0-alpine AS base
+FROM node:14.13.1-alpine AS base
 
 ENV NODE_ENV=production
 
@@ -12,7 +12,7 @@ RUN apk add --no-cache \
     autoconf \
     automake \
     file \
-		git \
+    git \
     g++ \
     gcc \
     libc-dev \
