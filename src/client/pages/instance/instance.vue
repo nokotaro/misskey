@@ -97,7 +97,7 @@
 				</div>
 			</div>
 			<div class="chart">
-				<canvas ref="chart"></canvas>
+				<canvas :ref="setChart"></canvas>
 			</div>
 		</div>
 		<div class="operations">
@@ -134,6 +134,7 @@ import MkSwitch from '@/components/ui/switch.vue';
 import MkInfo from '@/components/ui/info.vue';
 import bytes from '../../filters/bytes';
 import number from '../../filters/number';
+import * as os from '@/os';
 
 const chartLimit = 90;
 const sum = (...arr) => arr.reduce((r, a) => r.map((b, i) => a[i] + b));
@@ -145,7 +146,6 @@ const alpha = hex => {
 	const b = parseInt(result[3], 16);
 	return `rgba(${r}, ${g}, ${b}, 0.1)`;
 };
-import * as os from '@/os';
 
 export default defineComponent({
 	components: {
@@ -169,6 +169,7 @@ export default defineComponent({
 		return {
 			isSuspended: this.instance.isSuspended,
 			now: null,
+			canvas: null,
 			chart: null,
 			chartInstance: null,
 			chartSrc: 'requests',
@@ -244,11 +245,14 @@ export default defineComponent({
 		};
 
 		this.chart = chart;
-
-		this.renderChart();
 	},
 
 	methods: {
+		setChart(el) {
+			this.canvas = el;
+			this.renderChart();
+		},
+
 		changeBlock(e) {
 			os.api('admin/update-meta', {
 				blockedHosts: this.isBlocked ? this.meta.blockedHosts.concat([this.instance.host]) : this.meta.blockedHosts.filter(x => x !== this.instance.host)
@@ -277,7 +281,7 @@ export default defineComponent({
 			}
 
 			Chart.defaults.global.defaultFontColor = getComputedStyle(document.documentElement).getPropertyValue('--fg');
-			this.chartInstance = new Chart(this.$refs.chart, {
+			this.chartInstance = new Chart(this.canvas, {
 				type: 'line',
 				data: {
 					labels: new Array(chartLimit).fill(0).map((_, i) => this.getDate(i).toLocaleString()).slice().reverse(),
