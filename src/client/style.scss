@@ -285,13 +285,11 @@ hr {
 	margin: 0 !important;
 }
 
-._panelButton {
-	display: flex;
+._loadMore {
+	@extend ._panel;
+	@extend ._button;
 	width: 100%;
-	min-height: 48px;
-	align-items: center;
-	justify-content: center;
-	background: transparent;
+	padding: 12px 0;
 }
 
 ._popup {
@@ -329,12 +327,6 @@ hr {
 		margin-bottom: 24px;
 		font-size: 1.25em;
 		font-weight: bold;
-	}
-
-	> ._content + ._content {
-		border-top: solid 1px var(--divider);
-		margin-top: 16px;
-		padding-top: 16px;
 	}
 
 	&._fitBottom {
