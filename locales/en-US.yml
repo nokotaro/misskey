@@ -70,6 +70,7 @@ common:
   messaging: "Talk"
   home: "Home"
   deck: "Deck"
+  undeck: "Leave Deck"
   timeline: "Timeline"
   explore: "Explore"
   new-post: "New post"
@@ -272,6 +273,7 @@ common:
     ShowAdvancedSettings: "Display unnecessary settings"
     navbar-position: "Navbar position"
     navbar-position-top: "Top"
+    navbar-position-bottom: "Bottom"
     navbar-position-left: "Left"
     navbar-position-right: "Right"
     i-am-under-limited-internet: "I have limited bandwidth"
@@ -1121,6 +1123,8 @@ common/views/components/api-settings.vue:
 desktop/views/components/settings.apps.vue:
   no-apps: "No linked applications"
   revokeTokenConfirm: "Do you want to remove access from this app?"
+  terminateStreaming: "Terminate all streaming connection"
+
 
 common/views/components/drive-settings.vue:
   max: "Max"
