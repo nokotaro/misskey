@@ -1,7 +1,7 @@
 {
 	"name": "misskey",
 	"author": "syuilo <syuilotan@yahoo.co.jp>",
-	"version": "12.47.1-vue3-70",
+	"version": "12.47.1-vue3-71",
 	"codename": "indigo",
 	"repository": {
 		"type": "git",
