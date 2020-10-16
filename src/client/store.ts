@@ -1,7 +1,6 @@
 import { createStore } from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 import * as nestedProperty from 'nested-property';
-import { AiScript } from '@syuilo/aiscript';
 import { api } from '@/os';
 import { erase } from '../prelude/array';
 
@@ -95,7 +94,6 @@ function copy<T>(data: T): T {
 	return JSON.parse(JSON.stringify(data));
 }
 
-export const pluginContexts = new Map<string, AiScript>();
 export const postFormActions = [];
 export const userActions = [];
 export const noteActions = [];
@@ -111,8 +109,6 @@ export const store = createStore({
 
 	state: {
 		i: null,
-		pendingApiRequestsCount: 0,
-		spinner: null,
 	},
 
 	getters: {
@@ -126,14 +122,6 @@ export const store = createStore({
 
 		updateIKeyValue(state, { key, value }) {
 			state.i[key] = value;
-		},
-
-		beginApiRequest(state) {
-			state.pendingApiRequestsCount++;
-		},
-
-		endApiRequest(state) {
-			state.pendingApiRequestsCount--;
 		},
 	},
 
