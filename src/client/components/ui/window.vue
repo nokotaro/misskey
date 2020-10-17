@@ -1,34 +1,35 @@
 <template>
-<div class="ebkgocck">
-	<div class="body _popup _shadow _narrow_" @mousedown="onBodyMousedown" @keydown="onKeydown">
-		<div class="header" @mousedown.prevent="onHeaderMousedown" @touchmove.prevent="onHeaderMousedown">
-			<button class="_button" @click="close()"><Fa :icon="faTimes"/></button>
-			<span class="title">
-				<slot name="header"></slot>
-			</span>
-			<button class="_button" v-if="!withOkButton" @mousedown.stop="() => {}" @click="close()"><Fa :icon="faTimes"/></button>
-			<button class="_button" v-if="withOkButton" @mousedown.stop="() => {}" @click="$emit('ok')" :disabled="okButtonDisabled"><Fa :icon="faCheck"/></button>
-		</div>
-		<div class="body" v-if="padding">
-			<div class="_section">
+<transition :name="$store.state.device.animation ? 'window' : ''" appear @after-leave="$emit('closed')">
+	<div class="ebkgocck" v-if="showing">
+		<div class="body _popup _shadow _narrow_" @mousedown="onBodyMousedown" @keydown="onKeydown">
+			<div class="header" @mousedown.prevent="onHeaderMousedown" @touchstart.prevent="onHeaderMousedown">
+				<button class="_button" @click="close()"><Fa :icon="faTimes"/></button>
+				<span class="title">
+					<slot name="header"></slot>
+				</span>
+				<slot name="buttons"></slot>
+			</div>
+			<div class="body" v-if="padding">
+				<div class="_section">
+					<slot></slot>
+				</div>
+			</div>
+			<div class="body" v-else>
 				<slot></slot>
 			</div>
 		</div>
-		<div class="body" v-else>
-			<slot></slot>
-		</div>
+		<template v-if="canResize">
+			<div class="handle top" @mousedown.prevent="onTopHandleMousedown"></div>
+			<div class="handle right" @mousedown.prevent="onRightHandleMousedown"></div>
+			<div class="handle bottom" @mousedown.prevent="onBottomHandleMousedown"></div>
+			<div class="handle left" @mousedown.prevent="onLeftHandleMousedown"></div>
+			<div class="handle top-left" @mousedown.prevent="onTopLeftHandleMousedown"></div>
+			<div class="handle top-right" @mousedown.prevent="onTopRightHandleMousedown"></div>
+			<div class="handle bottom-right" @mousedown.prevent="onBottomRightHandleMousedown"></div>
+			<div class="handle bottom-left" @mousedown.prevent="onBottomLeftHandleMousedown"></div>
+		</template>
 	</div>
-	<template v-if="canResize">
-		<div class="handle top" @mousedown.prevent="onTopHandleMousedown"></div>
-		<div class="handle right" @mousedown.prevent="onRightHandleMousedown"></div>
-		<div class="handle bottom" @mousedown.prevent="onBottomHandleMousedown"></div>
-		<div class="handle left" @mousedown.prevent="onLeftHandleMousedown"></div>
-		<div class="handle top-left" @mousedown.prevent="onTopLeftHandleMousedown"></div>
-		<div class="handle top-right" @mousedown.prevent="onTopRightHandleMousedown"></div>
-		<div class="handle bottom-right" @mousedown.prevent="onBottomRightHandleMousedown"></div>
-		<div class="handle bottom-left" @mousedown.prevent="onBottomLeftHandleMousedown"></div>
-	</template>
-</div>
+</transition>
 </template>
 
 <script lang="ts">
@@ -42,12 +43,14 @@ const minWidth = 200;
 
 function dragListen(fn) {
 	window.addEventListener('mousemove',  fn);
+	window.addEventListener('touchmove',  fn);
 	window.addEventListener('mouseleave', dragClear.bind(null, fn));
 	window.addEventListener('mouseup',    dragClear.bind(null, fn));
 }
 
 function dragClear(fn) {
 	window.removeEventListener('mousemove',  fn);
+	window.removeEventListener('touchmove',  fn);
 	window.removeEventListener('mouseleave', dragClear);
 	window.removeEventListener('mouseup',    dragClear);
 }
@@ -76,10 +79,12 @@ export default defineComponent({
 		},
 	},
 
-	emits: ['close'],
+	emits: ['closed'],
 
 	data() {
 		return {
+			showing: true,
+			id: Math.random().toString(), // TODO: UUIDとかにする
 			faTimes
 		};
 	},
@@ -87,17 +92,23 @@ export default defineComponent({
 	mounted() {
 		if (this.initialWidth) this.applyTransformWidth(this.initialWidth);
 		if (this.initialHeight) this.applyTransformHeight(this.initialHeight);
-		// TODO: リファクタの余地がある。thisまるごと共有したくない
-		os.windows.add(this);
+
+		// TODO: calc center position
+		this.applyTransformTop(100);
+		this.applyTransformLeft(100);
+
+		os.windows.set(this.id, {
+			z: Number(document.defaultView.getComputedStyle(this.$el, null).zIndex)
+		});
 	},
 
 	unmounted() {
-		os.windows.remove(this);
+		os.windows.delete(this.id);
 	},
 
 	methods: {
 		close() {
-			this.$emit('close');
+			this.showing = false;
 		},
 
 		onKeydown(e) {
@@ -111,14 +122,15 @@ export default defineComponent({
 		// 最前面へ移動
 		top() {
 			let z = 0;
-			const ws = Array.from(os.windows.values()).filter(w => w !== this);
+			const ws = Array.from(os.windows.entries()).filter(([k, v]) => k !== this.id).map(([k, v]) => v);
 			for (const w of ws) {
-				const m = w.$el;
-				const mz = Number(document.defaultView.getComputedStyle(m, null).zIndex);
-				if (mz > z) z = mz;
+				if (w.z > z) z = w.z;
 			}
 			if (z > 0) {
 				(this.$el as any).style.zIndex = z + 1;
+				os.windows.set(this.id, {
+					z: z + 1
+				});
 			}
 		},
 
@@ -133,8 +145,8 @@ export default defineComponent({
 
 			const position = main.getBoundingClientRect();
 
-			const clickX = e.clientX;
-			const clickY = e.clientY;
+			const clickX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+			const clickY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
 			const moveBaseX = clickX - position.left;
 			const moveBaseY = clickY - position.top;
 			const browserWidth = window.innerWidth;
@@ -144,8 +156,11 @@ export default defineComponent({
 
 			// 動かした時
 			dragListen(me => {
-				let moveLeft = me.clientX - moveBaseX;
-				let moveTop = me.clientY - moveBaseY;
+				const x = me.touches && me.touches.length > 0 ? me.touches[0].clientX : me.clientX;
+				const y = me.touches && me.touches.length > 0 ? me.touches[0].clientY : me.clientY;
+
+				let moveLeft = x - moveBaseX;
+				let moveTop = y - moveBaseY;
 
 				// 下はみ出し
 				if (moveTop + windowHeight > browserHeight) moveTop = browserHeight - windowHeight;
@@ -312,6 +327,15 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.window-enter-active, .window-leave-active {
+	transition: opacity 0.3s, transform 0.3s !important;
+}
+.window-enter-from, .window-leave-to {
+	pointer-events: none;
+	opacity: 0;
+	transform: scale(0.9);
+}
+
 .ebkgocck {
 	position: fixed;
 	top: 0;
@@ -339,7 +363,7 @@ export default defineComponent({
 			box-shadow: 0px 1px var(--divider);
 			cursor: move;
 
-			> button {
+			> ::v-deep(button) {
 				height: $height;
 				width: $height;
 			}
@@ -347,16 +371,11 @@ export default defineComponent({
 			> .title {
 				flex: 1;
 				line-height: $height;
-				padding-left: 32px;
 				font-weight: bold;
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
 				pointer-events: none;
-			}
-
-			> button + .title {
-				padding-left: 0;
 			}
 		}
 
