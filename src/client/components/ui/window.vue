@@ -2,9 +2,9 @@
 <transition :name="$store.state.device.animation ? 'window' : ''" appear @after-leave="$emit('closed')">
 	<div class="ebkgocck" v-if="showing">
 		<div class="body _popup _shadow _narrow_" @mousedown="onBodyMousedown" @keydown="onKeydown">
-			<div class="header" @mousedown.prevent="onHeaderMousedown" @touchstart.prevent="onHeaderMousedown">
+			<div class="header">
 				<button class="_button" @click="close()"><Fa :icon="faTimes"/></button>
-				<span class="title">
+				<span class="title" @mousedown.prevent="onHeaderMousedown" @touchstart.prevent="onHeaderMousedown">
 					<slot name="header"></slot>
 				</span>
 				<slot name="buttons"></slot>
@@ -38,14 +38,15 @@ import { faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
 import contains from '@/scripts/contains';
 import * as os from '@/os';
 
-const minHeight = 40;
-const minWidth = 200;
+const minHeight = 50;
+const minWidth = 250;
 
 function dragListen(fn) {
 	window.addEventListener('mousemove',  fn);
 	window.addEventListener('touchmove',  fn);
 	window.addEventListener('mouseleave', dragClear.bind(null, fn));
 	window.addEventListener('mouseup',    dragClear.bind(null, fn));
+	window.addEventListener('touchend',   dragClear.bind(null, fn));
 }
 
 function dragClear(fn) {
@@ -53,9 +54,14 @@ function dragClear(fn) {
 	window.removeEventListener('touchmove',  fn);
 	window.removeEventListener('mouseleave', dragClear);
 	window.removeEventListener('mouseup',    dragClear);
+	window.removeEventListener('touchend',   dragClear);
 }
 
 export default defineComponent({
+	provide: {
+		inWindow: true
+	},
+
 	props: {
 		padding: {
 			type: Boolean,
@@ -93,17 +99,19 @@ export default defineComponent({
 		if (this.initialWidth) this.applyTransformWidth(this.initialWidth);
 		if (this.initialHeight) this.applyTransformHeight(this.initialHeight);
 
-		// TODO: calc center position
-		this.applyTransformTop(100);
-		this.applyTransformLeft(100);
+		this.applyTransformTop((window.innerHeight / 2) - (this.$el.offsetHeight / 2));
+		this.applyTransformLeft((window.innerWidth / 2) - (this.$el.offsetWidth / 2));
 
 		os.windows.set(this.id, {
 			z: Number(document.defaultView.getComputedStyle(this.$el, null).zIndex)
 		});
+
+		window.addEventListener('resize', this.onBrowserResize);
 	},
 
 	unmounted() {
 		os.windows.delete(this.id);
+		window.removeEventListener('resize', this.onBrowserResize);
 	},
 
 	methods: {
@@ -322,6 +330,19 @@ export default defineComponent({
 		applyTransformLeft(left) {
 			(this.$el as any).style.left = left + 'px';
 		},
+
+		onBrowserResize() {
+			const main = this.$el as any;
+			const position = main.getBoundingClientRect();
+			const browserWidth = window.innerWidth;
+			const browserHeight = window.innerHeight;
+			const windowWidth = main.offsetWidth;
+			const windowHeight = main.offsetHeight;
+			if (position.left < 0) main.style.left = 0;     // 左はみ出し
+			if (position.top + windowHeight > browserHeight) main.style.top = browserHeight - windowHeight + 'px';  // 下はみ出し
+			if (position.left + windowWidth > browserWidth) main.style.left = browserWidth - windowWidth + 'px';    // 右はみ出し
+			if (position.top < 0) main.style.top = 0;       // 上はみ出し
+		}
 	}
 });
 </script>
@@ -350,32 +371,34 @@ export default defineComponent({
 		width: 100%;
     height: 100%;
 
-		--section-padding: 24px;
-
-		@media (max-width: 500px) {
-			--section-padding: 16px;
-		}
+		--section-padding: 16px;
 
 		> .header {
 			$height: 50px;
 			display: flex;
+			position: relative;
 			flex-shrink: 0;
 			box-shadow: 0px 1px var(--divider);
 			cursor: move;
+			user-select: none;
+			height: $height;
 
 			> ::v-deep(button) {
 				height: $height;
 				width: $height;
+
+				&:hover {
+					color: var(--fgHighlighted);
+				}
 			}
 
 			> .title {
 				flex: 1;
+				position: relative;
 				line-height: $height;
-				font-weight: bold;
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
-				pointer-events: none;
 			}
 		}
 

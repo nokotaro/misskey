@@ -117,7 +117,12 @@ export default defineComponent({
 			type: Boolean,
 			required: false,
 			default: false
-		}
+		},
+		autofocus: {
+			type: Boolean,
+			required: false,
+			default: true
+		},
 	},
 
 	emits: ['posted', 'done', 'esc'],
@@ -270,11 +275,13 @@ export default defineComponent({
 			this.cw = this.reply.cw;
 		}
 
-		this.focus();
-
-		this.$nextTick(() => {
+		if (this.autofocus) {
 			this.focus();
-		});
+
+			this.$nextTick(() => {
+				this.focus();
+			});
+		}
 
 		// TODO: detach when unmount
 		new Autocomplete(this.$refs.text, this, { model: 'text' });
@@ -282,7 +289,7 @@ export default defineComponent({
 
 		this.$nextTick(() => {
 			// 書きかけの投稿を復元
-			if (!this.instant && !this.mention) {
+			if (!this.instant && !this.mention && !this.specified) {
 				const draft = JSON.parse(localStorage.getItem('drafts') || '{}')[this.draftKey];
 				if (draft) {
 					this.text = draft.data.text;
@@ -390,10 +397,10 @@ export default defineComponent({
 				currentLocalOnly: this.localOnly,
 				src: this.$refs.visibilityButton
 			}, {
-				'change-visibility': visibility => {
+				changeVisibility: visibility => {
 					this.applyVisibility(visibility);
 				},
-				'change-local-only': localOnly => {
+				changeLocalOnly: localOnly => {
 					this.localOnly = localOnly;
 				}
 			}, 'closed');

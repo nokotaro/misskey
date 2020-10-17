@@ -163,7 +163,7 @@ export default defineComponent({
 	},
 
 	methods: {
-		async changePage(page) {
+		changePage(page) {
 			if (page == null) return;
 			if (page.INFO) {
 				this.pageInfo = page.INFO;
@@ -273,6 +273,7 @@ export default defineComponent({
 			width: 100%;
 			line-height: $header-height;
 			text-align: center;
+			font-weight: bold;
 			//background-color: var(--panel);
 			-webkit-backdrop-filter: blur(32px);
 			backdrop-filter: blur(32px);
