@@ -12,6 +12,8 @@ export const stream = new Stream();
 
 export const pendingApiRequestsCount = ref(0);
 
+export const windows = new Set();
+
 export function api(endpoint: string, data: Record<string, any> = {}, token?: string | null | undefined) {
 	pendingApiRequestsCount.value++;
 
@@ -135,10 +137,10 @@ export function popup(component: Component | typeof import('*.vue'), props: Reco
 	};
 }
 
-// window にするとグローバルのアレと名前が被ってバグる
-export function window_(component: Component | typeof import('*.vue'), props: Record<string, any>, events = {}) {
+export function pageWindow(component: Component | typeof import('*.vue'), props: Record<string, any>) {
 	popup(defineAsyncComponent(() => import('@/components/page-window.vue')), {
-		component: component
+		initialComponent: markRaw(component),
+		initialProps: props,
 	});
 }
 
