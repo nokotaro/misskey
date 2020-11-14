@@ -3,8 +3,6 @@ import config from '../config';
 import { INote } from '../models/note';
 import { concat } from '../prelude/array';
 import { MfmForest, MfmTree } from './prelude';
-import { inspect } from 'util';
-import note from '../remote/activitypub/kernel/create/note';
 
 export function toHtml(tokens: MfmForest, mentionedRemoteUsers: INote['mentionedRemoteUsers'] = []) {
 	if (tokens == null) {
@@ -27,7 +25,8 @@ export function toHtml(tokens: MfmForest, mentionedRemoteUsers: INote['mentioned
 		},
 
 		big(token) {
-			const el = doc.createElement('strong');
+			const el = doc.createElement('span');
+			el.setAttribute('data-mfm', 'tada');
 			appendChildren(token.children, el);
 			return el;
 		},
