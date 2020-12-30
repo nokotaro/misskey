@@ -8,17 +8,17 @@
 		<div class="tabs _panel _vMargin">
 			<div class="left">
 				<button class="_button tab" @click="() => { src = 'home'; saveSrc(); }" :class="{ active: src === 'home' }" v-tooltip="$ts._timelines.home"><Fa :icon="faHome"/></button>
-				<button class="_button tab" @click="() => { src = 'local'; saveSrc(); }" :class="{ active: src === 'local' }" v-tooltip="$ts._timelines.local"><Fa :icon="faComments"/></button>
-				<button class="_button tab" @click="() => { src = 'social'; saveSrc(); }" :class="{ active: src === 'social' }" v-tooltip="$ts._timelines.social"><Fa :icon="faShareAlt"/></button>
-				<button class="_button tab" @click="() => { src = 'global'; saveSrc(); }" :class="{ active: src === 'global' }" v-tooltip="$ts._timelines.global"><Fa :icon="faGlobe"/></button>
+				<button class="_button tab" @click="() => { src = 'local'; saveSrc(); }" :class="{ active: src === 'local' }" v-tooltip="$ts._timelines.local" v-if="isLocalTimelineAvailable"><Fa :icon="faComments"/></button>
+				<button class="_button tab" @click="() => { src = 'social'; saveSrc(); }" :class="{ active: src === 'social' }" v-tooltip="$ts._timelines.social" v-if="isLocalTimelineAvailable"><Fa :icon="faShareAlt"/></button>
+				<button class="_button tab" @click="() => { src = 'global'; saveSrc(); }" :class="{ active: src === 'global' }" v-tooltip="$ts._timelines.global" v-if="isGlobalTimelineAvailable"><Fa :icon="faGlobe"/></button>
+				<span class="divider"></span>
+				<button class="_button tab" @click="() => { src = 'mentions'; saveSrc(); }" :class="{ active: src === 'mentions' }" v-tooltip="$ts.mentions"><Fa :icon="faAt"/><Fa :icon="faCircle" class="i" v-if="$i.hasUnreadMentions"/></button>
+				<button class="_button tab" @click="() => { src = 'directs'; saveSrc(); }" :class="{ active: src === 'directs' }" v-tooltip="$ts.directNotes"><Fa :icon="faEnvelope"/><Fa :icon="faCircle" class="i" v-if="$i.hasUnreadSpecifiedNotes"/></button>
 			</div>
 			<div class="right">
 				<button class="_button tab" @click="chooseChannel" :class="{ active: src === 'channel' }" v-tooltip="$ts.channel"><Fa :icon="faSatelliteDish"/><Fa :icon="faCircle" class="i" v-if="$i.hasUnreadChannel"/></button>
 				<button class="_button tab" @click="chooseAntenna" :class="{ active: src === 'antenna' }" v-tooltip="$ts.antennas"><Fa :icon="faSatellite"/><Fa :icon="faCircle" class="i" v-if="$i.hasUnreadAntenna"/></button>
 				<button class="_button tab" @click="chooseList" :class="{ active: src === 'list' }" v-tooltip="$ts.lists"><Fa :icon="faListUl"/></button>
-				<button class="_button tab" @click="() => { src = 'directs'; saveSrc(); }" :class="{ active: src === 'directs' }" v-tooltip="$ts.directNotes"><Fa :icon="faEnvelope"/><Fa :icon="faCircle" class="i" v-if="$i.hasUnreadSpecifiedNotes"/></button>
-				<button class="_button tab" @click="() => { src = 'mentions'; saveSrc(); }" :class="{ active: src === 'mentions' }" v-tooltip="$ts.mentions"><Fa :icon="faAt"/><Fa :icon="faCircle" class="i" v-if="$i.hasUnreadMentions"/></button>
-				<button class="_button tab" @click="chooseTl"><Fa :icon="faEllipsisH"/></button>
 			</div>
 		</div>
 		<XTimeline ref="tl"
@@ -84,8 +84,12 @@ export default defineComponent({
 			};
 		},
 
-		meta() {
-			return this.$instance;
+		isLocalTimelineAvailable(): boolean {
+			return !this.$instance.disableLocalTimeline || this.$i.isModerator || this.$i.isAdmin;
+		},
+
+		isGlobalTimelineAvailable(): boolean {
+			return !this.$instance.disableGlobalTimeline || this.$i.isModerator || this.$i.isAdmin;
 		},
 	},
 
@@ -228,6 +232,9 @@ export default defineComponent({
 			white-space: nowrap;
 			overflow: auto;
 
+			// 影の都合上
+			position: relative;
+
 			> .right {
 				margin-left: auto;
 			}
@@ -268,6 +275,15 @@ export default defineComponent({
 						font-size: 8px;
 						animation: blink 1s infinite;
 					}
+				}
+
+				> .divider {
+					display: inline-block;
+					width: 1px;
+					height: 28px;
+					vertical-align: middle;
+					margin: 0 8px;
+					background: var(--divider);
 				}
 			}
 		}
