@@ -10,7 +10,7 @@ RUN apk add --no-cache \
     autoconf \
     automake \
     file \
-		git \
+    git \
     g++ \
     gcc \
     libc-dev \
@@ -38,4 +38,4 @@ COPY --from=builder /misskey/node_modules ./node_modules
 COPY --from=builder /misskey/built ./built
 COPY . ./
 
-CMD ["npm", "run", "migrateandstart"]
+CMD ["npm", "run", "start"]
