@@ -10,7 +10,7 @@ RUN apk add --no-cache \
     autoconf \
     automake \
     file \
-		git \
+    git \
     g++ \
     gcc \
     libc-dev \
