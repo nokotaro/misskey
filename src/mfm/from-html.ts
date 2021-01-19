@@ -1,11 +1,11 @@
-import { parseFragment, DefaultTreeDocumentFragment } from 'parse5';
+import { parseFragment } from 'parse5';
 import { URL } from 'url';
 import { urlRegexFull, urlRegex } from './prelude';
 
 export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 	if (html == null) return null;
 
-	const dom = parseFragment(html) as DefaultTreeDocumentFragment;
+	const dom = parseFragment(html);
 
 	let text = '';
 
@@ -34,6 +34,13 @@ export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 				break;
 
 			case 'a': {
+				const name = getValue(node, 'data-mfm');
+				if (name === 'search') {
+					const query = getValue(node, 'data-mfm-query')
+					text += `${query} Search`;
+					break;
+				}
+
 				const txt = getText(node);
 				const rel = node.attrs.find((x: any) => x.name == 'rel');
 				const href = node.attrs.find((x: any) => x.name == 'href');

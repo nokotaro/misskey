@@ -70,6 +70,22 @@
 		</div>
 	</div>
 
+	<div class="notification pollFinished" v-if="notification.type == 'poll_finished'">
+		<mk-avatar class="avatar" :user="notification.user"/>
+		<div>
+			<header>
+				<fa icon="chart-pie"/>
+				<span>{{ $t('@.poll_finished') }}</span>
+				<mk-time :time="notification.createdAt"/>
+			</header>
+			<router-link class="note-ref" :to="notification.note | notePage" :title="getNoteSummary(notification.note)">
+				<fa icon="quote-left"/>
+					<mfm :text="getNoteSummary(notification.note)" :plain="true" :extra="true" :nowrap="true" :custom-emojis="notification.note.emojis"/>
+				<fa icon="quote-right"/>
+			</router-link>
+		</div>
+	</div>
+
 	<div class="notification highlight" v-if="notification.type == 'highlight'">
 		<mk-avatar class="avatar" :user="notification.user"/>
 		<div>
@@ -122,7 +138,7 @@ export default Vue.extend({
 		padding 16px
 		font-size 12px
 		overflow-wrap break-word
-		box-shadow 0 1px 8px rgba(0, 0, 0, 0.2)
+		border-bottom solid var(--lineWidth) var(--faceDivider)
 
 		&:after
 			content ""
@@ -197,4 +213,18 @@ export default Vue.extend({
 		&.reply, &.mention, &.highlight
 			> div > header [data-icon]
 				color #555
+
+		&.pollVote, &.pollFinished
+			> div > header
+				color var(--text)
+				align-items center
+
+		&.pollFinished
+			> .avatar
+				display none
+
+			> div
+				float none
+				width auto
+				padding 0
 </style>

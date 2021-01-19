@@ -10,10 +10,11 @@ import define from '../../../define';
 import User, { IRemoteUser } from '../../../../../models/user';
 import { ApiError } from '../../../error';
 import { getNote } from '../../../common/getters';
-import { deliver } from '../../../../../queue';
+import { deliver, createNotifyPollFinishedJob } from '../../../../../queue';
 import { renderActivity } from '../../../../../remote/activitypub/renderer';
 import renderVote from '../../../../../remote/activitypub/renderer/vote';
 import { deliverQuestionUpdate } from '../../../../../services/note/polls/update';
+import { oidEquals } from '../../../../../prelude/oid';
 
 export const meta = {
 	desc: {
@@ -162,6 +163,11 @@ export default define(meta, async (ps, user) => {
 	// この投稿をWatchする
 	if (user.settings.autoWatch !== false) {
 		watch(user._id, note);
+	}
+
+	// 投票完了通知
+	if (note.poll.expiresAt && !oidEquals(note.userId, user._id) && exist.length === 0) {
+		createNotifyPollFinishedJob(note, user, note.poll.expiresAt);
 	}
 
 	// リモート投票の場合リプライ送信

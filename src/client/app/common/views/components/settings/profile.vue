@@ -89,6 +89,7 @@
 				<ui-switch v-model="carefulMassive" :disabled="isLocked || refuseFollow" @change="save(false)">{{ $t('careful-massive') }}</ui-switch>
 				<ui-switch v-model="autoAcceptFollowed" :disabled="!isLocked && !refuseFollow && !carefulBot && !carefulRemote && !carefulMassive" @change="save(false)">{{ $t('auto-accept-followed') }}</ui-switch>
 				<ui-switch v-model="avoidSearchIndex" @change="save(false)">{{ $t('avoid-search-index') }}</ui-switch>
+				<ui-switch v-model="isExplorable" @change="save(false)">{{ $t('isExplorable') }}</ui-switch>
 				<ui-select v-model="hideFollows" @input="save(false)">
 					<option value="">{{ $t('hideFollows-none') }}</option>
 					<option value="follower">{{ $t('hideFollows-follower') }}</option>
@@ -131,6 +132,7 @@
 		<section>
 			<details>
 				<summary>{{ $t('danger-zone') }}</summary>
+				<ui-button @click="deleteAccount()">{{ $t('delete-account') }}</ui-button>
 				<ui-button v-if="!noFederation" @click="disableFederation()">{{ $t('disable-federation') }}</ui-button>
 				<ui-button v-if="noFederation" @click="enableFederation()">{{ $t('enable-federation') }}</ui-button>
 			</details>
@@ -175,6 +177,7 @@ export default Vue.extend({
 			carefulMassive: true,
 			autoAcceptFollowed: false,
 			avoidSearchIndex: false,
+			isExplorable: false,
 			hideFollows: '',
 			noFederation: false,
 			fieldName0 : null,
@@ -229,6 +232,7 @@ export default Vue.extend({
 		this.carefulMassive = this.$store.state.i.carefulMassive;
 		this.autoAcceptFollowed = this.$store.state.i.autoAcceptFollowed;
 		this.avoidSearchIndex = this.$store.state.i.avoidSearchIndex;
+		this.isExplorable = this.$store.state.i.isExplorable;
 		this.hideFollows = this.$store.state.i.hideFollows;
 		this.noFederation = this.$store.state.i.noFederation;
 
@@ -328,6 +332,7 @@ export default Vue.extend({
 				carefulMassive: !!this.carefulMassive,
 				autoAcceptFollowed: !!this.autoAcceptFollowed,
 				avoidSearchIndex: !!this.avoidSearchIndex,
+				isExplorable: !!this.isExplorable,
 				hideFollows: this.hideFollows || '',
 				fields,
 			}).then(i => {
@@ -487,12 +492,25 @@ export default Vue.extend({
 			});
 			if (canceled) return;
 
+			const { canceled: canceled2 } = await this.$root.dialog({
+				title: this.$t('delete-account-confirm'),
+				showCancelButton: true
+			});
+			if (canceled2) return;
+
 			this.$root.api('i/delete-account', {
 				password
 			}).then(() => {
 				this.$root.dialog({
 					type: 'success',
 					text: this.$t('account-deleted')
+				}).then(() => {
+					this.$root.signout();
+				});
+			}).catch((e: any) => {
+				this.$root.dialog({
+					type: 'error',
+					text: e.message
 				});
 			});
 		}

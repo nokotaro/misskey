@@ -1,5 +1,5 @@
 <template>
-<x-column :name="name" :column="column" :is-stacked="isStacked" :menu="menu">
+<x-column :name="name" :column="column" :is-stacked="isStacked" :pos="pos" :menu="menu">
 	<template #header><fa :icon="['far', 'bell']"/>{{ name }}</template>
 
 	<x-notifications :type="column.notificationType === 'all' ? null : column.notificationType"/>
@@ -27,7 +27,12 @@ export default Vue.extend({
 		isStacked: {
 			type: Boolean,
 			required: true
-		}
+		},
+		pos: {
+			type: Object,
+			required: false,
+			default: () => {}
+		},
 	},
 
 	data() {
@@ -57,7 +62,7 @@ export default Vue.extend({
 					title: this.$t('@.notification-type'),
 					type: null,
 					select: {
-						items: ['all', 'follow', 'mention', 'reply', 'renote', 'quote', 'reaction', 'pollVote', 'receiveFollowRequest', 'highlight'].map(x => ({
+						items: ['all', 'follow', 'mention', 'reply', 'renote', 'quote', 'reaction', 'poll_vote', 'poll_finished', 'receiveFollowRequest', 'highlight'].map(x => ({
 							value: x, text: this.$t('@.notification-types.' + x)
 						}))
 						default: this.column.notificationType,

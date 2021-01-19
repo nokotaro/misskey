@@ -85,6 +85,7 @@
 				<button class="button" @click="menu()" ref="menuButton">
 					<fa icon="ellipsis-h"/>
 				</button>
+				<button class="button stayTl" :class="{ pinned: !!appearNote.stayTl }" @click="toggleStayTl"><fa icon="thumbtack"/></button>
 			</footer>
 			<div class="deleted" v-if="appearNote.deletedAt != null">{{ $t('deleted') }}</div>
 		</div>
@@ -169,7 +170,7 @@ export default Vue.extend({
 .note
 	overflow hidden
 	font-size 13px
-	box-shadow 0 1px 8px rgba(0, 0, 0, 0.2)
+	border-bottom solid var(--lineWidth) var(--faceDivider)
 
 	&:last-of-type
 		border-bottom none
@@ -357,7 +358,7 @@ export default Vue.extend({
 					cursor pointer
 
 					&:not(:last-child)
-						margin-right 28px
+						margin-right 16px
 
 					&:hover
 						color var(--noteActionsHover)
@@ -373,6 +374,12 @@ export default Vue.extend({
 
 					&.renoted
 						color var(--primary)
+
+					&.stayTl
+							opacity 0.7
+							&.pinned
+								opacity 1
+								color var(--primary)
 
 			> .deleted
 				color var(--noteText)

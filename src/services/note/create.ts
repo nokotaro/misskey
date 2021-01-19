@@ -2,7 +2,7 @@ import es from '../../db/elasticsearch';
 import Note, { pack, INote, IChoice } from '../../models/note';
 import User, { isLocalUser, IUser, isRemoteUser, IRemoteUser, ILocalUser, getMute } from '../../models/user';
 import { publishMainStream, publishNotesStream } from '../stream';
-import { createDeleteNoteJob } from '../../queue';
+import { createDeleteNoteJob, createNotifyPollFinishedJob } from '../../queue';
 import renderNote from '../../remote/activitypub/renderer/note';
 import renderCreate from '../../remote/activitypub/renderer/create';
 import renderAnnounce from '../../remote/activitypub/renderer/announce';
@@ -36,6 +36,7 @@ import DeliverManager from '../../remote/activitypub/deliver-manager';
 import { deliverToRelays } from '../relay';
 import { getIndexer, getWordIndexer } from '../../misc/mecab';
 import Following from '../../models/following';
+import { IActivity } from '../../remote/activitypub/type';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention' | 'highlight';
 
@@ -165,6 +166,11 @@ export default async (user: IUser, data: Option, silent = false) => {
 	// Renote/Quote対象が「ホームまたは全体」以外の公開範囲ならreject
 	if (data.renote && data.renote.visibility != 'public' && data.renote.visibility != 'home') {
 		throw 'Renote target is not public or home';
+	}
+
+	// Renote/Quote対象がホームだったらホームに
+	if (data.renote && data.renote.visibility === 'home') {
+		data.visibility = 'home';
 	}
 
 	// PureRenoteの最大公開範囲はHomeにする
@@ -384,7 +390,16 @@ export default async (user: IUser, data: Option, silent = false) => {
 		// AP deliver
 		if (isLocalUser(user)) {
 			(async () => {
-				const noteActivity = await renderNoteOrRenoteActivity(data, note, user);
+				let noteActivity: IActivity | null;
+
+				if (user.isSilenced && note.visibility === 'public') {
+					const n = Object.assign({}, note);
+					n.visibility = 'home';
+					noteActivity = await renderNoteOrRenoteActivity(data, n, user);
+				} else {
+					noteActivity = await renderNoteOrRenoteActivity(data, note, user);
+				}
+
 				const dm = new DeliverManager(user, noteActivity);
 
 				// メンションされたリモートユーザーに配送
@@ -425,6 +440,10 @@ export default async (user: IUser, data: Option, silent = false) => {
 
 		// Register to search database
 		index(note);
+
+		if (isLocalUser(user) && note.poll && note.poll.expiresAt) {
+			createNotifyPollFinishedJob(note, user, note.poll.expiresAt);
+		}
 
 	})();
 
