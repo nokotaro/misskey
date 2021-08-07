@@ -19,7 +19,7 @@ jobs:
           git fetch upstream
           git checkout --track origin/develop
           git merge --no-edit upstream/develop
-          git push origin/develop
+          git push origin develop
         env:
           NAME: nokotaro
           EMAIL: takenoko@mail.nokotaro.com
