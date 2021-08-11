@@ -21,8 +21,6 @@ jobs:
           git checkout --track origin/develop
           git merge --no-edit upstream/develop
           npm version prerelease --preid $(echo ${GITHUB_SHA} | cut -c1-8)
-          git add .
-          git commit -m "update" -a
           git pull
           git push origin develop
         env:
