@@ -1,7 +1,7 @@
 {
 	"name": "misskey",
 	"author": "syuilo <syuilotan@yahoo.co.jp>",
-	"version": "12.86.0-9e918d50",
+	"version": "12.86.0-45e1dacd",
 	"codename": "indigo",
 	"repository": {
 		"type": "git",
