@@ -20,7 +20,8 @@ jobs:
           git fetch upstream
           git checkout --track origin/develop
           git merge --no-edit upstream/develop
-          npm version from-git
+          BASE_VERSION=`npm version | grep -Po -m1 "(?<=')[^',]+(?=-)"`
+          npm version ${BASE_VERSION}-$(echo ${GITHUB_SHA} | cut -c1-8)
           git pull
           git push origin develop
         env:
