@@ -18,7 +18,6 @@ jobs:
           git pull --unshallow
           git remote add upstream ${REPO_FORK}
           git fetch upstream
-          git checkout --track origin/develop
           git merge --no-edit upstream/develop
           BASE_VERSION=`npm version | grep -Po -m1 "(?<=')[^',]+(?=-)"`
           echo ${BASE_VERSION}
