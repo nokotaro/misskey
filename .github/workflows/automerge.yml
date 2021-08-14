@@ -22,7 +22,7 @@ jobs:
           git merge -Xtheirs --no-edit --allow-unrelated-histories upstream/develop && git checkout . && git add . && git commit || echo "No changes to commit"
           JSON_DATA=`cat package.json`
           PACKAGE_VERSION=$(echo ${JSON_DATA} | jq -r '.version')
-          npm version "${BASE_VERSION}-$(echo ${GIT_HASH} | cut -c1-7)" || echo "Version not changed"
+          npm version "${PACKAGE_VERSION}-$(echo ${GIT_HASH} | cut -c1-7)" || echo "Version not changed"
           git push origin develop
         env:
           NAME: nokotaro
