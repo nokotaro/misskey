@@ -11,39 +11,10 @@ metadata:
       fieldsType: FieldsV1
       manager: GoogleCloudConsole
       operation: Update
-      time: '2021-08-13T15:06:04Z'
     - apiVersion: apps/v1
       fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:annotations':
-            'f:deployment.kubernetes.io/revision': {}
-        'f:status':
-          'f:conditions':
-            .: {}
-            'k:{"type":"Available"}':
-              .: {}
-              'f:lastTransitionTime': {}
-              'f:lastUpdateTime': {}
-              'f:message': {}
-              'f:reason': {}
-              'f:status': {}
-              'f:type': {}
-            'k:{"type":"Progressing"}':
-              .: {}
-              'f:lastTransitionTime': {}
-              'f:lastUpdateTime': {}
-              'f:message': {}
-              'f:reason': {}
-              'f:status': {}
-              'f:type': {}
-          'f:observedGeneration': {}
-          'f:replicas': {}
-          'f:unavailableReplicas': {}
-          'f:updatedReplicas': {}
       manager: kube-controller-manager
       operation: Update
-      time: '2021-08-13T16:10:44Z'
   name: misskey
   namespace: develop
 spec:
@@ -116,7 +87,6 @@ metadata:
             'f:name': {}
       manager: GoogleCloudConsole
       operation: Update
-      time: '2021-08-13T15:06:04Z'
     - apiVersion: autoscaling/v1
       fieldsType: FieldsV1
       fieldsV1:
@@ -131,7 +101,6 @@ metadata:
           'f:desiredReplicas': {}
       manager: vpa-recommender
       operation: Update
-      time: '2021-08-13T15:28:55Z'
   name: misskey-hpa-olj1
   namespace: develop
 spec:
@@ -180,7 +149,6 @@ metadata:
           'f:type': {}
       manager: GoogleCloudConsole
       operation: Update
-      time: '2021-08-13T16:00:06Z'
     - apiVersion: v1
       fieldsType: FieldsV1
       fieldsV1:
@@ -193,7 +161,6 @@ metadata:
             'f:ingress': {}
       manager: kube-controller-manager
       operation: Update
-      time: '2021-08-13T16:00:51Z'
   name: misskey-service
   namespace: develop
 spec:
