@@ -19,13 +19,9 @@ jobs:
           git remote add upstream ${REPO_FORK}
           git fetch upstream
           GIT_HASH=`git rev-parse upstream/develop`
-          echo ${GIT_HASH}
           git merge -Xtheirs --no-edit --allow-unrelated-histories upstream/develop && git checkout . && git add . && git commit || echo "No changes to commit"
-          BASE_VERSION=`npm version | grep -Po -m1 "(?<=')[^',]+(?=-)" || npm version | grep -Po -m1 "(?<=')[^',]+(?=')"`
-          echo ${BASE_VERSION}
           JSON_DATA=`cat package.json`
           PACKAGE_VERSION=$(echo ${JSON_DATA} | jq -r '.version')
-          echo ${PACKAGE_VERSION}
           npm version "${BASE_VERSION}-$(echo ${GIT_HASH} | cut -c1-7)" || echo "Version not changed"
           git push origin develop
         env:
