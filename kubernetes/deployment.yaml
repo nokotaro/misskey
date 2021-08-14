@@ -9,54 +9,6 @@ metadata:
   managedFields:
     - apiVersion: apps/v1
       fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:labels':
-            .: {}
-            'f:app': {}
-        'f:spec':
-          'f:progressDeadlineSeconds': {}
-          'f:replicas': {}
-          'f:revisionHistoryLimit': {}
-          'f:selector': {}
-          'f:strategy':
-            'f:rollingUpdate':
-              .: {}
-              'f:maxSurge': {}
-              'f:maxUnavailable': {}
-            'f:type': {}
-          'f:template':
-            'f:metadata':
-              'f:labels':
-                .: {}
-                'f:app': {}
-            'f:spec':
-              'f:containers':
-                'k:{"name":"misskey-sha256-1"}':
-                  .: {}
-                  'f:image': {}
-                  'f:imagePullPolicy': {}
-                  'f:name': {}
-                  'f:resources':
-                    .: {}
-                    'f:limits':
-                      'f:cpu': {}
-                      'f:ephemeral-storage': {}
-                      'f:memory': {}
-                    'f:requests':
-                      'f:cpu': {}
-                      'f:ephemeral-storage': {}
-                      'f:memory': {}
-                  'f:terminationMessagePath': {}
-                  'f:terminationMessagePolicy': {}
-              'f:dnsPolicy': {}
-              'f:restartPolicy': {}
-              'f:schedulerName': {}
-              'f:securityContext':
-                .: {}
-                'f:seccompProfile':
-                  'f:type': {}
-              'f:terminationGracePeriodSeconds': {}
       manager: GoogleCloudConsole
       operation: Update
       time: '2021-08-13T15:06:04Z'
