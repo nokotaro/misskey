@@ -128,14 +128,6 @@ metadata:
       operation: Update
     - apiVersion: v1
       fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:finalizers':
-            .: {}
-            'v:"service.kubernetes.io/load-balancer-cleanup"': {}
-        'f:status':
-          'f:loadBalancer':
-            'f:ingress': {}
       manager: kube-controller-manager
       operation: Update
   name: misskey-service
