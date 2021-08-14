@@ -25,7 +25,7 @@ jobs:
           [ "$GIT_HASH" != "$GIT_HASH_OLD" ] && git merge -Xtheirs --no-edit --allow-unrelated-histories upstream/develop && git checkout . && git add . && git commit || echo "No changes to commit"
           PACKAGE_VERSION=$(cat package.json | jq -r '.version')
           echo $PACKAGE_VERSION
-          npm version "${PACKAGE_VERSION}-${GIT_HASH}" || echo "Version not changed"
+          [ "$GIT_HASH" != "$GIT_HASH_OLD" ] && npm version "${PACKAGE_VERSION}-${GIT_HASH}" || echo "Version not changed"
           git push origin develop
         env:
           NAME: nokotaro
