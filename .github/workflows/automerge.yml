@@ -28,6 +28,7 @@ jobs:
           DATE_AND_TIME=$(date +%Y%m%d%H%M%S)
           echo $DATE_AND_TIME
           [ "$GIT_HASH" != "$GIT_HASH_OLD" ] && npm version "${PACKAGE_VERSION}-${DATE_AND_TIME}.${GIT_HASH}" || echo "Version not changed"
+          git pull
           git push origin develop
         env:
           NAME: nokotaro
