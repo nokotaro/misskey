@@ -48,7 +48,7 @@ import Vue from 'vue';
 import i18n from '../../../i18n';
 const getPasswordStrength = require('syuilo-password-strength');
 import { host, url } from '../../../config';
-import { toUnicode } from 'punycode';
+import { toUnicode } from 'punycode/';
 
 export default Vue.extend({
 	i18n: i18n('common/views/components/signup.vue'),
@@ -86,7 +86,7 @@ export default Vue.extend({
 	mounted() {
 		const head = document.getElementsByTagName('head')[0];
 		const script = document.createElement('script');
-		script.setAttribute('src', 'https://www.google.com/recaptcha/api.js');
+		script.setAttribute('src', 'https://www.recaptcha.net/recaptcha/api.js');
 		head.appendChild(script);
 	},
 

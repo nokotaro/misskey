@@ -1,4 +1,4 @@
-import { IUser, isLocalUser, isRemoteUser } from '../../../models/user';
+import User, { IUser, isLocalUser, isRemoteUser } from '../../../models/user';
 import Note, { INote, pack } from '../../../models/note';
 import NoteReaction from '../../../models/note-reaction';
 import { publishNoteStream, publishHotStream } from '../../stream';
@@ -48,8 +48,14 @@ export default async (user: IUser, note: INote, reaction?: string, dislike = fal
 
 	perUserReactionsChart.update(user, note);
 
+	User.update({ _id: user._id }, {
+		$set: {
+			lastActivityAt: new Date()
+		}
+	});
+
 	const decodedReaction = decodeReaction(reaction);
-	const emoji = (await packEmojis([], note._user.host, [decodedReaction.replace(/:/g, '')]))[0];
+	const emoji = (await packEmojis([decodedReaction.replace(/:/g, '')], note._user.host))[0];
 
 	publishNoteStream(note._id, 'reacted', {
 		reaction: decodedReaction,
@@ -59,8 +65,8 @@ export default async (user: IUser, note: INote, reaction?: string, dislike = fal
 
 	if (note.reactionCounts == null) {
 		(async () => {
-			const fresh = await Note.findOne({ _id: note._id });
-			publishHotStream(await pack(fresh));
+			const fresh = (await Note.findOne({ _id: note._id }))!;
+			publishHotStream((await pack(fresh))!);
 		})();
 	}
 

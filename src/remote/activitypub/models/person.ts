@@ -1,13 +1,13 @@
 import * as mongo from 'mongodb';
 import * as promiseLimit from 'promise-limit';
-import { toUnicode } from 'punycode';
+import { toUnicode } from 'punycode/';
 
+import $, { Context } from 'cafy';
 import config from '../../../config';
-import User, { validateUsername, IUser, IRemoteUser, isRemoteUser } from '../../../models/user';
+import User, { IUser, IRemoteUser, isRemoteUser } from '../../../models/user';
 import Resolver from '../resolver';
 import { resolveImage } from './image';
-import { isCollectionOrOrderedCollection, isCollection, isOrderedCollection, IObject, isActor, IApPerson, isPropertyValue, IApPropertyValue, ApObject, getApIds, getOneApHrefNullable, isOrderedCollectionPage, isCreate, isPost } from '../type';
-import { IDriveFile } from '../../../models/drive-file';
+import { isCollectionOrOrderedCollection, isCollection, isOrderedCollection, IObject, isActor, IActor, isPropertyValue, IApPropertyValue, ApObject, getApIds, getOneApHrefNullable, isOrderedCollectionPage, isCreate, isPost, getApType, getApId, IApImage } from '../type';
 import Meta from '../../../models/meta';
 import { fromHtml } from '../../../mfm/from-html';
 import { htmlToMfm } from '../misc/html-to-mfm';
@@ -29,52 +29,64 @@ import { UpdateInstanceinfo } from '../../../services/update-instanceinfo';
 import { extractDbHost } from '../../../misc/convert-host';
 import DbResolver from '../db-resolver';
 import resolveUser from '../../resolve-user';
+import { normalizeTag } from '../../../misc/normalize-tag';
+import { substr } from 'stringz';
 const logger = apLogger;
+
+const MAX_NAME_LENGTH = 512;
+const MAX_SUMMARY_LENGTH = 8192;
+
+const truncate = (value: string, maxLength: number) => {
+	return substr(value, 0, maxLength);
+}
 
 /**
  * Validate and convert to actor object
  * @param x Fetched object
  * @param uri Fetch target URI
  */
-function toPerson(x: IObject, uri: string): IApPerson {
+function validateActor(x: IObject, uri: string): IActor {
 	const expectHost = toUnicode(new URL(uri).hostname.toLowerCase());
 
 	if (x == null) {
-		throw new Error('invalid person: object is null');
+		throw new Error('invalid Actor: object is null');
 	}
 
 	if (!isActor(x)) {
-		throw new Error(`invalid person type '${x.type}'`);
+		throw new Error(`invalid Actor type '${x.type}'`);
 	}
 
-	if (typeof x.preferredUsername !== 'string') {
-		throw new Error('invalid person: preferredUsername is not a string');
-	}
+	const validate = (name: string, value: any, validater: Context) => {
+		const e = validater.test(value);
+		if (e) throw new Error(`invalid Actor: ${name} ${e.message}`);
+	};
 
-	if (typeof x.inbox !== 'string') {
-		throw new Error('invalid person: inbox is not a string');
-	}
+	validate('id', x.id, $.str.min(1));
+	validate('inbox', x.inbox, $.str.min(1));
+	validate('preferredUsername', x.preferredUsername, $.str.min(1).max(128).match(/^\w([\w-.]*\w)?$/));
+	validate('name', x.name, $.optional.nullable.str);
+	validate('summary', x.summary, $.optional.nullable.str);
 
-	if (!validateUsername(x.preferredUsername, true)) {
-		throw new Error('invalid person: invalid username');
-	}
+	// サロゲートペアは2文字としてカウントされるので、サロゲートペアと合字を考慮して大きめにしておく
+	validate('name', x.name, $.optional.nullable.str.max(512));
 
-	if (typeof x.id !== 'string') {
-		throw new Error('invalid person: id is not a string');
-	}
+	// 入力値はHTMLなので大きめにしておく
+	validate('summary', x.summary, $.optional.nullable.str.max(8192));
 
-	const idHost = toUnicode(new URL(x.id).hostname.toLowerCase());
+	const idHost = toUnicode(new URL(x.id!).hostname.toLowerCase());
 	if (idHost !== expectHost) {
-		throw new Error('invalid person: id has different host');
+		throw new Error('invalid Actor: id has different host');
 	}
 
-	if (typeof x.publicKey.id !== 'string') {
-		throw new Error('invalid person: publicKey.id is not a string');
-	}
+	if (x.publicKey) {
+		if (typeof x.publicKey.id !== 'string') {
+			throw new Error('invalid Actor: publicKey.id is not a string');
+		}
 
-	const publicKeyIdHost = toUnicode(new URL(x.publicKey.id).hostname.toLowerCase());
-	if (publicKeyIdHost !== expectHost) {
-		throw new Error('invalid person: publicKey.id has different host');
+		const publicKeyIdHost = toUnicode(new URL(x.publicKey.id).hostname.toLowerCase());
+		if (publicKeyIdHost !== expectHost) {
+			throw new Error('invalid Actor: publicKey.id has different host');
+		}
 	}
 
 	return x;
@@ -95,37 +107,28 @@ export async function fetchPerson(uri: string): Promise<IUser | null> {
 /**
  * Personを作成します。
  */
-export async function createPerson(uri: string, resolver?: Resolver): Promise<IUser> {
+export async function createPerson(uri: string, resolver?: Resolver): Promise<IRemoteUser> {
 	if (typeof uri !== 'string') throw 'uri is not string';
 
 	if (resolver == null) resolver = new Resolver();
 
 	const object = await resolver.resolve(uri);
 
-	const person = toPerson(object, uri);
+	const person = validateActor(object, uri);
 
 	logger.info(`Creating the Person: ${person.id}`);
 
 	const [followersCount = 0, followingCount = 0, notesCount = 0] = await Promise.all([
-		resolver.resolve(person.followers).then(
-			resolved => isCollectionOrOrderedCollection(resolved) ? resolved.totalItems : undefined,
-			() => undefined
-		),
-		resolver.resolve(person.following).then(
-			resolved => isCollectionOrOrderedCollection(resolved) ? resolved.totalItems : undefined,
-			() => undefined
-		),
-		resolver.resolve(person.outbox).then(
-			resolved => isCollectionOrOrderedCollection(resolved) ? resolved.totalItems : undefined,
-			() => undefined
-		)
+		getCollectionCount(person.followers, resolver).catch(() => undefined),
+		getCollectionCount(person.following, resolver).catch(() => undefined),
+		getCollectionCount(person.outbox, resolver).catch(() => undefined),
 	]);
 
-	const host = toUnicode(new URL(object.id).hostname.toLowerCase());
+	const host = toUnicode(new URL(getApId(object)).hostname.toLowerCase());
 
 	const { fields, services } = analyzeAttachments(person.attachment);
 
-	const tags = extractApHashtags(person.tag).map(tag => tag.toLowerCase()).splice(0, 64);
+	const tags = extractApHashtags(person.tag).map(tag => normalizeTag(tag)).splice(0, 64);
 
 	const movedToUserId = await resolveAnotherUser(uri, person.movedTo);
 	// const alsoKnownAsUserIds = await resolveAnotherUsers(uri, person.alsoKnownAs);
@@ -141,20 +144,20 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 			bannerId: null,
 			createdAt: new Date(),
 			lastFetchedAt: new Date(),
-			description: htmlToMfm(person.summary, person.tag),
+			description: person.summary ? htmlToMfm(truncate(person.summary, MAX_SUMMARY_LENGTH), person.tag) : '',
 			followersCount,
 			followingCount,
 			notesCount,
-			name: person.name,
+			name: person.name ? truncate(person.name, MAX_NAME_LENGTH) : person.name,
 			isLocked: person.manuallyApprovesFollowers,
 			isExplorable: !!person.discoverable,
 			username: person.preferredUsername,
 			usernameLower: person.preferredUsername.toLowerCase(),
 			host,
-			publicKey: {
+			publicKey: person.publicKey ? {
 				id: person.publicKey.id,
 				publicKeyPem: person.publicKey.publicKeyPem
-			},
+			} : undefined,
 			inbox: person.inbox,
 			sharedInbox: person.sharedInbox || (person.endpoints ? person.endpoints.sharedInbox : undefined),
 			outbox: person.outbox,
@@ -171,35 +174,30 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 				birthday: bday ? bday[0] : undefined,
 				location: person['vcard:Address'] || undefined,
 			},
-			isBot: object.type == 'Service',
-			isGroup: object.type == 'Group',
-			isOrganization: object.type == 'Organization',
+			isBot: getApType(object) === 'Service',
+			isGroup: getApType(object) === 'Group',
+			isOrganization: getApType(object) === 'Organization',
 			isCat: (person as any).isCat === true
 		}) as IRemoteUser;
 	} catch (e) {
 		// duplicate key error
 		if (e.code === 11000) {
-			user = await User.findOne({
-				uri: person.id
+			// 同じ@username@host を持つものがあった場合、被った先を返す
+			const u = await User.findOne({
+				uri: { $ne: person.id },
+				usernameLower: person.preferredUsername.toLowerCase(),
+				host
 			});
 
-			// 同じ@username@host を持つものがあった場合、被った先を返す
-			if (user == null) {
-				const u = await User.findOne({
-					usernameLower: person.preferredUsername.toLowerCase(),
-					host
-				});
-
-				if (u) {
-					throw {
-						code: 'DUPLICATED_USERNAME',
-						with: u,
-					};
-				}
-
-				logger.error(e);
-				throw e;
+			if (u) {
+				throw {
+					code: 'DUPLICATED_USERNAME',
+					with: u,
+				};
 			}
+
+			logger.error(e);
+			throw e;
 		} else {
 			logger.error(e);
 			throw e;
@@ -233,21 +231,17 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 	updateUsertags(user, tags);
 
 	//#region アイコンとヘッダー画像をフェッチ
-	const [avatar, banner] = (await Promise.all<IDriveFile>([
-		toSingle(person.icon),
-		toSingle(person.image)
-	].map(img =>
-		img == null
-			? Promise.resolve(null)
-			: resolveImage(user, img).catch(() => null)
-	)));
+	const [avatar, banner] = await Promise.all([
+		fetchImage(user, person.icon).catch(() => null),
+		fetchImage(user, person.image).catch(() => null),
+	]);
 
 	const avatarId = avatar ? avatar._id : null;
 	const bannerId = banner ? banner._id : null;
 	const avatarUrl = getDriveFileUrl(avatar, true);
 	const bannerUrl = getDriveFileUrl(banner, false);
-	const avatarColor = avatar && avatar.metadata.properties.avgColor ? avatar.metadata.properties.avgColor : null;
-	const bannerColor = banner && avatar.metadata.properties.avgColor ? banner.metadata.properties.avgColor : null;
+	const avatarColor = avatar && avatar.metadata?.properties.avgColor ? avatar.metadata.properties.avgColor : null;
+	const bannerColor = banner && banner.metadata?.properties.avgColor ? banner.metadata.properties.avgColor : null;
 
 	await User.update({ _id: user._id }, {
 		$set: {
@@ -269,7 +263,7 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
 	//#endregion
 
 	//#region カスタム絵文字取得
-	const emojis = await extractEmojis(person.tag, host).catch(e => {
+	const emojis = await extractEmojis(person.tag || [], host).catch(e => {
 		logger.info(`extractEmojis: ${e}`);
 		return [] as IEmoji[];
 	});
@@ -295,7 +289,7 @@ export async function createPerson(uri: string, resolver?: Resolver): Promise<IU
  * @param resolver Resolver
  * @param hint Hint of Person object (この値が正当なPersonの場合、Remote resolveをせずに更新に利用します)
  */
-export async function updatePerson(uri: string, resolver?: Resolver, hint?: IApPerson): Promise<void> {
+export async function updatePerson(uri: string, resolver?: Resolver, hint?: IActor): Promise<void> {
 	if (typeof uri !== 'string') throw 'uri is not string';
 
 	// URIがこのサーバーを指しているならスキップ
@@ -315,37 +309,24 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: IApP
 
 	const object = hint || await resolver.resolve(uri) as any;
 
-	const person = toPerson(object, uri);
+	const person = validateActor(object, uri);
 
 	logger.info(`Updating the Person: ${person.id}`);
 
 	const [followersCount = 0, followingCount = 0, notesCount = 0] = await Promise.all([
-		resolver.resolve(person.followers).then(
-			resolved => isCollectionOrOrderedCollection(resolved) ? resolved.totalItems : undefined,
-			() => undefined
-		),
-		resolver.resolve(person.following).then(
-			resolved => isCollectionOrOrderedCollection(resolved) ? resolved.totalItems : undefined,
-			() => undefined
-		),
-		resolver.resolve(person.outbox).then(
-			resolved => isCollectionOrOrderedCollection(resolved) ? resolved.totalItems : undefined,
-			() => undefined
-		)
+		getCollectionCount(person.followers, resolver).catch(() => undefined),
+		getCollectionCount(person.following, resolver).catch(() => undefined),
+		getCollectionCount(person.outbox, resolver).catch(() => undefined),
 	]);
 
 	// アイコンとヘッダー画像をフェッチ
-	const [avatar, banner] = (await Promise.all<IDriveFile>([
-		toSingle(person.icon),
-		toSingle(person.image)
-	].map(img =>
-		img == null
-			? Promise.resolve(null)
-			: resolveImage(exist, img).catch(() => null)
-	)));
+	const [avatar, banner] = await Promise.all([
+		fetchImage(exist, person.icon).catch(() => null),
+		fetchImage(exist, person.image).catch(() => null),
+	]);
 
 	// カスタム絵文字取得
-	const emojis = await extractEmojis(person.tag, exist.host).catch(e => {
+	const emojis = await extractEmojis(person.tag || [], exist.host).catch(e => {
 		logger.info(`extractEmojis: ${e}`);
 		return [] as IEmoji[];
 	});
@@ -354,7 +335,7 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: IApP
 
 	const { fields, services } = analyzeAttachments(person.attachment);
 
-	const tags = extractApHashtags(person.tag).map(tag => tag.toLowerCase()).splice(0, 64);
+	const tags = extractApHashtags(person.tag).map(tag => normalizeTag(tag)).splice(0, 64);
 
 	const movedToUserId = await resolveAnotherUser(uri, person.movedTo);
 	const alsoKnownAsUserIds = await resolveAnotherUsers(uri, person.alsoKnownAs);
@@ -368,11 +349,11 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: IApP
 		outbox: person.outbox,
 		featured: person.featured,
 		emojis: emojiNames,
-		description: htmlToMfm(person.summary, person.tag),
+		description: person.summary ? htmlToMfm(truncate(person.summary, MAX_SUMMARY_LENGTH), person.tag) : '',
 		followersCount,
 		followingCount,
 		notesCount,
-		name: person.name,
+		name: person.name ? truncate(person.name, MAX_NAME_LENGTH) : person.name,
 		movedToUserId,
 		alsoKnownAsUserIds,
 		url: getOneApHrefNullable(person.url),
@@ -384,28 +365,28 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: IApP
 			birthday: bday ? bday[0] : undefined,
 			location: person['vcard:Address'] || undefined,
 		},
-		isBot: object.type == 'Service',
-		isGroup: object.type == 'Group',
-		isOrganization: object.type == 'Organization',
+		isBot: getApType(object) === 'Service',
+		isGroup: getApType(object) === 'Group',
+		isOrganization: getApType(object) === 'Organization',
 		isCat: (person as any).isCat === true,
 		isLocked: person.manuallyApprovesFollowers,
 		isExplorable: !!person.discoverable,
-		publicKey: {
+		publicKey: person.publicKey ? {
 			id: person.publicKey.id,
 			publicKeyPem: person.publicKey.publicKeyPem
-		},
+		} : undefined,
 	} as any;
 
 	if (avatar) {
 		updates.avatarId = avatar._id;
 		updates.avatarUrl = getDriveFileUrl(avatar, true);
-		updates.avatarColor = avatar.metadata.properties.avgColor ? avatar.metadata.properties.avgColor : null;
+		updates.avatarColor = avatar.metadata?.properties.avgColor ? avatar.metadata.properties.avgColor : null;
 	}
 
 	if (banner) {
 		updates.bannerId = banner._id;
 		updates.bannerUrl = getDriveFileUrl(banner, true);
-		updates.bannerColor = banner.metadata.properties.avgColor ? banner.metadata.properties.avgColor : null;
+		updates.bannerColor = banner.metadata?.properties.avgColor ? banner.metadata.properties.avgColor : null;
 	}
 
 	// Update user
@@ -440,7 +421,7 @@ export async function updatePerson(uri: string, resolver?: Resolver, hint?: IApP
  * Misskeyに対象のPersonが登録されていればそれを返し、そうでなければ
  * リモートサーバーからフェッチしてMisskeyに登録しそれを返します。
  */
-export async function resolvePerson(uri: string, verifier?: string, resolver?: Resolver): Promise<IUser> {
+export async function resolvePerson(uri: string, verifier?: string | null, resolver?: Resolver): Promise<IUser> {
 	if (typeof uri !== 'string') throw 'uri is not string';
 
 	//#region このサーバーに既に登録されていたらそれを返す
@@ -501,6 +482,19 @@ function addService(target: { [x: string]: any }, source: IApPropertyValue) {
 		target[source.name.split(':')[2]] = service(id, username);
 }
 
+async function getCollectionCount(value: IObject | string | undefined, resolver: Resolver) {
+	if (value == null) return undefined;
+	const resolved = await resolver.resolve(value);
+	return isCollectionOrOrderedCollection(resolved) ? resolved.totalItems : undefined
+}
+
+async function fetchImage(actor: IRemoteUser, value: IApImage | IApImage[] | undefined) {
+	if (value == null) return null;
+	const first = toSingle(value);
+	if (first == null) return null;
+	return await resolveImage(actor, first);
+}
+
 export function analyzeAttachments(attachments: IObject | IObject[] | undefined) {
 	attachments = toArray(attachments);
 
@@ -517,7 +511,7 @@ export function analyzeAttachments(attachments: IObject | IObject[] | undefined)
 		} else {
 			fields.push({
 				name: attachment.name,
-				value: fromHtml(attachment.value)
+				value: fromHtml(attachment.value) || ''
 			});
 		}
 	}
@@ -545,7 +539,7 @@ export async function updateFeatured(userId: mongo.ObjectID) {
 	// Resolve and regist Notes
 	const limit = promiseLimit(2);
 	const featuredNotes = await Promise.all(items
-		.filter(item => item.type === 'Note')
+		.filter(item => getApType(item) === 'Note')	// TODO: Noteでなくてもいいかも
 		.slice(0, 20)
 		.map(item => limit(() => resolveNote(item, resolver)) as Promise<INote>));
 
@@ -568,7 +562,7 @@ export async function fetchOutbox(user: IUser) {
 	const resolver = new Resolver();
 
 	// Fetch activities from outbox (first page only)
-	let unresolvedActivities: (IObject | string)[];
+	let unresolvedActivities: (IObject | string)[] | undefined;
 
 	const collection = await resolver.resolveCollection(user.outbox);
 	if (!isOrderedCollection(collection)) throw new Error(`Object is not an OrderedCollection`);

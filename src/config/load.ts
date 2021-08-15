@@ -21,7 +21,7 @@ const path = process.env.NODE_ENV == 'test'
 	: `${dir}/default.yml`;
 
 export default function load() {
-	const config = yaml.safeLoad(fs.readFileSync(path, 'utf-8')) as Source;
+	const config = yaml.load(fs.readFileSync(path, 'utf-8')) as Source;
 
 	const mixin = {} as Mixin;
 
@@ -30,6 +30,8 @@ export default function load() {
 	config.url = normalizeUrl(config.url);
 
 	config.port = config.port || parseInt(process.env.PORT || '', 10);
+
+	config.proxyRemoteFiles = !config.proxyRemoteFiles === false;
 
 	const icons = {
 		favicon: {

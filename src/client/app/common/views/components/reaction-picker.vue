@@ -3,7 +3,7 @@
 	<div class="backdrop" ref="backdrop" @click="close"></div>
 	<div class="popover" :class="{ isMobile: $root.isMobile }" ref="popover">
 		<div class="buttons" ref="buttons">
-			<button v-for="(reaction, i) in rs" :key="i" @click="react(reaction)" :tabindex="i + 1" :title="/^[a-z]+$/.test(reaction) ? $t('@.reactions.' + reaction) : reaction" v-particle><mk-reaction-icon :reaction="reaction"/></button>
+			<button v-for="(reaction, i) in rs" :key="i" @click="react(reaction)" :tabindex="i + 1" :title="/^[a-z]+$/.test(reaction) ? $t('@.reactions.' + reaction) : reaction"><mk-reaction-icon :reaction="reaction"/></button>
 		</div>
 		<div class="text">
 			<input v-model="text" :placeholder="$t('emoji')" @keyup.enter="reactText" @keydown.esc="close" @input="tryReactText" v-autocomplete="{ model: 'text', noZwsp: true }" ref="text">
@@ -20,7 +20,7 @@
 import Vue from 'vue';
 import i18n from '../../../i18n';
 import anime from 'animejs';
-import { emojiRegex } from '../../../../../misc/emoji-regex';
+import { emojiRegex, vendorEmojiRegex } from '../../../../../misc/emoji-regex';
 import { faRandom, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import { emojilist } from '../../../../../misc/emojilist';
 
@@ -45,13 +45,17 @@ export default Vue.extend({
 	data() {
 		return {
 			faRandom, faThumbsUp, faThumbsDown,
-			rs: this.reactions || this.$store.state.settings.reactions,
+			bases: this.reactions || this.$store.state.settings.reactions,
+			mosts: [],
 			text: null,
 			disliked: false,
 		};
 	},
 
 	computed: {
+		rs(): any {
+			return this.bases.concat(this.mosts);
+		},
 		keymap(): any {
 			return {
 				'esc': this.close,
@@ -69,10 +73,19 @@ export default Vue.extend({
 				const reaction = list[index];
 				result.push(reaction);
 			}
-			this.rs = result;
+			this.bases = result;
 		}
 
-		this.rs = this.rs.concat(this.$store.state.device.recentReactions || []);
+		this.bases = this.bases.concat(this.$store.state.device.recentReactions || []);
+
+		this.$root.api('users/reaction-stats', {
+			userId: this.$store.state.i.id,
+			limit: 10,
+			target: 'reactions',
+		}, false, true).then((reactionStats: any) => {
+			const mosts = reactionStats.reactions.map((x: any) => (x.reaction as string).replace(/@.:$/, ':'));
+			this.mosts = mosts.filter(x => !this.bases.includes(x));
+		});
 	},
 
 	mounted() {
@@ -160,7 +173,7 @@ export default Vue.extend({
 				}
 			}
 
-			const m = this.text.match(emojiRegex);
+			const m = this.text.match(vendorEmojiRegex) || this.text.match(emojiRegex);
 			if (!m) return;
 			this.react(m[1]);
 		},
@@ -185,7 +198,7 @@ export default Vue.extend({
 				y: rect.top + window.pageYOffset
 			});
 			vm.$once('chosen', emoji => {
-				const m = emoji.match(emojiRegex);
+				const m = emoji.match(vendorEmojiRegex) || emoji.match(emojiRegex);
 				this.react(m ? m[1] : emoji);
 			});
 			this.$once('hook:beforeDestroy', () => {

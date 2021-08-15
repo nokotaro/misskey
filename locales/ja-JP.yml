@@ -36,6 +36,7 @@ common:
   signin: "ログイン"
   signup: "新規登録"
   signout: "ログアウト"
+  reminder: "パスワードを忘れた"
   reload-to-apply-the-setting: "この設定を反映するにはページをリロードする必要があります。今すぐリロードしますか？"
   unfollow-confirm: "{name}さんをフォロー解除しますか？"
   delete-confirm: "この投稿を削除しますか？"
@@ -57,7 +58,7 @@ common:
   got-it: "わかった"
   customization-tips:
     title: "カスタマイズのヒント"
-    paragraph: "<p>ホームのカスタマイズでは、ウィジェットを追加/削除したり、ドラッグ&ドロップして並べ替えたりすることができます。</p><p>一部のウィジェットは、<strong><strong>右</strong>クリック</strong>することで表示を変更することができます。</p><p>ウィジェットを削除するには、ヘッダーの<strong>「ゴミ箱」</strong>と書かれたエリアにウィジェットをドラッグ&ドロップします。</p><p>カスタマイズを終了するには、右上の「完了」をクリックします。</p>"
+    paragraph: "ホームのカスタマイズでは、ウィジェットを追加/削除したり、ドラッグ&ドロップして並べ替えたりすることができます。一部のウィジェットは、右クリックすることで表示を変更することができます。ウィジェットを削除するには、ヘッダーの「ゴミ箱」と書かれたエリアにウィジェットをドラッグ&ドロップします。カスタマイズを終了するには、右上の「完了」をクリックします。"
     gotit: "Got it!"
   notification:
     file-uploaded: "ファイルがアップロードされました"
@@ -106,11 +107,13 @@ common:
   empty: 'ありません！'
   edit: '編集'
   aboutInstance: "このインスタンスについて"
-  favoriteReactions: "よく使うリアクション"
+  favoriteReactions: "よくするリアクション"
+  mostReacteds: "よくされるリアクション"
 
   favorites: "お気に入り"
   noteReactions: "リアクションした投稿"
   poll_finished: "アンケートが完了しました"
+  flush: "キャッシュをクリア"
 
   permissions:
     "read:account": "アカウントの情報を見る"
@@ -231,6 +234,7 @@ common:
     d: "言いたいことは？"
     e: "ここに書いてください"
     f: "あなたが書くのを待っています..."
+    tag: "このハッシュタグで投稿"
 
   settings: "設定"
   _settings:
@@ -261,9 +265,11 @@ common:
     i-like-sushi: "私は(プリンよりむしろ)寿司が好き"
     show-reversi-board-labels: "リバーシのボードの行と列のラベルを表示"
     use-avatar-reversi-stones: "リバーシの石にアバターを使う"
+    enable-decorated-mfm: "装飾系のMFM構文を有効にする"
     disable-animated-mfm: "投稿内の動きのあるテキストを無効にする"
     disable-showing-animated-images: "アニメーション画像を再生しない"
-    disableShowingInstanceInfo: "インスタンス情報を表示しない"
+    showInstanceInfo: "インスタンス情報を表示する"
+    showTlPin: "タイムラインにピン留めボタンを表示する"
     enableKeyboardShortcutInNote: "投稿でのキーボードショートカットを有効にする"
     suggest-recent-hashtags: "最近のハッシュタグを投稿フォームに表示する"
     always-show-nsfw: "常に閲覧注意のメディアを表示する"
@@ -382,6 +388,9 @@ common:
   update-available: "Misskeyの新しいバージョンがあります({newer}。現在{current}を利用中)。ページを再度読み込みすると更新が適用されます。"
   my-token-regenerated: "あなたのトークンが更新されたのでサインアウトします。"
   verified-user: "公式アカウント"
+  silenced-user: "Silenced user"
+  suspended-user: "Suspended user"
+  deleted-user: "Deleted user"
   hide-password: "パスワードを隠す"
   show-password: "パスワードを表示する"
   reload: "リロード"
@@ -495,6 +504,9 @@ common/views/pages/about.vue:
   notes: "投稿数"
   instances: "インスタンス数"
   popularReactions: "人気のリアクション"
+  localActive: "今のユーザー数"
+  globalActive: "今のユーザー数 (グローバル)"
+  reacters: "よくリアクションするユーザー"
 
 common/views/components/url-preview.vue:
   enable-player: "プレイヤーを開く"
@@ -680,6 +692,8 @@ common/views/components/note-menu.vue:
   delete-confirm: "この投稿を削除しますか？"
   deleteAsAdmin: "管理者として削除"
   deleteAsAdmin-confirm: "管理者権限を行使してこの投稿を削除しますか？"
+  deleteDriveNo: "ドライブのファイルは削除しない"
+  deleteDriveYes: "ドライブのファイルも削除する"
   edit: "編集"
   edit-confirm: "この投稿を編集しますか？この投稿へのリアクション、Renote、返信も全て削除されます。"
   delete-and-edit: "削除して編集"
@@ -824,6 +838,12 @@ common/views/components/signup.vue:
   recaptcha: "認証"
   create: "アカウント作成"
   some-error: "何らかの原因によりアカウントの作成に失敗しました。再度お試しください。"
+
+common/views/components/reminder.vue:
+  username: "ユーザー名"
+  email: "登録したメールアドレス"
+  desc: "メールアドレスが認証済みの場合、パスワードリセット用のリンクが送信されます。"
+  submit: "送信"
 
 common/views/components/special-message.vue:
   new-year: "Happy New Year!"
@@ -1064,6 +1084,10 @@ common/views/pages/follow.vue:
   request-pending: "フォロー許可待ち"
   follow-processing: "フォロー処理中"
   follow-request: "フォロー申請"
+
+common/views/pages/reset-password.vue:
+  password: "新しいパスワード"
+  save: "保存"
 
 desktop:
   banner-crop-title: "バナーとして表示する部分を選択"
@@ -1358,6 +1382,7 @@ common/views/components/password-settings.vue:
 
 common/views/components/post-form-attaches.vue:
   attach-cancel: "添付取り消し"
+  attach-delete: "取り消しと削除"
   mark-as-sensitive: "閲覧注意に設定"
   unmark-as-sensitive: "閲覧注意を解除"
 
@@ -1485,6 +1510,7 @@ admin/views/queue.vue:
   jobs: "ジョブ"
   queue: "キュー"
   state: "状態"
+  limit: "表示数"
   domains:
     deliver: "Deliver"
     inbox: "Inbox"
@@ -1646,6 +1672,9 @@ admin/views/users.vue:
   unsuspend: "凍結の解除"
   unsuspend-confirm: "凍結を解除しますか？"
   unsuspended: "凍結を解除しました"
+  delete: "削除"
+  delete-confirm: "削除しますか？"
+  deleted: "削除しました"
   make-silence: "サイレンス"
   silence-confirm: "サイレンスしますか？"
   unmake-silence: "サイレンスの解除"

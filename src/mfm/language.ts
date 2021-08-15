@@ -1,13 +1,14 @@
 import * as P from 'parsimmon';
-import { createLeaf, createTree, urlRegex } from './prelude';
+import { createMfmNode, urlRegex } from './utils';
 import { Predicate } from '../prelude/relation';
 import parseAcct from '../misc/acct/parse';
-import { toUnicode } from 'punycode';
-import { emojiRegex, vendorEmojiRegex, localEmojiRegex } from '../misc/emoji-regex';
+import { toUnicode } from 'punycode/';
+import { emojiRegex, vendorEmojiRegex } from '../misc/emoji-regex';
+import * as tinycolor from 'tinycolor2';
 
 export function removeOrphanedBrackets(s: string): string {
-	const openBrackets = ['(', '「', '['];
-	const closeBrackets = [')', '」', ']'];
+	const openBrackets = ['(', '['];
+	const closeBrackets = [')', ']'];
 	const xs = cumulativeSum(s.split('').map(c => {
 		if (openBrackets.includes(c)) return 1;
 		if (closeBrackets.includes(c)) return -1;
@@ -23,6 +24,16 @@ export const mfmLanguage = P.createLanguage({
 	root: r => P.alt(r.block, r.inline).atLeast(1),
 	plain: r => P.alt(r.emoji, r.text).atLeast(1),
 	plainX: r => P.alt(r.inline).atLeast(1),
+	basic: r => P.alt(
+		r.blockCode,
+		r.inlineCode,
+		r.mention,
+		r.hashtag,
+		r.url,
+		r.link,
+		r.emoji,
+		r.text,
+	).atLeast(1),
 	block: r => P.alt(
 		r.title,
 		r.quote,
@@ -30,55 +41,11 @@ export const mfmLanguage = P.createLanguage({
 		r.blockCode,
 		r.mathBlock,
 		r.center,
-		r.marquee
+		r.marquee,
+		r.color,
 	),
-	startOfLine: () => P((input, i) => {
-		if (i == 0 || input[i] == '\n' || input[i - 1] == '\n') {
-			return P.makeSuccess(i, null);
-		} else {
-			return P.makeFailure(i, 'not newline');
-		}
-	}),
-	title: r => r.startOfLine.then(P((input, i) => {
-		const text = input.substr(i);
-		const match = text.match(/^([【]([^【】\n]+?)[】])(\n|$)/);
-		if (!match) return P.makeFailure(i, 'not a title');
-		const q = match[2].trim();
-		const contents = r.inline.atLeast(1).tryParse(q);
-		return P.makeSuccess(i + match[0].length, createTree('title', contents, {}));
-	})),
-	quote: r => r.startOfLine.then(P((input, i) => {
-		const text = input.substr(i);
-		if (!text.match(/^>[\s\S]+?/)) return P.makeFailure(i, 'not a quote');
-		const quote = takeWhile(line => line.startsWith('>'), text.split('\n'));
-		const qInner = quote.join('\n').replace(/^>/gm, '').replace(/^ /gm, '');
-		if (qInner == '') return P.makeFailure(i, 'not a quote');
-		const contents = r.root.tryParse(qInner);
-		return P.makeSuccess(i + quote.join('\n').length + 1, createTree('quote', contents, {}));
-	})),
-	search: r => r.startOfLine.then(P((input, i) => {
-		const text = input.substr(i);
-		const match = text.match(/^(.+?)( |　)(検索|\[検索\]|Search|\[Search\])(\n|$)/i);
-		if (!match) return P.makeFailure(i, 'not a search');
-		return P.makeSuccess(i + match[0].length, createLeaf('search', { query: match[1], content: match[0].trim() }));
-	})),
-	blockCode: r => r.startOfLine.then(P((input, i) => {
-		const text = input.substr(i);
-		const match = text.match(/^```(.+?)?\n([\s\S]+?)\n```(\n|$)/i);
-		if (!match) return P.makeFailure(i, 'not a blockCode');
-		return P.makeSuccess(i + match[0].length, createLeaf('blockCode', { code: match[2], lang: match[1] ? match[1].trim() : null }));
-	})),
-	marquee: r => {
-		return P((input, i) => {
-			const text = input.substr(i);
-			const match = text.match(/^<marquee(\s[a-z-]+?)?>(.+?)<\/marquee>/i);
-			if (!match) return P.makeFailure(i, 'not a marquee');
-			return P.makeSuccess(i + match[0].length, {
-				content: match[2], attr: match[1] ? match[1].trim() : null
-			});
-		}).map(x => createTree('marquee', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
-	},
 	inline: r => P.alt(
+		r.bigger,
 		r.big,
 		r.bold,
 		r.small,
@@ -99,16 +66,93 @@ export const mfmLanguage = P.createLanguage({
 		r.url,
 		r.link,
 		r.emoji,
+
+		// 装飾はここに追加
+		r.blink,
+		r.twitch,
+		r.shake,
+		r.sup,
+		r.sub,
+		r.rgbshift,
+		r.x2,
+		r.x3,
+		r.x4,
+
 		r.fn,
+
 		r.text
 	),
-	big: r => P.regexp(/^\*\*\*([\s\S]+?)\*\*\*/, 1).map(x => createTree('big', r.inline.atLeast(1).tryParse(x), {})),
+	startOfLine: () => P((input, i) => {
+		if (i == 0 || input[i] == '\n' || input[i - 1] == '\n') {
+			return P.makeSuccess(i, null);
+		} else {
+			return P.makeFailure(i, 'not newline');
+		}
+	}),
+	title: r => r.startOfLine.then(P((input, i) => {
+		const text = input.substr(i);
+		const match = text.match(/^([【]([^【】\n]+?)[】])(\n|$)/);
+		if (!match) return P.makeFailure(i, 'not a title');
+		const q = match[2].trim();
+		const contents = r.inline.atLeast(1).tryParse(q);
+		return P.makeSuccess(i + match[0].length, createMfmNode('title', {}, contents));
+	})),
+	quote: r => r.startOfLine.then(P((input, i) => {
+		const text = input.substr(i);
+		if (!text.match(/^>[\s\S]+?/)) return P.makeFailure(i, 'not a quote');
+		const quote = takeWhile(line => line.startsWith('>'), text.split('\n'));
+		const qInner = quote.join('\n').replace(/^>/gm, '').replace(/^ /gm, '');
+		if (qInner == '') return P.makeFailure(i, 'not a quote');
+		const contents = r.root.tryParse(qInner);
+		return P.makeSuccess(i + quote.join('\n').length + 1, createMfmNode('quote', {}, contents));
+	})),
+	search: r => r.startOfLine.then(P((input, i) => {
+		const text = input.substr(i);
+		const match = text.match(/^(.+?)( |　)(検索|\[検索\]|Search|\[Search\])(\n|$)/i);
+		if (!match) return P.makeFailure(i, 'not a search');
+		return P.makeSuccess(i + match[0].length, createMfmNode('search', { query: match[1], content: match[0].trim() }));
+	})),
+	blockCode: r => r.startOfLine.then(P((input, i) => {
+		const text = input.substr(i);
+		const match = text.match(/^```(.+?)?\n([\s\S]+?)\n```(\n|$)/i);
+		if (!match) return P.makeFailure(i, 'not a blockCode');
+		return P.makeSuccess(i + match[0].length, createMfmNode('blockCode', { code: match[2], lang: match[1] ? match[1].trim() : null }));
+	})),
+	marquee: r => {
+		return P((input, i) => {
+			const text = input.substr(i);
+			const match = text.match(/^<marquee(\s[a-z-]+?)?>(.+?)<\/marquee>/i);
+			if (!match) return P.makeFailure(i, 'not a marquee');
+			return P.makeSuccess(i + match[0].length, {
+				content: match[2], attr: match[1] ? match[1].trim() : null
+			});
+		}).map(x => createMfmNode('marquee', { attr: x.attr }, r.inline.atLeast(1).tryParse(x.content)));
+	},
+	color: r => {
+		return P((input, i) => {
+			const text = input.substr(i);
+			const match = text.match(/^<color\s+(\S+)(?:\s+(\S+))?>([\s\S]+?)<[/]color>/i);
+			if (!match) return P.makeFailure(i, 'not a color');
+
+			const fg = tinycolor(match[1]);
+			if (!fg.isValid()) return P.makeFailure(i, 'not a valid fg color');
+
+			const bg = tinycolor(match[2]);
+
+			return P.makeSuccess(i + match[0].length, {
+				content: match[3], fg: fg.toHex8String(), bg: bg.isValid() ? bg.toHex8String() : undefined
+			});
+		}).map(x => createMfmNode('color', { fg: x.fg, bg: x.bg }, r.inline.atLeast(1).tryParse(x.content)));
+	},
+
+	big: r => P.regexp(/^\*\*\*([\s\S]+?)\*\*\*/, 1).map(x => createMfmNode('big', {}, r.inline.atLeast(1).tryParse(x))),
+	bigger: r => P.regexp(/^\*\*\*\*([\s\S]+?)\*\*\*\*/, 1).map(x => createMfmNode('bigger', {}, r.inline.atLeast(1).tryParse(x))),
 	bold: r => {
 		const asterisk = P.regexp(/\*\*([\s\S]+?)\*\*/, 1);
 		const underscore = P.regexp(/__([a-zA-Z0-9\s]+?)__/, 1);
-		return P.alt(asterisk, underscore).map(x => createTree('bold', r.inline.atLeast(1).tryParse(x), {}));
+		return P.alt(asterisk, underscore).map(x => createMfmNode('bold', {}, r.inline.atLeast(1).tryParse(x)));
 	},
-	small: r => P.regexp(/<small>([\s\S]+?)<\/small>/, 1).map(x => createTree('small', r.inline.atLeast(1).tryParse(x), {})),
+	small: r => P.regexp(/<small>([\s\S]+?)<\/small>/, 1).map(x => createMfmNode('small', {}, r.inline.atLeast(1).tryParse(x))),
 	italic: r => {
 		const xml = P.regexp(/<i>([\s\S]+?)<\/i>/, 1);
 		const underscore = P((input, i) => {
@@ -119,13 +163,13 @@ export const mfmLanguage = P.createLanguage({
 			return P.makeSuccess(i + match[0].length, match[2]);
 		});
 
-		return P.alt(xml, underscore).map(x => createTree('italic', r.inline.atLeast(1).tryParse(x), {}));
+		return P.alt(xml, underscore).map(x => createMfmNode('italic', {}, r.inline.atLeast(1).tryParse(x)));
 	},
-	strike: r => P.regexp(/~~([^\n~]+?)~~/, 1).map(x => createTree('strike', r.inline.atLeast(1).tryParse(x), {})),
+	strike: r => P.regexp(/~~([^\n~]+?)~~/, 1).map(x => createMfmNode('strike', {}, r.inline.atLeast(1).tryParse(x))),
 	motion: r => {
 		const paren = P.regexp(/\(\(\(([\s\S]+?)\)\)\)/, 1);
 		const xml = P.regexp(/<motion>(.+?)<\/motion>/, 1);
-		return P.alt(paren, xml).map(x => createTree('motion', r.inline.atLeast(1).tryParse(x), {}));
+		return P.alt(paren, xml).map(x => createMfmNode('motion', {}, r.inline.atLeast(1).tryParse(x)));
 	},
 	spin: r => {
 		return P((input, i) => {
@@ -144,7 +188,7 @@ export const mfmLanguage = P.createLanguage({
 			} else {
 				return P.makeFailure(i, 'not a spin');
 			}
-		}).map(x => createTree('spin', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
+		}).map(x => createMfmNode('spin', { attr: x.attr }, r.inline.atLeast(1).tryParse(x.content)));
 	},
 	xspin: r => {
 		return P((input, i) => {
@@ -158,7 +202,7 @@ export const mfmLanguage = P.createLanguage({
 			} else {
 				return P.makeFailure(i, 'not a spin');
 			}
-		}).map(x => createTree('xspin', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
+		}).map(x => createMfmNode('xspin', { attr: x.attr }, r.inline.atLeast(1).tryParse(x.content)));
 	},
 	yspin: r => {
 		return P((input, i) => {
@@ -172,15 +216,15 @@ export const mfmLanguage = P.createLanguage({
 			} else {
 				return P.makeFailure(i, 'not a spin');
 			}
-		}).map(x => createTree('yspin', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
+		}).map(x => createMfmNode('yspin', { attr: x.attr }, r.inline.atLeast(1).tryParse(x.content)));
 	},
-	jump: r => P.alt(P.regexp(/<jump>(.+?)<\/jump>/, 1), P.regexp(/\{\{\{([\s\S]+?)\}\}\}/, 1)).map(x => createTree('jump', r.inline.atLeast(1).tryParse(x), {})),
+	jump: r => P.alt(P.regexp(/<jump>(.+?)<\/jump>/, 1), P.regexp(/\{\{\{([\s\S]+?)\}\}\}/, 1)).map(x => createMfmNode('jump', {}, r.inline.atLeast(1).tryParse(x))),
 	flip: r => {
 		const a = P.regexp(/<flip>(.+?)<\/flip>/, 1);
 		const b = P.regexp(/＜＜＜(.+?)＞＞＞/, 1);
-		return P.alt(a, b).map(x => createTree('flip', r.inline.atLeast(1).tryParse(x), {}));
+		return P.alt(a, b).map(x => createMfmNode('flip', {}, r.inline.atLeast(1).tryParse(x)));
 	},
-	vflip: r => P.regexp(/<vflip>(.+?)<\/vflip>/, 1).map(x => createTree('vflip', r.inline.atLeast(1).tryParse(x), {})),
+	vflip: r => P.regexp(/<vflip>(.+?)<\/vflip>/, 1).map(x => createMfmNode('vflip', {}, r.inline.atLeast(1).tryParse(x))),
 	rotate: r => {
 		return P((input, i) => {
 			const text = input.substr(i);
@@ -193,38 +237,57 @@ export const mfmLanguage = P.createLanguage({
 			} else {
 				return P.makeFailure(i, 'not a rotate');
 			}
-		}).map(x => createTree('rotate', r.inline.atLeast(1).tryParse(x.content), { attr: x.attr }));
+		}).map(x => createMfmNode('rotate', { attr: x.attr }, r.inline.atLeast(1).tryParse(x.content)));
 	},
-	center: r => r.startOfLine.then(P.regexp(/<center>([\s\S]+?)<\/center>/, 1).map(x => createTree('center', r.inline.atLeast(1).tryParse(x), {}))),
-	inlineCode: () => P.regexp(/`([^´\n]+?)`/, 1).map(x => createLeaf('inlineCode', { code: x })),
-	mathBlock: r => r.startOfLine.then(P.regexp(/\\\[([\s\S]+?)\\\]/, 1).map(x => createLeaf('mathBlock', { formula: x.trim() }))),
-	mathInline: () => P.regexp(/\\\((.+?)\\\)/, 1).map(x => createLeaf('mathInline', { formula: x })),
+
+	// 装飾はここに追加
+	blink: r => P.regexp(/<blink>(.+?)<\/blink>/, 1).map(x => createMfmNode('blink', {}, r.inline.atLeast(1).tryParse(x))),
+	twitch: r => P.regexp(/<twitch>(.+?)<\/twitch>/, 1).map(x => createMfmNode('twitch', {}, r.inline.atLeast(1).tryParse(x))),
+	shake: r => P.regexp(/<shake>(.+?)<\/shake>/, 1).map(x => createMfmNode('shake', {}, r.inline.atLeast(1).tryParse(x))),
+	sup: r => P.regexp(/<sup>(.+?)<\/sup>/, 1).map(x => createMfmNode('sup', {}, r.inline.atLeast(1).tryParse(x))),
+	sub: r => P.regexp(/<sub>(.+?)<\/sub>/, 1).map(x => createMfmNode('sub', {}, r.inline.atLeast(1).tryParse(x))),
+	rgbshift: r => P.regexp(/<rgbshift>(.+?)<\/rgbshift>/, 1).map(x => createMfmNode('rgbshift', {}, r.inline.atLeast(1).tryParse(x))),
+	x2: r => P.regexp(/<x2>(.+?)<\/x2>/, 1).map(x => createMfmNode('x2', {}, r.inline.atLeast(1).tryParse(x))),
+	x3: r => P.regexp(/<x3>(.+?)<\/x3>/, 1).map(x => createMfmNode('x3', {}, r.inline.atLeast(1).tryParse(x))),
+	x4: r => P.regexp(/<x4>(.+?)<\/x4>/, 1).map(x => createMfmNode('x4', {}, r.inline.atLeast(1).tryParse(x))),
+
+	center: r => r.startOfLine.then(P.regexp(/<center>([\s\S]+?)<\/center>/, 1).map(x => createMfmNode('center', {}, r.inline.atLeast(1).tryParse(x)))),
+	inlineCode: () => P.regexp(/`([^´\n]+?)`/, 1).map(x => createMfmNode('inlineCode', { code: x })),
+	mathBlock: r => r.startOfLine.then(P.regexp(/\\\[([\s\S]+?)\\\]/, 1).map(x => createMfmNode('mathBlock', { formula: x.trim() }))),
+	mathInline: () => P.regexp(/\\\((.+?)\\\)/, 1).map(x => createMfmNode('mathInline', { formula: x })),
 	mention: () => {
 		return P((input, i) => {
 			const text = input.substr(i);
 			// eslint-disable-next-line no-useless-escape
 			const match = text.match(/^@\w([\w-]*\w)?(?:@[\w\.\-]+\w)?/);
 			if (!match) return P.makeFailure(i, 'not a mention');
-			if (input[i - 1] != null && input[i - 1].match(/[a-z0-9]/i)) return P.makeFailure(i, 'not a mention');
+			// @ の前に何かあればハッシュタグ扱いしない
+			if (input[i - 1]?.match(/[^\s\u200b]/)) return P.makeFailure(i, 'not a mention');
 			return P.makeSuccess(i + match[0].length, match[0]);
 		}).map(x => {
 			const { username, host } = parseAcct(x.substr(1));
 			const canonical = host != null ? `@${username}@${toUnicode(host)}` : x;
-			return createLeaf('mention', { canonical, username, host, acct: x });
+			return createMfmNode('mention', { canonical, username, host, acct: x });
 		});
 	},
 	hashtag: () => P((input, i) => {
+		// ローカルサーバーでの新規投稿作成時 / クライアントでのパース時 共通で適用したいハッシュタグ条件はここで指定する
+		// ローカルサーバーでの新規投稿作成時 に最終的にどれをハッシュタグとするかはisHashtag()に記述
+		// クライアントでのパース時 に最終的にどれをハッシュタグとするかはタグとして添付されているかで決まる
+
 		const text = input.substr(i);
 		// eslint-disable-next-line no-useless-escape
-		const match = text.match(/^#([^\s\.,!\?'"#:\/\[\]]+)/i);
+		const match = text.match(/^#([^\s\.,!\?'"#:\/()\[\]]+)/i);
 		if (!match) return P.makeFailure(i, 'not a hashtag');
-		let hashtag = match[1];
-		hashtag = removeOrphanedBrackets(hashtag);
+		const hashtag = match[1];
+
+		// # + U+20E3 / # + U+FE0F + U+20E3 のような 合字/絵文字異体字セレクタ付きは ハッシュタグ扱いしない
 		if (hashtag.match(/^(\u20e3|\ufe0f)/)) return P.makeFailure(i, 'not a hashtag');
-		if (hashtag.match(/^[0-9]+$/)) return P.makeFailure(i, 'not a hashtag');
-		if (input[i - 1] != null && input[i - 1].match(/[a-z0-9]/i)) return P.makeFailure(i, 'not a hashtag');
-		if (Array.from(hashtag || '').length > 128) return P.makeFailure(i, 'not a hashtag');
-		return P.makeSuccess(i + ('#' + hashtag).length, createLeaf('hashtag', { hashtag: hashtag }));
+
+		// # の前に何かあればハッシュタグ扱いしない
+		if (input[i - 1]?.match(/[^\s\u200b]/)) return P.makeFailure(i, 'not a hashtag');
+
+		return P.makeSuccess(i + ('#' + hashtag).length, createMfmNode('hashtag', { hashtag: hashtag }));
 	}),
 	url: () => {
 		return P((input, i) => {
@@ -237,12 +300,13 @@ export const mfmLanguage = P.createLanguage({
 					return P.makeFailure(i, 'not a url');
 				url = match[1];
 				i += 2;
-			} else
+			} else {
 				url = match[0];
-			url = removeOrphanedBrackets(url);
-			url = url.replace(/[.,]*$/, '');
+				url = removeOrphanedBrackets(url);
+				url = url.replace(/[.,]*$/, '');
+			}
 			return P.makeSuccess(i + url.length, url);
-		}).map(x => createLeaf('url', { url: x }));
+		}).map(x => createMfmNode('url', { url: x }));
 	},
 	link: r => {
 		return P.seqObj(
@@ -251,44 +315,48 @@ export const mfmLanguage = P.createLanguage({
 			P.string('['), ['text', P.regexp(/[^\n\[\]]+/)] as any, P.string(']'),
 			P.string('('), ['url', r.url] as any, P.string(')'),
 		).map((x: any) => {
-			return createTree('link', r.inline.atLeast(1).tryParse(x.text), {
+			return createMfmNode('link',
+			{
 				silent: x.silent,
-				url: x.url.node.props.url
-			});
+				url: x.url.props.url
+			}, P.alt(r.emoji, r.text).atLeast(1).tryParse(x.text));
 		});
 	},
 	emoji: () => {
-		const name = P.regexp(/:(@?[\w-]+(?:@[\w.-]+)?):/i, 1).map(x => createLeaf('emoji', { name: x }));
-		const vcode = P.regexp(vendorEmojiRegex).map(x => createLeaf('emoji', { emoji: x, vendor: true }));
-		const lcode = P.regexp(localEmojiRegex).map(x => createLeaf('emoji', { emoji: x, local: true }));
-		const code = P.regexp(emojiRegex).map(x => createLeaf('emoji', { emoji: x }));
-		return P.alt(name, lcode, vcode, code);
+		const name = P.regexp(/:(@?[\w-]+(?:@[\w.-]+)?):/i, 1).map(x => createMfmNode('emoji', { name: x }));
+		const vcode = P.regexp(vendorEmojiRegex).map(x => createMfmNode('emoji', { emoji: x, vendor: true }));
+		const code = P.regexp(emojiRegex).map(x => createMfmNode('emoji', { emoji: x }));
+		return P.alt(name, vcode, code);
 	},
 	fn: r => {
-		return P.seqObj(
-			P.string('['), ['fn', P.regexp(/[^\s\n\[\]]+/)] as any, P.string(' '), P.optWhitespace, ['text', P.regexp(/[^\n\[\]]+/)] as any, P.string(']'),
-		).map((x: any) => {
-			let name = x.fn;
-			const args = {};
-			const separator = x.fn.indexOf('.');
-			if (separator > -1) {
-				name = x.fn.substr(0, separator);
-				for (const arg of x.fn.substr(separator + 1).split(',')) {
-					const kv = arg.split('=');
-					if (kv.length === 1) {
-						args[kv[0]] = true;
-					} else {
-						args[kv[0]] = kv[1];
-					}
+		return P((input, i) => {
+			const text = input.substr(i);
+			const match = text.match(/^\[([0-9a-z]+)(?:\.([0-9a-z.,=]+))?\s+([^\n\[\]]+)\]/);
+			if (!match) return P.makeFailure(i, 'not a fn');
+
+			const name = match[1];
+			const argsPart = match[2];
+			const content = match[3];
+
+			if (!['tada', 'jelly', 'twitch', 'shake', 'spin', 'jump', 'bounce', 'flip', 'rgbshift', 'x2', 'x3', 'x4', 'font', 'blur'].includes(name)) {
+				return P.makeFailure(i, 'unknown fn name');
+			}
+
+			const args: Record<string, boolean | string> = {};
+			for (const arg of argsPart?.split(',') || []) {
+				const kv = arg.split('=');
+				if (kv[0] == '__proto__') return P.makeFailure(i, 'prototype pollution');
+				if (kv.length === 1) {
+					args[kv[0]] = true;
+				} else {
+					args[kv[0]] = kv[1];
 				}
 			}
-			return createTree('fn', r.inline.atLeast(1).tryParse(x.text), {
-				name,
-				args
-			});
-		});
+
+			return P.makeSuccess(i + match[0].length, { name, args, content });
+		}).map(x => createMfmNode('fn', { name: x.name, args: x.args }, r.inline.atLeast(1).tryParse(x.content)));
 	},
-	text: () => P.any.map(x => createLeaf('text', { text: x }))
+	text: () => P.any.map(x => createMfmNode('text', { text: x }))
 });
 
 /**

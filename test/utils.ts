@@ -1,6 +1,10 @@
 import * as childProcess from 'child_process';
 import * as http from 'http';
 import fetch from 'node-fetch';
+import loadConfig from '../src/config/load';
+import { SIGKILL } from 'constants';
+
+export const port = loadConfig().port;
 
 export const async = (fn: Function) => (done: Function) => {
 	fn().then(() => {
@@ -23,12 +27,51 @@ export function launchServer(callbackSpawnedProcess: (p: childProcess.ChildProce
 	};
 }
 
+export function startServer(timeout = 30 * 1000): Promise<childProcess.ChildProcess> {
+	return new Promise((res, rej) => {
+		const t = setTimeout(() => {
+			p.kill(SIGKILL);
+			rej('timeout to start');
+		}, timeout);
+
+		const p = childProcess.spawn('node', [__dirname + '/../index.js'], {
+			stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
+			env: { NODE_ENV: 'test', PATH: process.env.PATH }
+		});
+
+		p.on('error', e => rej(e));
+
+		p.on('message', message => {
+			if (message === 'ok') {
+				clearTimeout(t);
+				res(p);
+			}
+		});
+	});
+}
+
+export function shutdownServer(p: childProcess.ChildProcess, timeout = 20 * 1000) {
+	return new Promise((res, rej) => {
+		const t = setTimeout(() => {
+			p.kill(SIGKILL);
+			res('force exit');
+		}, timeout);
+
+		p.once('exit', () => {
+			clearTimeout(t);
+			res('exited');
+		});
+
+		p.kill();
+	});
+}
+
 export const api = async (endpoint: string, params: any, me?: any): Promise<{ body: any, status: number }> => {
 	const auth = me ? {
 		i: me.token
 	} : {};
 
-	const res = await fetch('http://localhost:8010/api/' + endpoint, {
+	const res = await fetch(`http://localhost:${port}/api/${endpoint}`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -66,10 +109,10 @@ export const post = async (user: any, params?: any): Promise<any> => {
 	return res.body ? res.body.createdNote : null;
 };
 
-export const simpleGet = async (path: string, accept: string): Promise<{ status?: number, type?: string, location?: string }> => {
+export const simpleGet = async (path: string, accept = '*/*'): Promise<{ status?: number, type?: string, location?: string }> => {
 	// node-fetchだと3xxを取れない
 	return await new Promise((resolve, reject) => {
-		const req = http.request(`http://localhost:8010${path}`, {
+		const req = http.request(`http://localhost:${port}${path}`, {
 			headers: {
 				Accept: accept
 			}

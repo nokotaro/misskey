@@ -27,18 +27,27 @@
 	<!-- 統計 -->
 	<ui-container>
 		<template #header><fa :icon="faChartBar"/> {{ $t('stats') }}</template>
-		<div class="items" v-if="stats">
-			<div class="item">
+		<div class="items">
+			<div class="item" v-if="stats">
 				<div class="key">{{ $t('users') }}</div>
 				<div class="value">{{ stats.originalUsersCount }}</div>
 			</div>
-			<div class="item">
+			<div class="item" v-if="stats">
 				<div class="key">{{ $t('notes') }}</div>
 				<div class="value">{{ stats.originalNotesCount }}</div>
 			</div>
-			<div class="item">
+			<div class="item" v-if="stats">
 				<div class="key">{{ $t('instances') }}</div>
 				<div class="value">{{ stats.instances }}</div>
+			</div>
+
+			<div class="item" v-if="activeUsersCount">
+				<div class="key">{{ $t('localActive') }}</div>
+				<div class="value">{{ activeUsersCount.local }}</div>
+			</div>
+			<div class="item" v-if="activeUsersCount">
+				<div class="key">{{ $t('globalActive') }}</div>
+				<div class="value">{{ activeUsersCount.global }}</div>
 			</div>
 		</div>
 	</ui-container>
@@ -51,6 +60,19 @@
 					<mk-reaction-icon :reaction="reaction.reaction" :customEmojis="popularReactions.emojis"/>
 				</div>
 				<div class="value">{{ reaction.count }}</div>
+			</div>
+		</div>
+	</ui-container>
+
+	<ui-container v-if="reacters">
+		<template #header><fa :icon="['far', 'smile']"/> {{ $t('reacters') }}</template>
+		<div class="items">
+			<div class="item" v-for="(item, i) in reacters.global" :key="`r-${item.user.id}`">
+				<div class="key" style="display: flex; gap: 0.5em; align-items: center;">
+					<mk-avatar class="avatar" :user="item.user" :key="`ra-${item.user.id}`" style="width: 1.5em; height: 1.5em;"/>
+					<mk-user-name :user="item.user" :key="`ru-${item.user.id}`"/>
+				</div>
+				<div class="value">{{ item.count }}</div>
 			</div>
 		</div>
 	</ui-container>
@@ -72,6 +94,8 @@ export default Vue.extend({
 			stats: null,
 			reactions: null,
 			popularReactions: null,
+			activeUsersCount: null,
+			reacters: null,
 			faServer, faChartBar, faThumbsUp
 		};
 	},
@@ -85,6 +109,12 @@ export default Vue.extend({
 		});
 		this.$root.api('notes/reactions/trend', {}, false, true).then((popularReactions: any) => {
 			this.popularReactions = popularReactions;
+		});
+		this.$root.api('active-users-count', {}, false, true).then((activeUsersCount: any) => {
+			this.activeUsersCount = activeUsersCount;
+		});
+		this.$root.api('notes/reactions/ranking', {}, false, true).then((reacters: any) => {
+			this.reacters = reacters;
 		});
 	},
 

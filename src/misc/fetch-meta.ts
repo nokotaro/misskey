@@ -4,7 +4,7 @@ const defaultMeta: any = {
 	name: 'Misskey',
 	maintainer: {},
 	langs: [],
-	cacheRemoteFiles: true,
+	cacheRemoteFiles: false,
 	localDriveCapacityMb: 256,
 	remoteDriveCapacityMb: 8,
 	hidedTags: [],
@@ -18,7 +18,6 @@ const defaultMeta: any = {
 	enableGithubIntegration: false,
 	enableDiscordIntegration: false,
 	mascotImageUrl: '/assets/ai.png',
-	errorImageUrl: 'https://xn--931a.moe/aiart/yubitun.png',
 	enableServiceWorker: false
 };
 

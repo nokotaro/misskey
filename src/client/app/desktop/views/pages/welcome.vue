@@ -138,7 +138,12 @@
 
 	<modal name="signin" class="modal" width="450px" height="auto" scrollable>
 		<header class="formHeader">{{ $t('@.signin') }}</header>
-		<mk-signin class="form"/>
+		<mk-signin class="form" @reminder="reminder" />
+	</modal>
+
+	<modal name="reminder" class="modal" width="450px" height="auto" scrollable>
+		<header class="formHeader">{{ $t('@.reminder') }}</header>
+		<mk-reminder class="form" @done="doneReminder" />
 	</modal>
 </div>
 </template>
@@ -148,7 +153,7 @@ import Vue from 'vue';
 import i18n from '../../../i18n';
 import { host, constants } from '../../../config';
 import { concat } from '../../../../../prelude/array';
-import { toUnicode } from 'punycode';
+import { toUnicode } from 'punycode/';
 
 export default Vue.extend({
 	i18n: i18n('desktop/views/pages/welcome.vue'),
@@ -204,6 +209,15 @@ export default Vue.extend({
 
 		signin() {
 			this.$modal.show('signin');
+		},
+
+		reminder() {
+			this.$modal.hide('signin');
+			this.$modal.show('reminder');
+		},
+
+		doneReminder() {
+			this.$modal.hide('reminder');
 		},
 
 		dark() {

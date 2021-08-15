@@ -38,18 +38,17 @@
 		<mk-avatar class="avatar" :user="appearNote.user" v-if="$store.state.device.postStyle != 'smart'"/>
 		<div class="main">
 			<mk-note-header class="header" :note="appearNote" :mini="true"/>
-			<x-instance-info v-if="appearNote.user.instance && !$store.state.device.disableShowingInstanceInfo" :instance="appearNote.user.instance" />
+			<x-instance-info v-if="appearNote.user.instance && $store.state.device.showInstanceInfo" :instance="appearNote.user.instance" />
 			<div class="body" v-if="appearNote.deletedAt == null">
 				<p v-if="appearNote.cw != null" class="cw">
-				<mfm v-if="appearNote.cw != ''" class="text" :text="appearNote.cw" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis" />
+				<mfm v-if="appearNote.cw != ''" class="text" :text="appearNote.cw" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis" :hashtags="appearNote.tags" :basic="!!appearNote.notHaveDecorationMfm"/>
 					<mk-cw-button v-model="showContent" :note="appearNote"/>
 				</p>
 				<div class="content" v-show="appearNote.cw == null || showContent">
 					<div class="text">
 						<span v-if="appearNote.isHidden" style="opacity: 0.5">({{ $t('private') }})</span>
 						<a class="reply" v-if="appearNote.reply"><fa icon="reply"/></a>
-						<mfm v-if="appearNote.text" :text="appearNote.text" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis"/>
-						<a class="rp" v-if="appearNote.renote != null">RN:</a>
+						<mfm v-if="appearNote.text" :text="appearNote.text" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis" :hashtags="appearNote.tags" :basic="!!appearNote.notHaveDecorationMfm"/>
 					</div>
 					<div class="files" v-if="appearNote.files.length > 0">
 						<mk-media-list :media-list="appearNote.files" :hide="!$store.state.device.alwaysShowNsfw && appearNote.cw == null"/>
@@ -63,29 +62,32 @@
 			<footer v-if="appearNote.deletedAt == null && !preview" class="footer">
 				<mk-reactions-viewer :note="appearNote" ref="reactionsViewer"/>
 				<button @click="reply()" class="button">
-					<template v-if="appearNote.reply"><fa icon="reply-all"/></template>
-					<template v-else><fa icon="reply"/></template>
-					<p class="count" v-if="appearNote.repliesCount > 0">{{ appearNote.repliesCount }}</p>
+					<fa :icon="appearNote.reply ? 'reply-all' : 'reply'"/>
+					<p class="count" v-if="appearNote.repliesCount + appearNote.quoteCount > 0">{{ appearNote.repliesCount + appearNote.quoteCount }}</p>
 				</button>
 				<button v-if="appearNote.myRenoteId != null" @click="undoRenote()" title="Undo" class="button renoted">
-					<fa icon="retweet"/><p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
+					<fa icon="retweet"/><p class="count" v-if="appearNote.renoteCount - appearNote.quoteCount > 0">{{ appearNote.renoteCount - appearNote.quoteCount }}</p>
+
 				</button>
 				<button v-else-if="['public', 'home'].includes(appearNote.visibility)" @click="renote()" title="Renote" class="button">
-					<fa icon="retweet"/><p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
+					<fa icon="retweet"/><p class="count" v-if="appearNote.renoteCount - appearNote.quoteCount > 0">{{ appearNote.renoteCount - appearNote.quoteCount }}</p>
 				</button>
 				<button v-else class="button">
 					<fa icon="ban"/>
 				</button>
 				<button v-if="appearNote.myReaction == null" class="button" @click="react()" ref="reactButton">
-					<fa icon="plus"/>
+					<fa-layers>
+						<fa :icon="faLaugh"/>
+						<fa icon="plus" transform="shrink-8 down-4 right-5" style="color: var(--noteActionsReactionHover)"/>
+					</fa-layers>
 				</button>
 				<button v-if="appearNote.myReaction != null" class="button reacted" @click="undoReact(appearNote)" ref="reactButton">
-					<fa icon="minus"/>
+					<fa :icon="faLaugh"/>
 				</button>
 				<button class="button" @click="menu()" ref="menuButton">
 					<fa icon="ellipsis-h"/>
 				</button>
-				<button class="button stayTl" :class="{ pinned: !!appearNote.stayTl }" @click="toggleStayTl"><fa icon="thumbtack"/></button>
+				<button v-if="$store.state.device.showTlPin" class="button stayTl" :class="{ pinned: !!appearNote.stayTl }" @click="toggleStayTl"><fa icon="thumbtack"/></button>
 			</footer>
 			<div class="deleted" v-if="appearNote.deletedAt != null">{{ $t('deleted') }}</div>
 		</div>
@@ -102,6 +104,7 @@ import XSub from './note.sub.vue';
 import noteMixin from '../../../common/scripts/note-mixin';
 import noteSubscriber from '../../../common/scripts/note-subscriber';
 import XInstanceInfo from '../../../common/views/components/instance-info.vue';
+import { faLaugh } from '@fortawesome/free-regular-svg-icons';
 
 export default Vue.extend({
 	i18n: i18n('mobile/views/components/note.vue'),
@@ -142,6 +145,7 @@ export default Vue.extend({
 
 	data() {
 		return {
+			faLaugh,
 			conversation: [],
 			replies: []
 		};
@@ -368,9 +372,10 @@ export default Vue.extend({
 						margin 0 0 0 8px
 						color var(--text)
 						opacity 0.7
+						font-size 0.8em
 
 					&.reacted
-						color var(--primary)
+						color var(--noteActionsReactionHover)
 
 					&.renoted
 						color var(--primary)

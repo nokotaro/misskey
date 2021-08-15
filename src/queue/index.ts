@@ -1,40 +1,18 @@
-import * as Queue from 'bull';
 import * as httpSignature from 'http-signature';
-
 import config from '../config';
-import { ILocalUser } from '../models/user';
-
+import { InboxInfo, InboxRequestData } from './types';
+import { deliverQueue, inboxQueue, dbQueue } from './queues';
+import { getJobInfo } from './get-job-info';
 import processDeliver from './processors/deliver';
 import processInbox from './processors/inbox';
 import processDb from './processors/db';
 import { queueLogger } from './logger';
+import { ILocalUser, IUser } from '../models/user';
 import { IDriveFile } from '../models/drive-file';
 import { INote } from '../models/note';
-import { getJobInfo } from './get-job-info';
-import { IActivity } from '../remote/activitypub/type';
 import { IMute } from '../models/mute';
+import { IActivity } from '../remote/activitypub/type';
 import queueChart from '../services/chart/queue';
-import { DeliverJobData, InboxJobData, DbJobData, InboxInfo, InboxRequestData } from './type';
-
-function initializeQueue<T>(name: string, limitPerSec = -1) {
-	return new Queue<T>(name, config.redis != null ? {
-		redis: {
-			port: config.redis.port,
-			host: config.redis.host,
-			password: config.redis.pass,
-			db: config.redis.db || 0,
-		},
-		prefix: config.redis.prefix ? `${config.redis.prefix}:queue` : 'queue',
-		limiter: limitPerSec > 0 ? {
-			max: limitPerSec,
-			duration: 1000
-		} : undefined
-	} : undefined);
-}
-
-export const deliverQueue = initializeQueue<DeliverJobData>('deliver', config.deliverJobPerSec || 128);
-export const inboxQueue = initializeQueue<InboxJobData>('inbox', config.inboxJobPerSec || 16);
-export const dbQueue = initializeQueue<DbJobData>('db');
 
 const deliverLogger = queueLogger.createSubLogger('deliver');
 const inboxLogger = queueLogger.createSubLogger('inbox');
@@ -50,7 +28,11 @@ deliverQueue
 	})
 	.on('active', (job) => deliverLogger.info(`active ${getJobInfo(job, true)} to=${job.data.to}`))
 	.on('completed', (job, result) => deliverLogger.info(`completed(${result}) ${getJobInfo(job, true)} to=${job.data.to}`))
-	.on('failed', (job, err) => deliverLogger.warn(`failed(${err}) ${getJobInfo(job)} to=${job.data.to}`))
+	.on('failed', (job, err) => {
+		const msg = `failed(${err}) ${getJobInfo(job)} to=${job.data.to}`;
+		job.log(msg);
+		deliverLogger.warn(msg);
+	})
 	.on('error', (error) => deliverLogger.error(`error ${error}`))
 	.on('stalled', (job) => deliverLogger.warn(`stalled ${getJobInfo(job)} to=${job.data.to}`));
 
@@ -61,7 +43,11 @@ inboxQueue
 	})
 	.on('active', (job) => inboxLogger.info(`active ${getJobInfo(job, true)} activity=${job.data.activity ? job.data.activity.id : 'none'}`))
 	.on('completed', (job, result) => inboxLogger.info(`completed(${result}) ${getJobInfo(job, true)} activity=${job.data.activity ? job.data.activity.id : 'none'}`))
-	.on('failed', (job, err) => inboxLogger.warn(`failed(${err}) ${getJobInfo(job)} activity=${job.data.activity ? job.data.activity.id : 'none'}`))
+	.on('failed', (job, err) => {
+		const msg = `failed(${err}) ${getJobInfo(job)} activity=${job.data.activity ? job.data.activity.id : 'none'}`;
+		job.log(msg);
+		inboxLogger.warn(msg);
+	})
 	.on('error', (error) => inboxLogger.error(`error ${error}`))
 	.on('stalled', (job) => inboxLogger.warn(`stalled ${getJobInfo(job)} activity=${job.data.activity ? job.data.activity.id : 'none'}`));
 
@@ -106,9 +92,9 @@ export function deliver(user: ILocalUser, content: any, to: string, lowSeverity 
 
 	return deliverQueue.add(data, {
 		attempts,
+		timeout: 1 * 60 * 1000,	// 1min
 		backoff: {
-			type: 'exponential',
-			delay: 60 * 1000
+			type: 'apBackoff'
 		},
 		removeOnComplete: true,
 		removeOnFail: true
@@ -129,28 +115,30 @@ export function inbox(activity: IActivity, signature: httpSignature.IParsedSigna
 
 	return inboxQueue.add(data, {
 		attempts: config.inboxJobMaxAttempts || 8,
+		timeout: 5 * 60 * 1000,	// 5min
 		backoff: {
-			type: 'exponential',
-			delay: 60 * 1000
+			type: 'apBackoff'
 		},
 		removeOnComplete: true,
 		removeOnFail: true
 	});
 }
 
-export function createDeleteNotesJob(user: ILocalUser) {
+export function createDeleteNotesJob(user: IUser) {
 	return dbQueue.add('deleteNotes', {
 		user: user
 	}, {
+		timeout: 3 * 60 * 60 * 1000,	// 3hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});
 }
 
-export function createDeleteDriveFilesJob(user: ILocalUser) {
+export function createDeleteDriveFilesJob(user: IUser) {
 	return dbQueue.add('deleteDriveFiles', {
 		user: user
 	}, {
+		timeout: 3 * 60 * 60 * 1000,	// 3hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -161,6 +149,7 @@ export function createDeleteNoteJob(note: INote, delay: number) {
 		noteId: note._id
 	}, {
 		delay,
+		timeout: 1 * 60 * 60 * 1000,	// 1hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -175,6 +164,7 @@ export function createExpireMuteJob(mute: IMute) {
 		muteId: `${mute._id}`
 	}, {
 		delay,
+		timeout: 5 * 60 * 1000,	// 5min
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -189,6 +179,7 @@ export function createNotifyPollFinishedJob(note: INote, user: ILocalUser, expir
 		userId: `${user._id}`
 	}, {
 		delay,
+		timeout: 5 * 60 * 1000,	// 5min
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -198,6 +189,7 @@ export function createExportNotesJob(user: ILocalUser) {
 	return dbQueue.add('exportNotes', {
 		user: user
 	}, {
+		timeout: 1 * 60 * 60 * 1000,	// 1hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -207,6 +199,7 @@ export function createExportFollowingJob(user: ILocalUser) {
 	return dbQueue.add('exportFollowing', {
 		user: user
 	}, {
+		timeout: 1 * 60 * 60 * 1000,	// 1hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -216,6 +209,7 @@ export function createExportMuteJob(user: ILocalUser) {
 	return dbQueue.add('exportMute', {
 		user: user
 	}, {
+		timeout: 1 * 60 * 60 * 1000,	// 1hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -225,6 +219,7 @@ export function createExportBlockingJob(user: ILocalUser) {
 	return dbQueue.add('exportBlocking', {
 		user: user
 	}, {
+		timeout: 1 * 60 * 60 * 1000,	// 1hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -234,6 +229,7 @@ export function createExportUserListsJob(user: ILocalUser) {
 	return dbQueue.add('exportUserLists', {
 		user: user
 	}, {
+		timeout: 1 * 60 * 60 * 1000,	// 1hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -244,6 +240,7 @@ export function createImportFollowingJob(user: ILocalUser, fileId: IDriveFile['_
 		user: user,
 		fileId: fileId
 	}, {
+		timeout: 1 * 60 * 60 * 1000,	// 1hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -254,6 +251,7 @@ export function createImportBlockingJob(user: ILocalUser, fileId: IDriveFile['_i
 		user: user,
 		fileId: fileId
 	}, {
+		timeout: 1 * 60 * 60 * 1000,	// 1hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -264,6 +262,7 @@ export function createImportMuteJob(user: ILocalUser, fileId: IDriveFile['_id'])
 		user: user,
 		fileId: fileId
 	}, {
+		timeout: 1 * 60 * 60 * 1000,	// 1hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});
@@ -274,6 +273,7 @@ export function createImportUserListsJob(user: ILocalUser, fileId: IDriveFile['_
 		user: user,
 		fileId: fileId
 	}, {
+		timeout: 1 * 60 * 60 * 1000,	// 1hour
 		removeOnComplete: true,
 		removeOnFail: true
 	});

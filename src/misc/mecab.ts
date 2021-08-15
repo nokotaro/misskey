@@ -1,6 +1,6 @@
-import { parse as parseMfm } from '../mfm/parse';
-import toText from '../mfm/toText';
-import toWord from '../mfm/toWord';
+import { parseFull } from '../mfm/parse';
+import toText from '../mfm/to-text';
+import toWord from '../mfm/to-word';
 import config from '../config';
 import { unique } from '../prelude/array';
 import { spawn } from 'child_process';
@@ -13,14 +13,14 @@ const pipeline = util.promisify(stream.pipeline);
 
 export async function getIndexer(note: Partial<Record<'text' | 'cw', string>>): Promise<string[]> {
 	const source = `${note.text || ''} ${note.cw || ''}`;
-	const text = toText(parseMfm(source)!);
+	const text = toText(parseFull(source)!);
 	const tokens = await me(text);
 	return unique(tokens.filter(token => ['フィラー', '感動詞', '形容詞', '連体詞', '動詞', '副詞', '名詞'].includes(token[1])).map(token => token[0]));
 }
 
 export async function getWordIndexer(note: Partial<Record<'text' | 'cw', string>>): Promise<string[]> {
 	const source = `${note.text || ''} ${note.cw || ''}`;
-	const text = toWord(parseMfm(source)!);
+	const text = toWord(parseFull(source)!);
 	const tokens = await me(text);
 	const words = unique(tokens.filter(token => token[2] === '固有名詞').map(token => token[0]));
 
@@ -31,7 +31,7 @@ export async function getWordIndexer(note: Partial<Record<'text' | 'cw', string>
 
 async function me(text: string): Promise<string[][]> {
 	if (config.mecabSearch?.mecabBin) {
-		return await mecab(text, config.mecabSearch.mecabBin, config.mecabSearch.mecabDic)
+		return await mecab(text.normalize('NFKC'), config.mecabSearch.mecabBin, config.mecabSearch.mecabDic)
 	}
 
 	return [];

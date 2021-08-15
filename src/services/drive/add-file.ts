@@ -289,10 +289,11 @@ async function upload(key: string, stream: fs.ReadStream | Buffer, type: string,
 		Key: key,
 		Body: stream,
 		ContentType: type,
-		CacheControl: 'max-age=31536000, immutable',
+		CacheControl: 'max-age=2592000, s-maxage=172800, immutable',
 	} as S3.PutObjectRequest;
 
 	if (filename) params.ContentDisposition = contentDisposition('inline', filename);
+	if (drive.config?.setPublicRead) params.ACL = 'public-read';
 
 	const s3 = getS3(drive);
 
@@ -343,7 +344,8 @@ async function deleteOldFile(user: IRemoteUser) {
 		_id: {
 			$nin: [user.avatarId, user.bannerId]
 		},
-		'metadata.userId': user._id
+		'metadata.userId': user._id,
+		'metadata.deletedAt': { $exists: false },
 	}, {
 		sort: {
 			_id: 1
@@ -403,7 +405,7 @@ export async function addFile(
 		}
 	}
 
-	//#region Check drive usage
+	//#region Check drive usageisRemote
 	if (!isLink) {
 		const usage = await DriveFile
 			.aggregate([{
