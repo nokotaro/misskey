@@ -12,13 +12,14 @@ import channels from './channels';
 import { EventEmitter } from 'events';
 import { ApiError } from '../error';
 import { getHideUserIdsById } from '../common/get-hide-users';
+import { PubSubMessage, NoteStreamBody } from '../../../services/stream';
 
 /**
  * Main stream connection
  */
 export default class Connection {
-	public user?: IUser;
-	public app: IApp;
+	public user?: IUser | null;
+	public app?: IApp | null;
 	private wsConnection: websocket.connection;
 	public subscriber: EventEmitter;
 	private channels: Channel[] = [];
@@ -29,8 +30,8 @@ export default class Connection {
 	constructor(
 		wsConnection: websocket.connection,
 		subscriber: EventEmitter,
-		user: IUser,
-		app: IApp
+		user: IUser | null | undefined,
+		app: IApp | null | undefined,
 	) {
 		this.wsConnection = wsConnection;
 		this.user = user;
@@ -138,11 +139,11 @@ export default class Connection {
 	}
 
 	@autobind
-	private async onNoteStreamMessage(data: any) {
+	private async onNoteStreamMessage(data: PubSubMessage<NoteStreamBody>) {
 		this.sendMessageToWs('noteUpdated', {
-			id: data.body.id,
+			id: data.body!.id,
 			type: data.type,
-			body: data.body.body,
+			body: data.body!.body,
 		});
 	}
 
@@ -223,7 +224,7 @@ export default class Connection {
 	}
 
 	@autobind
-	private async onServerEvent(data: any) {
+	private async onServerEvent(data: PubSubMessage<unknown>) {
 		if (data.type === 'mutingChanged') {
 			this.updateMuting();
 		}

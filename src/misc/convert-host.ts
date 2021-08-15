@@ -1,5 +1,5 @@
 import config from '../config';
-import { toUnicode, toASCII } from 'punycode';
+import { toUnicode, toASCII } from 'punycode/';
 import { URL } from 'url';
 
 export function getFullApAccount(username: string, host: string | null) {
@@ -21,12 +21,16 @@ export function extractApHost(uri: string) {
 	return toApHost(url.hostname);
 }
 
-export function toDbHost(host: string | null) {
+export function toDbHost(host: string): string;
+export function toDbHost(host: string | null): string | null;
+export function toDbHost(host: string | null): string | null{
 	if (host == null) return null;
 	return toUnicode(host.toLowerCase());
 }
 
-export function toApHost(host: string | null) {
+export function toApHost(host: string): string;
+export function toApHost(host: string | null): string | null;
+export function toApHost(host: string | null): string | null {
 	if (host == null) return null;
 	return toASCII(host.toLowerCase());
 }

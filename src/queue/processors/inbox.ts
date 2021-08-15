@@ -3,7 +3,7 @@ import * as httpSignature from 'http-signature';
 import { IRemoteUser } from '../../models/user';
 import perform from '../../remote/activitypub/perform';
 import { resolvePerson } from '../../remote/activitypub/models/person';
-import { toUnicode } from 'punycode';
+import { toUnicode } from 'punycode/';
 import { URL } from 'url';
 import Logger from '../../services/logger';
 import { registerOrFetchInstanceDoc } from '../../services/register-or-fetch-instance-doc';
@@ -11,28 +11,39 @@ import Instance from '../../models/instance';
 import instanceChart from '../../services/chart/instance';
 import { getApId } from '../../remote/activitypub/type';
 import { UpdateInstanceinfo } from '../../services/update-instanceinfo';
-import { isBlockedHost } from '../../misc/instance-info';
-import { InboxJobData } from '../type';
+import { isBlockedHost } from '../../services/instance-moderation';
+import { InboxJobData } from '../types';
+import Resolver from '../../remote/activitypub/resolver';
 import DbResolver from '../../remote/activitypub/db-resolver';
 import { inspect } from 'util';
 import { extractApHost } from '../../misc/convert-host';
 import { LdSignature } from '../../remote/activitypub/misc/ld-signature';
 import resolveUser from '../../remote/resolve-user';
 import config from '../../config';
+import { publishInstanceModUpdated } from '../../services/server-event';
 
 const logger = new Logger('inbox');
 
 // ユーザーのinboxにアクティビティが届いた時の処理
 export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
-	const signature = job.data.signature;
-	const activity = job.data.activity;
+	return await tryProcessInbox(job.data);
+};
 
-	const dbResolver = new DbResolver();
+type ApContext = {
+	resolver?: Resolver
+	dbResolver?: DbResolver
+};
+
+export const tryProcessInbox = async (data: InboxJobData, ctx?: ApContext): Promise<string> => {
+	const signature = data.signature;
+	const activity = data.activity;
+
+	const resolver = ctx?.resolver || new Resolver();
+	const dbResolver = ctx?.dbResolver || new DbResolver();
 
 	//#region Log
-	const info = Object.assign({}, activity);
-	delete info['@context'];
-	logger.debug(inspect(info));
+	logger.debug(inspect(signature));
+	logger.debug(inspect(activity));
 	//#endregion
 
 	/** peer host (リレーから来たらリレー) */
@@ -52,7 +63,7 @@ export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
 	// || activity.actorを元にDBから取得 || activity.actorを元にリモートから取得
 	if (user == null) {
 		try {
-			user = await resolvePerson(getApId(activity.actor)) as IRemoteUser;
+			user = await resolvePerson(getApId(activity.actor), undefined, resolver) as IRemoteUser;
 		} catch (e) {
 			// 対象が4xxならスキップ
 			if (e.statusCode >= 400 && e.statusCode < 500) {
@@ -64,7 +75,12 @@ export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
 
 	// http-signature signer がわからなければ終了
 	if (user == null) {
-		throw new Error('failed to resolve http-signature signer');
+		return `skip: failed to resolve http-signature signer`;
+	}
+
+	// publicKey がなくても終了
+	if (user.publicKey == null) {
+		return `skip: failed to resolve user publicKey`;
 	}
 	//#endregion
 
@@ -95,6 +111,10 @@ export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
 			user = await dbResolver.getRemoteUserFromKeyId(activity.signature.creator);
 			if (user == null) {
 				return `skip: LD-Signatureのユーザーが取得できませんでした`;
+			}
+
+			if (user.publicKey == null) {
+				return `skip: LD-SignatureのユーザーはpublicKeyを持っていませんでした`;
 			}
 
 			// LD-Signature検証
@@ -139,9 +159,11 @@ export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
 
 		Instance.update({ _id: i._id }, {
 			$set: set
-		});
+		}).then(() => {
+			publishInstanceModUpdated();
+		})
 
-		UpdateInstanceinfo(i, job.data.request);
+		UpdateInstanceinfo(i, data.request);
 
 		instanceChart.requestReceived(i.host);
 	});

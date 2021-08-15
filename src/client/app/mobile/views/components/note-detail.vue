@@ -22,19 +22,19 @@
 			<div>
 				<router-link class="name" :to="appearNote.user | userPage"><mk-user-name :user="appearNote.user"/></router-link>
 				<span class="username"><mk-acct :user="appearNote.user"/></span>
-				<x-instance-info v-if="appearNote.user.instance && !$store.state.device.disableShowingInstanceInfo" :instance="appearNote.user.instance" />
+				<x-instance-info v-if="appearNote.user.instance && $store.state.device.showInstanceInfo" :instance="appearNote.user.instance" />
 			</div>
 		</header>
 		<div class="body">
 			<p v-if="appearNote.cw != null" class="cw">
-				<mfm v-if="appearNote.cw != ''" class="text" :text="appearNote.cw" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis" />
+				<mfm v-if="appearNote.cw != ''" class="text" :text="appearNote.cw" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis" :hashtags="appearNote.tags" :basic="!!appearNote.notHaveDecorationMfm"/>
 				<mk-cw-button v-model="showContent" :note="appearNote"/>
 			</p>
 			<div class="content" v-show="appearNote.cw == null || showContent">
 				<div class="text">
 					<span v-if="appearNote.isHidden" style="opacity: 0.5">({{ $t('private') }})</span>
 					<span v-if="appearNote.deletedAt" style="opacity: 0.5">({{ $t('deleted') }})</span>
-					<mfm v-if="appearNote.text" :text="appearNote.text" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis"/>
+					<mfm v-if="appearNote.text" :text="appearNote.text" :author="appearNote.user" :i="$store.state.i" :custom-emojis="appearNote.emojis" :hashtags="appearNote.tags" :basic="!!appearNote.notHaveDecorationMfm"/>
 				</div>
 				<div class="files" v-if="appearNote.files.length > 0">
 					<mk-media-list :media-list="appearNote.files" :hide="!$store.state.device.alwaysShowNsfw && appearNote.cw == null"/>
@@ -60,24 +60,26 @@
 		<footer>
 			<mk-reactions-viewer :note="appearNote"/>
 			<button @click="reply()" :title="$t('title')">
-				<template v-if="appearNote.reply"><fa icon="reply-all"/></template>
-				<template v-else><fa icon="reply"/></template>
-				<p class="count" v-if="appearNote.repliesCount > 0">{{ appearNote.repliesCount }}</p>
+				<fa :icon="appearNote.reply ? 'reply-all' : 'reply'"/>
+				<p class="count" v-if="appearNote.repliesCount + appearNote.quoteCount > 0">{{ appearNote.repliesCount + appearNote.quoteCount }}</p>
 			</button>
 			<button v-if="appearNote.myRenoteId != null" @click="undoRenote()" title="Undo" class="renoted">
-				<fa icon="retweet"/><p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
+				<fa icon="retweet"/><p class="count" v-if="appearNote.renoteCount - appearNote.quoteCount > 0">{{ appearNote.renoteCount - appearNote.quoteCount }}</p>
 			</button>
 			<button v-else-if="['public', 'home'].includes(appearNote.visibility)" @click="renote()" title="Renote">
-				<fa icon="retweet"/><p class="count" v-if="appearNote.renoteCount > 0">{{ appearNote.renoteCount }}</p>
+				<fa icon="retweet"/><p class="count" v-if="appearNote.renoteCount - appearNote.quoteCount > 0">{{ appearNote.renoteCount - appearNote.quoteCount }}</p>
 			</button>
 			<button v-else>
 				<fa icon="ban"/>
 			</button>
 			<button v-if="appearNote.myReaction == null" class="reactionButton" @click="react()" ref="reactButton">
-				<fa icon="plus"/>
+				<fa-layers>
+					<fa :icon="faLaugh"/>
+					<fa icon="plus" transform="shrink-8 down-4 right-5" style="color: var(--noteActionsReactionHover)"/>
+				</fa-layers>
 			</button>
 			<button v-if="appearNote.myReaction != null" class="reactionButton reacted" @click="undoReact(appearNote)" ref="reactButton">
-				<fa icon="minus"/>
+				<fa :icon="faLaugh"/>
 			</button>
 			<button @click="menu()" ref="menuButton">
 				<fa icon="ellipsis-h"/>
@@ -96,7 +98,7 @@ import i18n from '../../../i18n';
 import XSub from './note.sub.vue';
 import noteSubscriber from '../../../common/scripts/note-subscriber';
 import noteMixin from '../../../common/scripts/note-mixin';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
+import { faClock, faLaugh } from '@fortawesome/free-regular-svg-icons';
 import XVisibilityIcon from '../../../common/views/components/visibility-icon.vue';
 import XInstanceInfo from '../../../common/views/components/instance-info.vue';
 
@@ -123,7 +125,7 @@ export default Vue.extend({
 
 	data() {
 		return {
-			faClock,
+			faClock, faLaugh,
 			conversation: [],
 			conversationFetching: false,
 			replies: []
@@ -343,9 +345,10 @@ export default Vue.extend({
 					margin 0 0 0 8px
 					color var(--text)
 					opacity 0.7
+					font-size 0.8em
 
 				&.reacted
-					color var(--primary)
+					color var(--noteActionsReactionHover)
 
 				&.renoted
 					color var(--primary)

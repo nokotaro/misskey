@@ -70,10 +70,10 @@
 <script lang="ts">
 import Vue from 'vue';
 import i18n from '../../../i18n';
-import { parse } from '../../../../../mfm/parse';
+import { parseBasic } from '../../../../../mfm/parse';
 import { host } from '../../../config';
-import { toASCII } from 'punycode';
-import extractMentions from '../../../../../misc/extract-mentions';
+import { toASCII } from 'punycode/';
+import { extractMentions } from '../../../../../mfm/extract-mentions';
 import XPostFormAttaches from '../../../common/views/components/post-form-attaches.vue';
 import XVisibilityIcon from '../../../common/views/components/visibility-icon.vue';
 import form from '../../../common/scripts/post-form';
@@ -142,7 +142,7 @@ export default Vue.extend({
 		}
 
 		if (this.reply && this.reply.text != null) {
-			const ast = parse(this.reply.text);
+			const ast = parseBasic(this.reply.text);
 
 			for (const x of extractMentions(ast)) {
 				const mention = x.host ? `@${x.username}@${toASCII(x.host)}` : `@${x.username}`;
@@ -198,38 +198,57 @@ export default Vue.extend({
 		}
 
 		this.$nextTick(() => {
-			if (this.initialNote) {
-				// 削除して編集
-				const init = this.initialNote;
-				this.text =
-					this.normalizedText(this.initialText) ||
-					this.normalizedText(this.text) ||
-					this.normalizedText(init.text) || '';
-				this.files = init.files;
-				this.cw = init.cw;
-				this.useCw = init.cw != null;
-				if (init.poll) {
-					this.poll = true;
-					this.$nextTick(() => {
-						(this.$refs.poll as any).set({
-							choices: init.poll.choices.map(c => c.text),
-							multiple: init.poll.multiple
+			// 書きかけの投稿を復元
+			if (!this.instant && !this.mention) {
+				const draft = JSON.parse(localStorage.getItem('drafts') || '{}')[this.draftId];
+				if (draft) {
+					this.text = draft.data.text;
+					this.files = draft.data.files;
+					if (draft.data.poll) {
+						this.poll = true;
+						this.$nextTick(() => {
+							(this.$refs.poll as any).set(draft.data.poll);
 						});
-					});
+					}
+					this.$emit('change-attached-files', this.files);
 				}
-				this.visibility = init.visibility;
-				this.localOnly = init.localOnly;
-				this.quoteId = init.renote ? init.renote.id : null;
-				if (!this.renote) this.renote = this.initialNote.renote;
-				this.quote = true;
 			}
 
-			if (!this.inside) {
-				this.$nextTick(this.focus);
-			}
+			this.$nextTick(() => {
+				if (this.initialNote) {
+					// 削除して編集
+					const init = this.initialNote;
+					this.text =
+						this.normalizedText(this.initialText) ||
+						this.normalizedText(this.text) ||
+						this.normalizedText(init.text) || '';
+					this.files = init.files;
+					this.cw = init.cw;
+					this.useCw = init.cw != null;
+					if (init.poll) {
+						this.poll = true;
+						this.$nextTick(() => {
+							(this.$refs.poll as any).set({
+								choices: init.poll.choices.map(c => c.text),
+								multiple: init.poll.multiple
+							});
+						});
+					}
+					this.visibility = init.visibility;
+					this.localOnly = init.localOnly;
+					this.quoteId = init.renote ? init.renote.id : null;
+					if (!this.renote) this.renote = this.initialNote.renote;
+				}
 
-			const len = this.text.length;
-			if (len > 0 && this.$refs.text) (this.$refs.text as HTMLTextAreaElement).setSelectionRange(len, len);
+				if (!this.text && this.$route?.params?.tag) {
+					this.text = `#${this.$route.params.tag} `;
+				}
+
+				this.$nextTick(() => this.watch());
+
+				const len = this.text.length;
+				if (len > 0 && this.$refs.text) (this.$refs.text as HTMLTextAreaElement).setSelectionRange(len, len);
+			});
 		});
 	},
 

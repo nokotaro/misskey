@@ -1,11 +1,12 @@
-import { parseFragment } from 'parse5';
+import * as parse5 from 'parse5';
+import treeAdapter = require('parse5/lib/tree-adapters/default');
 import { URL } from 'url';
-import { urlRegexFull, urlRegex } from './prelude';
+import { urlRegexFull } from './utils';
 
 export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 	if (html == null) return null;
 
-	const dom = parseFragment(html);
+	const dom = parse5.parseFragment(html);
 
 	let text = '';
 
@@ -15,7 +16,7 @@ export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 
 	return text.trim();
 
-	function appendChildren(childNodes: any,): void {
+	function appendChildren(childNodes: parse5.ChildNode[]): void {
 		if (childNodes) {
 			for (const n of childNodes) {
 				analyze(n);
@@ -23,27 +24,24 @@ export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 		}
 	}
 
-	function analyze(node: any) {
-		switch (node.nodeName) {
-			case '#text':
-				text += node.value;
-				break;
+	function analyze(node: parse5.Node) {
+		if (treeAdapter.isTextNode(node)) {
+			text += node.value;
+			return;
+		}
 
+		// Skip comment or document type node
+		if (!treeAdapter.isElementNode(node)) return;
+
+		switch (node.nodeName) {
 			case 'br':
 				text += '\n';
 				break;
 
 			case 'a': {
-				const name = getValue(node, 'data-mfm');
-				if (name === 'search') {
-					const query = getValue(node, 'data-mfm-query')
-					text += `${query} Search`;
-					break;
-				}
-
 				const txt = getText(node);
-				const rel = node.attrs.find((x: any) => x.name == 'rel');
-				const href = node.attrs.find((x: any) => x.name == 'href');
+				const rel = node.attrs.find(x => x.name == 'rel');
+				const href = node.attrs.find(x => x.name == 'href');
 
 				// ハッシュタグ
 				if (hashtagNames && href && hashtagNames.map(x => x.toLowerCase()).includes(txt.toLowerCase())) {
@@ -52,7 +50,7 @@ export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 				} else if (txt.startsWith('@') && !(rel && rel.value.match(/^me /))) {
 					const part = txt.split('@');
 
-					if (part.length == 2) {
+					if (part.length == 2 && href) {
 						//#region ホスト名部分が省略されているので復元する
 						const acct = `${txt}@${(new URL(href.value)).hostname}`;
 						text += acct;
@@ -62,19 +60,52 @@ export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 					}
 				// その他
 				} else {
-					text += !href ? txt
-						: txt === href.value
-							? txt.match(urlRegexFull) ? txt
-							: `<${txt}>`
-						: (href.value.match(urlRegex) && !href.value.match(urlRegexFull))	// URLぽいがエンコードされてない
-							? `[${txt}](<${href.value}>)`
-							: `[${txt}](${href.value})`;
+					const isPlainSafe = (input: string): boolean => {
+						if (input.match(/[()]/)) return false;
+						if (input.match(/[.,]$/)) return false;
+						if (input.match(urlRegexFull)) return true;
+						return false;
+					};
+
+					const generateLink = () => {
+						// hrefもtextもない
+						if (!href && !txt) {
+							return '';
+						}
+
+						// hrefがない
+						if (!href) {
+							return txt;
+						}
+
+						// ラベル不要＆安全にベタ書き出来るURL
+						if ((!txt || txt === href.value) && isPlainSafe(href.value)) {
+							return href.value;
+						}
+
+						let encoded: string | null = null;
+						try {
+							encoded = href.value.match(/^https?:[/][/]/)
+								? new URL(href.value).href
+									.replace(/[()]/g, c => '%' + c.charCodeAt(0).toString(16))
+									.replace(/[.,]$/, c => '%' + c.charCodeAt(0).toString(16))
+								: null;
+						} catch { }
+
+						if (encoded) {
+							return `[${txt}](${encoded})`;
+						} else {
+							return txt;
+						}
+					};
+
+					text += generateLink();
 				}
 				break;
 			}
 
 			case 'div': {
-				const align = node.attrs.find((x: any) => x.name === 'align');
+				const align = node.attrs.find(x => x.name === 'align');
 				const center = align?.value === 'center';
 				if (center) text += '<center>';
 				appendChildren(node.childNodes);
@@ -124,83 +155,14 @@ export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 				break;
 
 			case 'span': {
-				const name = getValue(node, 'data-mfm');
-				if (name === 'jelly') {
-					text += '<motion>';
-					appendChildren(node.childNodes);
-					text += '</motion>';
-				} else if (name === 'tada') {
-						text += '***';
-						appendChildren(node.childNodes);
-						text += '***';
-				} else if (name === 'spin') {
-					const tag = hasAttribute(node, 'data-mfm-x') ? 'xspin' : hasAttribute(node, 'data-mfm-y') ? 'yspin' : 'spin';
-					const attr = hasAttribute(node, 'data-mfm-left') ? ' left' : hasAttribute(node, 'data-mfm-alternate') ? ' alternate' : '';
-					text += `<${tag}${attr}>`;
-					appendChildren(node.childNodes);
-					text += `</${tag}>`;
-				} else if (name === 'jump') {
-					text += '<jump>';
-					appendChildren(node.childNodes);
-					text += '</jump>';
-				} else if (name === 'flip') {
-					if (hasAttribute(node, 'data-mfm-h') && hasAttribute(node, 'data-mfm-v')) {
-						text += `<flip><vflip>`;
-						appendChildren(node.childNodes);
-						text += `</vflip></flip>`;
-					} else if (hasAttribute(node, 'data-mfm-v')) {
-						text += `<vflip>`;
-						appendChildren(node.childNodes);
-						text += `</vflip>`;
-					} else {
-						text += `<flip>`;
-						appendChildren(node.childNodes);
-						text += `</flip>`;
-					}
-				} else if (name === 'rotate') {
-					const deg = node.attrs.find((x: any) => x.name == 'data-mfm-deg');
-					text += `<rotate ${deg.value}>`;
-					appendChildren(node.childNodes);
-					text += `</rotate>`;
-				} else if (name?.match(/^[a-z]+$/)) {
-					const args = [];
-					for (const attr of node.attrs) {
-						const m = attr.name.match(/^data-mfm-([a-z]+)$/);
-						if (!m) continue;
-						const key = m[1];
-						args.push(attr.name === attr.value ? key : `${key}=${attr.value}`);
-					}
-
-					text += args.length > 0 ? `[${name}.${args.join(',')} ` : `[${name} `;
-					appendChildren(node.childNodes);
-					text += ']';
-				} else {
-					appendChildren(node.childNodes);
-				}
-				break;
-			}
-
-			case 'marquee': {
-				const direction = getValue(node, 'direction');
-				const behavior = getValue(node, 'behavior');
-
-				const attr
-					= behavior === 'alternate' ? ' alternate'
-					: behavior === 'slide'
-						? direction === 'right' ? ' reverse-slide' : ' slide'
-						: direction === 'right' ? ' reverse' : ''
-
-						text += `<marquee${attr}>`;
-					appendChildren(node.childNodes);
-					text += `</marquee>`;
+				appendChildren(node.childNodes);
 				break;
 			}
 
 			// block code (<pre><code>)
 			case 'pre': {
 				if (node.childNodes.length === 1 && node.childNodes[0].nodeName === 'code') {
-					const lang = node.childNodes[0].attrs.find((x: any) => x.name == 'data-mfm-lang');
-					text += '```' + (lang?.value || '') + '\n';
+					text += '```\n';
 					text += getText(node.childNodes[0]);
 					text += '\n```\n';
 				} else {
@@ -211,16 +173,9 @@ export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 
 			// inline code (<code>)
 			case 'code': {
-				const name = getValue(node, 'data-mfm');
-				if (name === 'math') {
-					text += '\\\(';
-					text += getText(node);
-					text += '\\\)';
-				} else {
-					text += '`';
-					appendChildren(node.childNodes);
-					text += '`';
-				}
+				text += '`';
+				appendChildren(node.childNodes);
+				text += '`';
 				break;
 			}
 
@@ -244,21 +199,14 @@ export function fromHtml(html: string, hashtagNames?: string[]): string | null {
 	}
 }
 
-function getText(node: any): string {
-	if (node.nodeName == '#text') return node.value;
-	if (node.nodeName == 'br') return '\n';
+function getText(node: parse5.Node): string {
+	if (treeAdapter.isTextNode(node)) return node.value;
+	if (!treeAdapter.isElementNode(node)) return '';
+	if (node.nodeName === 'br') return '\n';
 
 	if (node.childNodes) {
-		return node.childNodes.map((n: any) => getText(n)).join('');
+		return node.childNodes.map(n => getText(n)).join('');
 	}
 
 	return '';
-}
-
-function getValue(node: any, name: string): string | undefined {
-	return node.attrs.find((x: any) => x.name == name)?.value || undefined;
-}
-
-function hasAttribute(node: any, name: string) {
-	return !!node.attrs.find((x: any) => x.name == name);
 }

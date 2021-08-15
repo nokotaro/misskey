@@ -1,5 +1,5 @@
 <template>
-<div>
+<div style="background: var(--desktopPostFormBg)">
 	<div class="mk-post-form"
 		@dragover.stop="onDragover"
 		@dragenter="onDragenter"
@@ -77,9 +77,9 @@ import MkVisibilityChooser from '../../../common/views/components/visibility-cho
 import XPostFormAttaches from '../../../common/views/components/post-form-attaches.vue';
 import XVisibilityIcon from '../../../common/views/components/visibility-icon.vue';
 import form from '../../../common/scripts/post-form';
-import { toASCII } from 'punycode';
-import extractMentions from '../../../../../misc/extract-mentions';
-import { parse } from '../../../../../mfm/parse';
+import { toASCII } from 'punycode/';
+import { extractMentions } from '../../../../../mfm/extract-mentions';
+import { parseBasic } from '../../../../../mfm/parse';
 import { host } from '../../../config';
 
 export default Vue.extend({
@@ -129,7 +129,7 @@ export default Vue.extend({
 		}
 
 		if (this.reply && this.reply.text != null) {
-			const ast = parse(this.reply.text);
+			const ast = parseBasic(this.reply.text);
 
 			for (const x of extractMentions(ast)) {
 				const mention = x.host ? `@${x.username}@${toASCII(x.host)}` : `@${x.username}`;
@@ -225,6 +225,10 @@ export default Vue.extend({
 					this.localOnly = init.localOnly;
 					this.quoteId = init.renote ? init.renote.id : null;
 					if (!this.renote) this.renote = this.initialNote.renote;
+				}
+
+				if (!this.text && this.$route?.params?.tag) {
+					this.text = `#${this.$route.params.tag} `;
 				}
 
 				this.focus();
@@ -407,6 +411,7 @@ export default Vue.extend({
 				color var(--primary)
 
 		> .hashtags
+			max-width 540px
 			margin 0 0 8px 0
 			padding 2px
 			overflow hidden
@@ -514,13 +519,11 @@ export default Vue.extend({
 		pointer-events none
 
 .preview
+	max-width 570px
 	background var(--desktopPostFormBg)
 
 	> summary
 		padding 0px 16px 16px 20px
 		font-size 14px
 		color var(--text)
-
-	> .note
-		border-top solid var(--lineWidth) var(--faceDivider)
 </style>

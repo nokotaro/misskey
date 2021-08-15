@@ -39,7 +39,7 @@
 			<div class="command">
 				<ui-button @click="fetchOutbox()">{{ $t('fetch-posts') }}</ui-button>
 			</div>
-			<x-notes id="user_timeline_53" ref="timeline" :make-promise="makePromise" @inited="() => $emit('loaded')"/>
+			<x-notes id="user_timeline_53" ref="timeline" :key="user.id" :make-promise="makePromise" @inited="() => $emit('loaded')"/>
 		</div>
 	</ui-container>
 </div>
@@ -96,7 +96,7 @@ export default Vue.extend({
 			this.makePromise = cursor => this.$root.api('users/notes', {
 				userId: this.user.id,
 				limit: fetchLimit + 1,
-				untilDate: cursor ? cursor : new Date().getTime() + 1000 * 86400 * 365,
+				untilId: cursor ? cursor : undefined,
 				withFiles: this.withFiles,
 				includeMyRenotes: this.$store.state.settings.showMyRenotes,
 				includeRenotedMyNotes: this.$store.state.settings.showRenotedMyNotes,
@@ -106,7 +106,7 @@ export default Vue.extend({
 					notes.pop();
 					return {
 						notes: notes,
-						cursor: new Date(notes[notes.length - 1].createdAt).getTime()
+						cursor: notes[notes.length - 1].id
 					};
 				} else {
 					return {
@@ -134,7 +134,6 @@ export default Vue.extend({
 				fileType: image,
 				excludeNsfw: !this.$store.state.device.alwaysShowNsfw,
 				limit: 9,
-				untilDate: new Date().getTime() + 1000 * 86400 * 30
 			}).then(notes => {
 				for (const note of notes) {
 					for (const file of note.files) {

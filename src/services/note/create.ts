@@ -11,7 +11,7 @@ import DriveFile, { IDriveFile } from '../../models/drive-file';
 import { createNotification } from '../../services/create-notification';
 import NoteWatching from '../../models/note-watching';
 import watch from './watch';
-import { parse } from '../../mfm/parse';
+import { parseBasic } from '../../mfm/parse';
 import { IApp } from '../../models/app';
 import resolveUser from '../../remote/resolve-user';
 import Meta from '../../models/meta';
@@ -27,16 +27,17 @@ import { erase, concat, unique } from '../../prelude/array';
 import insertNoteUnread from './unread';
 import { registerOrFetchInstanceDoc } from '../register-or-fetch-instance-doc';
 import Instance from '../../models/instance';
-import { toASCII } from 'punycode';
-import extractMentions from '../../misc/extract-mentions';
-import extractEmojis from '../../misc/extract-emojis';
-import extractHashtags from '../../misc/extract-hashtags';
+import { toASCII } from 'punycode/';
+import { extractMentions } from '../../mfm/extract-mentions';
+import { extractEmojis } from '../../mfm/extract-emojis';
+import { extractHashtags } from '../../mfm/extract-hashtags';
 import { genId } from '../../misc/gen-id';
 import DeliverManager from '../../remote/activitypub/deliver-manager';
 import { deliverToRelays } from '../relay';
 import { getIndexer, getWordIndexer } from '../../misc/mecab';
 import Following from '../../models/following';
 import { IActivity } from '../../remote/activitypub/type';
+import { normalizeTag } from '../../misc/normalize-tag';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention' | 'highlight';
 
@@ -104,16 +105,16 @@ class NotificationManager {
 type Option = {
 	createdAt?: Date;
 	name?: string;
-	text?: string;
-	reply?: INote;
-	renote?: INote;
+	text?: string | null;
+	reply?: INote | null;
+	renote?: INote | null;
 	files?: IDriveFile[];
 	geo?: any;
 	poll?: any;
 	viaMobile?: boolean;
 	localOnly?: boolean;
 	copyOnce?: boolean;
-	cw?: string;
+	cw?: string | null;
 	visibility?: string;
 	visibleUsers?: IUser[];
 	apMentions?: IUser[];
@@ -204,10 +205,10 @@ export default async (user: IUser, data: Option, silent = false) => {
 
 	// Parse MFM if needed
 	if (parseEmojisInToken || !tags || !emojis || !mentionedUsers) {
-		const tokens = data.text ? parse(data.text) : [];
-		const cwTokens = data.cw ? parse(data.cw) : [];
+		const tokens = data.text ? parseBasic(data.text) : [];
+		const cwTokens = data.cw ? parseBasic(data.cw) : [];
 		const choiceTokens = data.poll && data.poll.choices
-			? concat((data.poll.choices as IChoice[]).map(choice => parse(choice.text)))
+			? concat((data.poll.choices as IChoice[]).map(choice => parseBasic(choice.text)))
 			: [];
 
 		const combinedTokens = tokens.concat(cwTokens).concat(choiceTokens);
@@ -319,14 +320,15 @@ export default async (user: IUser, data: Option, silent = false) => {
 		}
 
 		if (isQuote(note)) {
-			saveQuote(data.renote, note);
+			saveQuote(data.renote!, note);
+			incQuoteCount(data.renote!);
 		}
 
 		// Pack the note
-		const noteObj = await pack(note);
+		const noteObj = (await pack(note))!;
 
 		if (isFirstNote) {
-			noteObj.isFirstNote = true;
+			(noteObj as any).isFirstNote = true;
 		}
 
 		publishNotesStream(noteObj);
@@ -484,6 +486,14 @@ function incRenoteCount(renote: INote, user: IUser) {
 	});
 }
 
+function incQuoteCount(renote: INote) {
+	Note.update({ _id: renote._id }, {
+		$inc: {
+			quoteCount: 1
+		}
+	});
+}
+
 async function insertNote(user: IUser, data: Option, tags: string[], emojis: string[], mentionedUsers: IUser[]) {
 	const insert: any = {
 		_id: genId(data.createdAt),
@@ -496,7 +506,7 @@ async function insertNote(user: IUser, data: Option, tags: string[], emojis: str
 		poll: data.poll,
 		cw: data.cw == null ? null : data.cw,
 		tags,
-		tagsLower: tags.map(tag => tag.toLowerCase()),
+		tagsLower: tags.map(tag => normalizeTag(tag)),
 		emojis,
 		userId: user._id,
 		viaMobile: data.viaMobile,
@@ -698,7 +708,8 @@ function saveReply(reply: INote, note: INote) {
 function incNotesCountOfUser(user: IUser) {
 	User.update({ _id: user._id }, {
 		$set: {
-			updatedAt: new Date()
+			updatedAt: new Date(),
+			lastActivityAt: new Date()
 		},
 		$inc: {
 			notesCount: 1
@@ -723,7 +734,8 @@ function incNotesCount(user: IUser) {
 	}
 }
 
-async function extractMentionedUsers(user: IUser, tokens: ReturnType<typeof parse>): Promise<IUser[]> {
+// TODO: parseBasicの結果以外でも入れることが出来てしまう
+async function extractMentionedUsers(user: IUser, tokens: ReturnType<typeof parseBasic>): Promise<IUser[]> {
 	if (tokens == null) return [];
 
 	const mentions = extractMentions(tokens);

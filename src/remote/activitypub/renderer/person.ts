@@ -3,7 +3,7 @@ import renderKey from './key';
 import config from '../../../config';
 import { ILocalUser } from '../../../models/user';
 import { toHtml } from '../../../mfm/to-html';
-import { parse } from '../../../mfm/parse';
+import { parseBasic } from '../../../mfm/parse';
 import DriveFile from '../../../models/drive-file';
 import { getEmojis } from './note';
 import renderEmoji from './emoji';
@@ -69,7 +69,7 @@ export default async (user: ILocalUser) => {
 		attachment.push({
 			type: 'PropertyValue',
 			name: 'Discord',
-			value: `<a href="https://discordapp.com/users/${user.discord.id}" rel="me nofollow noopener" target="_blank"><span>${user.discord.username}#${user.discord.discriminator}</span></a>`,
+			value: `<a href="https://discord.com/users/${user.discord.id}" rel="me nofollow noopener" target="_blank"><span>${user.discord.username}#${user.discord.discriminator}</span></a>`,
 			identifier: {
 				type: 'PropertyValue',
 				name: 'misskey:authentication:discord',
@@ -101,7 +101,7 @@ export default async (user: ILocalUser) => {
 		url: `${config.url}/@${user.username}`,
 		preferredUsername: user.username,
 		name: user.name,
-		summary: toHtml(parse(user.description)),
+		summary: toHtml(parseBasic(user.description)),
 		icon: (avatar && avatar.metadata && !avatar.metadata.isSensitive) ? renderImage(avatar) : undefined,
 		image: (banner && banner.metadata && !banner.metadata.isSensitive) ? renderImage(banner) : undefined,
 		tag,

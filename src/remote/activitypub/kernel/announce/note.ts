@@ -6,8 +6,9 @@ import { fetchNote, resolveNote } from '../../models/note';
 import { apLogger } from '../../logger';
 import { extractApHost } from '../../../../misc/convert-host';
 import { getApLock } from '../../../../misc/app-lock';
-import { isBlockedHost } from '../../../../misc/instance-info';
+import { isBlockedHost } from '../../../../services/instance-moderation';
 import { parseAudience } from '../../audience';
+import { parseDateWithLimit } from '../../misc/date';
 
 const logger = apLogger;
 
@@ -17,8 +18,8 @@ const logger = apLogger;
 export default async function(resolver: Resolver, actor: IRemoteUser, activity: IAnnounce, targetUri: string): Promise<string> {
 	const uri = getApId(activity);
 
-	// アナウンサーが凍結されていたらスキップ
-	if (actor.isSuspended) {
+	// アナウンサーが凍結か削除されていたらスキップ
+	if (actor.isSuspended || actor.isDeleted) {
 		return `skip: actor is suspended`;
 	}
 
@@ -56,7 +57,7 @@ export default async function(resolver: Resolver, actor: IRemoteUser, activity: 
 		const activityAudience = await parseAudience(actor, activity.to, activity.cc);
 
 		await post(actor, {
-			createdAt: new Date(activity.published),
+			createdAt: parseDateWithLimit(activity.published, 600 * 1000) || new Date(),
 			renote,
 			visibility: activityAudience.visibility,
 			visibleUsers: activityAudience.visibleUsers,

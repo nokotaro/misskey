@@ -1,4 +1,4 @@
-import { parse } from '../../../../mfm/parse';
+import { parseBasic } from '../../../../mfm/parse';
 import { sum, unique } from '../../../../prelude/array';
 import { shouldMuteNote } from './should-mute-note';
 import MkNoteMenu from '../views/components/note-menu.vue';
@@ -87,11 +87,10 @@ export default (opts: Opts = {}) => ({
 
 		urls(): string[] {
 			if (this.appearNote.text) {
-				const ast = parse(this.appearNote.text);
-				// TODO: 再帰的にURL要素がないか調べる
+				const ast = parseBasic(this.appearNote.text);
 				const urls = unique(ast
-					.filter(t => ((t.node.type == 'url' || t.node.type == 'link') && t.node.props.url && !t.node.props.silent))
-					.map(t => t.node.props.url));
+					.filter(node => ((node.type == 'url' || node.type == 'link') && node.props.url && !node.props.silent))
+					.map(node => node.props.url));
 
 				// unique without hash
 				// [ http://a/#1, http://a/#2, http://b/#3 ] => [ http://a/#1, http://b/#3 ]
@@ -149,7 +148,7 @@ export default (opts: Opts = {}) => ({
 			const w = this.$root.new(MkReactionPicker, {
 				source: this.$refs.reactButton,
 				showFocus: viaKeyboard,
-				animation: !viaKeyboard
+				animation: false
 			});
 			w.$once('chosen', (reaction, disliked)  => {
 				this.$root.api('notes/reactions/create', {

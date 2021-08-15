@@ -4,7 +4,7 @@ import config from '../../../config';
 import Resolver from '../resolver';
 import { INote } from '../../../models/note';
 import post from '../../../services/note/create';
-import { IPost, IObject, getOneApId, getApId, getOneApHrefNullable, isPost, isEmoji, IApImage } from '../type';
+import { IPost, IObject, getOneApId, getApId, getOneApHrefNullable, isPost, isEmoji, IApImage, getApType } from '../type';
 import { resolvePerson, updatePerson } from './person';
 import { resolveImage } from './image';
 import { IRemoteUser } from '../../../models/user';
@@ -12,7 +12,7 @@ import { htmlToMfm } from '../misc/html-to-mfm';
 import Emoji, { IEmoji } from '../../../models/emoji';
 import { extractApMentions } from './mention';
 import { extractApHashtags } from './tag';
-import { toUnicode } from 'punycode';
+import { toUnicode } from 'punycode/';
 import { unique, toArray, toSingle } from '../../../prelude/array';
 import { extractPollFromQuestion } from './question';
 import vote from '../../../services/note/polls/vote';
@@ -22,11 +22,12 @@ import { deliverQuestionUpdate } from '../../../services/note/polls/update';
 import { extractApHost } from '../../../misc/convert-host';
 import { getApLock } from '../../../misc/app-lock';
 import { createMessage } from '../../../services/messages/create';
-import { isBlockedHost } from '../../../misc/instance-info';
+import { isBlockedHost } from '../../../services/instance-moderation';
 import { parseAudience } from '../audience';
 import MessagingMessage from '../../../models/messaging-message';
 import DbResolver from '../db-resolver';
 import { tryStockEmoji } from '../../../services/emoji-store';
+import { parseDate, parseDateWithLimit } from '../misc/date';
 
 const logger = apLogger;
 
@@ -38,7 +39,7 @@ function toNote(object: IObject, uri: string): IPost {
 	}
 
 	if (!isPost(object)) {
-		throw new Error(`invalid Note: invalid object type ${object.type}`);
+		throw new Error(`invalid Note: invalid object type ${getApType(object)}`);
 	}
 
 	if (object.id && extractApHost(object.id) !== expectHost) {
@@ -91,10 +92,11 @@ export async function createNote(value: string | IObject, resolver?: Resolver | 
 	logger.info(`Creating the Note: ${note.id}`);
 
 	// 投稿者をフェッチ
+	if (!note.attributedTo) return null;
 	const actor = await resolvePerson(getOneApId(note.attributedTo), null, resolver) as IRemoteUser;
 
-	// 投稿者が凍結されていたらスキップ
-	if (actor.isSuspended) {
+	// 投稿者が凍結か削除されていたらスキップ
+	if (actor.isSuspended || actor.isDeleted) {
 		return null;
 	}
 
@@ -117,17 +119,21 @@ export async function createNote(value: string | IObject, resolver?: Resolver | 
 
 	// 添付ファイル
 	// Noteがsensitiveなら添付もsensitiveにする
-	const limit = promiseLimit(2);
+	const limit = promiseLimit<IDriveFile>(2);
 
 	note.attachment = toArray(note.attachment);
+
+	// 添付が多すぎたら無視
+	if (note.attachment.length > 100) return null;
+
 	const files = note.attachment
 		.map(attach => attach.sensitive = note.sensitive)
-		? (await Promise.all(note.attachment.map(x => limit(() => resolveImage(actor, x)) as Promise<IDriveFile>)))
+		? (await Promise.all(note.attachment.map(x => limit(() => resolveImage(actor, x)))))
 			.filter(image => image != null)
 		: [];
 
 	// リプライ
-	const reply: INote = note.inReplyTo
+	const reply: INote | null = note.inReplyTo
 		? await resolveNote(getOneApId(note.inReplyTo), resolver).then(x => {
 			if (x == null) {
 				logger.warn(`Specified inReplyTo, but not found`);
@@ -137,7 +143,7 @@ export async function createNote(value: string | IObject, resolver?: Resolver | 
 			}
 		}).catch(async e => {
 			// トークだったらinReplyToのエラーは無視
-			const uri = getApId(getOneApId(note.inReplyTo));
+			const uri = getApId(getOneApId(note.inReplyTo!));
 			if (uri.startsWith(config.url + '/')) {
 				const id = uri.split('/').pop();
 				const talk = await MessagingMessage.findOne({ _id: id });
@@ -154,7 +160,7 @@ export async function createNote(value: string | IObject, resolver?: Resolver | 
 		: null;
 
 	// 引用
-	let quote: INote;
+	let quote: INote | undefined | null;
 
 	if (note._misskey_quote || note.quoteUrl) {
 		const tryResolveNote = async (uri: string): Promise<{
@@ -195,7 +201,7 @@ export async function createNote(value: string | IObject, resolver?: Resolver | 
 	const cw = note.summary === '' ? null : note.summary;
 
 	// テキストのパース
-	const text = note._misskey_content || htmlToMfm(note.content, note.tag);
+	const text = note._misskey_content || (note.content ? htmlToMfm(note.content, note.tag) : null);
 
 	// vote
 	if (reply && reply.poll) {
@@ -215,18 +221,9 @@ export async function createNote(value: string | IObject, resolver?: Resolver | 
 		if (note.name) {
 			return await tryCreateVote(note.name, reply.poll.choices.findIndex(x => x.text === note.name));
 		}
-
-		// 後方互換性のため
-		if (text) {
-			const m = text.match(/(\d+)$/);
-
-			if (m) {
-				return await tryCreateVote(m[0], Number(m[1]));
-			}
-		}
 	}
 
-	const emojis = await extractEmojis(note.tag, actor.host).catch(e => {
+	const emojis = await extractEmojis(note.tag || [], actor.host).catch(e => {
 		logger.info(`extractEmojis: ${e}`);
 		return [] as IEmoji[];
 	});
@@ -247,7 +244,7 @@ export async function createNote(value: string | IObject, resolver?: Resolver | 
 	}
 
 	return await post(actor, {
-		createdAt: note.published ? new Date(note.published) : undefined,
+		createdAt: parseDateWithLimit(note.published, 600 * 1000) || new Date(),
 		files,
 		reply,
 		renote: quote,
@@ -317,9 +314,10 @@ export async function extractEmojis(tags: IObject | IObject[], host_: string) {
 
 			if (exists) {
 				// 更新されていたら更新
-				if ((tag.updated != null && exists.updatedAt == null)
+				const updated = parseDate(tag.updated);
+				if ((updated != null && exists.updatedAt == null)
 					|| (tag.id != null && exists.uri == null)
-					|| (tag.updated != null && exists.updatedAt != null && new Date(tag.updated) > exists.updatedAt)) {
+					|| (updated != null && exists.updatedAt != null && updated > exists.updatedAt)) {
 						logger.info(`update emoji host=${host}, name=${name}`);
 						exists = await Emoji.findOneAndUpdate({
 							host,

@@ -153,57 +153,228 @@ export const schemas = {
 		required: ['id', 'createdAt']
 	},
 
+	Poll: {
+		type: 'object',
+		properties: {
+			multiple: {
+				type: 'boolean',
+				nullable: true,
+				description: '複数回答か',
+			},
+			expiresAt: {
+				type: 'string',
+				format: 'date-time',
+				nullable: true,
+				description: '期限、nullは無限。',
+			},
+			choices: {
+				type: 'array',
+				format: 'object',
+				description: '投票の選択肢',
+				items: {
+					type: 'object',
+					nullable: false,
+					properties: {
+						id: {
+							type: 'number',
+							description: '0からのインデックス',
+						},
+						text: {
+							type: 'string',
+							description: '選択肢名',
+						},
+						votes: {
+							type: 'number',
+							description: '投票数',
+						}
+					},
+				},
+			}
+		}
+	},
+
 	Note: {
 		type: 'object',
 		properties: {
 			id: {
 				type: 'string',
 				format: 'id',
+				optional: false, nullable: false,
 				description: 'The unique identifier for this Note.',
 				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
 			},
 			createdAt: {
 				type: 'string',
 				format: 'date-time',
+				nullable: false,
 				description: 'The date that the Note was created on Misskey.'
 			},
 			text: {
-				type: 'string'
+				type: 'string',
+				nullable: true,
 			},
 			cw: {
-				type: 'string'
+				type: 'string',
+				nullable: true,
+				description: 'Content warning'
 			},
 			userId: {
 				type: 'string',
 				format: 'id',
+				nullable: false,
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
 			},
 			user: {
-				$ref: '#/components/schemas/User'
+				$ref: '#/components/schemas/User',
+				nullable: false,
 			},
 			replyId: {
 				type: 'string',
 				format: 'id',
+				nullable: true,
+				description: 'Note id of the reply target.',
 				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
 			},
 			renoteId: {
 				type: 'string',
 				format: 'id',
+				nullable: true,
+				description: 'Note id of the renote/quote target.',
 				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
 			},
 			reply: {
-				$ref: '#/components/schemas/Note'
+				type: 'object',
+				nullable: true,
+				format: 'Note',
+				description: 'Note object of the reply target.',
 			},
 			renote: {
-				$ref: '#/components/schemas/Note'
+				type: 'object',
+				nullable: true,
+				format: 'Note',
+				description: 'Note object of the renote/quote target.',
 			},
 			viaMobile: {
-				type: 'boolean'
+				type: 'boolean',
+				nullable: true,
 			},
 			visibility: {
-				type: 'string'
+				type: 'string',
+				nullable: false,
+				description: 'public, home, followers, specified or private',
+			},
+			fileIds: {
+				type: 'array',
+				format: 'id',
+				nullable: true,
+				description: 'Attached DriveFile ids.',
+			},
+			files: {
+				type: 'array',
+				format: 'DriveFile',
+				nullable: true,
+				description: 'Attached DriveFile objects.',
+			},
+			tags: {
+				type: 'array',
+				format: 'string',
+				nullable: true,
+				description: 'Hashtags',
+				example: [ 'a', 'b' ]
+			},
+			reactions: {
+				type: 'object',
+				nullable: true,
+				description: 'Reactions to this note. keyが :なにか: だったら、emojis.name === なにか な emojis.url を画像として表示して、それ以外だったらUnicode絵文字として表示すればいい。',
+				example: {
+					'🍊': 1,
+					':local_custom_emoji@.:': 1,
+					':remote_custom_emoji@example.com:': 1,
+				}
+			},
+			emojis: {
+				type: 'array',
+				format: 'object',
+				items: {
+					type: 'object',
+					nullable: false,
+					properties: {
+						name: {
+							type: 'string',
+							nullable: false,
+							description: '/[0-9A-Za-z_.@-]+/',
+						},
+						url: {
+							type: 'string',
+							nullable: false,
+							description: 'Image url',
+						},
+					},
+				},
+				nullable: true,
+				description: 'Custom/Avatar emoji informations used in text/reactions.',
+				example: [
+					{ name: 'local_custom_emoji', url: 'xxx'},
+					{ name: 'remote_custom_emoji@example.com', url: 'xxx'},
+					{ name: '@local_user', url: 'xxx'},
+					{ name: '@remote_user@example.com', url: 'xxx'},
+					{ name: 'local_custom_reaction@.', url: 'xxx'},
+					{ name: 'remote_custom_reaction@example.com', url: 'xxx'},
+				]
+			},
+			localOnly: {
+				type: 'boolean',
+				nullable: true,
+			},
+			copyOnce: {
+				type: 'boolean',
+				nullable: true,
+			},
+			score: {
+				type: 'number',
+				nullable: true,
+				description: 'Renoted/Quoted/Reacted counts (exclude from BOT).',
+			},
+			renoteCount: {
+				type: 'number',
+				nullable: true,
+				description: 'Renoted/Quoted counts.',
+			},
+			quoteCount: {
+				type: 'number',
+				nullable: true,
+				description: 'Quoted counts.',
+			},
+			repliesCount: {
+				type: 'number',
+				nullable: true,
+				description: 'Replied counts.',
+			},
+			myReaction: {
+				type: 'string',
+				nullable: true,
+				description: 'If reacted, that reaction.',
+				example: '🍊',
+			},
+			myRenoteId: {
+				type: 'string',
+				nullable: true,
+				description: 'If renoted/quoted, that Note object id.',
+				example: 'xxxxxxxxxxxxxxxxxxxxxxxx',
+			},
+			poll: {
+				$ref: '#/components/schemas/Poll',
+				nullable: true,
+			},
+			url: {
+				type: 'string',
+				nullable: true,
+			},
+			uri: {
+				type: 'string',
+				nullable: true,
 			},
 		},
-		required: ['id', 'userId', 'createdAt']
 	},
 
 	Notification: {

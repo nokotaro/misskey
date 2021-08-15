@@ -7,6 +7,7 @@ import define from '../../define';
 import { getHideUserIds } from '../../common/get-hide-users';
 import User from '../../../../models/user';
 import { toDbHost } from '../../../../misc/convert-host';
+import { normalizeTag } from '../../../../misc/normalize-tag';
 
 export const meta = {
 	desc: {
@@ -139,10 +140,10 @@ export default define(meta, async (ps, me) => {
 	if (ps.tag) {
 		const tokens = ps.tag.trim().split(/\s+/);
 
-		const tag = tokens.shift();
+		const tag = tokens.shift() as string
 
 		push({
-			tagsLower: tag.toLowerCase()
+			tagsLower: normalizeTag(tag)
 		});
 
 		for (const token of tokens) {
