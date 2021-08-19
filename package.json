@@ -1,7 +1,7 @@
 {
 	"name": "misskey",
 	"author": "syuilo <syuilotan@yahoo.co.jp>",
-	"version": "12.88.0-20210819092545.7bf517e",
+	"version": "12.88.0",
 	"codename": "indigo",
 	"repository": {
 		"type": "git",
@@ -10,8 +10,8 @@
 	"main": "./index.js",
 	"private": true,
 	"scripts": {
-		"start": "node ./index.js",
-		"start:test": "cross-env NODE_ENV=test node ./index.js",
+		"start": "node --experimental-json-modules ./index.js",
+		"start:test": "cross-env NODE_ENV=test node --experimental-json-modules ./index.js",
 		"init": "npm run migrate",
 		"ormconfig": "node ./built/ormconfig.js",
 		"migrate": "ts-node ./node_modules/typeorm/cli.js migration:run",
