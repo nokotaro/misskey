@@ -24,14 +24,12 @@ export default {
 			}
 		};
 
-		console.log(binding.arg);
-
 		if (binding.arg === 'dialog') {
 			el.addEventListener('click', (ev) => {
 				ev.preventDefault();
 				ev.stopPropagation();
 				dialog({
-					type: 'help',
+					type: 'info',
 					text: binding.value,
 				});
 				return false;
