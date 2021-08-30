@@ -3,18 +3,18 @@
 
 プロジェクトに興味を持っていただきありがとうございます！ このドキュメントでは、プロジェクトに貢献する際に必要な情報をまとめています。
 
-## 実装をする前に
-機能追加やバグ修正をしたいときは、まずIssueなどで設計、方針をレビューしてもらいましょう(無い場合は作ってください)。このステップがないと、せっかく実装してもPRがマージされない可能性が高くなります。
-
-また、実装に取り掛かるときは当該Issueに自分をアサインしてください(自分でできない場合は他メンバーに自分をアサインしてもらうようお願いしてください)。
-自分が実装するという意思表示をすることで、作業がバッティングするのを防ぎます。
-
 ## Issues
 Issueを作成する前に、以下をご確認ください:
 - 重複を防ぐため、既に同様の内容のIssueが作成されていないか検索してから新しいIssueを作ってください。
 - Issueを質問に使わないでください。
 	- Issueは、要望、提案、問題の報告にのみ使用してください。
 	- 質問は、[Misskey Forum](https://forum.misskey.io/)や[Discord](https://discord.gg/Wp8gVStHW3)でお願いします。
+
+## 実装をする前に
+機能追加やバグ修正をしたいときは、まずIssueで設計、方針をレビューしてもらいましょう(無い場合は作ってください)。このステップがないと、せっかく実装してもPRがマージされない可能性が高くなります。
+
+また、実装に取り掛かるときは当該Issueに自分をアサインしてください(自分でできない場合は他メンバーに自分をアサインしてもらうようお願いしてください)。
+自分が実装するという意思表示をすることで、作業がバッティングするのを防ぎます。
 
 ## PRの作成
 PRありがとうございます！ PRを作成する前に、以下をご確認ください:
@@ -73,116 +73,11 @@ Configuration files are located in [`/.github/workflows`](/.github/workflows).
 If you have no experience on 3D modeling, we suggest to use the free 3DCG software [Blender](https://www.blender.org/).
 You can find information on glTF 2.0 at [glTF 2.0 — Blender Manual]( https://docs.blender.org/manual/en/dev/addons/io_scene_gltf2.html).
 
-## FAQ
+## Notes
 ### How to resolve conflictions occurred at yarn.lock?
 
 Just execute `yarn` to fix it.
 
-## Glossary
-### AP
-Stands for _**A**ctivity**P**ub_.
-
-### MFM
-Stands for _**M**isskey **F**lavored **M**arkdown_.
-
-### Mk
-Stands for _**M**iss**k**ey_.
-
-### SW
-Stands for _**S**ervice**W**orker_.
-
-### Nyaize
-Convert な(na) to にゃ(nya)
-
-#### Denyaize
-Revert Nyaize
-
-## TypeScript Coding Style
-### Do not omit semicolons
-This is to avoid Automatic Semicolon Insertion (ASI) hazard.
-
-Ref:
-* https://www.ecma-international.org/ecma-262/#sec-automatic-semicolon-insertion
-* https://github.com/tc39/ecma262/pull/1062
-
-### Do not omit curly brackets
-Bad:
-``` ts
-if (foo)
-	bar;
-else
-	baz;
-```
-
-Good:
-``` ts
-if (foo) {
-	bar;
-} else {
-	baz;
-}
-```
-
-As a special case, you can omit the curly brackets if
-
-* the body of the `if`-statement have only one statement and,
-* the `if`-statement does not have `else`-clause.
-
-Good:
-``` ts
-if (foo) bar;
-```
-
-Make sure that the condition and the body statement are on the same line.
-
-### Do not use `==` when it can simply be replaced with `===`.
-🥰
-
-### Use only boolean (or null related) values in the condition of an `if`-statement.
-Bad:
-``` ts
-if (foo.length)
-```
-
-Good:
-``` ts
-if (foo.length > 0)
-```
-
-### Do not use `export default`
-This is because the current language support does not work well with `export default`.
-
-Ref:
-* https://basarat.gitbooks.io/typescript/docs/tips/defaultIsBad.html
-* https://gfx.hatenablog.com/entry/2017/11/24/135343
-
-Bad:
-``` ts
-export default function(foo: string): string {
-```
-
-Good:
-``` ts
-export function something(foo: string): string {
-```
-
-## Directory structure
-```
-src ... Source code
-	@types ... Type definitions
-	prelude ... Independence utils for coding JavaScript without side effects
-	misc ... Independence utils for Misskey without side effects
-	service ... Common functions with side effects
-	queue ... Job queues and Jobs
-	server ... Web Server
-	client ... Client
-	mfm ... MFM
-
-test ... Test code
-
-```
-
-## Notes
 ### placeholder
 SQLをクエリビルダで組み立てる際、使用するプレースホルダは重複してはならない
 例えば
