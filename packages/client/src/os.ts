@@ -4,31 +4,13 @@ import { Component, defineAsyncComponent, markRaw, reactive, Ref, ref } from 'vu
 import { EventEmitter } from 'eventemitter3';
 import insertTextAtCursor from 'insert-text-at-cursor';
 import * as Misskey from 'misskey-js';
-import * as Sentry from '@sentry/browser';
-import { apiUrl, debug, url } from '@/config';
+import { apiUrl, url } from '@/config';
 import MkPostFormDialog from '@/components/post-form-dialog.vue';
 import MkWaitingDialog from '@/components/waiting-dialog.vue';
 import { resolve } from '@/router';
 import { $i } from '@/account';
-import { defaultStore } from '@/store';
-
-export let isScreenTouching = false;
-
-window.addEventListener('touchstart', () => {
-	isScreenTouching = true;
-}, { passive: true });
-
-window.addEventListener('touchend', () => {
-	isScreenTouching = false;
-}, { passive: true });
-
-export const stream = markRaw(new Misskey.Stream(url, $i));
 
 export const pendingApiRequestsCount = ref(0);
-let apiRequestsCount = 0; // for debug
-export const apiRequests = ref([]); // for debug
-
-export const windows = new Map();
 
 const apiClient = new Misskey.api.APIClient({
 	origin: url,
@@ -40,18 +22,6 @@ export const api = ((endpoint: string, data: Record<string, any> = {}, token?: s
 	const onFinally = () => {
 		pendingApiRequestsCount.value--;
 	};
-
-	const log = debug ? reactive({
-		id: ++apiRequestsCount,
-		endpoint,
-		req: markRaw(data),
-		res: null,
-		state: 'pending',
-	}) : null;
-	if (debug) {
-		apiRequests.value.push(log);
-		if (apiRequests.value.length > 128) apiRequests.value.shift();
-	}
 
 	const promise = new Promise((resolve, reject) => {
 		// Append a credential
@@ -69,34 +39,10 @@ export const api = ((endpoint: string, data: Record<string, any> = {}, token?: s
 
 			if (res.status === 200) {
 				resolve(body);
-				if (debug) {
-					log!.res = markRaw(JSON.parse(JSON.stringify(body)));
-					log!.state = 'success';
-				}
 			} else if (res.status === 204) {
 				resolve();
-				if (debug) {
-					log!.state = 'success';
-				}
 			} else {
 				reject(body.error);
-				if (debug) {
-					log!.res = markRaw(body.error);
-					log!.state = 'failed';
-				}
-
-				if (defaultStore.state.reportError && !_DEV_) {
-					Sentry.withScope((scope) => {
-						scope.setTag('api_endpoint', endpoint);
-						scope.setContext('api params', data);
-						scope.setContext('api error info', body.info);
-						scope.setTag('api_error_id', body.id);
-						scope.setTag('api_error_code', body.code);
-						scope.setTag('api_error_kind', body.kind);
-						scope.setLevel(Sentry.Severity.Error);
-						Sentry.captureMessage('API error');
-					});
-				}
 			}
 		}).catch(reject);
 	});
@@ -137,7 +83,7 @@ export function promiseDialog<T extends Promise<any>>(
 			onSuccess(res);
 		} else {
 			success.value = true;
-			setTimeout(() => {
+			window.setTimeout(() => {
 				showing.value = false;
 			}, 1000);
 		}
@@ -174,6 +120,16 @@ export const popups = ref([]) as Ref<{
 	props: Record<string, any>;
 }[]>;
 
+const zIndexes = {
+	low: 1000000,
+	middle: 2000000,
+	high: 3000000,
+};
+export function claimZIndex(priority: 'low' | 'middle' | 'high' = 'low'): number {
+	zIndexes[priority] += 100;
+	return zIndexes[priority];
+}
+
 export async function popup(component: Component | typeof import('*.vue') | Promise<Component | typeof import('*.vue')>, props: Record<string, any>, events = {}, disposeEvent?: string) {
 	if (component.then) component = await component;
 
@@ -182,9 +138,8 @@ export async function popup(component: Component | typeof import('*.vue') | Prom
 
 	const id = ++popupIdCount;
 	const dispose = () => {
-		if (_DEV_) console.log('os:popup close', id, component, props, events);
 		// このsetTimeoutが無いと挙動がおかしくなる(autocompleteが閉じなくなる)。Vueのバグ？
-		setTimeout(() => {
+		window.setTimeout(() => {
 			popups.value = popups.value.filter(popup => popup.id !== id);
 		}, 0);
 	};
@@ -198,7 +153,6 @@ export async function popup(component: Component | typeof import('*.vue') | Prom
 		id,
 	};
 
-	if (_DEV_) console.log('os:popup open', id, component, props, events);
 	popups.value.push(state);
 
 	return {
@@ -225,7 +179,9 @@ export function modalPageWindow(path: string) {
 }
 
 export function toast(message: string) {
-	// TODO
+	popup(import('@/components/toast.vue'), {
+		message
+	}, {}, 'closed');
 }
 
 export function alert(props: {
@@ -373,7 +329,7 @@ export function select(props: {
 export function success() {
 	return new Promise((resolve, reject) => {
 		const showing = ref(true);
-		setTimeout(() => {
+		window.setTimeout(() => {
 			showing.value = false;
 		}, 1000);
 		popup(import('@/components/waiting-dialog.vue'), {
@@ -585,7 +541,7 @@ export const uploads = ref<{
 	img: string;
 }[]>([]);
 
-export function upload(file: File, folder?: any, name?: string) {
+export function upload(file: File, folder?: any, name?: string): Promise<Misskey.entities.DriveFile> {
 	if (folder && typeof folder == 'object') folder = folder.id;
 
 	return new Promise((resolve, reject) => {
@@ -614,7 +570,7 @@ export function upload(file: File, folder?: any, name?: string) {
 			const xhr = new XMLHttpRequest();
 			xhr.open('POST', apiUrl + '/drive/files/create', true);
 			xhr.onload = (ev) => {
-				if (ev.target == null || ev.target.response == null) {
+				if (xhr.status !== 200 || ev.target == null || ev.target.response == null) {
 					// TODO: 消すのではなくて再送できるようにしたい
 					uploads.value = uploads.value.filter(x => x.id != id);
 

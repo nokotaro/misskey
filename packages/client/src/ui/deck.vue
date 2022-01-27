@@ -29,7 +29,7 @@
 		<button class="button post _button" @click="post()"><i class="fas fa-pencil-alt"></i></button>
 	</div>
 
-	<transition name="menu-back">
+	<transition :name="$store.state.animation ? 'menu-back' : ''">
 		<div v-if="drawerMenuShowing"
 			class="menu-back _modalBg"
 			@click="drawerMenuShowing = false"
@@ -37,7 +37,7 @@
 		></div>
 	</transition>
 
-	<transition name="menu">
+	<transition :name="$store.state.animation ? 'menu' : ''">
 		<XDrawerMenu v-if="drawerMenuShowing" class="menu"/>
 	</transition>
 
@@ -82,7 +82,7 @@ export default defineComponent({
 		});
 
 		const columns = deckStore.reactiveState.columns;
-		const layout = deckStore.reactiveState.layout.value;
+		const layout = deckStore.reactiveState.layout;
 		const menuIndicated = computed(() => {
 			if ($i == null) return false;
 			for (const def in menuDef) {

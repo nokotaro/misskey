@@ -1,8 +1,10 @@
 import * as os from '@/os';
+import { stream } from '@/stream';
 import { i18n } from '@/i18n';
 import { defaultStore } from '@/store';
+import { DriveFile } from 'misskey-js/built/entities';
 
-export function selectFile(src: any, label: string | null, multiple = false) {
+function select(src: any, label: string | null, multiple: boolean): Promise<DriveFile | DriveFile[]> {
 	return new Promise((res, rej) => {
 		const chooseFileFromPc = () => {
 			const input = document.createElement('input');
@@ -47,7 +49,7 @@ export function selectFile(src: any, label: string | null, multiple = false) {
 
 				const marker = Math.random().toString(); // TODO: UUIDとか使う
 
-				const connection = os.stream.useChannel('main');
+				const connection = stream.useChannel('main');
 				connection.on('urlUploadFinished', data => {
 					if (data.marker === marker) {
 						res(multiple ? [data.file] : data.file);
@@ -85,4 +87,12 @@ export function selectFile(src: any, label: string | null, multiple = false) {
 			action: chooseFileFromUrl
 		}], src);
 	});
+}
+
+export function selectFile(src: any, label: string | null = null): Promise<DriveFile> {
+	return select(src, label, false) as Promise<DriveFile>;
+}
+
+export function selectFiles(src: any, label: string | null = null): Promise<DriveFile[]> {
+	return select(src, label, true) as Promise<DriveFile[]>;
 }

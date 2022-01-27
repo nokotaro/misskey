@@ -1,5 +1,5 @@
 <template>
-<div class="mk-uploader _acrylic">
+<div class="mk-uploader _acrylic" :style="{ zIndex }">
 	<ol v-if="uploads.length > 0">
 		<li v-for="ctx in uploads" :key="ctx.id">
 			<div class="img" :style="{ backgroundImage: `url(${ ctx.img })` }"></div>
@@ -17,23 +17,17 @@
 </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { } from 'vue';
 import * as os from '@/os';
 
-export default defineComponent({
-	data() {
-		return {
-			uploads: os.uploads,
-		};
-	},
-});
+const uploads = os.uploads;
+const zIndex = os.claimZIndex('high');
 </script>
 
 <style lang="scss" scoped>
 .mk-uploader {
 	position: fixed;
-	z-index: 10000;
 	right: 16px;
 	width: 260px;
 	top: 32px;

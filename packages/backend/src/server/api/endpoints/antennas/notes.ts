@@ -12,7 +12,7 @@ import { generateBlockedUserQuery } from '../../common/generate-block-query';
 export const meta = {
 	tags: ['antennas', 'account', 'notes'],
 
-	requireCredential: true as const,
+	requireCredential: true,
 
 	kind: 'read:account',
 
@@ -23,7 +23,7 @@ export const meta = {
 
 		limit: {
 			validator: $.optional.num.range(1, 100),
-			default: 10
+			default: 10,
 		},
 
 		sinceId: {
@@ -47,25 +47,26 @@ export const meta = {
 		noSuchAntenna: {
 			message: 'No such antenna.',
 			code: 'NO_SUCH_ANTENNA',
-			id: '850926e0-fd3b-49b6-b69a-b28a5dbd82fe'
-		}
+			id: '850926e0-fd3b-49b6-b69a-b28a5dbd82fe',
+		},
 	},
 
 	res: {
-		type: 'array' as const,
-		optional: false as const, nullable: false as const,
+		type: 'array',
+		optional: false, nullable: false,
 		items: {
-			type: 'object' as const,
-			optional: false as const, nullable: false as const,
-			ref: 'Note'
-		}
-	}
-};
+			type: 'object',
+			optional: false, nullable: false,
+			ref: 'Note',
+		},
+	},
+} as const;
 
+// eslint-disable-next-line import/no-default-export
 export default define(meta, async (ps, user) => {
 	const antenna = await Antennas.findOne({
 		id: ps.antennaId,
-		userId: user.id
+		userId: user.id,
 	});
 
 	if (antenna == null) {

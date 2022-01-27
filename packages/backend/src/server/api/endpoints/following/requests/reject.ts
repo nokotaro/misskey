@@ -8,25 +8,26 @@ import { getUser } from '../../../common/getters';
 export const meta = {
 	tags: ['following', 'account'],
 
-	requireCredential: true as const,
+	requireCredential: true,
 
 	kind: 'write:following',
 
 	params: {
 		userId: {
 			validator: $.type(ID),
-		}
+		},
 	},
 
 	errors: {
 		noSuchUser: {
 			message: 'No such user.',
 			code: 'NO_SUCH_USER',
-			id: 'abc2ffa6-25b2-4380-ba99-321ff3a94555'
+			id: 'abc2ffa6-25b2-4380-ba99-321ff3a94555',
 		},
-	}
-};
+	},
+} as const;
 
+// eslint-disable-next-line import/no-default-export
 export default define(meta, async (ps, user) => {
 	// Fetch follower
 	const follower = await getUser(ps.userId).catch(e => {

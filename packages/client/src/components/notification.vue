@@ -19,10 +19,6 @@
 				:reaction="notification.reaction ? notification.reaction.replace(/^:(\w+):$/, ':$1@.:') : notification.reaction"
 				:custom-emojis="notification.note.emojis"
 				:no-style="true"
-				@touchstart.passive="onReactionMouseover"
-				@mouseover="onReactionMouseover"
-				@mouseleave="onReactionMouseleave"
-				@touchend="onReactionMouseleave"
 			/>
 		</div>
 	</div>
@@ -78,6 +74,7 @@ import { notePage } from '@/filters/note';
 import { userPage } from '@/filters/user';
 import { i18n } from '@/i18n';
 import * as os from '@/os';
+import { stream } from '@/stream';
 import { useTooltip } from '@/scripts/use-tooltip';
 
 export default defineComponent({
@@ -110,7 +107,7 @@ export default defineComponent({
 			if (!props.notification.isRead) {
 				const readObserver = new IntersectionObserver((entries, observer) => {
 					if (!entries.some(entry => entry.isIntersecting)) return;
-					os.stream.send('readNotification', {
+					stream.send('readNotification', {
 						id: props.notification.id
 					});
 					observer.disconnect();
@@ -118,7 +115,7 @@ export default defineComponent({
 
 				readObserver.observe(elRef.value);
 
-				const connection = os.stream.useChannel('main');
+				const connection = stream.useChannel('main');
 				connection.on('readAllNotifications', () => readObserver.disconnect());
 
 				onUnmounted(() => {
@@ -151,7 +148,7 @@ export default defineComponent({
 			os.api('users/groups/invitations/reject', { invitationId: props.notification.invitation.id });
 		};
 
-		const { onMouseover: onReactionMouseover, onMouseleave: onReactionMouseleave } = useTooltip((showing) => {
+		useTooltip(reactionRef, (showing) => {
 			os.popup(XReactionTooltip, {
 				showing,
 				reaction: props.notification.reaction ? props.notification.reaction.replace(/^:(\w+):$/, ':$1@.:') : props.notification.reaction,
@@ -170,8 +167,6 @@ export default defineComponent({
 			rejectFollowRequest,
 			acceptGroupInvitation,
 			rejectGroupInvitation,
-			onReactionMouseover,
-			onReactionMouseleave,
 			elRef,
 			reactionRef,
 		};

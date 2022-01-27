@@ -1,6 +1,6 @@
 <template>
 <div class="_formRoot">
-	<div v-panel class="rfqxtzch _formBlock">
+	<div v-adaptive-border class="rfqxtzch _panel _formBlock">
 		<div class="toggle">
 			<div class="toggleWrapper">
 				<input id="dn" v-model="darkMode" type="checkbox" class="dn"/>
@@ -163,10 +163,6 @@ export default defineComponent({
 			location.reload();
 		});
 
-		onMounted(() => {
-			emit('info', INFO);
-		});
-
 		onActivated(() => {
 			fetchThemes().then(() => {
 				installedThemes.value = getThemes();
@@ -188,7 +184,7 @@ export default defineComponent({
 			themesCount,
 			wallpaper,
 			setWallpaper(e) {
-				selectFile(e.currentTarget || e.target, null, false).then(file => {
+				selectFile(e.currentTarget || e.target, null).then(file => {
 					wallpaper.value = file.url;
 				});
 			},

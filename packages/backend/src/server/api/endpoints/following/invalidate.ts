@@ -12,46 +12,47 @@ export const meta = {
 
 	limit: {
 		duration: ms('1hour'),
-		max: 100
+		max: 100,
 	},
 
-	requireCredential: true as const,
+	requireCredential: true,
 
 	kind: 'write:following',
 
 	params: {
 		userId: {
 			validator: $.type(ID),
-		}
+		},
 	},
 
 	errors: {
 		noSuchUser: {
 			message: 'No such user.',
 			code: 'NO_SUCH_USER',
-			id: '5b12c78d-2b28-4dca-99d2-f56139b42ff8'
+			id: '5b12c78d-2b28-4dca-99d2-f56139b42ff8',
 		},
 
 		followerIsYourself: {
 			message: 'Follower is yourself.',
 			code: 'FOLLOWER_IS_YOURSELF',
-			id: '07dc03b9-03da-422d-885b-438313707662'
+			id: '07dc03b9-03da-422d-885b-438313707662',
 		},
 
 		notFollowing: {
 			message: 'The other use is not following you.',
 			code: 'NOT_FOLLOWING',
-			id: '5dbf82f5-c92b-40b1-87d1-6c8c0741fd09'
+			id: '5dbf82f5-c92b-40b1-87d1-6c8c0741fd09',
 		},
 	},
 
 	res: {
-		type: 'object' as const,
-		optional: false as const, nullable: false as const,
-		ref: 'User'
-	}
-};
+		type: 'object',
+		optional: false, nullable: false,
+		ref: 'UserLite',
+	},
+} as const;
 
+// eslint-disable-next-line import/no-default-export
 export default define(meta, async (ps, user) => {
 	const followee = user;
 
@@ -69,7 +70,7 @@ export default define(meta, async (ps, user) => {
 	// Check not following
 	const exist = await Followings.findOne({
 		followerId: follower.id,
-		followeeId: followee.id
+		followeeId: followee.id,
 	});
 
 	if (exist == null) {
