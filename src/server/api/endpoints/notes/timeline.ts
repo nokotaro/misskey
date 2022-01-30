@@ -2,7 +2,6 @@ import $ from 'cafy';
 import ID, { transform } from '../../../../misc/cafy-id';
 import { getFriendIds } from '../../common/get-friends';
 import define from '../../define';
-import activeUsersChart from '../../../../services/chart/active-users';
 import { getHideUserIds } from '../../common/get-hide-users';
 import UserList from '../../../../models/user-list';
 import { concat } from '../../../../prelude/array';
@@ -10,6 +9,7 @@ import { isSelfHost } from '../../../../misc/convert-host';
 import { getHideRenoteUserIds } from '../../common/get-hide-renote-users';
 import { oidIncludes } from '../../../../prelude/oid';
 import { getPackedTimeline } from '../../common/get-timeline';
+import config from '../../../../config';
 
 export const meta = {
 	desc: {
@@ -92,6 +92,14 @@ export const meta = {
 			}
 		},
 
+		excludeRenote: {
+			validator: $.optional.bool,
+			default: false,
+			desc: {
+				'ja-JP': 'Renoteを含めない'
+			}
+		},
+
 		withFiles: {
 			validator: $.optional.bool,
 			desc: {
@@ -143,7 +151,7 @@ export default define(meta, async (ps, user) => {
 	const [followingIds, hideUserIds, hideFromHomeLists, hideRenoteUserIds] = await Promise.all([
 		// フォローを取得
 		// Fetch following
-		getFriendIds(user._id),
+		getFriendIds(user._id, true, config.homeTlActiveLimitDays || -1),
 
 		// 隠すユーザーを取得
 		getHideUserIds(user, false),
@@ -232,11 +240,9 @@ export default define(meta, async (ps, user) => {
 		});
 	}
 
-	if (hideRenoteUserIds.length > 0) {
+	if (ps.excludeRenote) {
 		query.$and.push({
 			$or: [{
-				userId: { $nin: hideRenoteUserIds }
-			}, {
 				renoteId: null
 			}, {
 				text: { $ne: null }
@@ -246,54 +252,70 @@ export default define(meta, async (ps, user) => {
 				poll: { $ne: null }
 			}]
 		});
-	}
+	} else {
+		if (hideRenoteUserIds.length > 0) {
+			query.$and.push({
+				$or: [{
+					userId: { $nin: hideRenoteUserIds }
+				}, {
+					renoteId: null
+				}, {
+					text: { $ne: null }
+				}, {
+					fileIds: { $ne: [] }
+				}, {
+					poll: { $ne: null }
+				}]
+			});
+		}
 
-	if (ps.includeMyRenotes === false) {
-		query.$and.push({
-			$or: [{
-				userId: { $ne: user._id }
-			}, {
-				renoteId: null
-			}, {
-				text: { $ne: null }
-			}, {
-				fileIds: { $ne: [] }
-			}, {
-				poll: { $ne: null }
-			}]
-		});
-	}
+		if (ps.includeMyRenotes === false) {
+			query.$and.push({
+				$or: [{
+					userId: { $ne: user._id }
+				}, {
+					renoteId: null
+				}, {
+					text: { $ne: null }
+				}, {
+					fileIds: { $ne: [] }
+				}, {
+					poll: { $ne: null }
+				}]
+			});
+		}
 
-	if (ps.includeRenotedMyNotes === false) {
-		query.$and.push({
-			$or: [{
-				'_renote.userId': { $ne: user._id }
-			}, {
-				renoteId: null
-			}, {
-				text: { $ne: null }
-			}, {
-				fileIds: { $ne: [] }
-			}, {
-				poll: { $ne: null }
-			}]
-		});
-	}
+		if (ps.includeRenotedMyNotes === false) {
+			query.$and.push({
+				$or: [{
+					'_renote.userId': { $ne: user._id }
+				}, {
+					renoteId: null
+				}, {
+					text: { $ne: null }
+				}, {
+					fileIds: { $ne: [] }
+				}, {
+					poll: { $ne: null }
+				}]
+			});
+		}
 
-	if (ps.includeLocalRenotes === false) {
-		query.$and.push({
-			$or: [{
-				'_renote.user.host': { $ne: null }
-			}, {
-				renoteId: null
-			}, {
-				text: { $ne: null }
-			}, {
-				fileIds: { $ne: [] }
-			}, {
-				poll: { $ne: null }
-			}]
-		});
+		if (ps.includeLocalRenotes === false) {
+			query.$and.push({
+				$or: [{
+					'_renote.user.host': { $ne: null }
+				}, {
+					renoteId: null
+				}, {
+					text: { $ne: null }
+				}, {
+					fileIds: { $ne: [] }
+				}, {
+					poll: { $ne: null }
+				}]
+			});
+		}
 	}
 
 	const withFiles = ps.withFiles != null ? ps.withFiles : ps.mediaOnly;
@@ -343,7 +365,6 @@ export default define(meta, async (ps, user) => {
 		};
 	}
 	//#endregion
-	activeUsersChart.update(user);
 
 	return await getPackedTimeline(user, query, sort, ps.limit!);
 });

@@ -59,6 +59,10 @@ export type ThinPackedUser = {
 	isBot: boolean;
 	isCat: boolean;
 	instance: any;	// TODO
+	avoidSearchIndex?: boolean;
+	tags: string[];
+	url?: string | null;
+	uri?: string | null;
 	emojis: {
 		name: string;
 		url: string;
@@ -79,7 +83,6 @@ export type PackedUser = ThinPackedUser & {
 		birthday?: string | null;
 		location?: string | null;
 	};
-	tags?: string[];
 	fields?: {
 		name: string;
 		value: string;
@@ -110,10 +113,6 @@ export type PackedUser = ThinPackedUser & {
 		discriminator: string;
 	};
 
-	// remote
-	url?: string | null;
-	uri?: string | null;
-
 	// my
 	avatarId?: string | null;
 	bannerId?: string | null;
@@ -123,7 +122,6 @@ export type PackedUser = ThinPackedUser & {
 	carefulMassive?: boolean;
 	refuseFollow?: boolean;
 	autoAcceptFollowed?: boolean;
-	avoidSearchIndex?: boolean;
 	isExplorable?: boolean;
 	hideFollows?: string;
 	wallpaperId?: string | null;
@@ -197,3 +195,16 @@ export type V10Followers = {
 	next: string
 }
 //#endregion
+
+export type PackedNotification = {
+	id: string;
+	createdAt: string;
+	isRead: boolean;
+	type: 'follow' | 'mention' | 'reply' | 'renote' | 'quote' | 'reaction' | 'poll_vote' | 'poll_finished' | 'receiveFollowRequest' | 'highlight' | 'unreadMessagingMessage';
+	user: ThinPackedUser;
+	userId: string;
+	note?: PackedNote | null;
+	message?: any | null;
+	reaction?: string | null;
+	choice?: number | null;
+};

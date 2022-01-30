@@ -6,7 +6,7 @@ import * as mongo from 'mongodb';
 import { queueLogger } from '../../logger';
 import { addFile } from '../../../services/drive/add-file';
 import User from '../../../models/user';
-import dateFormat = require('dateformat');
+import { format } from 'date-fns';
 import Blocking from '../../../models/blocking';
 import { getFullApAccount } from '../../../misc/convert-host';
 import { DbUserJobData } from '../../types';
@@ -84,8 +84,8 @@ export async function exportBlocking(job: Bull.Job<DbUserJobData>): Promise<stri
 	stream.end();
 	logger.succ(`Exported to: ${path}`);
 
-	const fileName = 'blocking-' + dateFormat(new Date(), 'yyyy-mm-dd-HH-MM-ss') + '.csv';
-	const driveFile = await addFile(user, path, fileName, undefined, undefined, true);
+	const fileName = 'blocking-' + format(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.csv';
+	const driveFile = await addFile({ user, path, name: fileName, force: true });
 
 	cleanup();
 	return `ok: Exported to: ${driveFile._id}`;
