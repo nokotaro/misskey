@@ -6,7 +6,7 @@ import * as mongo from 'mongodb';
 import { queueLogger } from '../../logger';
 import { addFile } from '../../../services/drive/add-file';
 import User from '../../../models/user';
-import dateFormat = require('dateformat');
+import { format } from 'date-fns';
 import UserList from '../../../models/user-list';
 import { getFullApAccount } from '../../../misc/convert-host';
 import { DbUserJobData } from '../../types';
@@ -69,8 +69,8 @@ export async function exportUserLists(job: Bull.Job<DbUserJobData>): Promise<str
 	stream.end();
 	logger.succ(`Exported to: ${path}`);
 
-	const fileName = 'user-lists-' + dateFormat(new Date(), 'yyyy-mm-dd-HH-MM-ss') + '.csv';
-	const driveFile = await addFile(user, path, fileName, undefined, undefined, true);
+	const fileName = 'user-lists-' + format(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.csv';
+	const driveFile = await addFile({ user, path, name: fileName, force: true });
 
 	cleanup();
 	return `Exported to: ${driveFile._id}`;

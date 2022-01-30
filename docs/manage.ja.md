@@ -45,3 +45,17 @@ node built/tools/clean-old-renotes.js 30
 ```sh
 node built/tools/clean-unused-files.js
 ```
+
+## statsを再集計する
+
+```sh
+node built/tools/recount-stats.js
+```
+
+## リモートカスタム絵文字を再同期
+
+リモートカスタム絵文字のURLの更新と再保存を行います
+
+```sh
+node built/tools/resync-remote-emoji.js name@host
+```

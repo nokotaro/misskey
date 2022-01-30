@@ -49,7 +49,7 @@ type IUserBase = {
 	lastActivityAt?: Date;
 	followersCount: number;
 	followingCount: number;
-	name?: string;
+	name?: string | null;
 	notesCount: number;
 	username: string;
 	usernameLower: string;
@@ -62,13 +62,13 @@ type IUserBase = {
 	wallpaperId: mongo.ObjectID;
 	wallpaperUrl?: string;
 	data: any;
-	description: string;
+	description?: string | null;
 	pinnedNoteIds: mongo.ObjectID[];
 	emojis?: string[];
 	tags?: string[];
 	profile?: {
-		location?: string;
-		birthday?: string; // 'YYYY-MM-DD'
+		location?: string | null;
+		birthday?: string | null; // 'YYYY-MM-DD'
 		tags?: string[];
 	};
 
@@ -157,6 +157,7 @@ type IUserBase = {
 
 export interface ILocalUser extends IUserBase {
 	host: null;
+	/** privateKeyPem */
 	keypair: string;
 	email: string;
 	emailVerified?: boolean;
@@ -257,7 +258,7 @@ export function isValidLocation(location: string): boolean {
 
 export function isValidBirthday(birthday: string): boolean {
 	// eslint-disable-next-line no-useless-escape
-	return typeof birthday == 'string' && /^([0-9]{4})\-([0-9]{2})-([0-9]{2})$/.test(birthday);
+	return typeof birthday == 'string' && /^([0-9]{4,8})\-([0-9]{2})-([0-9]{2})$/.test(birthday);
 }
 //#endregion
 
@@ -447,6 +448,12 @@ export async function pack(
 			return [];
 		}): [],
 
+		avoidSearchIndex: !!db.avoidSearchIndex,
+		tags: db.tags || [],
+
+		url: isRemoteUser(db) ? db.url || null : null,
+		uri: isRemoteUser(db) ? db.uri || null : null,
+
 		...(opts.detail ? {
 			createdAt: toISODateOrNull(db.createdAt),
 			updatedAt: toISODateOrNull(db.updatedAt),
@@ -464,7 +471,6 @@ export async function pack(
 				birthday: db.profile?.birthday || null,
 				location: db.profile?.location || null,
 			},
-			tags: db.tags || [],
 			fields: db.fields || [],
 			followersCount: db.followersCount,
 			followingCount: db.followingCount,
@@ -496,12 +502,6 @@ export async function pack(
 					discriminator: db.discord?.discriminator,
 				} : undefined,
 			}: {}),
-
-			...(isRemoteUser(db) ? {
-				url: db.url || null,
-				uri: db.uri || null,
-			}: {}),
-
 		} : {}),
 
 		// detail && 自分を見てる
@@ -514,7 +514,6 @@ export async function pack(
 			carefulMassive: !!db.carefulMassive,
 			refuseFollow: !!db.refuseFollow,
 			autoAcceptFollowed: !!db.autoAcceptFollowed,
-			avoidSearchIndex: !!db.avoidSearchIndex,
 			isExplorable: !!db.isExplorable,
 			hideFollows: db.hideFollows || '',
 

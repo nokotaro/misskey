@@ -5,13 +5,14 @@ import Resolver from '../resolver';
 import fetchMeta from '../../../misc/fetch-meta';
 import { apLogger } from '../logger';
 import { IObject, isDocument } from '../type';
+import { StatusError } from '../../../misc/fetch';
 
 const logger = apLogger;
 
 /**
  * Imageを作成します。
  */
-export async function createImage(actor: IRemoteUser, value: IObject): Promise<IDriveFile> {
+export async function createImage(actor: IRemoteUser, value: IObject): Promise<IDriveFile | null | undefined> {
 	// 投稿者が凍結か削除されていたらスキップ
 	if (actor.isSuspended || actor.isDeleted) {
 		return null;
@@ -21,7 +22,7 @@ export async function createImage(actor: IRemoteUser, value: IObject): Promise<I
 
 	if (!isDocument(image)) return null;
 
-	if (image.url == null) {
+	if (typeof image.url !== 'string') {
 		throw new Error('invalid image: url not privided');
 	}
 
@@ -32,24 +33,18 @@ export async function createImage(actor: IRemoteUser, value: IObject): Promise<I
 
 	let file;
 	try {
-		file = await uploadFromUrl(image.url, actor, null, image.url, !!image.sensitive, false, !cache);
+		file = await uploadFromUrl({ url: image.url, user: actor, uri: image.url, sensitive: !!image.sensitive, isLink: !cache });
 	} catch (e) {
 		// 4xxの場合は添付されてなかったことにする
-		if (e >= 400 && e < 500) {
-			logger.warn(`Ignored image: ${image.url} - ${e}`);
-			return null;
-		}
-
-		// misc
-		if (e.code === 'HPE_HEADER_OVERFLOW') {
-			logger.warn(`Ignored image: ${image.url} - ${e.code}`);
+		if (e instanceof StatusError && e.isClientError) {
+			logger.warn(`Ignored image: ${image.url} - ${e.statusCode}`);
 			return null;
 		}
 
 		throw e;
 	}
 
-	if (file.metadata.isRemote) {
+	if (file.metadata?.isRemote) {
 		// URLが異なっている場合、同じ画像が以前に異なるURLで登録されていたということなので、
 		// URLを更新する
 		if (file.metadata.url !== image.url) {

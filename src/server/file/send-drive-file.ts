@@ -12,9 +12,10 @@ import { serverLogger } from '..';
 import { convertToJpeg, convertToPngOrJpeg } from '../../services/drive/image-processor';
 import { generateVideoThumbnail } from '../../services/drive/generate-video-thumbnail';
 import { contentDisposition } from '../../misc/content-disposition';
-import { detectType } from '../../misc/get-file-info';
+import { detectTypeWithCheck, FILE_TYPE_BROWSERSAFE } from '../../misc/get-file-info';
 import { downloadUrl } from '../../misc/download-url';
 import { InternalStorage } from '../../services/drive/internal-storage';
+import { StatusError } from '../../misc/fetch';
 
 const commonReadableHandlerGenerator = (ctx: Router.RouterContext) => (e: Error): void => {
 	serverLogger.error(e);
@@ -57,13 +58,13 @@ export default async function(ctx: Router.RouterContext) {
 		try {
 			await downloadUrl(url, path);
 
-			const { mime, ext } = await detectType(path);
+			const { mime, ext } = await detectTypeWithCheck(path);
 
 			const convertFile = async () => {
 				if ('thumbnail' in ctx.query) {
 					if (['image/jpg', 'image/webp'].includes(mime)) {
 						return await convertToJpeg(path, 530, 255);
-					} else if (['image/png'].includes(mime)) {
+					} else if (['image/png', 'image/svg+xml'].includes(mime)) {
 						return await convertToPngOrJpeg(path, 530, 255);
 					} else if (mime.startsWith('video/')) {
 						return await generateVideoThumbnail(path);
@@ -81,7 +82,7 @@ export default async function(ctx: Router.RouterContext) {
 			return await sendNormal(ctx, file.data, file.type);
 		} catch (e) {
 			serverLogger.error(e);
-			return await sendError(ctx, typeof e === 'number' && e >= 400 && e < 500 ? e : 500);
+			return await sendError(ctx, (e instanceof StatusError && e.isClientError) ? e.statusCode : 500);
 		} finally {
 			cleanup();
 		}
@@ -107,7 +108,7 @@ export default async function(ctx: Router.RouterContext) {
 			const key = isThumbnail ? (file.metadata.storageProps?.thumbnailKey || file.metadata.storageProps?.key) : (file.metadata.storageProps?.webpublicKey || file.metadata.storageProps?.key);
 			if (!key) throw 'fs but key not found';
 
-			const { mime, ext } = await detectType(InternalStorage.resolvePath(key));
+			const { mime, ext } = await detectTypeWithCheck(InternalStorage.resolvePath(key));
 			const filename = rename(file.filename, {
 				suffix: isThumbnail ? '-thumb' : '-web',
 				extname: ext ? `.${ext}` : undefined
@@ -175,7 +176,7 @@ async function sendRaw(ctx: Router.RouterContext, file: IDriveFile): Promise<voi
 
 async function sendNormal(ctx: Router.RouterContext, body: Buffer | stream.Stream, contentType: string, filename?: string): Promise<void> {
 	ctx.body = body;
-	ctx.set('Content-Type', contentType);
+	ctx.set('Content-Type', FILE_TYPE_BROWSERSAFE.includes(contentType) ? contentType : 'application/octet-stream');
 	ctx.set('Cache-Control', 'max-age=2592000, s-maxage=172800, immutable');
 	if (filename) ctx.set('Content-Disposition', contentDisposition('inline', filename));
 }

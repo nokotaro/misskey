@@ -4,13 +4,12 @@ const defaultMeta: any = {
 	name: 'Misskey',
 	maintainer: {},
 	langs: [],
-	cacheRemoteFiles: true,
+	cacheRemoteFiles: false,
 	localDriveCapacityMb: 256,
 	remoteDriveCapacityMb: 8,
 	hidedTags: [],
 	stats: {
-		originalNotesCount: 0,
-		originalUsersCount: 0
+		// Object.assignじゃマージされない
 	},
 	maxNoteTextLength: 1000,
 	enableEmojiReaction: true,

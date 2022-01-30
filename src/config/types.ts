@@ -6,6 +6,7 @@ export type Source = {
 	feedback_url?: string;
 	url: string;
 	port: number;
+	addr?: string;
 	https?: { [x: string]: string };
 	disableHsts?: boolean;
 	mongodb: {
@@ -22,11 +23,6 @@ export type Source = {
 		db?: number;
 		prefix?: string;
 	};
-	elasticsearch: {
-		host: string;
-		port: number;
-		pass: string;
-	};
 	drive?: DriveConfig;
 	remoteDrive?: DriveConfig;
 	proxyRemoteFiles?: boolean;
@@ -38,12 +34,16 @@ export type Source = {
 	disableUrlPreview?: boolean;
 	disablePosts?: boolean;
 
+	enableInstanceGeoIp?: boolean;
+
 	signToActivityPubGet?: boolean;
 
 	proxy?: string;
 	proxySmtp?: string;
 
 	proxyProxy?: string;
+
+	allowedPrivateNetworks?: string[];
 
 	maxFileSize?: number;
 
@@ -71,12 +71,14 @@ export type Source = {
 		mecabBin?: string;
 		mecabDic?: string;
 		mecabServer?: string;
+		mecabNeologd?: boolean;
 	};
 
 	icons?: Icons
 	themeColor?: string;
 
 	hideServerInfo?: boolean;
+	minimumAge?: number;
 };
 
 export type DriveConfig = {
@@ -91,6 +93,7 @@ export type DriveConfig = {
 		accessKey: string;
 		secretKey: string;
 		region?: string;
+		useProxy? :boolean;
 		setPublicRead?: boolean;
 		s3ForcePathStyle?: boolean;
 	};
