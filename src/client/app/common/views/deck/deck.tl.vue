@@ -51,6 +51,11 @@ export default Vue.extend({
 			required: false,
 			default: false
 		},
+		enableSound: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
 	},
 
 	data() {
@@ -65,10 +70,10 @@ export default Vue.extend({
 	computed: {
 		stream(): any {
 			switch (this.src) {
-				case 'home': return this.$root.stream.connectToChannel('homeTimeline', { excludeForeignReply: this.$store.state.settings.excludeForeignReply });
+				case 'home': return this.$root.stream.connectToChannel('homeTimeline', { includeForeignReply: this.$store.state.settings.includeForeignReply });
 				case 'local': return this.$root.stream.useSharedConnection('localTimeline');
 				case 'locao': return this.$root.stream.useSharedConnection('locaoTimeline');
-				case 'hybrid': return this.$root.stream.connectToChannel('hybridTimeline', { excludeForeignReply: this.$store.state.settings.excludeForeignReply });
+				case 'hybrid': return this.$root.stream.connectToChannel('hybridTimeline', { includeForeignReply: this.$store.state.settings.includeForeignReply });
 				case 'hot': return this.$root.stream.useSharedConnection('hotTimeline');
 				case 'global': return this.$root.stream.useSharedConnection('globalTimeline');
 			}
@@ -113,7 +118,7 @@ export default Vue.extend({
 			includeMyRenotes: this.$store.state.settings.showMyRenotes,
 			includeRenotedMyNotes: this.$store.state.settings.showRenotedMyNotes,
 			includeLocalRenotes: this.$store.state.settings.showLocalRenotes,
-			excludeForeignReply: this.$store.state.settings.excludeForeignReply,
+			includeForeignReply: this.$store.state.settings.includeForeignReply,
 		}).then(notes => {
 			if (notes.length == fetchLimit + 1) {
 				notes.pop();
@@ -160,7 +165,7 @@ export default Vue.extend({
 			(this.$refs.timeline as any).prepend(note);
 
 			// サウンドを再生する
-			if (this.$store.state.device.enableSounds && this.$store.state.device.enableSoundsInTimeline) {
+			if (this.enableSound) {
 				const sound = new Audio(`${config.url}/assets/post.mp3`);
 				sound.volume = this.$store.state.device.soundVolume;
 				sound.play();
