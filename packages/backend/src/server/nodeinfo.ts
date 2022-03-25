@@ -1,8 +1,10 @@
-import * as Router from '@koa/router';
-import config from '@/config/index';
-import { fetchMeta } from '@/misc/fetch-meta';
-import { Users, Notes } from '@/models/index';
-import { Not, IsNull, MoreThan } from 'typeorm';
+import Router from '@koa/router';
+import config from '@/config/index.js';
+import { fetchMeta } from '@/misc/fetch-meta.js';
+import { Users, Notes } from '@/models/index.js';
+import { MoreThan } from 'typeorm';
+import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
+import { Cache } from '@/misc/cache.js';
 
 const router = new Router();
 
@@ -25,14 +27,12 @@ const nodeinfo2 = async () => {
 		activeHalfyear,
 		activeMonth,
 		localPosts,
-		localComments,
 	] = await Promise.all([
 		fetchMeta(true),
 		Users.count({ where: { host: null } }),
-		Users.count({ where: { host: null, updatedAt: MoreThan(new Date(now - 15552000000)) } }),
-		Users.count({ where: { host: null, updatedAt: MoreThan(new Date(now - 2592000000)) } }),
-		Notes.count({ where: { userHost: null, replyId: null } }),
-		Notes.count({ where: { userHost: null, replyId: Not(IsNull()) } }),
+		Users.count({ where: { host: null, lastActiveDate: MoreThan(new Date(now - 15552000000)) } }),
+		Users.count({ where: { host: null, lastActiveDate: MoreThan(new Date(now - 2592000000)) } }),
+		Notes.count({ where: { userHost: null } }),
 	]);
 
 	const proxyAccount = meta.proxyAccountId ? await Users.pack(meta.proxyAccountId).catch(() => null) : null;
@@ -52,7 +52,7 @@ const nodeinfo2 = async () => {
 		usage: {
 			users: { total, activeHalfyear, activeMonth },
 			localPosts,
-			localComments,
+			localComments: 0,
 		},
 		metadata: {
 			nodeName: meta.name,
@@ -71,7 +71,7 @@ const nodeinfo2 = async () => {
 			emailRequiredForSignup: meta.emailRequiredForSignup,
 			enableHcaptcha: meta.enableHcaptcha,
 			enableRecaptcha: meta.enableRecaptcha,
-			maxNoteTextLength: meta.maxNoteTextLength,
+			maxNoteTextLength: MAX_NOTE_TEXT_LENGTH,
 			enableTwitterIntegration: meta.enableTwitterIntegration,
 			enableGithubIntegration: meta.enableGithubIntegration,
 			enableDiscordIntegration: meta.enableDiscordIntegration,
@@ -82,15 +82,17 @@ const nodeinfo2 = async () => {
 	};
 };
 
+const cache = new Cache<Awaited<ReturnType<typeof nodeinfo2>>>(1000 * 60 * 10);
+
 router.get(nodeinfo2_1path, async ctx => {
-	const base = await nodeinfo2();
+	const base = await cache.fetch(null, () => nodeinfo2());
 
 	ctx.body = { version: '2.1', ...base };
 	ctx.set('Cache-Control', 'public, max-age=600');
 });
 
 router.get(nodeinfo2_0path, async ctx => {
-	const base = await nodeinfo2();
+	const base = await cache.fetch(null, () => nodeinfo2());
 
 	delete base.software.repository;
 

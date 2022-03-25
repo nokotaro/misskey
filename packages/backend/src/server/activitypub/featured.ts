@@ -1,19 +1,20 @@
-import * as Router from '@koa/router';
-import config from '@/config/index';
-import { renderActivity } from '@/remote/activitypub/renderer/index';
-import renderOrderedCollection from '@/remote/activitypub/renderer/ordered-collection';
-import { setResponseType } from '../activitypub';
-import renderNote from '@/remote/activitypub/renderer/note';
-import { Users, Notes, UserNotePinings } from '@/models/index';
+import Router from '@koa/router';
+import config from '@/config/index.js';
+import { renderActivity } from '@/remote/activitypub/renderer/index.js';
+import renderOrderedCollection from '@/remote/activitypub/renderer/ordered-collection.js';
+import { setResponseType } from '../activitypub.js';
+import renderNote from '@/remote/activitypub/renderer/note.js';
+import { Users, Notes, UserNotePinings } from '@/models/index.js';
+import { userCache } from './cache.js';
 
 export default async (ctx: Router.RouterContext) => {
 	const userId = ctx.params.user;
 
-	// Verify user
-	const user = await Users.findOne({
+	// TODO: typeorm 3.0にしたら .then(x => x || null) は消せる
+	const user = await userCache.fetch(userId, () => Users.findOne({
 		id: userId,
 		host: null,
-	});
+	}).then(x => x || null));
 
 	if (user == null) {
 		ctx.status = 404;
