@@ -78,22 +78,6 @@ router.get('/apple-touch-icon.png', async ctx => {
 	});
 });
 
-router.get('/twemoji/*', async ctx => {
-	const path = ctx.path.replace('/twemoji/', '');
-
-	if (!path.match(/^[0-9a-f-]+\.svg$/)) {
-		ctx.status = 404;
-		return;
-	}
-
-	ctx.set('Content-Security-Policy', `default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; media-src 'self';`);
-
-	await send(ctx as any, path, {
-		root: `${__dirname}/../../../node_modules/@discordapp/twemoji/dist/svg/`,
-		maxage: ms('30 days'),
-	});
-});
-
 // ServiceWorker
 router.get(/^\/sw\.(.+?)\.js$/, async ctx => {
 	await send(ctx as any, `/assets/sw.${ctx.params[0]}.js`, {
@@ -275,7 +259,6 @@ router.get('/notes/:note', async (ctx, next) => {
 		imageUrl = _note.user?.avatarUrl;
 	}
 
-	const card = (video || audio) ? 'player' : 'summary';
 	const stream = video?.url || audio?.url;
 	const type = video?.type || audio?.type;
 	const player = (video || audio) ? `${config.url}/notes/${_note?.id}/embed` : null;
@@ -292,7 +275,6 @@ router.get('/notes/:note', async (ctx, next) => {
 		iconType: config.icons?.favicon?.type,
 		appleTouchIcon: config.icons?.appleTouchIcon?.url,
 		noindex: _note.user?.avoidSearchIndex,
-		card,
 		player, width, height, stream, type,
 	});
 
