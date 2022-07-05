@@ -39,14 +39,6 @@ html {
 		scrollbar-color: var(--scrollbarHandle) inherit;
 		scrollbar-width: thin;
 
-		&:hover {
-			scrollbar-color: var(--scrollbarHandleHover) inherit;
-		}
-
-		&:active {
-			scrollbar-color: var(--accent) inherit;
-		}
-
 		&::-webkit-scrollbar {
 			width: 6px;
 			height: 6px;
@@ -260,7 +252,7 @@ hr {
 ._panel {
 	background: var(--panel);
 	border-radius: var(--radius);
-	overflow: clip;
+	overflow: hidden; overflow: clip;
 }
 
 ._block {
@@ -336,12 +328,6 @@ hr {
 	&:active {
 		border-color: var(--accent);
 	}
-}
-
-._window {
-	background: var(--panel);
-	border-radius: var(--radius);
-	contain: content;
 }
 
 ._popup {
