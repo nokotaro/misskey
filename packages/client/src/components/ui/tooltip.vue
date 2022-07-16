@@ -1,7 +1,10 @@
 <template>
 <transition :name="$store.state.animation ? 'tooltip' : ''" appear @after-leave="emit('closed')">
 	<div v-show="showing" ref="el" class="buebdbiu _acrylic _shadow" :style="{ zIndex, maxWidth: maxWidth + 'px' }">
-		<slot>{{ text }}</slot>
+		<slot>
+			<Mfm v-if="asMfm" :text="text"/>
+			<span v-else>{{ text }}</span>
+		</slot>
 	</div>
 </transition>
 </template>
@@ -16,6 +19,7 @@ const props = withDefaults(defineProps<{
 	x?: number;
 	y?: number;
 	text?: string;
+	asMfm?: boolean;
 	maxWidth?: number;
 	direction?: 'top' | 'bottom' | 'right' | 'left';
 	innerMargin?: number;
@@ -63,7 +67,7 @@ const setPosition = () => {
 		}
 
 		return [left, top];
-	}
+	};
 
 	const calcPosWhenBottom = () => {
 		let left: number;
@@ -84,7 +88,7 @@ const setPosition = () => {
 		}
 
 		return [left, top];
-	}
+	};
 
 	const calcPosWhenLeft = () => {
 		let left: number;
@@ -105,14 +109,14 @@ const setPosition = () => {
 		}
 
 		return [left, top];
-	}
+	};
 
 	const calcPosWhenRight = () => {
 		let left: number;
 		let top: number;
 
 		if (props.targetElement) {
-			left = (rect.left + window.pageXOffset) + props.innerMargin;
+			left = (rect.left + props.targetElement.offsetWidth + window.pageXOffset) + props.innerMargin;
 			top = rect.top + window.pageYOffset + (props.targetElement.offsetHeight / 2);
 		} else {
 			left = props.x + props.innerMargin;
@@ -126,7 +130,7 @@ const setPosition = () => {
 		}
 
 		return [left, top];
-	}
+	};
 
 	const calc = (): {
 		left: number;
@@ -170,9 +174,7 @@ const setPosition = () => {
 				return { left, top, transformOrigin: 'left center' };
 			}
 		}
-
-		return null as never;
-	}
+	};
 
 	const { left, top, transformOrigin } = calc();
 	el.value.style.transformOrigin = transformOrigin;

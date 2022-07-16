@@ -1,5 +1,6 @@
 <template>
-<div ref="itemsEl" v-hotkey="keymap"
+<div
+	ref="itemsEl" v-hotkey="keymap"
 	class="rrevdjwt"
 	:class="{ center: align === 'center', asDrawer }"
 	:style="{ width: (width && !asDrawer) ? width + 'px' : '', maxHeight: maxHeight ? maxHeight + 'px' : '' }"
@@ -60,7 +61,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(e: 'close'): void;
+	(ev: 'close'): void;
 }>();
 
 let itemsEl = $ref<HTMLDivElement>();
@@ -135,7 +136,7 @@ function focusDown() {
 	> .item {
 		display: block;
 		position: relative;
-		padding: 8px 18px;
+		padding: 6px 16px;
 		width: 100%;
 		box-sizing: border-box;
 		white-space: nowrap;
@@ -160,6 +161,15 @@ function focusDown() {
 
 		> * {
 			position: relative;
+		}
+
+		&:not(:disabled):hover {
+			color: var(--accent);
+			text-decoration: none;
+
+			&:before {
+				background: var(--accentedBg);
+			}
 		}
 
 		&.danger {
@@ -188,15 +198,6 @@ function focusDown() {
 
 			&:before {
 				background: var(--accent);
-			}
-		}
-
-		&:not(:disabled):hover {
-			color: var(--accent);
-			text-decoration: none;
-
-			&:before {
-				background: var(--accentedBg);
 			}
 		}
 
