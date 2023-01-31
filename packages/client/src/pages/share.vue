@@ -1,25 +1,24 @@
 <template>
-<div class="">
-	<section class="_section">
-		<div class="_content">
-			<XPostForm
-				v-if="state === 'writing'"
-				fixed
-				:instant="true"
-				:initial-text="initialText"
-				:initial-visibility="visibility"
-				:initial-files="files"
-				:initial-local-only="localOnly"
-				:reply="reply"
-				:renote="renote"
-				:initial-visible-users="visibleUsers"
-				class="_panel"
-				@posted="state = 'posted'"
-			/>
-			<MkButton v-else-if="state === 'posted'" primary class="close" @click="close()">{{ i18n.ts.close }}</MkButton>
-		</div>
-	</section>
-</div>
+<MkStickyContainer>
+	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
+	<MkSpacer :content-max="800">
+		<XPostForm
+			v-if="state === 'writing'"
+			fixed
+			:instant="true"
+			:initial-text="initialText"
+			:initial-visibility="visibility"
+			:initial-files="files"
+			:initial-local-only="localOnly"
+			:reply="reply"
+			:renote="renote"
+			:initial-visible-users="visibleUsers"
+			class="_panel"
+			@posted="state = 'posted'"
+		/>
+		<MkButton v-else-if="state === 'posted'" primary class="close" @click="close()">{{ i18n.ts.close }}</MkButton>
+	</MkSpacer>
+</MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
@@ -29,8 +28,8 @@ import { } from 'vue';
 import { noteVisibilities } from 'misskey-js';
 import * as Acct from 'misskey-js/built/acct';
 import * as Misskey from 'misskey-js';
-import MkButton from '@/components/ui/button.vue';
-import XPostForm from '@/components/post-form.vue';
+import MkButton from '@/components/MkButton.vue';
+import XPostForm from '@/components/MkPostForm.vue';
 import * as os from '@/os';
 import { mainRouter } from '@/router';
 import { definePageMetadata } from '@/scripts/page-metadata';
