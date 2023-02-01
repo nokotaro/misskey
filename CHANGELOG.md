@@ -9,6 +9,96 @@
 You should also include the user name that made the change.
 -->
 
+## 13.2.6 (2023/02/01)
+### Changes
+- docker-compose.ymlをdocker-compose.yml.exampleにしました。docker-compose.ymlとしてコピーしてから使用してください。
+
+### Improvements
+- 絵文字ピッカーのパフォーマンスを改善
+- AiScriptを0.12.4に更新
+
+### Bugfixes
+- Server: リレーと通信できない問題を修正
+- Client: classicモード使用時にwindowサイズによってdefaultに変更された後に、windowサイズが元に戻ったらclassicに戻すように修正 #9669
+- Client: Chromeで検索ダイアログで変換確定するとそのまま検索されてしまう問題を修正
+
+## 13.2.4 (2023/01/27)
+### Improvements
+- リモートカスタム絵文字表示時のパフォーマンスを改善
+- Default to `animation: false` when prefers-reduced-motion is set
+- リアクション履歴が公開なら、ログインしていなくても表示できるように
+- tweak blur setting
+- tweak custom emoji cache
+
+### Bugfixes
+- fix aggregation of retention
+- ダッシュボードでオンラインユーザー数が表示されない問題を修正
+- フォロー申請・フォローのボタンが、通知から消えている問題を修正
+
+## 13.2.3 (2023/01/26)
+### Improvements
+- カスタム絵文字の更新をリアルタイムで反映するように
+
+### Bugfixes
+- turnstile-failed: missing-input-secret
+
+## 13.2.2 (2023/01/25)
+### Improvements
+- サーバーのパフォーマンスを改善
+
+### Bugfixes
+- サインイン時に誤ったレートリミットがかかることがある問題を修正
+- MFMのposition、rotate、scaleで小数が使えない問題を修正
+
+## 13.2.1 (2023/01/24)
+### Improvements
+- デザインの調整
+- サーバーのパフォーマンスを改善
+
+## 13.2.0 (2023/01/23)
+
+### Improvements
+- onlyServer / onlyQueue オプションを復活
+- 他人の実績閲覧時は獲得条件を表示しないように
+- アニメーション減らすオプション有効時はリアクションのアニメーションを無効に
+- カスタム絵文字一覧のパフォーマンスを改善
+
+### Bugfixes
+- Aiscript: button is not defined
+
+## 13.1.7 (2023/01/22)
+
+### Improvements
+- 新たな実績を追加
+- MFMにscaleタグを追加
+
+## 13.1.4 (2023/01/22)
+
+### Improvements
+- 新たな実績を追加
+
+### Bugfixes
+- Client: ローカリゼーション更新時にリロードが繰り返されることがあるのを修正
+
+## 13.1.3 (2023/01/22)
+
+### Bugfixes
+- Client: リアクションのカスタム絵文字の表示の問題を修正
+
+## 13.1.2 (2023/01/22)
+
+### Bugfixes
+- Client: リアクションのカスタム絵文字の表示の問題を修正
+
+## 13.1.1 (2023/01/22)
+
+### Improvements
+- ローカルのカスタム絵文字を表示する際のパフォーマンスを改善
+- Client: 瞬間的に大量の実績を解除した際の挙動を改善
+
+### Bugfixes
+- Client: アップデート時にローカリゼーションデータが更新されないことがあるのを修正
+
 ## 13.1.0 (2023/01/21)
 
 ### Improvements
@@ -46,6 +136,7 @@ You should also include the user name that made the change.
 - Node.js 18.x or later is required
 - PostgreSQL 15.x is required
 	- Misskey not using 15 specific features at 13.0.0, but may do so in the future.
+	- Docker環境でPostgreSQLのアップデートを行う際のガイドはこちら: https://github.com/misskey-dev/misskey/pull/9641#issue-1536336620
 - Elasticsearchのサポートが削除されました
 	- 代わりに今後任意の検索プロバイダを設定できる仕組みを構想しています。その仕組みを使えば今まで通りElasticsearchも利用できます
 - Yarnからpnpmに移行されました
