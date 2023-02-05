@@ -45,7 +45,6 @@ RUN apt-get update \
 USER misskey
 WORKDIR /misskey
 
-COPY --from=builder /usr/bin/yq /usr/bin/yq
 COPY --chown=misskey:misskey --from=builder /misskey/node_modules ./node_modules
 COPY --chown=misskey:misskey --from=builder /misskey/built ./built
 COPY --chown=misskey:misskey --from=builder /misskey/packages/backend/node_modules ./packages/backend/node_modules
