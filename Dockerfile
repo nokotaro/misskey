@@ -12,15 +12,15 @@ RUN corepack enable
 
 WORKDIR /misskey
 
-COPY --link ["pnpm-lock.yaml", "pnpm-workspace.yaml", "package.json", "./"]
-COPY --link ["scripts", "./scripts"]
-COPY --link ["packages/backend/package.json", "./packages/backend/"]
-COPY --link ["packages/frontend/package.json", "./packages/frontend/"]
-COPY --link ["packages/sw/package.json", "./packages/sw/"]
+COPY ["pnpm-lock.yaml", "pnpm-workspace.yaml", "package.json", "./"]
+COPY ["scripts", "./scripts"]
+COPY ["packages/backend/package.json", "./packages/backend/"]
+COPY ["packages/frontend/package.json", "./packages/frontend/"]
+COPY ["packages/sw/package.json", "./packages/sw/"]
 
 RUN pnpm i --frozen-lockfile
 
-COPY --link . ./
+COPY . ./
 
 ARG NODE_ENV=production
 
