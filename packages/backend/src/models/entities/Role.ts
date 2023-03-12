@@ -1,4 +1,4 @@
-import { Entity, Index, JoinColumn, Column, PrimaryColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 import { id } from '../id.js';
 
 type CondFormulaValueAnd = {
@@ -143,6 +143,12 @@ export class Role {
 		default: false,
 	})
 	public canEditMembersByModerator: boolean;
+
+	// UIに表示する際の並び順用(大きいほど先頭)
+	@Column('integer', {
+		default: 0,
+	})
+	public displayOrder: number;
 
 	@Column('jsonb', {
 		default: { },
