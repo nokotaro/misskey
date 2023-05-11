@@ -1,4 +1,6 @@
-ARG NODE_VERSION=18.13.0-bullseye
+# syntax = docker/dockerfile:1.4
+
+ARG NODE_VERSION=18.16.0-bullseye
 
 FROM node:${NODE_VERSION} AS builder
 
