@@ -57,6 +57,7 @@ import { User } from '@/models/entities/User.js';
 import { UserIp } from '@/models/entities/UserIp.js';
 import { UserKeypair } from '@/models/entities/UserKeypair.js';
 import { UserList } from '@/models/entities/UserList.js';
+import { UserListFavorite } from '@/models/entities/UserListFavorite.js';
 import { UserListJoining } from '@/models/entities/UserListJoining.js';
 import { UserNotePining } from '@/models/entities/UserNotePining.js';
 import { UserPending } from '@/models/entities/UserPending.js';
@@ -70,6 +71,7 @@ import { Role } from '@/models/entities/Role.js';
 import { RoleAssignment } from '@/models/entities/RoleAssignment.js';
 import { Flash } from '@/models/entities/Flash.js';
 import { FlashLike } from '@/models/entities/FlashLike.js';
+import { UserMemo } from '@/models/entities/UserMemo.js';
 
 import { Config } from '@/config.js';
 import MisskeyLogger from '@/logger.js';
@@ -131,6 +133,7 @@ export const entities = [
 	UserKeypair,
 	UserPublickey,
 	UserList,
+	UserListFavorite,
 	UserListJoining,
 	UserNotePining,
 	UserSecurityKey,
@@ -183,6 +186,7 @@ export const entities = [
 	RoleAssignment,
 	Flash,
 	FlashLike,
+	UserMemo,
 	...charts,
 ];
 

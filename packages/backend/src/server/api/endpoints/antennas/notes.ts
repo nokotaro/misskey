@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import Redis from 'ioredis';
+import * as Redis from 'ioredis';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { NotesRepository, AntennasRepository } from '@/models/index.js';
 import { QueryService } from '@/core/QueryService.js';
@@ -113,6 +113,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			}
 
 			this.antennasRepository.update(antenna.id, {
+				isActive: true,
 				lastUsedAt: new Date(),
 			});
 

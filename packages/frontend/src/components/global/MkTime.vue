@@ -8,6 +8,7 @@
 </template>
 
 <script lang="ts" setup>
+import isChromatic from 'chromatic/isChromatic';
 import { onUnmounted } from 'vue';
 import { i18n } from '@/i18n';
 import { dateTimeFormat } from '@/scripts/intl-const';
@@ -17,7 +18,7 @@ const props = withDefaults(defineProps<{
 	origin?: Date | null;
 	mode?: 'relative' | 'absolute' | 'detail';
 }>(), {
-	origin: null,
+	origin: isChromatic() ? new Date('2023-04-01T00:00:00Z') : null,
 	mode: 'relative',
 });
 
@@ -57,7 +58,6 @@ function tick() {
 
 if (props.mode === 'relative' || props.mode === 'detail') {
 	tick();
-
 	onUnmounted(() => {
 		window.clearTimeout(tickId);
 	});

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import Redis from 'ioredis';
+import * as Redis from 'ioredis';
 import type { Antenna } from '@/models/entities/Antenna.js';
 import type { Note } from '@/models/entities/Note.js';
 import type { User } from '@/models/entities/User.js';
@@ -53,11 +53,6 @@ export class AntennaService implements OnApplicationShutdown {
 		this.antennas = [];
 
 		this.redisForSub.on('message', this.onRedisMessage);
-	}
-
-	@bindThis
-	public onApplicationShutdown(signal?: string | undefined) {
-		this.redisForSub.off('message', this.onRedisMessage);
 	}
 
 	@bindThis
@@ -195,5 +190,15 @@ export class AntennaService implements OnApplicationShutdown {
 		}
 	
 		return this.antennas;
+	}
+
+	@bindThis
+	public dispose(): void {
+		this.redisForSub.off('message', this.onRedisMessage);
+	}
+
+	@bindThis
+	public onApplicationShutdown(signal?: string | undefined): void {
+		this.dispose();
 	}
 }
