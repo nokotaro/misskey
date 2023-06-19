@@ -5,7 +5,19 @@
 		<MkAvatar v-else-if="notification.type === 'achievementEarned'" :class="$style.icon" :user="$i" link preview/>
 		<MkAvatar v-else-if="notification.user" :class="$style.icon" :user="notification.user" link preview/>
 		<img v-else-if="notification.icon" :class="$style.icon" :src="notification.icon" alt=""/>
-		<div :class="[$style.subIcon, $style['t_' + notification.type]]">
+		<div
+			:class="[$style.subIcon, {
+				[$style.t_follow]: notification.type === 'follow',
+				[$style.t_followRequestAccepted]: notification.type === 'followRequestAccepted',
+				[$style.t_receiveFollowRequest]: notification.type === 'receiveFollowRequest',
+				[$style.t_renote]: notification.type === 'renote',
+				[$style.t_reply]: notification.type === 'reply',
+				[$style.t_mention]: notification.type === 'mention',
+				[$style.t_quote]: notification.type === 'quote',
+				[$style.t_pollEnded]: notification.type === 'pollEnded',
+				[$style.t_achievementEarned]: notification.type === 'achievementEarned',
+			}]"
+		>
 			<i v-if="notification.type === 'follow'" class="ti ti-plus"></i>
 			<i v-else-if="notification.type === 'receiveFollowRequest'" class="ti ti-clock"></i>
 			<i v-else-if="notification.type === 'followRequestAccepted'" class="ti ti-check"></i>
@@ -20,8 +32,8 @@
 				v-else-if="notification.type === 'reaction'"
 				ref="reactionRef"
 				:reaction="notification.reaction ? notification.reaction.replace(/^:(\w+):$/, ':$1@.:') : notification.reaction"
-				:custom-emojis="notification.note.emojis"
-				:no-style="true"
+				:customEmojis="notification.note.emojis"
+				:noStyle="true"
 				style="width: 100%; height: 100%;"
 			/>
 		</div>
@@ -34,7 +46,7 @@
 			<span v-else>{{ notification.header }}</span>
 			<MkTime v-if="withTime" :time="notification.createdAt" :class="$style.headerTime"/>
 		</header>
-		<div :class="$style.content">
+		<div>
 			<MkA v-if="notification.type === 'reaction'" :class="$style.text" :to="notePage(notification.note)" :title="getNoteSummary(notification.note)">
 				<i class="ti ti-quote" :class="$style.quote"></i>
 				<Mfm :text="getNoteSummary(notification.note)" :plain="true" :nowrap="true" :author="notification.note.user"/>
@@ -83,7 +95,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, shallowRef, onMounted, onUnmounted, watch } from 'vue';
+import { ref, shallowRef } from 'vue';
 import * as misskey from 'misskey-js';
 import MkReactionIcon from '@/components/MkReactionIcon.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';
@@ -94,7 +106,6 @@ import { notePage } from '@/filters/note';
 import { userPage } from '@/filters/user';
 import { i18n } from '@/i18n';
 import * as os from '@/os';
-import { stream } from '@/stream';
 import { useTooltip } from '@/scripts/use-tooltip';
 import { $i } from '@/account';
 
@@ -109,35 +120,6 @@ const props = withDefaults(defineProps<{
 
 const elRef = shallowRef<HTMLElement>(null);
 const reactionRef = ref(null);
-
-let readObserver: IntersectionObserver | undefined;
-let connection;
-
-onMounted(() => {
-	if (!props.notification.isRead) {
-		readObserver = new IntersectionObserver((entries, observer) => {
-			if (!entries.some(entry => entry.isIntersecting)) return;
-			stream.send('readNotification', {
-				id: props.notification.id,
-			});
-			observer.disconnect();
-		});
-
-		readObserver.observe(elRef.value);
-
-		connection = stream.useChannel('main');
-		connection.on('readAllNotifications', () => readObserver.disconnect());
-
-		watch(props.notification.isRead, () => {
-			readObserver.disconnect();
-		});
-	}
-});
-
-onUnmounted(() => {
-	if (readObserver) readObserver.disconnect();
-	if (connection) connection.dispose();
-});
 
 const followRequestDone = ref(false);
 
@@ -271,9 +253,6 @@ useTooltip(reactionRef, (showing) => {
 .headerTime {
 	margin-left: auto;
 	font-size: 0.9em;
-}
-
-.content {
 }
 
 .text {

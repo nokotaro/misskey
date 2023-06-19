@@ -149,13 +149,12 @@ export class ServerService implements OnApplicationShutdown {
 					host: (host == null) || (host === this.config.host) ? IsNull() : host,
 					isSuspended: false,
 				},
-				relations: ['avatar'],
 			});
 
 			reply.header('Cache-Control', 'public, max-age=86400');
 
 			if (user) {
-				reply.redirect(this.userEntityService.getAvatarUrlSync(user));
+				reply.redirect(user.avatarUrl ?? this.userEntityService.getIdenticonUrl(user));
 			} else {
 				reply.redirect('/static-assets/user-unknown.png');
 			}
@@ -195,7 +194,7 @@ export class ServerService implements OnApplicationShutdown {
 
 		fastify.register(this.clientServerService.createServer);
 
-		this.streamingApiServerService.attachStreamingApi(fastify.server);
+		this.streamingApiServerService.attach(fastify.server);
 
 		fastify.server.on('error', err => {
 			switch ((err as any).code) {
@@ -223,7 +222,14 @@ export class ServerService implements OnApplicationShutdown {
 		await fastify.ready();
 	}
 
-	async onApplicationShutdown(signal: string): Promise<void> {
+	@bindThis
+	public async dispose(): Promise<void> {
+    await this.streamingApiServerService.detach();
 		await this.#fastify.close();
+	}
+
+	@bindThis
+	async onApplicationShutdown(signal: string): Promise<void> {
+		await this.dispose();
 	}
 }

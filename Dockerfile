@@ -1,4 +1,6 @@
-ARG NODE_VERSION=18.13.0-bullseye
+# syntax = docker/dockerfile:1.4
+
+ARG NODE_VERSION=18.16.0-bullseye
 
 FROM node:${NODE_VERSION} AS builder
 
@@ -15,6 +17,7 @@ COPY ["scripts", "./scripts"]
 COPY ["packages/backend/package.json", "./packages/backend/"]
 COPY ["packages/frontend/package.json", "./packages/frontend/"]
 COPY ["packages/sw/package.json", "./packages/sw/"]
+COPY ["packages/misskey-js/package.json", "./packages/misskey-js/"]
 
 RUN pnpm i --frozen-lockfile
 
