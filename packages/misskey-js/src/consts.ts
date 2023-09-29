@@ -73,6 +73,11 @@ export const moderationLogTypes = [
 	'unsuspendRemoteInstance',
 	'markSensitiveDriveFile',
 	'unmarkSensitiveDriveFile',
+	'resolveAbuseReport',
+	'createInvitation',
+	'createAd',
+	'updateAd',
+	'deleteAd',
 ] as const;
 
 export type ModerationLogPayloads = {
@@ -209,5 +214,26 @@ export type ModerationLogPayloads = {
 		fileUserId: string | null;
 		fileUserUsername: string | null;
 		fileUserHost: string | null;
+	};
+	resolveAbuseReport: {
+		reportId: string;
+		report: any;
+		forwarded: boolean;
+	};
+	createInvitation: {
+		invitations: any[];
+	};
+	createAd: {
+		adId: string;
+		ad: any;
+	};
+	updateAd: {
+		adId: string;
+		before: any;
+		after: any;
+	};
+	deleteAd: {
+		adId: string;
+		ad: any;
 	};
 };
