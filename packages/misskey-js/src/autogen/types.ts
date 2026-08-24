@@ -3317,6 +3317,24 @@ export type paths = {
          */
         post: operations['notes___user-list-timeline'];
     };
+    '/notes/vmimi-relay-hybrid-timeline': {
+        /**
+         * notes/vmimi-relay-hybrid-timeline
+         * @description No description provided.
+         *
+         *     **Credential required**: *Yes* / **Permission**: *read:account*
+         */
+        post: operations['notes___vmimi-relay-hybrid-timeline'];
+    };
+    '/notes/vmimi-relay-timeline': {
+        /**
+         * notes/vmimi-relay-timeline
+         * @description No description provided.
+         *
+         *     **Credential required**: *No*
+         */
+        post: operations['notes___vmimi-relay-timeline'];
+    };
     '/notifications/create': {
         /**
          * notifications/create
@@ -5353,6 +5371,7 @@ export type components = {
             usersCount: number;
         };
         RolePolicies: {
+            vrtlAvailable: boolean;
             gtlAvailable: boolean;
             ltlAvailable: boolean;
             canPublicNote: boolean;
@@ -5571,6 +5590,7 @@ export type components = {
                 emailRequiredForSignup: boolean;
                 localTimeline: boolean;
                 globalTimeline: boolean;
+                vmimiRelayTimeline: boolean;
                 hcaptcha: boolean;
                 turnstile: boolean;
                 recaptcha: boolean;
@@ -13060,6 +13080,7 @@ export interface operations {
                     manifestJsonOverride?: string;
                     enableFanoutTimeline?: boolean;
                     enableFanoutTimelineDbFallback?: boolean;
+                    vmimiRelayTimelineCacheMax?: number;
                     perLocalUserUserTimelineCacheMax?: number;
                     perRemoteUserUserTimelineCacheMax?: number;
                     perUserHomeTimelineCacheMax?: number;
@@ -31955,6 +31976,170 @@ export interface operations {
                      * @default false
                      */
                     withFiles?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description OK (with results) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Note'][];
+                };
+            };
+            /** @description Client error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Authentication error */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Forbidden error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description I'm Ai */
+            418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+        };
+    };
+    'notes___vmimi-relay-hybrid-timeline': {
+        requestBody: {
+            content: {
+                'application/json': {
+                    /** @default false */
+                    withFiles?: boolean;
+                    /** @default true */
+                    withRenotes?: boolean;
+                    /** @default false */
+                    withReplies?: boolean;
+                    /** @default true */
+                    withLocalOnly?: boolean;
+                    /** @default 10 */
+                    limit?: number;
+                    /** @default true */
+                    allowPartial?: boolean;
+                    /** Format: misskey:id */
+                    sinceId?: string;
+                    /** Format: misskey:id */
+                    untilId?: string;
+                    sinceDate?: number;
+                    untilDate?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description OK (with results) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Note'][];
+                };
+            };
+            /** @description Client error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Authentication error */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Forbidden error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description I'm Ai */
+            418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+        };
+    };
+    'notes___vmimi-relay-timeline': {
+        requestBody: {
+            content: {
+                'application/json': {
+                    /** @default false */
+                    withFiles?: boolean;
+                    /** @default true */
+                    withRenotes?: boolean;
+                    /** @default false */
+                    withReplies?: boolean;
+                    /** @default true */
+                    withLocalOnly?: boolean;
+                    /** @default 10 */
+                    limit?: number;
+                    /** @default true */
+                    allowPartial?: boolean;
+                    /** Format: misskey:id */
+                    sinceId?: string;
+                    /** Format: misskey:id */
+                    untilId?: string;
+                    sinceDate?: number;
+                    untilDate?: number;
                 };
             };
         };
