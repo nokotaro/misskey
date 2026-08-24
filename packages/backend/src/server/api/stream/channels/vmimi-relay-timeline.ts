@@ -1,0 +1,97 @@
+/*
+ * SPDX-FileCopyrightText: syuilo and misskey-project
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
+import { Inject, Injectable, Scope } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import type { Packed } from '@/misc/json-schema.js';
+import { MetaService } from '@/core/MetaService.js';
+import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
+import { bindThis } from '@/decorators.js';
+import { RoleService } from '@/core/RoleService.js';
+import { VmimiRelayTimelineService } from '@/core/VmimiRelayTimelineService.js';
+import { isQuotePacked, isRenotePacked } from '@/misc/is-renote.js';
+import { NoteStreamingHidingService } from '../NoteStreamingHidingService.js';
+import Channel, { type ChannelRequest } from '../channel.js';
+
+@Injectable({ scope: Scope.TRANSIENT })
+export class VmimiRelayTimelineChannel extends Channel {
+	public readonly chName = 'vmimiRelayTimeline';
+	public static shouldShare = false;
+	public static requireCredential = false as const;
+	private withRenotes: boolean;
+	private withReplies: boolean;
+	private withFiles: boolean;
+	private withLocalOnly: boolean;
+
+	constructor(
+		@Inject(REQUEST)
+		request: ChannelRequest,
+
+		private metaService: MetaService,
+		private roleService: RoleService,
+		private noteEntityService: NoteEntityService,
+		private vmimiRelayTimelineService: VmimiRelayTimelineService,
+		private noteStreamingHidingService: NoteStreamingHidingService,
+	) {
+		super(request);
+	}
+
+	@bindThis
+	public async init(params: any) {
+		const policies = await this.roleService.getUserPolicies(this.user ? this.user.id : null);
+		if (!policies.vrtlAvailable) return;
+
+		this.withRenotes = params.withRenotes ?? true;
+		this.withReplies = params.withReplies ?? false;
+		this.withFiles = params.withFiles ?? false;
+		this.withLocalOnly = params.withLocalOnly ?? true;
+
+		// Subscribe events
+		this.subscriber.on('notesStream', this.onNote);
+	}
+
+	@bindThis
+	private async onNote(note: Packed<'Note'>) {
+		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;
+
+		if (!this.vmimiRelayTimelineService.isRelayedInstance(note.user.host ?? null)) return;
+		if (!this.withLocalOnly && note.localOnly) return;
+		if (note.visibility !== 'public') return;
+		if (note.channelId != null) return;
+
+		// 関係ない返信は除外
+		if (note.reply && this.user && !this.following[note.userId]?.withReplies && !this.withReplies) {
+			const reply = note.reply;
+			// 「チャンネル接続主への返信」でもなければ、「チャンネル接続主が行った返信」でもなければ、「投稿者の投稿者自身への返信」でもない場合
+			if (reply.userId !== this.user.id && note.userId !== this.user.id && reply.userId !== note.userId) return;
+		}
+
+		if (isRenotePacked(note) && !isQuotePacked(note) && !this.withRenotes) return;
+
+		if (this.isNoteMutedOrBlocked(note)) return;
+
+		const filtered = await this.noteStreamingHidingService.filter(note, this.user?.id ?? null);
+		if (!filtered) return;
+		// eslint-disable-next-line no-param-reassign -- これ以降元の Note オブジェクトは見てはいけないので、いっそ再代入した方が安全
+		note = filtered;
+
+		if (this.user) {
+			if (isRenotePacked(note) && !isQuotePacked(note)) {
+				if (note.renote && Object.keys(note.renote.reactions).length > 0) {
+					const myRenoteReaction = await this.noteEntityService.populateMyReaction(note.renote, this.user.id);
+					note.renote.myReaction = myRenoteReaction;
+				}
+			}
+		}
+
+		this.send('note', note);
+	}
+
+	@bindThis
+	public dispose() {
+		// Unsubscribe events
+		this.subscriber.off('notesStream', this.onNote);
+	}
+}

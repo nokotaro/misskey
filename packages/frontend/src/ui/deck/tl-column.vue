@@ -20,12 +20,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<MkStreamingNotesTimeline
 		v-else-if="column.tl"
 		ref="timeline"
-		:key="column.tl + withRenotes + withReplies + onlyFiles"
+		:key="column.tl + withRenotes + withReplies + onlyFiles + withLocalOnly"
 		:src="column.tl"
 		:withRenotes="withRenotes"
 		:withReplies="withReplies"
 		:withSensitive="withSensitive"
 		:onlyFiles="onlyFiles"
+		:withLocalOnly="withLocalOnly"
 		:sound="true"
 		:customSound="soundSetting"
 	/>
@@ -42,7 +43,7 @@ import { removeColumn, updateColumn } from '@/deck.js';
 import MkStreamingNotesTimeline from '@/components/MkStreamingNotesTimeline.vue';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
-import { hasWithReplies, isAvailableBasicTimeline, basicTimelineIconClass } from '@/timelines.js';
+import { hasWithReplies, isAvailableBasicTimeline, basicTimelineIconClass, hasWithLocalOnly } from '@/timelines.js';
 import { soundSettingsButton } from '@/ui/deck/tl-note-notification.js';
 
 const props = defineProps<{
@@ -57,6 +58,7 @@ const withRenotes = ref(props.column.withRenotes ?? true);
 const withReplies = ref(props.column.withReplies ?? false);
 const withSensitive = ref(props.column.withSensitive ?? true);
 const onlyFiles = ref(props.column.onlyFiles ?? false);
+const withLocalOnly = ref(props.column.withLocalOnly ?? true);
 
 watch(withRenotes, v => {
 	updateColumn(props.column.id, {
@@ -82,6 +84,12 @@ watch(onlyFiles, v => {
 	});
 });
 
+watch(withLocalOnly, v => {
+	updateColumn(props.column.id, {
+		withLocalOnly: v,
+	});
+});
+
 watch(soundSetting, v => {
 	updateColumn(props.column.id, { soundSetting: v });
 });
@@ -103,6 +111,10 @@ async function setType() {
 			value: 'social', label: i18n.ts._timelines.social,
 		}, {
 			value: 'global', label: i18n.ts._timelines.global,
+		}, {
+			value: 'vmimi-relay', label: i18n.ts._timelines['vmimi-relay'],
+		}, {
+			value: 'vmimi-relay-social', label: i18n.ts._timelines['vmimi-relay-social'],
 		}],
 		default: props.column.tl,
 	});
@@ -154,6 +166,14 @@ const menu = computed<MenuItem[]>(() => {
 		text: i18n.ts.withSensitive,
 		ref: withSensitive,
 	});
+
+	if (hasWithLocalOnly(props.column.tl)) {
+		menuItems.push({
+			type: 'switch',
+			text: i18n.ts.showLocalOnlyInTimeline,
+			ref: withLocalOnly,
+		});
+	}
 
 	return menuItems;
 });

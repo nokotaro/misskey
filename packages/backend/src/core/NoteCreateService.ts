@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 11200)
+Total output lines: 1291
+
 /*
  * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
@@ -45,6 +48,7 @@ import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerServ
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
 import { bindThis } from '@/decorators.js';
 import { DB_MAX_NOTE_TEXT_LENGTH } from '@/const.js';
+import { VmimiRelayTimelineService } from '@/core/VmimiRelayTimelineService.js';
 import { RoleService } from '@/core/RoleService.js';
 import { SearchService } from '@/core/SearchService.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
@@ -244,6 +248,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		@Inject(DI.driveFilesRepository)
 		private driveFilesRepository: DriveFilesRepository,
 
+		private vmimiRelayTimelineService: VmimiRelayTimelineService,
 		private userEntityService: UserEntityService,
 		private noteEntityService: NoteEntityService,
 		private idService: IdService,
@@ -559,141 +564,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 				case 'specified':
 					// specified / direct noteはspecifiedのみreply可能
 					if (data.visibility !== 'specified') {
-						data.visibility = 'specified';
-					}
-					break;
-			}
-
-			// ローカルのみにリプライしたらローカルのみにする
-			if (data.reply.localOnly && data.channel == null) {
-				data.localOnly = true;
-			}
-		}
-
-		if (data.text) {
-			if (data.text.length > DB_MAX_NOTE_TEXT_LENGTH) {
-				data.text = data.text.slice(0, DB_MAX_NOTE_TEXT_LENGTH);
-			}
-			data.text = data.text.trim();
-			if (data.text === '') {
-				data.text = null;
-			}
-		} else {
-			data.text = null;
-		}
-
-		let tags = data.apHashtags;
-		let emojis = data.apEmojis;
-		let mentionedUsers = data.apMentions;
-
-		// Parse MFM if needed
-		if (!tags || !emojis || !mentionedUsers) {
-			const tokens = (data.text ? mfm.parse(data.text)! : []);
-			const cwTokens = data.cw ? mfm.parse(data.cw)! : [];
-			const choiceTokens = data.poll && data.poll.choices
-				? concat(data.poll.choices.map(choice => mfm.parse(choice)!))
-				: [];
-
-			const combinedTokens = tokens.concat(cwTokens).concat(choiceTokens);
-
-			tags = data.apHashtags ?? extractHashtags(combinedTokens);
-
-			emojis = data.apEmojis ?? extractCustomEmojisFromMfm(combinedTokens);
-
-			mentionedUsers = data.apMentions ?? (await this.extractMentionedUsers(user, combinedTokens));
-		}
-
-		// if the host is media-silenced, custom emojis are not allowed
-		if (this.utilityService.isMediaSilencedHost(this.meta.mediaSilencedHosts, user.host)) emojis = [];
-
-		tags = tags.filter(tag => Array.from(tag).length <= 128).splice(0, 32);
-
-		if (data.reply && (user.id !== data.reply.userId) && !mentionedUsers.some(u => u.id === data.reply!.userId)) {
-			mentionedUsers.push(await this.usersRepository.findOneByOrFail({ id: data.reply!.userId }));
-		}
-
-		if (data.visibility === 'specified') {
-			if (data.visibleUsers == null) throw new Error('invalid param');
-
-			for (const u of data.visibleUsers) {
-				if (!mentionedUsers.some(x => x.id === u.id)) {
-					mentionedUsers.push(u);
-				}
-			}
-
-			if (data.reply && !data.visibleUsers.some(x => x.id === data.reply!.userId)) {
-				data.visibleUsers.push(await this.usersRepository.findOneByOrFail({ id: data.reply!.userId }));
-			}
-		}
-
-		const effectiveMentionCount = Math.max(mentionedUsers.length, data.apMentionRawCount ?? 0);
-		if (effectiveMentionCount > 0 && effectiveMentionCount > (await this.roleService.getUserPolicies(user.id)).mentionLimit) {
-			throw new IdentifiableError('9f466dab-c856-48cd-9e65-ff90ff750580', 'Note contains too many mentions');
-		}
-
-		const note = await this.insertNote(user, data, tags, emojis, mentionedUsers);
-
-		setImmediate('post created', { signal: this.#shutdownController.signal }).then(
-			() => this.postNoteCreated(note, user, data, silent, tags!, mentionedUsers!),
-			() => { /* aborted, ignore this */ },
-		);
-
-		return note;
-	}
-
-	@bindThis
-	private async insertNote(user: { id: MiUser['id']; host: MiUser['host']; }, data: Option, tags: string[], emojis: string[], mentionedUsers: MinimumUser[]) {
-		const insert = new MiNote({
-			id: this.idService.gen(data.createdAt?.getTime()),
-			fileIds: data.files ? data.files.map(file => file.id) : [],
-			replyId: data.reply ? data.reply.id : null,
-			renoteId: data.renote ? data.renote.id : null,
-			channelId: data.channel ? data.channel.id : null,
-			threadId: data.reply
-				? data.reply.threadId
-					? data.reply.threadId
-					: data.reply.id
-				: null,
-			name: data.name,
-			text: data.text,
-			hasPoll: data.poll != null,
-			cw: data.cw ?? null,
-			tags: tags.map(tag => normalizeForSearch(tag)),
-			emojis,
-			userId: user.id,
-			localOnly: data.localOnly!,
-			reactionAcceptance: data.reactionAcceptance ?? null,
-			visibility: data.visibility as any,
-			visibleUserIds: data.visibility === 'specified'
-				? data.visibleUsers
-					? data.visibleUsers.map(u => u.id)
-					: []
-				: [],
-
-			attachedFileTypes: data.files ? data.files.map(file => file.type) : [],
-
-			// 以下非正規化データ
-			replyUserId: data.reply ? data.reply.userId : null,
-			replyUserHost: data.reply ? data.reply.userHost : null,
-			renoteUserId: data.renote ? data.renote.userId : null,
-			renoteUserHost: data.renote ? data.renote.userHost : null,
-			renoteChannelId: data.renote ? data.renote.channelId : null,
-			userHost: user.host,
-		});
-
-		if (data.uri != null) insert.uri = data.uri;
-		if (data.url != null) insert.url = data.url;
-
-		// Append mentions data
-		if (mentionedUsers.length > 0) {
-			insert.mentions = mentionedUsers.map(u => u.id);
-			const profiles = await this.userProfilesRepository.findBy({ userId: In(insert.mentions) });
-			insert.mentionedRemoteUsers = JSON.stringify(mentionedUsers.filter(u => this.userEntityService.isRemoteUser(u)).map(u => {
-				const profile = profiles.find(p => p.userId === u.id);
-				const url = profile != null ? profile.url : null;
-				return {
-					uri: u.uri,
-					url: url ?? undefined,
+						…1200 tokens truncated…ined,
 					username: u.username,
 					host: u.host,
 				} as IMentionedRemoteUsers[0];
@@ -1175,6 +1046,12 @@ export class NoteCreateService implements OnApplicationShutdown {
 						this.fanoutTimelineService.push(`localTimelineWithReplyTo:${note.replyUserId}`, note.id, 300 / 10, r);
 					}
 				}
+				if (note.visibility === 'public' && this.vmimiRelayTimelineService.isRelayedInstance(note.userHost) && !note.localOnly) {
+					this.fanoutTimelineService.push('vmimiRelayTimelineWithReplies', note.id, this.meta.vmimiRelayTimelineCacheMax, r);
+					if (note.replyUserHost == null) {
+						this.fanoutTimelineService.push(`vmimiRelayTimelineWithReplyTo:${note.replyUserId}`, note.id, this.meta.vmimiRelayTimelineCacheMax / 10, r);
+					}
+				}
 			} else {
 				this.fanoutTimelineService.push(`userTimeline:${user.id}`, note.id, note.userHost == null ? this.meta.perLocalUserUserTimelineCacheMax : this.meta.perRemoteUserUserTimelineCacheMax, r);
 				if (note.fileIds.length > 0) {
@@ -1185,6 +1062,12 @@ export class NoteCreateService implements OnApplicationShutdown {
 					this.fanoutTimelineService.push('localTimeline', note.id, 1000, r);
 					if (note.fileIds.length > 0) {
 						this.fanoutTimelineService.push('localTimelineWithFiles', note.id, 500, r);
+					}
+				}
+				if (note.visibility === 'public' && this.vmimiRelayTimelineService.isRelayedInstance(note.userHost) && !note.localOnly) {
+					this.fanoutTimelineService.push('vmimiRelayTimeline', note.id, this.meta.vmimiRelayTimelineCacheMax, r);
+					if (note.fileIds.length > 0) {
+						this.fanoutTimelineService.push('vmimiRelayTimelineWithFiles', note.id, this.meta.vmimiRelayTimelineCacheMax / 2, r);
 					}
 				}
 			}

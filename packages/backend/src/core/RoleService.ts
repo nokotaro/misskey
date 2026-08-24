@@ -34,6 +34,7 @@ import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 
 // misskey-js の rolePolicies と同期すべし
 export type RolePolicies = {
+	vrtlAvailable: boolean;
 	gtlAvailable: boolean;
 	ltlAvailable: boolean;
 	canPublicNote: boolean;
@@ -76,6 +77,7 @@ export type RolePolicies = {
 };
 
 export const DEFAULT_POLICIES: RolePolicies = {
+	vrtlAvailable: true,
 	gtlAvailable: true,
 	ltlAvailable: true,
 	canPublicNote: true,
@@ -404,6 +406,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		const serverMaxFileSizeMb = Math.floor(this.config.maxFileSize / (1024 * 1024));
 
 		return {
+			vrtlAvailable: calc('vrtlAvailable', vs => vs.some(v => v === true)),
 			gtlAvailable: calc('gtlAvailable', vs => vs.some(v => v === true)),
 			ltlAvailable: calc('ltlAvailable', vs => vs.some(v => v === true)),
 			canPublicNote: calc('canPublicNote', vs => vs.some(v => v === true)),
