@@ -1,14 +1,13 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="700">
+<PageWithHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs">
+	<div class="_spacer" style="--MI_SPACER-w: 700px;">
 		<div class="jqqmcavi">
-			<MkButton v-if="pageId" class="button" inline link :to="`/@${ author.username }/pages/${ currentName }`"><i class="ti ti-external-link"></i> {{ i18n.ts._pages.viewPage }}</MkButton>
+			<MkButton v-if="pageId && author != null" class="button" inline type="routerLink" :to="`/@${ author.username }/pages/${ currentName }`"><i class="ti ti-external-link"></i> {{ i18n.ts._pages.viewPage }}</MkButton>
 			<MkButton v-if="!readonly" inline primary class="button" @click="save"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
 			<MkButton v-if="pageId" inline class="button" @click="duplicate"><i class="ti ti-copy"></i> {{ i18n.ts.duplicate }}</MkButton>
 			<MkButton v-if="pageId && !readonly" inline class="button" danger @click="del"><i class="ti ti-trash"></i> {{ i18n.ts.delete }}</MkButton>
@@ -25,16 +24,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</MkInput>
 
 				<MkInput v-model="name">
-					<template #prefix>{{ url }}/@{{ author.username }}/pages/</template>
+					<template #prefix>{{ url }}/@{{ author?.username ?? '???' }}/pages/</template>
 					<template #label>{{ i18n.ts._pages.url }}</template>
 				</MkInput>
 
 				<MkSwitch v-model="alignCenter">{{ i18n.ts._pages.alignCenter }}</MkSwitch>
 
-				<MkSelect v-model="font">
+				<MkSelect v-model="font" :items="fontDef">
 					<template #label>{{ i18n.ts._pages.font }}</template>
-					<option value="serif">{{ i18n.ts._pages.fontSerif }}</option>
-					<option value="sans-serif">{{ i18n.ts._pages.fontSansSerif }}</option>
 				</MkSelect>
 
 				<MkSwitch v-model="hideTitleWhenPinned">{{ i18n.ts._pages.hideTitleWhenPinned }}</MkSwitch>
@@ -56,25 +53,29 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkButton v-if="!readonly" rounded class="add" @click="add()"><i class="ti ti-plus"></i></MkButton>
 			</div>
 		</div>
-	</MkSpacer>
-</MkStickyContainer>
+	</div>
+</PageWithHeader>
 </template>
 
 <script lang="ts" setup>
-import { computed, provide, watch } from 'vue';
-import { v4 as uuid } from 'uuid';
+import { computed, provide, watch, ref } from 'vue';
+import * as Misskey from 'misskey-js';
+import { url } from '@@/js/config.js';
 import XBlocks from './page-editor.blocks.vue';
+import { genId } from '@/utility/id.js';
 import MkButton from '@/components/MkButton.vue';
 import MkSelect from '@/components/MkSelect.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import MkInput from '@/components/MkInput.vue';
-import { url } from '@/config.js';
 import * as os from '@/os.js';
-import { selectFile } from '@/scripts/select-file.js';
-import { mainRouter } from '@/router.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
+import { selectFile } from '@/utility/drive.js';
 import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { $i } from '@/account.js';
+import { definePage } from '@/page.js';
+import { $i } from '@/i.js';
+import { mainRouter } from '@/router.js';
+import { useMkSelect } from '@/composables/use-mkselect.js';
+import { getPageBlockList } from '@/pages/page-editor/common.js';
 
 const props = defineProps<{
 	initPageId?: string;
@@ -82,185 +83,211 @@ const props = defineProps<{
 	initUser?: string;
 }>();
 
-let tab = $ref('settings');
-let author = $ref($i);
-let readonly = $ref(false);
-let page = $ref(null);
-let pageId = $ref(null);
-let currentName = $ref(null);
-let title = $ref('');
-let summary = $ref(null);
-let name = $ref(Date.now().toString());
-let eyeCatchingImage = $ref(null);
-let eyeCatchingImageId = $ref(null);
-let font = $ref('sans-serif');
-let content = $ref([]);
-let alignCenter = $ref(false);
-let hideTitleWhenPinned = $ref(false);
+const tab = ref('settings');
+const author = ref<Misskey.entities.User | null>($i);
+const readonly = ref(false);
+const page = ref<Misskey.entities.Page | null>(null);
+const pageId = ref<string | null>(null);
+const currentName = ref<string | null>(null);
+const title = ref('');
+const summary = ref<string | null>(null);
+const name = ref(Date.now().toString());
+const eyeCatchingImage = ref<Misskey.entities.DriveFile | null>(null);
+const eyeCatchingImageId = ref<string | null>(null);
+const {
+	model: font,
+	def: fontDef,
+} = useMkSelect({
+	items: [
+		{ label: i18n.ts._pages.fontSansSerif, value: 'sans-serif' },
+		{ label: i18n.ts._pages.fontSerif, value: 'serif' },
+	],
+	initialValue: 'sans-serif',
+});
+const content = ref<Misskey.entities.Page['content']>([]);
+const alignCenter = ref(false);
+const hideTitleWhenPinned = ref(false);
 
-provide('readonly', readonly);
-provide('getPageBlockList', getPageBlockList);
+provide('readonly', readonly.value);
 
-watch($$(eyeCatchingImageId), async () => {
-	if (eyeCatchingImageId == null) {
-		eyeCatchingImage = null;
+watch(eyeCatchingImageId, async () => {
+	if (eyeCatchingImageId.value == null) {
+		eyeCatchingImage.value = null;
 	} else {
-		eyeCatchingImage = await os.api('drive/files/show', {
-			fileId: eyeCatchingImageId,
+		eyeCatchingImage.value = await misskeyApi('drive/files/show', {
+			fileId: eyeCatchingImageId.value,
 		});
 	}
 });
 
-function getSaveOptions() {
+function getSaveOptions(): Misskey.entities.PagesCreateRequest {
 	return {
-		title: title.trim(),
-		name: name.trim(),
-		summary: summary,
-		font: font,
+		title: title.value.trim(),
+		name: name.value.trim(),
+		summary: summary.value,
+		font: font.value,
 		script: '',
-		hideTitleWhenPinned: hideTitleWhenPinned,
-		alignCenter: alignCenter,
-		content: content,
+		hideTitleWhenPinned: hideTitleWhenPinned.value,
+		alignCenter: alignCenter.value,
+		content: content.value,
 		variables: [],
-		eyeCatchingImageId: eyeCatchingImageId,
+		eyeCatchingImageId: eyeCatchingImageId.value,
 	};
 }
 
-function save() {
+async function save() {
 	const options = getSaveOptions();
 
-	const onError = err => {
-		if (err.id === '3d81ceae-475f-4600-b2a8-2bc116157532') {
-			if (err.info.param === 'name') {
-				os.alert({
-					type: 'error',
-					title: i18n.ts._pages.invalidNameTitle,
-					text: i18n.ts._pages.invalidNameText,
-				});
-			}
-		} else if (err.code === 'NAME_ALREADY_EXISTS') {
-			os.alert({
-				type: 'error',
-				text: i18n.ts._pages.nameAlreadyExists,
-			});
-		}
-	};
+	if (pageId.value) {
+		const updateOptions: Misskey.entities.PagesUpdateRequest = {
+			pageId: pageId.value,
+			...options,
+		};
 
-	if (pageId) {
-		options.pageId = pageId;
-		os.api('pages/update', options)
-			.then(page => {
-				currentName = name.trim();
-				os.alert({
-					type: 'success',
-					text: i18n.ts._pages.updated,
-				});
-			}).catch(onError);
+		await os.apiWithDialog('pages/update', updateOptions, undefined, {
+			'2298a392-d4a1-44c5-9ebb-ac1aeaa5a9ab': {
+				title: i18n.ts.somethingHappened,
+				text: i18n.ts._pages.nameAlreadyExists,
+			},
+		});
+
+		currentName.value = name.value.trim();
 	} else {
-		os.api('pages/create', options)
-			.then(created => {
-				pageId = created.id;
-				currentName = name.trim();
-				os.alert({
-					type: 'success',
-					text: i18n.ts._pages.created,
-				});
-				mainRouter.push(`/pages/edit/${pageId}`);
-			}).catch(onError);
+		const created = await os.apiWithDialog('pages/create', options, undefined, {
+			'4650348e-301c-499a-83c9-6aa988c66bc1': {
+				title: i18n.ts.somethingHappened,
+				text: i18n.ts._pages.nameAlreadyExists,
+			},
+		});
+
+		pageId.value = created.id;
+		currentName.value = name.value.trim();
+		mainRouter.replace('/pages/edit/:initPageId', {
+			params: {
+				initPageId: pageId.value,
+			},
+		});
 	}
 }
 
-function del() {
-	os.confirm({
+async function del() {
+	if (!pageId.value) return;
+
+	const { canceled } = await os.confirm({
 		type: 'warning',
-		text: i18n.t('removeAreYouSure', { x: title.trim() }),
-	}).then(({ canceled }) => {
-		if (canceled) return;
-		os.api('pages/delete', {
-			pageId: pageId,
-		}).then(() => {
-			os.alert({
-				type: 'success',
-				text: i18n.ts._pages.deleted,
-			});
-			mainRouter.push('/pages');
-		});
+		text: i18n.tsx.removeAreYouSure({ x: title.value.trim() }),
 	});
+
+	if (canceled) return;
+
+	await os.apiWithDialog('pages/delete', {
+		pageId: pageId.value,
+	});
+
+	mainRouter.replace('/pages');
 }
 
-function duplicate() {
-	title = title + ' - copy';
-	name = name + '-copy';
-	os.api('pages/create', getSaveOptions()).then(created => {
-		pageId = created.id;
-		currentName = name.trim();
-		os.alert({
-			type: 'success',
-			text: i18n.ts._pages.created,
-		});
-		mainRouter.push(`/pages/edit/${pageId}`);
+async function duplicate() {
+	title.value = title.value + ' - copy';
+	name.value = name.value + '-copy';
+
+	const created = await os.apiWithDialog('pages/create', getSaveOptions(), undefined, {
+		'4650348e-301c-499a-83c9-6aa988c66bc1': {
+			title: i18n.ts.somethingHappened,
+			text: i18n.ts._pages.nameAlreadyExists,
+		},
+	});
+
+	pageId.value = created.id;
+	currentName.value = name.value.trim();
+
+	mainRouter.push('/pages/edit/:initPageId', {
+		params: {
+			initPageId: pageId.value,
+		},
 	});
 }
 
 async function add() {
 	const { canceled, result: type } = await os.select({
-		type: null,
 		title: i18n.ts._pages.chooseBlock,
 		items: getPageBlockList(),
 	});
-	if (canceled) return;
+	if (canceled || type == null) return;
 
-	const id = uuid();
-	content.push({ id, type });
+	const id = genId();
+
+	// TODO: page-editor.el.section.vueのと共通化
+	if (type === 'text') {
+		content.value.push({
+			id,
+			type,
+			text: '',
+		});
+	} else if (type === 'section') {
+		content.value.push({
+			id,
+			type,
+			title: '',
+			children: [],
+		});
+	} else if (type === 'image') {
+		content.value.push({
+			id,
+			type,
+			fileId: null,
+		});
+	} else if (type === 'note') {
+		content.value.push({
+			id,
+			type,
+			detailed: false,
+			note: null,
+		});
+	}
 }
 
-function getPageBlockList() {
-	return [
-		{ value: 'section', text: i18n.ts._pages.blocks.section },
-		{ value: 'text', text: i18n.ts._pages.blocks.text },
-		{ value: 'image', text: i18n.ts._pages.blocks.image },
-		{ value: 'note', text: i18n.ts._pages.blocks.note },
-	];
-}
-
-function setEyeCatchingImage(img) {
-	selectFile(img.currentTarget ?? img.target, null).then(file => {
-		eyeCatchingImageId = file.id;
+function setEyeCatchingImage(ev: PointerEvent) {
+	selectFile({
+		anchorElement: ev.currentTarget ?? ev.target,
+		multiple: false,
+	}).then(file => {
+		eyeCatchingImageId.value = file.id;
 	});
 }
 
 function removeEyeCatchingImage() {
-	eyeCatchingImageId = null;
+	eyeCatchingImageId.value = null;
 }
 
 async function init() {
 	if (props.initPageId) {
-		page = await os.api('pages/show', {
+		page.value = await misskeyApi('pages/show', {
 			pageId: props.initPageId,
 		});
 	} else if (props.initPageName && props.initUser) {
-		page = await os.api('pages/show', {
+		page.value = await misskeyApi('pages/show', {
 			name: props.initPageName,
 			username: props.initUser,
 		});
-		readonly = true;
+		readonly.value = true;
 	}
 
-	if (page) {
-		author = page.user;
-		pageId = page.id;
-		title = page.title;
-		name = page.name;
-		currentName = page.name;
-		summary = page.summary;
-		font = page.font;
-		hideTitleWhenPinned = page.hideTitleWhenPinned;
-		alignCenter = page.alignCenter;
-		content = page.content;
-		eyeCatchingImageId = page.eyeCatchingImageId;
+	if (page.value) {
+		author.value = page.value.user;
+		pageId.value = page.value.id;
+		title.value = page.value.title;
+		name.value = page.value.name;
+		currentName.value = page.value.name;
+		summary.value = page.value.summary;
+		font.value = page.value.font;
+		hideTitleWhenPinned.value = page.value.hideTitleWhenPinned;
+		alignCenter.value = page.value.alignCenter;
+		content.value = page.value.content;
+		eyeCatchingImageId.value = page.value.eyeCatchingImageId;
 	} else {
-		const id = uuid();
-		content = [{
+		const id = genId();
+		content.value = [{
 			id,
 			type: 'text',
 			text: 'Hello World!',
@@ -270,9 +297,9 @@ async function init() {
 
 init();
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => [{
+const headerTabs = computed(() => [{
 	key: 'settings',
 	title: i18n.ts._pages.pageSetting,
 	icon: 'ti ti-settings',
@@ -282,18 +309,11 @@ const headerTabs = $computed(() => [{
 	icon: 'ti ti-note',
 }]);
 
-definePageMetadata(computed(() => {
-	let title = i18n.ts._pages.newPage;
-	if (props.initPageId) {
-		title = i18n.ts._pages.editPage;
-	}
-	else if (props.initPageName && props.initUser) {
-		title = i18n.ts._pages.readPage;
-	}
-	return {
-		title: title,
-		icon: 'ti ti-pencil',
-	};
+definePage(() => ({
+	title: props.initPageId ? i18n.ts._pages.editPage
+	: props.initPageName && props.initUser ? i18n.ts._pages.readPage
+	: i18n.ts._pages.newPage,
+	icon: 'ti ti-pencil',
 }));
 </script>
 

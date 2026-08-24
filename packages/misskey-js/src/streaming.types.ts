@@ -1,6 +1,36 @@
-import type { Antenna, CustomEmoji, DriveFile, MeDetailed, MessagingMessage, Note, Notification, PageEvent, User, UserGroup } from './entities.js';
+import {
+	Antenna,
+	ChatMessage,
+	ChatMessageLite,
+	DriveFile,
+	DriveFolder,
+	Note,
+	Notification,
+	Signin,
+	User,
+	UserDetailed,
+	UserDetailedNotMe,
+	UserLite,
+} from './autogen/models.js';
+import {
+	AnnouncementCreated,
+	EmojiAdded, EmojiDeleted,
+	EmojiUpdated,
+	PageEvent,
+	QueueStats,
+	QueueStatsLog,
+	ServerStats,
+	ServerStatsLog,
+	ReversiGameDetailed,
+} from './entities.js';
+import {
+	ReversiUpdateKey,
+} from './consts.js';
 
-type FIXME = any;
+type ReversiUpdateSettings<K extends ReversiUpdateKey> = {
+	key: K;
+	value: ReversiGameDetailed[K];
+};
 
 export type Channels = {
 	main: {
@@ -10,87 +40,139 @@ export type Channels = {
 			mention: (payload: Note) => void;
 			reply: (payload: Note) => void;
 			renote: (payload: Note) => void;
-			follow: (payload: User) => void; // 自分が他人をフォローしたとき
-			followed: (payload: User) => void; // 他人が自分をフォローしたとき
-			unfollow: (payload: User) => void; // 自分が他人をフォロー解除したとき
-			meUpdated: (payload: MeDetailed) => void;
+			follow: (payload: UserDetailedNotMe) => void; // 自分が他人をフォローしたとき
+			followed: (payload: UserDetailed | UserLite) => void; // 他人が自分をフォローしたとき
+			unfollow: (payload: UserDetailed) => void; // 自分が他人をフォロー解除したとき
+			meUpdated: (payload: UserDetailed) => void;
 			pageEvent: (payload: PageEvent) => void;
 			urlUploadFinished: (payload: { marker: string; file: DriveFile; }) => void;
 			readAllNotifications: () => void;
 			unreadNotification: (payload: Notification) => void;
-			unreadMention: (payload: Note['id']) => void;
-			readAllUnreadMentions: () => void;
-			unreadSpecifiedNote: (payload: Note['id']) => void;
-			readAllUnreadSpecifiedNotes: () => void;
-			readAllMessagingMessages: () => void;
-			messagingMessage: (payload: MessagingMessage) => void;
-			unreadMessagingMessage: (payload: MessagingMessage) => void;
-			readAllAntennas: () => void;
+			notificationFlushed: () => void;
 			unreadAntenna: (payload: Antenna) => void;
+			newChatMessage: (payload: ChatMessage) => void;
 			readAllAnnouncements: () => void;
 			myTokenRegenerated: () => void;
-			reversiNoInvites: () => void;
-			reversiInvited: (payload: FIXME) => void;
-			signin: (payload: FIXME) => void;
+			signin: (payload: Signin) => void;
 			registryUpdated: (payload: {
 				scope?: string[];
 				key: string;
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				value: any | null;
 			}) => void;
 			driveFileCreated: (payload: DriveFile) => void;
 			readAntenna: (payload: Antenna) => void;
+			receiveFollowRequest: (payload: User) => void;
+			announcementCreated: (payload: AnnouncementCreated) => void;
 		};
 		receives: null;
 	};
 	homeTimeline: {
-		params: null;
+		params: {
+			withRenotes?: boolean;
+			withFiles?: boolean;
+		};
 		events: {
 			note: (payload: Note) => void;
 		};
 		receives: null;
 	};
 	localTimeline: {
-		params: null;
+		params: {
+			withRenotes?: boolean;
+			withReplies?: boolean;
+			withFiles?: boolean;
+		};
 		events: {
 			note: (payload: Note) => void;
 		};
 		receives: null;
 	};
 	hybridTimeline: {
-		params: null;
+		params: {
+			withRenotes?: boolean;
+			withReplies?: boolean;
+			withFiles?: boolean;
+		};
 		events: {
 			note: (payload: Note) => void;
 		};
 		receives: null;
 	};
 	globalTimeline: {
-		params: null;
+		params: {
+			withRenotes?: boolean;
+			withFiles?: boolean;
+		};
 		events: {
 			note: (payload: Note) => void;
 		};
 		receives: null;
 	};
-	messaging: {
+	userList: {
 		params: {
-			otherparty?: User['id'] | null;
-			group?: UserGroup['id'] | null;
+			listId: string;
+			withFiles?: boolean;
+			withRenotes?: boolean;
 		};
 		events: {
-			message: (payload: MessagingMessage) => void;
-			deleted: (payload: MessagingMessage['id']) => void;
-			read: (payload: MessagingMessage['id'][]) => void;
-			typers: (payload: User[]) => void;
+			note: (payload: Note) => void;
 		};
-		receives: {
-			read: {
-				id: MessagingMessage['id'];
-			};
+		receives: null;
+	};
+	hashtag: {
+		params: {
+			q: string[][];
 		};
+		events: {
+			note: (payload: Note) => void;
+		};
+		receives: null;
+	};
+	roleTimeline: {
+		params: {
+			roleId: string;
+		};
+		events: {
+			note: (payload: Note) => void;
+		};
+		receives: null;
+	};
+	antenna: {
+		params: {
+			antennaId: string;
+		};
+		events: {
+			note: (payload: Note) => void;
+		};
+		receives: null;
+	};
+	channel: {
+		params: {
+			channelId: string;
+		};
+		events: {
+			note: (payload: Note) => void;
+		};
+		receives: null;
+	};
+	drive: {
+		params: null;
+		events: {
+			fileCreated: (payload: DriveFile) => void;
+			fileDeleted: (payload: DriveFile['id']) => void;
+			fileUpdated: (payload: DriveFile) => void;
+			folderCreated: (payload: DriveFolder) => void;
+			folderDeleted: (payload: DriveFolder['id']) => void;
+			folderUpdated: (payload: DriveFolder) => void;
+		};
+		receives: null;
 	};
 	serverStats: {
 		params: null;
 		events: {
-			stats: (payload: FIXME) => void;
+			stats: (payload: ServerStats) => void;
+			statsLog: (payload: ServerStatsLog) => void;
 		};
 		receives: {
 			requestLog: {
@@ -102,7 +184,8 @@ export type Channels = {
 	queueStats: {
 		params: null;
 		events: {
-			stats: (payload: FIXME) => void;
+			stats: (payload: QueueStats) => void;
+			statsLog: (payload: QueueStatsLog) => void;
 		};
 		receives: {
 			requestLog: {
@@ -111,47 +194,137 @@ export type Channels = {
 			};
 		};
 	};
+	admin: {
+		params: null;
+		events: {
+			newAbuseUserReport: {
+				id: string;
+				targetUserId: string;
+				reporterId: string;
+				comment: string;
+			}
+		};
+		receives: null;
+	};
+	reversi: {
+		params: null;
+		events: {
+			matched: (payload: { game: ReversiGameDetailed }) => void;
+			invited: (payload: { user: User }) => void;
+		};
+		receives: null;
+	};
+	reversiGame: {
+		params: {
+			gameId: string;
+		};
+		events: {
+			started: (payload: { game: ReversiGameDetailed; }) => void;
+			ended: (payload: { winnerId: User['id'] | null; game: ReversiGameDetailed; }) => void;
+			canceled: (payload: { userId: User['id']; }) => void;
+			changeReadyStates: (payload: { user1: boolean; user2: boolean; }) => void;
+			updateSettings: <K extends ReversiUpdateKey>(payload: { userId: User['id']; key: K; value: ReversiGameDetailed[K]; }) => void;
+			log: (payload: {
+				time: number;
+				player: boolean;
+				operation: 'put';
+				pos: number;
+			} & { id: string | null }) => void;
+		};
+		receives: {
+			putStone: {
+				pos: number;
+				id: string;
+			};
+			ready: boolean;
+			cancel: null | Record<string, never>;
+			updateSettings: ReversiUpdateSettings<ReversiUpdateKey>;
+			claimTimeIsUp: null | Record<string, never>;
+		}
+	};
+	chatUser: {
+		params: {
+			otherId: string;
+		};
+		events: {
+			message: (payload: ChatMessageLite) => void;
+			deleted: (payload: ChatMessageLite['id']) => void;
+			react: (payload: {
+				reaction: string;
+				user?: UserLite;
+				messageId: ChatMessageLite['id'];
+			}) => void;
+			unreact: (payload: {
+				reaction: string;
+				user?: UserLite;
+				messageId: ChatMessageLite['id'];
+			}) => void;
+		};
+		receives: {
+			read: {
+				id: ChatMessageLite['id'];
+			};
+		};
+	};
+	chatRoom: {
+		params: {
+			roomId: string;
+		};
+		events: {
+			message: (payload: ChatMessageLite) => void;
+			deleted: (payload: ChatMessageLite['id']) => void;
+			react: (payload: {
+				reaction: string;
+				user?: UserLite;
+				messageId: ChatMessageLite['id'];
+			}) => void;
+			unreact: (payload: {
+				reaction: string;
+				user?: UserLite;
+				messageId: ChatMessageLite['id'];
+			}) => void;
+		};
+		receives: {
+			read: {
+				id: ChatMessageLite['id'];
+			};
+		};
+	};
 };
 
-export type NoteUpdatedEvent = {
-	id: Note['id'];
+export type NoteUpdatedEvent = { id: Note['id'] } & ({
 	type: 'reacted';
 	body: {
 		reaction: string;
+		emoji?: {
+			name: string;
+			url: string;
+		} | null;
 		userId: User['id'];
 	};
 } | {
-	id: Note['id'];
 	type: 'unreacted';
 	body: {
 		reaction: string;
 		userId: User['id'];
 	};
 } | {
-	id: Note['id'];
 	type: 'deleted';
 	body: {
 		deletedAt: string;
 	};
 } | {
-	id: Note['id'];
-	type: 'updated';
-	body: {
-		cw: string | null;
-		text: string;
-	};
-} | {
-	id: Note['id'];
 	type: 'pollVoted';
 	body: {
 		choice: number;
 		userId: User['id'];
 	};
-};
+});
 
 export type BroadcastEvents = {
 	noteUpdated: (payload: NoteUpdatedEvent) => void;
-	emojiAdded: (payload: {
-		emoji: CustomEmoji;
-	}) => void;
+	emojiAdded: (payload: EmojiAdded) => void;
+	emojiUpdated: (payload: EmojiUpdated) => void;
+	emojiDeleted: (payload: EmojiDeleted) => void;
+	announcementCreated: (payload: AnnouncementCreated) => void;
 };

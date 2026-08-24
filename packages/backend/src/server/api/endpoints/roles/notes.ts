@@ -1,22 +1,26 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
+import { Brackets } from 'typeorm';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { NotesRepository, RolesRepository } from '@/models/_.js';
 import { QueryService } from '@/core/QueryService.js';
 import { DI } from '@/di-symbols.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { IdService } from '@/core/IdService.js';
+import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
+import { ChannelMutingService } from '@/core/ChannelMutingService.js';
 import { ApiError } from '../../error.js';
 
 export const meta = {
 	tags: ['role', 'notes'],
 
 	requireCredential: true,
+	kind: 'read:account',
 
 	errors: {
 		noSuchRole: {
@@ -53,8 +57,8 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
 	constructor(
-		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
+		@Inject(DI.redisForTimelines)
+		private redisForTimelines: Redis.Redis,
 
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
@@ -65,8 +69,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private idService: IdService,
 		private noteEntityService: NoteEntityService,
 		private queryService: QueryService,
+		private fanoutTimelineService: FanoutTimelineService,
+		private channelMutingService: ChannelMutingService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
+			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate!) : null);
+			const sinceId = ps.sinceId ?? (ps.sinceDate ? this.idService.gen(ps.sinceDate!) : null);
+
 			const role = await this.rolesRepository.findOneBy({
 				id: ps.roleId,
 				isPublic: true,
@@ -78,18 +87,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			if (!role.isExplorable) {
 				return [];
 			}
-			const limit = ps.limit + (ps.untilId ? 1 : 0) + (ps.sinceId ? 1 : 0); // untilIdに指定したものも含まれるため+1
-			const noteIdsRes = await this.redisClient.xrevrange(
-				`roleTimeline:${role.id}`,
-				ps.untilId ? this.idService.parse(ps.untilId).date.getTime() : ps.untilDate ?? '+',
-				ps.sinceId ? this.idService.parse(ps.sinceId).date.getTime() : ps.sinceDate ?? '-',
-				'COUNT', limit);
 
-			if (noteIdsRes.length === 0) {
-				return [];
-			}
-
-			const noteIds = noteIdsRes.map(x => x[1][1]).filter(x => x !== ps.untilId && x !== ps.sinceId);
+			let noteIds = await this.fanoutTimelineService.get(`roleTimeline:${role.id}`, untilId, sinceId);
+			noteIds = noteIds.slice(0, ps.limit);
 
 			if (noteIds.length === 0) {
 				return [];
@@ -104,9 +104,23 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				.leftJoinAndSelect('reply.user', 'replyUser')
 				.leftJoinAndSelect('renote.user', 'renoteUser');
 
+			// -- ミュートされたチャンネル対策
+			const mutingChannelIds = await this.channelMutingService
+				.list({ requestUserId: me.id }, { idOnly: true })
+				.then(x => x.map(x => x.id));
+			if (mutingChannelIds.length > 0) {
+				query.andWhere(new Brackets(qb => {
+					qb.orWhere('note.channelId IS NULL');
+					qb.orWhere('note.channelId NOT IN (:...mutingChannelIds)', { mutingChannelIds });
+				}));
+				query.andWhere(new Brackets(qb => {
+					qb.orWhere('note.renoteChannelId IS NULL');
+					qb.orWhere('note.renoteChannelId NOT IN (:...mutingChannelIds)', { mutingChannelIds });
+				}));
+			}
+
 			this.queryService.generateVisibilityQuery(query, me);
-			this.queryService.generateMutedUserQuery(query, me);
-			this.queryService.generateBlockedUserQuery(query, me);
+			this.queryService.generateBaseNoteFilteringQuery(query, me);
 
 			const notes = await query.getMany();
 			notes.sort((a, b) => a.id > b.id ? -1 : 1);

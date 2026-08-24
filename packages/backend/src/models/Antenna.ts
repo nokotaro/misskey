@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -13,11 +13,6 @@ export class MiAntenna {
 	@PrimaryColumn(id())
 	public id: string;
 
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the Antenna.',
-	})
-	public createdAt: Date;
-
 	@Index()
 	@Column('timestamp with time zone')
 	public lastUsedAt: Date;
@@ -29,7 +24,7 @@ export class MiAntenna {
 	})
 	public userId: MiUser['id'];
 
-	@ManyToOne(type => MiUser, {
+	@ManyToOne(() => MiUser, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
@@ -50,7 +45,7 @@ export class MiAntenna {
 	})
 	public userListId: MiUserList['id'] | null;
 
-	@ManyToOne(type => MiUserList, {
+	@ManyToOne(() => MiUserList, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
@@ -80,6 +75,11 @@ export class MiAntenna {
 	@Column('boolean', {
 		default: false,
 	})
+	public excludeBots: boolean;
+
+	@Column('boolean', {
+		default: false,
+	})
 	public withReplies: boolean;
 
 	@Column('boolean')
@@ -90,12 +90,22 @@ export class MiAntenna {
 	})
 	public expression: string | null;
 
-	@Column('boolean')
-	public notify: boolean;
-
 	@Index()
 	@Column('boolean', {
 		default: true,
 	})
 	public isActive: boolean;
+
+	@Column('boolean', {
+		default: false,
+	})
+	public localOnly: boolean;
+
+	@Column('boolean', {
+		default: false,
+	})
+	public excludeNotesInSensitiveChannel: boolean;
 }
+// Note for future developers: When you added a new column,
+// You should update ExportAntennaProcessorService and ImportAntennaProcessorService
+// to export and import antennas correctly.

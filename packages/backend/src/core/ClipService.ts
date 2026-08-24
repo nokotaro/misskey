@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -41,18 +41,17 @@ export class ClipService {
 		const currentCount = await this.clipsRepository.countBy({
 			userId: me.id,
 		});
-		if (currentCount > (await this.roleService.getUserPolicies(me.id)).clipLimit) {
+		if (currentCount >= (await this.roleService.getUserPolicies(me.id)).clipLimit) {
 			throw new ClipService.TooManyClipsError();
 		}
 
-		const clip = await this.clipsRepository.insert({
-			id: this.idService.genId(),
-			createdAt: new Date(),
+		const clip = await this.clipsRepository.insertOne({
+			id: this.idService.gen(),
 			userId: me.id,
 			name: name,
 			isPublic: isPublic,
 			description: description,
-		}).then(x => this.clipsRepository.findOneByOrFail(x.identifiers[0]));
+		});
 
 		return clip;
 	}
@@ -103,13 +102,13 @@ export class ClipService {
 		const currentCount = await this.clipNotesRepository.countBy({
 			clipId: clip.id,
 		});
-		if (currentCount > (await this.roleService.getUserPolicies(me.id)).noteEachClipsLimit) {
+		if (currentCount >= (await this.roleService.getUserPolicies(me.id)).noteEachClipsLimit) {
 			throw new ClipService.TooManyClipNotesError();
 		}
 
 		try {
 			await this.clipNotesRepository.insert({
-				id: this.idService.genId(),
+				id: this.idService.gen(),
 				noteId: noteId,
 				clipId: clip.id,
 			});

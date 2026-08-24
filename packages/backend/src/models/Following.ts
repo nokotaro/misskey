@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -9,15 +9,10 @@ import { MiUser } from './User.js';
 
 @Entity('following')
 @Index(['followerId', 'followeeId'], { unique: true })
+@Index(['followeeId', 'followerHost', 'isFollowerHibernated'])
 export class MiFollowing {
 	@PrimaryColumn(id())
 	public id: string;
-
-	@Index()
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the Following.',
-	})
-	public createdAt: Date;
 
 	@Index()
 	@Column({
@@ -26,7 +21,7 @@ export class MiFollowing {
 	})
 	public followeeId: MiUser['id'];
 
-	@ManyToOne(type => MiUser, {
+	@ManyToOne(() => MiUser, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
@@ -39,11 +34,22 @@ export class MiFollowing {
 	})
 	public followerId: MiUser['id'];
 
-	@ManyToOne(type => MiUser, {
+	@ManyToOne(() => MiUser, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
 	public follower: MiUser | null;
+
+	@Column('boolean', {
+		default: false,
+	})
+	public isFollowerHibernated: boolean;
+
+	// タイムラインにその人のリプライまで含めるかどうか
+	@Column('boolean', {
+		default: false,
+	})
+	public withReplies: boolean;
 
 	@Index()
 	@Column('varchar', {

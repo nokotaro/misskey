@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -14,6 +14,7 @@ export const meta = {
 	tags: ['notes'],
 
 	requireCredential: true,
+	kind: 'read:account',
 
 	res: {
 		type: 'array',
@@ -31,6 +32,7 @@ export const paramDef = {
 	properties: {
 		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
 		offset: { type: 'integer', default: 0 },
+		excludeChannels: { type: 'boolean', default: false },
 	},
 	required: [],
 } as const;
@@ -57,9 +59,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				.where('poll.userHost IS NULL')
 				.andWhere('poll.userId != :meId', { meId: me.id })
 				.andWhere('poll.noteVisibility = \'public\'')
-				.andWhere(new Brackets(qb => { qb
-					.where('poll.expiresAt IS NULL')
-					.orWhere('poll.expiresAt > :now', { now: new Date() });
+				.andWhere(new Brackets(qb => {
+					qb
+						.where('poll.expiresAt IS NULL')
+						.orWhere('poll.expiresAt > :now', { now: new Date() });
 				}));
 
 			//#region exclude arleady voted polls
@@ -84,6 +87,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			query.setParameters(mutingQuery.getParameters());
 			//#endregion
 
+			//#region exclude channels
+			if (ps.excludeChannels) {
+				query.andWhere('poll.channelId IS NULL');
+			}
+			//#endregion
+
 			const polls = await query
 				.orderBy('poll.noteId', 'DESC')
 				.limit(ps.limit)
@@ -97,7 +106,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					id: In(polls.map(poll => poll.noteId)),
 				},
 				order: {
-					createdAt: 'DESC',
+					id: 'DESC',
 				},
 			});
 

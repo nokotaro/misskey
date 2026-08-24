@@ -1,17 +1,17 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="$style.root">
-	<MkAvatar :class="$style.avatar" :user="note.user" link preview/>
+<div v-if="note" :class="$style.root">
+	<MkAvatar :class="[$style.avatar, prefer.s.useStickyIcons ? $style.useSticky : null]" :user="note.user" link preview/>
 	<div :class="$style.main">
 		<MkNoteHeader :class="$style.header" :note="note" :mini="true"/>
 		<div>
 			<p v-if="note.cw != null" :class="$style.cw">
-				<Mfm v-if="note.cw != ''" style="margin-right: 8px;" :text="note.cw" :author="note.user" :i="$i" :emojiUrls="note.emojis"/>
-				<MkCwButton v-model="showContent" :note="note"/>
+				<Mfm v-if="note.cw != ''" style="margin-right: 8px;" :text="note.cw" :author="note.user" :nyaize="'respect'" :emojiUrls="note.emojis"/>
+				<MkCwButton v-model="showContent" :text="note.text" :files="note.files" :poll="note.poll"/>
 			</p>
 			<div v-show="note.cw == null || showContent">
 				<MkSubNoteContent :class="$style.text" :note="note"/>
@@ -19,21 +19,25 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</div>
 	</div>
 </div>
+<div v-else :class="$style.deleted">
+	{{ i18n.ts.deletedNote }}
+</div>
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
+import { ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkNoteHeader from '@/components/MkNoteHeader.vue';
 import MkSubNoteContent from '@/components/MkSubNoteContent.vue';
 import MkCwButton from '@/components/MkCwButton.vue';
-import { $i } from '@/account.js';
+import { i18n } from '@/i18n.js';
+import { prefer } from '@/preferences.js';
 
 const props = defineProps<{
-	note: Misskey.entities.Note;
+	note: Misskey.entities.Note | null;
 }>();
 
-const showContent = $ref(false);
+const showContent = ref(false);
 </script>
 
 <style lang="scss" module>
@@ -51,9 +55,12 @@ const showContent = $ref(false);
 	width: 34px;
 	height: 34px;
 	border-radius: 8px;
-	position: sticky !important;
-	top: calc(16px + var(--stickyTop, 0px));
-	left: 0;
+
+	&.useSticky {
+		position: sticky !important;
+		top: calc(16px + var(--MI-stickyTop, 0px));
+		left: 0;
+	}
 }
 
 .main {
@@ -101,5 +108,14 @@ const showContent = $ref(false);
 		width: 48px;
 		height: 48px;
 	}
+}
+
+.deleted {
+	text-align: center;
+	padding: 8px !important;
+	--color: light-dark(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
+	background-size: auto auto;
+	background-image: repeating-linear-gradient(135deg, transparent, transparent 10px, var(--color) 4px, var(--color) 14px);
+	border-radius: 8px;
 }
 </style>

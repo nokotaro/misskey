@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -144,19 +144,18 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			}
 
 			// Create vote
-			const vote = await this.pollVotesRepository.insert({
-				id: this.idService.genId(),
-				createdAt,
+			const vote = await this.pollVotesRepository.insertOne({
+				id: this.idService.gen(createdAt.getTime()),
 				noteId: note.id,
 				userId: me.id,
 				choice: ps.choice,
-			}).then(x => this.pollVotesRepository.findOneByOrFail(x.identifiers[0]));
+			});
 
 			// Increment votes count
 			const index = ps.choice + 1; // In SQL, array index is 1 based
 			await this.pollsRepository.query(`UPDATE poll SET votes[${index}] = votes[${index}] + 1 WHERE "noteId" = '${poll.noteId}'`);
 
-			this.globalEventService.publishNoteStream(note.id, 'pollVoted', {
+			this.globalEventService.publishNoteStream(note, 'pollVoted', {
 				choice: ps.choice,
 				userId: me.id,
 			});

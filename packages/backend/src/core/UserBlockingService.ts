@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -11,12 +11,12 @@ import type { MiBlocking } from '@/models/Blocking.js';
 import { QueueService } from '@/core/QueueService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
-import type { FollowRequestsRepository, BlockingsRepository, UserListsRepository, UserListJoiningsRepository } from '@/models/_.js';
+import type { FollowRequestsRepository, BlockingsRepository, UserListsRepository, UserListMembershipsRepository } from '@/models/_.js';
 import Logger from '@/logger.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { LoggerService } from '@/core/LoggerService.js';
-import { WebhookService } from '@/core/WebhookService.js';
+import { UserWebhookService } from '@/core/UserWebhookService.js';
 import { bindThis } from '@/decorators.js';
 import { CacheService } from '@/core/CacheService.js';
 import { UserFollowingService } from '@/core/UserFollowingService.js';
@@ -38,15 +38,15 @@ export class UserBlockingService implements OnModuleInit {
 		@Inject(DI.userListsRepository)
 		private userListsRepository: UserListsRepository,
 
-		@Inject(DI.userListJoiningsRepository)
-		private userListJoiningsRepository: UserListJoiningsRepository,
+		@Inject(DI.userListMembershipsRepository)
+		private userListMembershipsRepository: UserListMembershipsRepository,
 
 		private cacheService: CacheService,
 		private userEntityService: UserEntityService,
 		private idService: IdService,
 		private queueService: QueueService,
 		private globalEventService: GlobalEventService,
-		private webhookService: WebhookService,
+		private webhookService: UserWebhookService,
 		private apRendererService: ApRendererService,
 		private loggerService: LoggerService,
 	) {
@@ -68,8 +68,7 @@ export class UserBlockingService implements OnModuleInit {
 		]);
 
 		const blocking = {
-			id: this.idService.genId(),
-			createdAt: new Date(),
+			id: this.idService.gen(),
 			blocker,
 			blockerId: blocker.id,
 			blockee,
@@ -110,22 +109,16 @@ export class UserBlockingService implements OnModuleInit {
 
 		if (this.userEntityService.isLocalUser(followee)) {
 			this.userEntityService.pack(followee, followee, {
-				detail: true,
+				schema: 'MeDetailed',
 			}).then(packed => this.globalEventService.publishMainStream(followee.id, 'meUpdated', packed));
 		}
 
 		if (this.userEntityService.isLocalUser(follower) && !silent) {
 			this.userEntityService.pack(followee, follower, {
-				detail: true,
+				schema: 'UserDetailedNotMe',
 			}).then(async packed => {
 				this.globalEventService.publishMainStream(follower.id, 'unfollow', packed);
-
-				const webhooks = (await this.webhookService.getActiveWebhooks()).filter(x => x.userId === follower.id && x.on.includes('unfollow'));
-				for (const webhook of webhooks) {
-					this.queueService.webhookDeliver(webhook, 'unfollow', {
-						user: packed,
-					});
-				}
+				this.webhookService.enqueueUserWebhook(follower.id, 'unfollow', { user: packed });
 			});
 		}
 
@@ -149,7 +142,7 @@ export class UserBlockingService implements OnModuleInit {
 		});
 
 		for (const userList of userLists) {
-			await this.userListJoiningsRepository.delete({
+			await this.userListMembershipsRepository.delete({
 				userListId: userList.id,
 				userId: user.id,
 			});

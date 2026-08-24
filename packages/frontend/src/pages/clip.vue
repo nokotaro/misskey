@@ -1,74 +1,95 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions"/></template>
-	<MkSpacer :contentMax="800">
+<PageWithHeader :actions="headerActions">
+	<div class="_spacer" style="--MI_SPACER-w: 800px;">
 		<div v-if="clip" class="_gaps">
 			<div class="_panel">
-				<div v-if="clip.description" :class="$style.description">
-					<Mfm :text="clip.description" :isNote="false" :i="$i"/>
+				<div class="_gaps_s" :class="$style.description">
+					<div v-if="clip.description">
+						<Mfm :text="clip.description" :isNote="false"/>
+					</div>
+					<div v-else>({{ i18n.ts.noDescription }})</div>
+					<div>
+						<MkButton v-if="favorited" v-tooltip="i18n.ts.unfavorite" asLike rounded primary @click="unfavorite()"><i class="ti ti-heart"></i><span v-if="clip.favoritedCount > 0" style="margin-left: 6px;">{{ clip.favoritedCount }}</span></MkButton>
+						<MkButton v-else v-tooltip="i18n.ts.favorite" asLike rounded @click="favorite()"><i class="ti ti-heart"></i><span v-if="clip.favoritedCount > 0" style="margin-left: 6px;">{{ clip.favoritedCount }}</span></MkButton>
+					</div>
 				</div>
-				<MkButton v-if="favorited" v-tooltip="i18n.ts.unfavorite" asLike rounded primary @click="unfavorite()"><i class="ti ti-heart"></i><span v-if="clip.favoritedCount > 0" style="margin-left: 6px;">{{ clip.favoritedCount }}</span></MkButton>
-				<MkButton v-else v-tooltip="i18n.ts.favorite" asLike rounded @click="favorite()"><i class="ti ti-heart"></i><span v-if="clip.favoritedCount > 0" style="margin-left: 6px;">{{ clip.favoritedCount }}</span></MkButton>
 				<div :class="$style.user">
 					<MkAvatar :user="clip.user" :class="$style.avatar" indicator link preview/> <MkUserName :user="clip.user" :nowrap="false"/>
 				</div>
 			</div>
 
-			<MkNotes :pagination="pagination" :detail="true"/>
+			<MkNotesTimeline :paginator="paginator" :detail="true"/>
 		</div>
-	</MkSpacer>
-</MkStickyContainer>
+	</div>
+</PageWithHeader>
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, provide } from 'vue';
+import { computed, watch, provide, ref, markRaw } from 'vue';
 import * as Misskey from 'misskey-js';
-import MkNotes from '@/components/MkNotes.vue';
-import { $i } from '@/account.js';
+import { url } from '@@/js/config.js';
+import type { MenuItem } from '@/types/menu.js';
+import type { PageHeaderItem } from '@/types/page-header.js';
+import MkNotesTimeline from '@/components/MkNotesTimeline.vue';
+import { $i } from '@/i.js';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { url } from '@/config.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
+import { definePage } from '@/page.js';
 import MkButton from '@/components/MkButton.vue';
-import { clipsCache } from '@/cache';
+import { clipsCache } from '@/cache.js';
+import { isSupportShare } from '@/utility/navigator.js';
+import { copyToClipboard } from '@/utility/copy-to-clipboard.js';
+import { genEmbedCode } from '@/utility/get-embed-code.js';
+import { assertServerContext, serverContext } from '@/server-context.js';
+import { Paginator } from '@/utility/paginator.js';
+
+// contextは非ログイン状態の情報しかないためログイン時は利用できない
+const CTX_CLIP = !$i && assertServerContext(serverContext, 'clip') ? serverContext.clip : null;
 
 const props = defineProps<{
 	clipId: string,
 }>();
 
-let clip: Misskey.entities.Clip = $ref<Misskey.entities.Clip>();
-let favorited = $ref(false);
-const pagination = {
-	endpoint: 'clips/notes' as const,
+const clip = ref<Misskey.entities.Clip | null>(CTX_CLIP);
+const favorited = ref(false);
+const paginator = markRaw(new Paginator('clips/notes', {
 	limit: 10,
-	params: computed(() => ({
+	canSearch: true,
+	computedParams: computed(() => ({
 		clipId: props.clipId,
 	})),
-};
+}));
 
-const isOwned: boolean | null = $computed<boolean | null>(() => $i && clip && ($i.id === clip.userId));
+const isOwned = computed<boolean | null>(() => $i && clip.value && ($i.id === clip.value.userId));
 
 watch(() => props.clipId, async () => {
-	clip = await os.api('clips/show', {
+	if (CTX_CLIP && CTX_CLIP.id === props.clipId) {
+		clip.value = CTX_CLIP;
+		return;
+	}
+
+	clip.value = await misskeyApi('clips/show', {
 		clipId: props.clipId,
 	});
-	favorited = clip.isFavorited;
+
+	favorited.value = clip.value!.isFavorited ?? false;
 }, {
 	immediate: true,
 });
 
-provide('currentClip', $$(clip));
+provide('currentClip', clip);
 
 function favorite() {
 	os.apiWithDialog('clips/favorite', {
 		clipId: props.clipId,
 	}).then(() => {
-		favorited = true;
+		favorited.value = true;
 	});
 }
 
@@ -81,75 +102,107 @@ async function unfavorite() {
 	os.apiWithDialog('clips/unfavorite', {
 		clipId: props.clipId,
 	}).then(() => {
-		favorited = false;
+		favorited.value = false;
 	});
 }
 
-const headerActions = $computed(() => clip && isOwned ? [{
+const headerActions = computed<PageHeaderItem[] | null>(() => clip.value && isOwned.value ? [{
 	icon: 'ti ti-pencil',
 	text: i18n.ts.edit,
 	handler: async (): Promise<void> => {
-		const { canceled, result } = await os.form(clip.name, {
+		if (clip.value == null) return;
+
+		const { canceled, result } = await os.form(clip.value.name, {
 			name: {
 				type: 'string',
 				label: i18n.ts.name,
-				default: clip.name,
+				default: clip.value.name,
 			},
 			description: {
 				type: 'string',
 				required: false,
 				multiline: true,
+				treatAsMfm: true,
 				label: i18n.ts.description,
-				default: clip.description,
+				default: clip.value.description,
 			},
 			isPublic: {
 				type: 'boolean',
 				label: i18n.ts.public,
-				default: clip.isPublic,
+				default: clip.value.isPublic,
 			},
 		});
+
 		if (canceled) return;
 
 		os.apiWithDialog('clips/update', {
-			clipId: clip.id,
+			clipId: clip.value.id,
 			...result,
 		});
 
 		clipsCache.delete();
 	},
-}, ...(clip.isPublic ? [{
+}, ...(clip.value.isPublic ? [{
 	icon: 'ti ti-share',
 	text: i18n.ts.share,
-	handler: async (): Promise<void> => {
-		navigator.share({
-			title: clip.name,
-			text: clip.description,
-			url: `${url}/clips/${clip.id}`,
+	handler: (ev): void => {
+		const menuItems: MenuItem[] = [];
+
+		menuItems.push({
+			icon: 'ti ti-link',
+			text: i18n.ts.copyUrl,
+			action: () => {
+				copyToClipboard(`${url}/clips/${clip.value!.id}`);
+			},
+		}, {
+			icon: 'ti ti-code',
+			text: i18n.ts.embed,
+			action: () => {
+				genEmbedCode('clips', clip.value!.id);
+			},
 		});
+
+		if (isSupportShare()) {
+			menuItems.push({
+				icon: 'ti ti-share',
+				text: i18n.ts.share,
+				action: async () => {
+					navigator.share({
+						title: clip.value!.name,
+						text: clip.value!.description ?? '',
+						url: `${url}/clips/${clip.value!.id}`,
+					});
+				},
+			});
+		}
+
+		os.popupMenu(menuItems, ev.currentTarget ?? ev.target);
 	},
-}] : []), {
+}] satisfies PageHeaderItem[] : []), {
 	icon: 'ti ti-trash',
 	text: i18n.ts.delete,
 	danger: true,
 	handler: async (): Promise<void> => {
+		if (clip.value == null) return;
+
 		const { canceled } = await os.confirm({
 			type: 'warning',
-			text: i18n.t('deleteAreYouSure', { x: clip.name }),
+			text: i18n.tsx.deleteAreYouSure({ x: clip.value.name }),
 		});
 		if (canceled) return;
 
 		await os.apiWithDialog('clips/delete', {
-			clipId: clip.id,
+			clipId: clip.value.id,
 		});
 
 		clipsCache.delete();
 	},
-}] : null);
+}] satisfies PageHeaderItem[] : null);
 
-definePageMetadata(computed(() => clip ? {
-	title: clip.name,
+definePage(() => ({
+	title: clip.value ? clip.value.name : i18n.ts.clip,
 	icon: 'ti ti-paperclip',
-} : null));
+}));
 </script>
 
 <style lang="scss" module>
@@ -160,7 +213,7 @@ definePageMetadata(computed(() => clip ? {
 .user {
 	--height: 32px;
 	padding: 16px;
-	border-top: solid 0.5px var(--divider);
+	border-top: solid 0.5px var(--MI_THEME-divider);
 	line-height: var(--height);
 }
 

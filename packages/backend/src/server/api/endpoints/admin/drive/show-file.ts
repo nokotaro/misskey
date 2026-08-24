@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -8,6 +8,7 @@ import type { DriveFilesRepository, UsersRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { DI } from '@/di-symbols.js';
 import { RoleService } from '@/core/RoleService.js';
+import { IdService } from '@/core/IdService.js';
 import { ApiError } from '../../../error.js';
 
 export const meta = {
@@ -15,6 +16,7 @@ export const meta = {
 
 	requireCredential: true,
 	requireModerator: true,
+	kind: 'read:admin:drive',
 
 	errors: {
 		noSuchFile: {
@@ -59,7 +61,7 @@ export const meta = {
 			name: {
 				type: 'string',
 				optional: false, nullable: false,
-				example: 'lenna.jpg',
+				example: '192.jpg',
 			},
 			type: {
 				type: 'string',
@@ -82,6 +84,24 @@ export const meta = {
 			properties: {
 				type: 'object',
 				optional: false, nullable: false,
+				properties: {
+					width: {
+						type: 'number',
+						optional: true, nullable: false,
+					},
+					height: {
+						type: 'number',
+						optional: true, nullable: false,
+					},
+					orientation: {
+						type: 'number',
+						optional: true, nullable: false,
+					},
+					avgColor: {
+						type: 'string',
+						optional: true, nullable: false,
+					},
+				},
 			},
 			storedInternal: {
 				type: 'boolean',
@@ -137,19 +157,42 @@ export const meta = {
 				type: 'boolean',
 				optional: false, nullable: false,
 			},
+			maybeSensitive: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			maybePorn: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			requestIp: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			requestHeaders: {
+				type: 'object',
+				optional: false, nullable: true,
+			},
 		},
 	},
 } as const;
 
 export const paramDef = {
-	type: 'object',
-	properties: {
-		fileId: { type: 'string', format: 'misskey:id' },
-		url: { type: 'string' },
-	},
 	anyOf: [
-		{ required: ['fileId'] },
-		{ required: ['url'] },
+		{
+			type: 'object',
+			properties: {
+				fileId: { type: 'string', format: 'misskey:id' },
+			},
+			required: ['fileId'],
+		},
+		{
+			type: 'object',
+			properties: {
+				url: { type: 'string' },
+			},
+			required: ['url'],
+		},
 	],
 } as const;
 
@@ -163,17 +206,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private usersRepository: UsersRepository,
 
 		private roleService: RoleService,
+		private idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const file = ps.fileId ? await this.driveFilesRepository.findOneBy({ id: ps.fileId }) : await this.driveFilesRepository.findOne({
-				where: [{
-					url: ps.url,
-				}, {
-					thumbnailUrl: ps.url,
-				}, {
-					webpublicUrl: ps.url,
-				}],
-			});
+			const file = await this.driveFilesRepository.findOneBy(
+				'fileId' in ps
+					? { id: ps.fileId }
+					: [{ url: ps.url }, { thumbnailUrl: ps.url }, { webpublicUrl: ps.url }],
+			);
 
 			if (file == null) {
 				throw new ApiError(meta.errors.noSuchFile);
@@ -212,7 +252,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				type: file.type,
 				name: file.name,
 				md5: file.md5,
-				createdAt: file.createdAt.toISOString(),
+				createdAt: this.idService.parse(file.id).date.toISOString(),
 				requestIp: iAmModerator ? file.requestIp : null,
 				requestHeaders: iAmModerator && !ownerIsModerator ? file.requestHeaders : null,
 			};

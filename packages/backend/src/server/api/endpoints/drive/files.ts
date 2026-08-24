@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -34,9 +34,11 @@ export const paramDef = {
 		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
 		sinceId: { type: 'string', format: 'misskey:id' },
 		untilId: { type: 'string', format: 'misskey:id' },
+		sinceDate: { type: 'integer' },
+		untilDate: { type: 'integer' },
 		folderId: { type: 'string', format: 'misskey:id', nullable: true, default: null },
 		type: { type: 'string', nullable: true, pattern: /^[a-zA-Z\/\-*]+$/.toString().slice(1, -1) },
-		sort: { type: 'string', nullable: true, enum: ['+createdAt', '-createdAt', '+name', '-name', '+size', '-size'] },
+		sort: { type: 'string', nullable: true, enum: ['+createdAt', '-createdAt', '+name', '-name', '+size', '-size', null] },
 	},
 	required: [],
 } as const;
@@ -51,7 +53,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const query = this.queryService.makePaginationQuery(this.driveFilesRepository.createQueryBuilder('file'), ps.sinceId, ps.untilId)
+			const query = this.queryService.makePaginationQuery(this.driveFilesRepository.createQueryBuilder('file'), ps.sinceId, ps.untilId, ps.sinceDate, ps.untilDate)
 				.andWhere('file.userId = :userId', { userId: me.id });
 
 			if (ps.folderId) {
@@ -69,8 +71,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			}
 
 			switch (ps.sort) {
-				case '+createdAt': query.orderBy('file.createdAt', 'DESC'); break;
-				case '-createdAt': query.orderBy('file.createdAt', 'ASC'); break;
+				case '+createdAt': query.orderBy('file.id', 'DESC'); break;
+				case '-createdAt': query.orderBy('file.id', 'ASC'); break;
 				case '+name': query.orderBy('file.name', 'DESC'); break;
 				case '-name': query.orderBy('file.name', 'ASC'); break;
 				case '+size': query.orderBy('file.size', 'DESC'); break;

@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -14,16 +14,11 @@ export class MiAnnouncementRead {
 	@PrimaryColumn(id())
 	public id: string;
 
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the AnnouncementRead.',
-	})
-	public createdAt: Date;
-
 	@Index()
 	@Column(id())
 	public userId: MiUser['id'];
 
-	@ManyToOne(type => MiUser, {
+	@ManyToOne(() => MiUser, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
@@ -33,7 +28,7 @@ export class MiAnnouncementRead {
 	@Column(id())
 	public announcementId: MiAnnouncement['id'];
 
-	@ManyToOne(type => MiAnnouncement, {
+	@ManyToOne(() => MiAnnouncement, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()

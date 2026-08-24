@@ -1,105 +1,113 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><XHeader :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="700" :marginMin="16" :marginMax="32">
-		<FormSuspense :p="init">
+<PageWithHeader :tabs="headerTabs">
+	<div class="_spacer" style="--MI_SPACER-w: 700px; --MI_SPACER-min: 16px; --MI_SPACER-max: 32px;">
+		<SearchMarker path="/admin/email-settings" :label="i18n.ts.emailServer" :keywords="['email']" icon="ti ti-mail">
 			<div class="_gaps_m">
-				<MkSwitch v-model="enableEmail">
-					<template #label>{{ i18n.ts.enableEmail }} ({{ i18n.ts.recommended }})</template>
-					<template #caption>{{ i18n.ts.emailConfigInfo }}</template>
-				</MkSwitch>
+				<SearchMarker>
+					<MkSwitch v-model="enableEmail">
+						<template #label><SearchLabel>{{ i18n.ts.enableEmail }}</SearchLabel> ({{ i18n.ts.recommended }})</template>
+						<template #caption><SearchText>{{ i18n.ts.emailConfigInfo }}</SearchText></template>
+					</MkSwitch>
+				</SearchMarker>
 
 				<template v-if="enableEmail">
-					<MkInput v-model="email" type="email">
-						<template #label>{{ i18n.ts.emailAddress }}</template>
-					</MkInput>
+					<SearchMarker>
+						<MkInput v-model="email" type="email">
+							<template #label><SearchLabel>{{ i18n.ts.emailAddress }}</SearchLabel></template>
+						</MkInput>
+					</SearchMarker>
 
-					<FormSection>
-						<template #label>{{ i18n.ts.smtpConfig }}</template>
+					<SearchMarker>
+						<FormSection>
+							<template #label><SearchLabel>{{ i18n.ts.smtpConfig }}</SearchLabel></template>
 
-						<div class="_gaps_m">
-							<FormSplit :minWidth="280">
-								<MkInput v-model="smtpHost">
-									<template #label>{{ i18n.ts.smtpHost }}</template>
-								</MkInput>
-								<MkInput v-model="smtpPort" type="number">
-									<template #label>{{ i18n.ts.smtpPort }}</template>
-								</MkInput>
-							</FormSplit>
-							<FormSplit :minWidth="280">
-								<MkInput v-model="smtpUser">
-									<template #label>{{ i18n.ts.smtpUser }}</template>
-								</MkInput>
-								<MkInput v-model="smtpPass" type="password">
-									<template #label>{{ i18n.ts.smtpPass }}</template>
-								</MkInput>
-							</FormSplit>
-							<FormInfo>{{ i18n.ts.emptyToDisableSmtpAuth }}</FormInfo>
-							<MkSwitch v-model="smtpSecure">
-								<template #label>{{ i18n.ts.smtpSecure }}</template>
-								<template #caption>{{ i18n.ts.smtpSecureInfo }}</template>
-							</MkSwitch>
-						</div>
-					</FormSection>
+							<div class="_gaps_m">
+								<FormSplit :minWidth="280">
+									<SearchMarker>
+										<MkInput v-model="smtpHost">
+											<template #label><SearchLabel>{{ i18n.ts.smtpHost }}</SearchLabel></template>
+										</MkInput>
+									</SearchMarker>
+									<SearchMarker>
+										<MkInput v-model="smtpPort" type="number">
+											<template #label><SearchLabel>{{ i18n.ts.smtpPort }}</SearchLabel></template>
+										</MkInput>
+									</SearchMarker>
+								</FormSplit>
+
+								<FormSplit :minWidth="280">
+									<SearchMarker>
+										<MkInput v-model="smtpUser">
+											<template #label><SearchLabel>{{ i18n.ts.smtpUser }}</SearchLabel></template>
+										</MkInput>
+									</SearchMarker>
+									<SearchMarker>
+										<MkInput v-model="smtpPass" type="password" autocomplete="new-password">
+											<template #label><SearchLabel>{{ i18n.ts.smtpPass }}</SearchLabel></template>
+										</MkInput>
+									</SearchMarker>
+								</FormSplit>
+
+								<FormInfo>{{ i18n.ts.emptyToDisableSmtpAuth }}</FormInfo>
+
+								<SearchMarker>
+									<MkSwitch v-model="smtpSecure">
+										<template #label><SearchLabel>{{ i18n.ts.smtpSecure }}</SearchLabel></template>
+										<template #caption><SearchText>{{ i18n.ts.smtpSecureInfo }}</SearchText></template>
+									</MkSwitch>
+								</SearchMarker>
+							</div>
+						</FormSection>
+					</SearchMarker>
 				</template>
 			</div>
-		</FormSuspense>
-	</MkSpacer>
+		</SearchMarker>
+	</div>
 	<template #footer>
 		<div :class="$style.footer">
-			<MkSpacer :contentMax="700" :marginMin="16" :marginMax="16">
+			<div class="_spacer" style="--MI_SPACER-w: 700px; --MI_SPACER-min: 16px; --MI_SPACER-max: 16px;">
 				<div class="_buttons">
 					<MkButton primary rounded @click="save"><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton>
 					<MkButton rounded @click="testEmail"><i class="ti ti-send"></i> {{ i18n.ts.testEmail }}</MkButton>
 				</div>
-			</MkSpacer>
+			</div>
 		</div>
 	</template>
-</MkStickyContainer>
+</PageWithHeader>
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
-import XHeader from './_header_.vue';
+import { ref, computed } from 'vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import MkInput from '@/components/MkInput.vue';
 import FormInfo from '@/components/MkInfo.vue';
-import FormSuspense from '@/components/form/suspense.vue';
 import FormSplit from '@/components/form/split.vue';
 import FormSection from '@/components/form/section.vue';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
 import { fetchInstance, instance } from '@/instance.js';
 import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { definePage } from '@/page.js';
 import MkButton from '@/components/MkButton.vue';
 
-let enableEmail: boolean = $ref(false);
-let email: any = $ref(null);
-let smtpSecure: boolean = $ref(false);
-let smtpHost: string = $ref('');
-let smtpPort: number = $ref(0);
-let smtpUser: string = $ref('');
-let smtpPass: string = $ref('');
+const meta = await misskeyApi('admin/meta');
 
-async function init() {
-	const meta = await os.api('admin/meta');
-	enableEmail = meta.enableEmail;
-	email = meta.email;
-	smtpSecure = meta.smtpSecure;
-	smtpHost = meta.smtpHost;
-	smtpPort = meta.smtpPort;
-	smtpUser = meta.smtpUser;
-	smtpPass = meta.smtpPass;
-}
+const enableEmail = ref(meta.enableEmail);
+const email = ref(meta.email);
+const smtpSecure = ref(meta.smtpSecure);
+const smtpHost = ref(meta.smtpHost);
+const smtpPort = ref(meta.smtpPort);
+const smtpUser = ref(meta.smtpUser);
+const smtpPass = ref(meta.smtpPass);
 
 async function testEmail() {
 	const { canceled, result: destination } = await os.inputText({
-		title: i18n.ts.destination,
+		title: 'To',
 		type: 'email',
 		default: instance.maintainerEmail ?? '',
 		placeholder: 'test@example.com',
@@ -115,29 +123,29 @@ async function testEmail() {
 
 function save() {
 	os.apiWithDialog('admin/update-meta', {
-		enableEmail,
-		email,
-		smtpSecure,
-		smtpHost,
-		smtpPort,
-		smtpUser,
-		smtpPass,
+		enableEmail: enableEmail.value,
+		email: email.value,
+		smtpSecure: smtpSecure.value,
+		smtpHost: smtpHost.value,
+		smtpPort: smtpPort.value,
+		smtpUser: smtpUser.value,
+		smtpPass: smtpPass.value,
 	}).then(() => {
-		fetchInstance();
+		fetchInstance(true);
 	});
 }
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePage(() => ({
 	title: i18n.ts.emailServer,
 	icon: 'ti ti-mail',
-});
+}));
 </script>
 
 <style lang="scss" module>
 .footer {
-	-webkit-backdrop-filter: var(--blur, blur(15px));
-	backdrop-filter: var(--blur, blur(15px));
+	-webkit-backdrop-filter: var(--MI-blur, blur(15px));
+	backdrop-filter: var(--MI-blur, blur(15px));
 }
 </style>

@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -41,11 +41,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script setup lang="ts">
-import { $i, getAccounts } from '@/account.js';
+import { ref } from 'vue';
+import { instanceName } from '@@/js/config.js';
+import { $i } from '@/i.js';
 import MkButton from '@/components/MkButton.vue';
 import { instance } from '@/instance.js';
-import { api, apiWithDialog, promiseDialog } from '@/os.js';
+import { apiWithDialog, promiseDialog, alert } from '@/os.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
 import { i18n } from '@/i18n.js';
+import { getAccounts } from '@/accounts.js';
 
 defineProps<{
 	primary?: boolean;
@@ -62,32 +66,49 @@ defineProps<{
 }>();
 
 // ServiceWorker registration
-let registration = $ref<ServiceWorkerRegistration | undefined>();
+const registration = ref<ServiceWorkerRegistration | undefined>();
 // If this browser supports push notification
-let supported = $ref(false);
+const supported = ref(false);
 // If this browser has already subscribed to push notification
-let pushSubscription = $ref<PushSubscription | null>(null);
-let pushRegistrationInServer = $ref<{ state?: string; key?: string; userId: string; endpoint: string; sendReadMessage: boolean; } | undefined>();
+const pushSubscription = ref<PushSubscription | null>(null);
+const pushRegistrationInServer = ref<{ state?: string; key?: string; userId: string; endpoint: string; sendReadMessage: boolean; } | undefined>();
 
-function subscribe() {
-	if (!registration || !supported || !instance.swPublickey) return;
+async function subscribe() {
+	if (!registration.value || !supported.value || !instance.swPublickey) return;
+
+	if ('Notification' in window) {
+		let permission = Notification.permission;
+
+		if (Notification.permission === 'default') {
+			permission = await promiseDialog(Notification.requestPermission(), null, null, i18n.ts.pleaseAllowPushNotification);
+		}
+
+		if (permission !== 'granted') {
+			alert({
+				type: 'error',
+				title: i18n.ts.browserPushNotificationDisabled,
+				text: i18n.tsx.browserPushNotificationDisabledDescription({ serverName: instanceName }),
+			});
+			return;
+		}
+	}
 
 	// SEE: https://developer.mozilla.org/en-US/docs/Web/API/PushManager/subscribe#Parameters
-	return promiseDialog(registration.pushManager.subscribe({
+	await promiseDialog(registration.value.pushManager.subscribe({
 		userVisibleOnly: true,
 		applicationServerKey: urlBase64ToUint8Array(instance.swPublickey),
 	})
 		.then(async subscription => {
-			pushSubscription = subscription;
+			pushSubscription.value = subscription;
 
 			// Register
-			pushRegistrationInServer = await api('sw/register', {
+			pushRegistrationInServer.value = await misskeyApi('sw/register', {
 				endpoint: subscription.endpoint,
 				auth: encode(subscription.getKey('auth')),
 				publickey: encode(subscription.getKey('p256dh')),
 			});
 		}, async err => { // When subscribe failed
-		// 通知が許可されていなかったとき
+			// 通知が許可されていなかったとき
 			if (err?.name === 'NotAllowedError') {
 				console.info('User denied the notification permission request.');
 				return;
@@ -102,36 +123,35 @@ function subscribe() {
 }
 
 async function unsubscribe() {
-	if (!pushSubscription) return;
+	if (!pushSubscription.value) return;
 
-	const endpoint = pushSubscription.endpoint;
+	const endpoint = pushSubscription.value.endpoint;
 	const accounts = await getAccounts();
 
-	pushRegistrationInServer = undefined;
+	pushRegistrationInServer.value = undefined;
 
 	if ($i && accounts.length >= 2) {
 		apiWithDialog('sw/unregister', {
-			i: $i.token,
 			endpoint,
-		});
+		}, $i.token);
 	} else {
-		pushSubscription.unsubscribe();
+		pushSubscription.value.unsubscribe();
 		apiWithDialog('sw/unregister', {
 			endpoint,
-		});
-		pushSubscription = null;
+		}, null);
+		pushSubscription.value = null;
 	}
 }
 
 function encode(buffer: ArrayBuffer | null) {
-	return btoa(String.fromCharCode.apply(null, new Uint8Array(buffer)));
+	return btoa(String.fromCharCode(...(buffer != null ? new Uint8Array(buffer) : [])));
 }
 
 /**
  * Convert the URL safe base64 string to a Uint8Array
  * @param base64String base64 string
  */
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
+function urlBase64ToUint8Array(base64String: string): BufferSource {
 	const padding = '='.repeat((4 - base64String.length % 4) % 4);
 	const base64 = (base64String + padding)
 		.replace(/-/g, '+')
@@ -150,20 +170,20 @@ if (navigator.serviceWorker == null) {
 	// TODO: よしなに？
 } else {
 	navigator.serviceWorker.ready.then(async swr => {
-		registration = swr;
+		registration.value = swr;
 
-		pushSubscription = await registration.pushManager.getSubscription();
+		pushSubscription.value = await registration.value.pushManager.getSubscription();
 
 		if (instance.swPublickey && ('PushManager' in window) && $i && $i.token) {
-			supported = true;
+			supported.value = true;
 
-			if (pushSubscription) {
-				const res = await api('sw/show-registration', {
-					endpoint: pushSubscription.endpoint,
+			if (pushSubscription.value) {
+				const res = await misskeyApi('sw/show-registration', {
+					endpoint: pushSubscription.value.endpoint,
 				});
 
 				if (res) {
-					pushRegistrationInServer = res;
+					pushRegistrationInServer.value = res;
 				}
 			}
 		}
@@ -171,6 +191,6 @@ if (navigator.serviceWorker == null) {
 }
 
 defineExpose({
-	pushRegistrationInServer: $$(pushRegistrationInServer),
+	pushRegistrationInServer: pushRegistrationInServer,
 });
 </script>

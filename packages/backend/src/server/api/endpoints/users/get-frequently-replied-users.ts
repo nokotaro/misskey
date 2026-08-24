@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -84,7 +84,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					id: -1,
 				},
 				take: 1000,
-				select: ['replyId'],
+				select: { replyId: true },
 			});
 
 			// 投稿が少なかったら中断
@@ -97,7 +97,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				where: {
 					id: In(recentNotes.map(p => p.replyId)),
 				},
-				select: ['userId'],
+				select: { userId: true },
 			});
 
 			const repliedUsers: any = {};
@@ -118,12 +118,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			const repliedUsersSorted = Object.keys(repliedUsers).sort((a, b) => repliedUsers[b] - repliedUsers[a]);
 
 			// Extract top replied users
-			const topRepliedUsers = repliedUsersSorted.slice(0, ps.limit);
+			const topRepliedUserIds = repliedUsersSorted.slice(0, ps.limit);
 
 			// Make replies object (includes weights)
-			const repliesObj = await Promise.all(topRepliedUsers.map(async (user) => ({
-				user: await this.userEntityService.pack(user, me, { detail: true }),
-				weight: repliedUsers[user] / peak,
+			const _userMap = await this.userEntityService.packMany(topRepliedUserIds, me, { schema: 'UserDetailed' })
+				.then(users => new Map(users.map(u => [u.id, u])));
+			const repliesObj = await Promise.all(topRepliedUserIds.map(async (userId) => ({
+				user: _userMap.get(userId) ?? (await this.userEntityService.pack(userId, me, { schema: 'UserDetailed' })),
+				weight: repliedUsers[userId] / peak,
 			})));
 
 			return repliesObj;

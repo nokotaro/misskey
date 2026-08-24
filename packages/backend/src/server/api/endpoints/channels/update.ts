@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -50,7 +50,7 @@ export const paramDef = {
 	properties: {
 		channelId: { type: 'string', format: 'misskey:id' },
 		name: { type: 'string', minLength: 1, maxLength: 128 },
-		description: { type: 'string', nullable: true, minLength: 1, maxLength: 2048 },
+		description: { type: 'string', nullable: true, maxLength: 2048 },
 		bannerId: { type: 'string', format: 'misskey:id', nullable: true },
 		isArchived: { type: 'boolean', nullable: true },
 		pinnedNoteIds: {
@@ -61,6 +61,7 @@ export const paramDef = {
 		},
 		color: { type: 'string', minLength: 1, maxLength: 16 },
 		isSensitive: { type: 'boolean', nullable: true },
+		allowRenoteToExternal: { type: 'boolean', nullable: true },
 	},
 	required: ['channelId'],
 } as const;
@@ -115,6 +116,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				...(typeof ps.isArchived === 'boolean' ? { isArchived: ps.isArchived } : {}),
 				...(banner ? { bannerId: banner.id } : {}),
 				...(typeof ps.isSensitive === 'boolean' ? { isSensitive: ps.isSensitive } : {}),
+				...(typeof ps.allowRenoteToExternal === 'boolean' ? { allowRenoteToExternal: ps.allowRenoteToExternal } : {}),
 			});
 
 			return await this.channelEntityService.pack(channel.id, me);

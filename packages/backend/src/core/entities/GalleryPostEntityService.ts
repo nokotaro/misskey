@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -12,6 +12,7 @@ import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiGalleryPost } from '@/models/GalleryPost.js';
 import { bindThis } from '@/decorators.js';
+import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 import { DriveFileEntityService } from './DriveFileEntityService.js';
 
@@ -26,6 +27,7 @@ export class GalleryPostEntityService {
 
 		private userEntityService: UserEntityService,
 		private driveFileEntityService: DriveFileEntityService,
+		private idService: IdService,
 	) {
 	}
 
@@ -33,16 +35,19 @@ export class GalleryPostEntityService {
 	public async pack(
 		src: MiGalleryPost['id'] | MiGalleryPost,
 		me?: { id: MiUser['id'] } | null | undefined,
+		hint?: {
+			packedUser?: Packed<'UserLite'>
+		},
 	): Promise<Packed<'GalleryPost'>> {
 		const meId = me ? me.id : null;
 		const post = typeof src === 'object' ? src : await this.galleryPostsRepository.findOneByOrFail({ id: src });
 
 		return await awaitAll({
 			id: post.id,
-			createdAt: post.createdAt.toISOString(),
+			createdAt: this.idService.parse(post.id).date.toISOString(),
 			updatedAt: post.updatedAt.toISOString(),
 			userId: post.userId,
-			user: this.userEntityService.pack(post.user ?? post.userId, me),
+			user: hint?.packedUser ?? this.userEntityService.pack(post.user ?? post.userId, me),
 			title: post.title,
 			description: post.description,
 			fileIds: post.fileIds,
@@ -51,16 +56,19 @@ export class GalleryPostEntityService {
 			tags: post.tags.length > 0 ? post.tags : undefined,
 			isSensitive: post.isSensitive,
 			likedCount: post.likedCount,
-			isLiked: meId ? await this.galleryLikesRepository.exist({ where: { postId: post.id, userId: meId } }) : undefined,
+			isLiked: meId ? await this.galleryLikesRepository.exists({ where: { postId: post.id, userId: meId } }) : undefined,
 		});
 	}
 
 	@bindThis
-	public packMany(
+	public async packMany(
 		posts: MiGalleryPost[],
 		me?: { id: MiUser['id'] } | null | undefined,
 	) {
-		return Promise.all(posts.map(x => this.pack(x, me)));
+		const _users = posts.map(({ user, userId }) => user ?? userId);
+		const _userMap = await this.userEntityService.packMany(_users, me)
+			.then(users => new Map(users.map(u => [u.id, u])));
+		return Promise.all(posts.map(post => this.pack(post, me, { packedUser: _userMap.get(post.userId) })));
 	}
 }
 

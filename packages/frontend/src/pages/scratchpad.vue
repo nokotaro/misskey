@@ -1,66 +1,92 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkSpacer :contentMax="800">
-	<div :class="$style.root">
-		<div :class="$style.editor" class="_panel">
-			<PrismEditor v-model="code" class="_monospace" :class="$style.code" :highlight="highlighter" :lineNumbers="false"/>
-			<MkButton style="position: absolute; top: 8px; right: 8px;" primary @click="run()"><i class="ti ti-player-play"></i></MkButton>
-		</div>
-
-		<MkContainer v-if="root && components.length > 1" :key="uiKey" :foldable="true">
-			<template #header>UI</template>
-			<div :class="$style.ui">
-				<MkAsUi :component="root" :components="components" size="small"/>
+<PageWithHeader>
+	<div class="_spacer" style="--MI_SPACER-w: 800px;">
+		<div class="_gaps">
+			<div class="_gaps_s">
+				<div :class="$style.editor" class="_panel">
+					<MkCodeEditor v-model="code" lang="aiscript"/>
+				</div>
+				<MkButton primary @click="run()"><i class="ti ti-player-play"></i></MkButton>
 			</div>
-		</MkContainer>
 
-		<MkContainer :foldable="true" class="">
-			<template #header>{{ i18n.ts.output }}</template>
-			<div :class="$style.logs">
-				<div v-for="log in logs" :key="log.id" class="log" :class="{ print: log.print }">{{ log.text }}</div>
+			<MkContainer v-if="root && components.length > 1" :key="uiKey" :foldable="true">
+				<template #header>UI</template>
+				<div :class="$style.ui">
+					<MkAsUi :component="root" :components="components" size="small"/>
+				</div>
+			</MkContainer>
+
+			<MkContainer :foldable="true" class="">
+				<template #header>{{ i18n.ts.output }}</template>
+				<div :class="$style.logs">
+					<div v-for="log in logs" :key="log.id" class="log" :class="{ print: log.print }">{{ log.text }}</div>
+				</div>
+			</MkContainer>
+
+			<MkContainer :foldable="true" :expanded="false">
+				<template #header>{{ i18n.ts.uiInspector }}</template>
+				<div :class="$style.uiInspector">
+					<div v-for="c in components" :key="c.value.id" :class="{ [$style.uiInspectorUnShown]: !showns.has(c.value.id) }">
+						<div :class="$style.uiInspectorType">{{ c.value.type }}</div>
+						<div :class="$style.uiInspectorId">{{ c.value.id }}</div>
+						<button :class="$style.uiInspectorPropsToggle" @click="() => uiInspectorOpenedComponents.set(c, !uiInspectorOpenedComponents.get(c))">
+							<i v-if="uiInspectorOpenedComponents.get(c)" class="ti ti-chevron-up icon"></i>
+							<i v-else class="ti ti-chevron-down icon"></i>
+						</button>
+						<div v-if="uiInspectorOpenedComponents.get(c)">
+							<MkTextarea :modelValue="stringifyUiProps(c.value)" code readonly></MkTextarea>
+						</div>
+					</div>
+					<div :class="$style.uiInspectorDescription">{{ i18n.ts.uiInspectorDescription }}</div>
+				</div>
+			</MkContainer>
+
+			<div class="">
+				{{ i18n.ts.scratchpadDescription }}
 			</div>
-		</MkContainer>
-
-		<div class="">
-			{{ i18n.ts.scratchpadDescription }}
 		</div>
 	</div>
-</MkSpacer>
+</PageWithHeader>
 </template>
 
 <script lang="ts" setup>
-import { onDeactivated, onUnmounted, Ref, ref, watch } from 'vue';
-import 'prismjs';
-import { highlight, languages } from 'prismjs/components/prism-core';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/themes/prism-okaidia.css';
-import { PrismEditor } from 'vue-prism-editor';
-import 'vue-prism-editor/dist/prismeditor.min.css';
+import { onDeactivated, onUnmounted, ref, watch, computed } from 'vue';
 import { Interpreter, Parser, utils } from '@syuilo/aiscript';
+import type { Ref } from 'vue';
+import type { AsUiComponent } from '@/aiscript/ui.js';
+import type { AsUiRoot } from '@/aiscript/ui.js';
+import type { Value } from '@syuilo/aiscript/interpreter/value.js';
 import MkContainer from '@/components/MkContainer.vue';
 import MkButton from '@/components/MkButton.vue';
-import { createAiScriptEnv } from '@/scripts/aiscript/api.js';
+import MkTextarea from '@/components/MkTextarea.vue';
+import MkCodeEditor from '@/components/MkCodeEditor.vue';
+import { aiScriptReadline, createAiScriptEnv } from '@/aiscript/api.js';
 import * as os from '@/os.js';
-import { $i } from '@/account.js';
+import { $i } from '@/i.js';
 import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
-import { AsUiComponent, AsUiRoot, registerAsUiLib } from '@/scripts/aiscript/ui.js';
+import { definePage } from '@/page.js';
+import { registerAsUiLib } from '@/aiscript/ui.js';
 import MkAsUi from '@/components/MkAsUi.vue';
 import { miLocalStorage } from '@/local-storage.js';
-import { claimAchievement } from '@/scripts/achievements.js';
+import { claimAchievement } from '@/utility/achievements.js';
 
 const parser = new Parser();
 let aiscript: Interpreter;
 const code = ref('');
-const logs = ref<any[]>([]);
-const root = ref<AsUiRoot>();
-let components: Ref<AsUiComponent>[] = $ref([]);
-let uiKey = $ref(0);
+const logs = ref<{
+	id: number;
+	text: string;
+	print: boolean;
+}[]>([]);
+const root = ref<AsUiRoot | undefined>();
+const components = ref<Ref<AsUiComponent>[]>([]);
+const uiKey = ref(0);
+const uiInspectorOpenedComponents = ref(new WeakMap<AsUiComponent | Ref<AsUiComponent>, boolean>);
 
 const saved = miLocalStorage.getItem('scratchpad');
 if (saved) {
@@ -71,34 +97,30 @@ watch(code, () => {
 	miLocalStorage.setItem('scratchpad', code.value);
 });
 
+function stringifyUiProps(uiProps: AsUiComponent) {
+	return JSON.stringify(
+		{ ...uiProps, type: undefined, id: undefined },
+		(k, v) => typeof v === 'function' ? '<function>' : v,
+		2,
+	);
+}
+
 async function run() {
 	if (aiscript) aiscript.abort();
 	root.value = undefined;
-	components = [];
-	uiKey++;
+	components.value = [];
+	uiKey.value++;
 	logs.value = [];
 	aiscript = new Interpreter(({
 		...createAiScriptEnv({
 			storageKey: 'widget',
 			token: $i?.token,
 		}),
-		...registerAsUiLib(components, (_root) => {
+		...registerAsUiLib(components.value, (_root) => {
 			root.value = _root.value;
 		}),
 	}), {
-		in: (q) => {
-			return new Promise(ok => {
-				os.inputText({
-					title: q,
-				}).then(({ canceled, result: a }) => {
-					if (canceled) {
-						ok('');
-					} else {
-						ok(a);
-					}
-				});
-			});
-		},
+		in: aiScriptReadline,
 		out: (value) => {
 			if (value.type === 'str' && value.value.toLowerCase().replace(',', '').includes('hello world')) {
 				claimAchievement('outputHelloWorldOnScratchpad');
@@ -120,7 +142,7 @@ async function run() {
 			switch (type) {
 				case 'end': logs.value.push({
 					id: Math.random(),
-					text: utils.valToString(params.val, true),
+					text: utils.valToString(params.val as Value, true),
 					print: false,
 				}); break;
 				default: break;
@@ -152,10 +174,6 @@ async function run() {
 	}
 }
 
-function highlighter(code) {
-	return highlight(code, languages.js, 'javascript');
-}
-
 onDeactivated(() => {
 	if (aiscript) aiscript.abort();
 });
@@ -164,21 +182,34 @@ onUnmounted(() => {
 	if (aiscript) aiscript.abort();
 });
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
-definePageMetadata({
+const showns = computed(() => {
+	if (root.value == null) return new Set<string>();
+	const result = new Set<string>();
+	(function addChildrenToResult(c: AsUiComponent) {
+		result.add(c.id);
+		const children = c.children;
+		if (children) {
+			const childComponents = components.value.filter(v => children.includes(v.value.id));
+			for (const child of childComponents) {
+				addChildrenToResult(child.value);
+			}
+		}
+	})(root.value);
+	return result;
+});
+
+definePage(() => ({
 	title: i18n.ts.scratchpad,
 	icon: 'ti ti-terminal-2',
-});
+}));
 </script>
 
 <style lang="scss" module>
 .root {
-	display: flex;
-	flex-direction: column;
-	gap: var(--margin);
 }
 
 .editor {
@@ -207,5 +238,40 @@ definePageMetadata({
 			}
 		}
 	}
+}
+
+.uiInspector {
+	display: grid;
+	gap: 8px;
+	padding: 16px;
+}
+
+.uiInspectorUnShown {
+	color: color(from var(--MI_THEME-fg) srgb r g b / 0.5);
+}
+
+.uiInspectorType {
+	display: inline-block;
+	border: hidden;
+	border-radius: 10px;
+	background-color: var(--MI_THEME-panelHighlight);
+	padding: 2px 8px;
+	font-size: 12px;
+}
+
+.uiInspectorId {
+	display: inline-block;
+	padding-left: 8px;
+}
+
+.uiInspectorDescription {
+	display: block;
+	font-size: 12px;
+	padding-top: 16px;
+}
+
+.uiInspectorPropsToggle {
+	background: none;
+	border: none;
 }
 </style>

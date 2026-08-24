@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -12,6 +12,8 @@ import type { MiUser } from '@/models/User.js';
 import type { MiRole } from '@/models/Role.js';
 import { bindThis } from '@/decorators.js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
+import { IdService } from '@/core/IdService.js';
+import { Packed } from '@/misc/json-schema.js';
 
 @Injectable()
 export class RoleEntityService {
@@ -21,6 +23,8 @@ export class RoleEntityService {
 
 		@Inject(DI.roleAssignmentsRepository)
 		private roleAssignmentsRepository: RoleAssignmentsRepository,
+
+		private idService: IdService,
 	) {
 	}
 
@@ -28,14 +32,15 @@ export class RoleEntityService {
 	public async pack(
 		src: MiRole['id'] | MiRole,
 		me?: { id: MiUser['id'] } | null | undefined,
-	) {
+	): Promise<Packed<'Role'>> {
 		const role = typeof src === 'object' ? src : await this.rolesRepository.findOneByOrFail({ id: src });
 
 		const assignedCount = await this.roleAssignmentsRepository.createQueryBuilder('assign')
 			.where('assign.roleId = :roleId', { roleId: role.id })
-			.andWhere(new Brackets(qb => { qb
-				.where('assign.expiresAt IS NULL')
-				.orWhere('assign.expiresAt > :now', { now: new Date() });
+			.andWhere(new Brackets(qb => {
+				qb
+					.where('assign.expiresAt IS NULL')
+					.orWhere('assign.expiresAt > :now', { now: new Date() });
 			}))
 			.getCount();
 
@@ -50,7 +55,7 @@ export class RoleEntityService {
 
 		return await awaitAll({
 			id: role.id,
-			createdAt: role.createdAt.toISOString(),
+			createdAt: this.idService.parse(role.id).date.toISOString(),
 			updatedAt: role.updatedAt.toISOString(),
 			name: role.name,
 			description: role.description,
@@ -63,6 +68,7 @@ export class RoleEntityService {
 			isModerator: role.isModerator,
 			isExplorable: role.isExplorable,
 			asBadge: role.asBadge,
+			preserveAssignmentOnMoveAccount: role.preserveAssignmentOnMoveAccount,
 			canEditMembersByModerator: role.canEditMembersByModerator,
 			displayOrder: role.displayOrder,
 			policies: policies,

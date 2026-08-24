@@ -1,57 +1,57 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div>
-	<MkAnimBg style="position: fixed; top: 0;"/>
+<PageWithAnimBg>
 	<div :class="$style.formContainer">
 		<form :class="$style.form" class="_panel" @submit.prevent="submit()">
 			<div :class="$style.banner">
 				<i class="ti ti-user-check"></i>
 			</div>
 			<div class="_gaps_m" style="padding: 32px;">
-				<div>{{ i18n.t('clickToFinishEmailVerification', { ok: i18n.ts.gotIt }) }}</div>
+				<div>{{ i18n.tsx.clickToFinishEmailVerification({ ok: i18n.ts.gotIt }) }}</div>
 				<div>
-					<MkButton gradate large rounded type="submit" :disabled="submitting" data-cy-admin-ok style="margin: 0 auto;">
+					<MkButton gradate large rounded type="submit" :disabled="submitting" data-testid="admin-ok" style="margin: 0 auto;">
 						{{ submitting ? i18n.ts.processing : i18n.ts.gotIt }}<MkEllipsis v-if="submitting"/>
 					</MkButton>
 				</div>
 			</div>
 		</form>
 	</div>
-</div>
+</PageWithAnimBg>
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
+import { ref } from 'vue';
 import MkButton from '@/components/MkButton.vue';
-import MkAnimBg from '@/components/MkAnimBg.vue';
-import { login } from '@/account.js';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
+import { login } from '@/accounts.js';
 
-let submitting = $ref(false);
+const submitting = ref(false);
 
 const props = defineProps<{
 	code: string;
 }>();
 
 function submit() {
-	if (submitting) return;
-	submitting = true;
+	if (submitting.value) return;
+	submitting.value = true;
 
-	os.api('signup-pending', {
+	misskeyApi('signup-pending', {
 		code: props.code,
 	}).then(res => {
 		return login(res.i, '/');
 	}).catch(() => {
-		submitting = false;
+		submitting.value = false;
 
 		os.alert({
 			type: 'error',
-			text: i18n.ts.somethingHappened,
+			title: i18n.ts.somethingHappened,
+			text: i18n.ts.emailVerificationFailedError,
 		});
 	});
 }
@@ -62,14 +62,14 @@ function submit() {
 	min-height: 100svh;
 	padding: 32px 32px 64px 32px;
 	box-sizing: border-box;
-display: grid;
-place-content: center;
+	display: grid;
+	place-content: center;
 }
 
 .form {
 	position: relative;
 	z-index: 10;
-	border-radius: var(--radius);
+	border-radius: var(--MI-radius);
 	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 	overflow: clip;
 	max-width: 500px;
@@ -79,7 +79,7 @@ place-content: center;
 	padding: 16px;
 	text-align: center;
 	font-size: 26px;
-	background-color: var(--accentedBg);
-	color: var(--accent);
+	background-color: var(--MI_THEME-accentedBg);
+	color: var(--MI_THEME-accent);
 }
 </style>

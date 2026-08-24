@@ -1,11 +1,10 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 import * as fs from 'node:fs';
 import { Inject, Injectable } from '@nestjs/common';
-import { MoreThan } from 'typeorm';
 import { format as dateFormat } from 'date-fns';
 import { DI } from '@/di-symbols.js';
 import type { MiNoteFavorite, NoteFavoritesRepository, PollsRepository, MiUser, UsersRepository } from '@/models/_.js';
@@ -15,6 +14,10 @@ import { createTemp } from '@/misc/create-temp.js';
 import type { MiPoll } from '@/models/Poll.js';
 import type { MiNote } from '@/models/Note.js';
 import { bindThis } from '@/decorators.js';
+import { IdService } from '@/core/IdService.js';
+import { NotificationService } from '@/core/NotificationService.js';
+import { QueryService } from '@/core/QueryService.js';
+import { shouldHideNoteByTime } from '@/misc/should-hide-note-by-time.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbJobDataWithUser } from '../types.js';
@@ -35,6 +38,9 @@ export class ExportFavoritesProcessorService {
 
 		private driveService: DriveService,
 		private queueLoggerService: QueueLoggerService,
+		private queryService: QueryService,
+		private idService: IdService,
+		private notificationService: NotificationService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-favorites');
 	}
@@ -74,18 +80,25 @@ export class ExportFavoritesProcessorService {
 			let exportedFavoritesCount = 0;
 			let cursor: MiNoteFavorite['id'] | null = null;
 
+			const total = await this.noteFavoritesRepository.countBy({
+				userId: user.id,
+			});
+
 			while (true) {
-				const favorites = await this.noteFavoritesRepository.find({
-					where: {
-						userId: user.id,
-						...(cursor ? { id: MoreThan(cursor) } : {}),
-					},
-					take: 100,
-					order: {
-						id: 1,
-					},
-					relations: ['note', 'note.user'],
-				}) as (MiNoteFavorite & { note: MiNote & { user: MiUser } })[];
+				const query = this.noteFavoritesRepository.createQueryBuilder('favorite')
+					.leftJoinAndSelect('favorite.note', 'note')
+					.leftJoinAndSelect('note.user', 'user')
+					.where('favorite.userId = :userId', { userId: user.id })
+					.orderBy('favorite.id', 'ASC')
+					.take(100);
+
+				if (cursor) {
+					query.andWhere('favorite.id > :cursor', { cursor });
+				}
+
+				this.queryService.generateVisibilityQuery(query, { id: user.id });
+
+				const favorites = await query.getMany() as (MiNoteFavorite & { note: MiNote & { user: MiUser } })[];
 
 				if (favorites.length === 0) {
 					job.updateProgress(100);
@@ -95,21 +108,22 @@ export class ExportFavoritesProcessorService {
 				cursor = favorites.at(-1)?.id ?? null;
 
 				for (const favorite of favorites) {
+					const noteCreatedAt = this.idService.parse(favorite.note.id).date;
+					if (shouldHideNoteByTime(favorite.note.user.makeNotesHiddenBefore, noteCreatedAt)) {
+						continue;
+					}
+
 					let poll: MiPoll | undefined;
 					if (favorite.note.hasPoll) {
 						poll = await this.pollsRepository.findOneByOrFail({ noteId: favorite.note.id });
 					}
-					const content = JSON.stringify(serialize(favorite, poll));
+					const content = JSON.stringify(this.serialize(favorite, poll));
 					const isFirst = exportedFavoritesCount === 0;
 					await write(isFirst ? content : ',\n' + content);
 					exportedFavoritesCount++;
 				}
 
-				const total = await this.noteFavoritesRepository.countBy({
-					userId: user.id,
-				});
-
-				job.updateProgress(exportedFavoritesCount / total);
+				job.updateProgress(exportedFavoritesCount / total * 100);
 			}
 
 			await write(']');
@@ -121,38 +135,43 @@ export class ExportFavoritesProcessorService {
 			const driveFile = await this.driveService.addFile({ user, path, name: fileName, force: true, ext: 'json' });
 
 			this.logger.succ(`Exported to: ${driveFile.id}`);
+
+			this.notificationService.createNotification(user.id, 'exportCompleted', {
+				exportedEntity: 'favorite',
+				fileId: driveFile.id,
+			});
 		} finally {
 			cleanup();
 		}
 	}
-}
 
-function serialize(favorite: MiNoteFavorite & { note: MiNote & { user: MiUser } }, poll: MiPoll | null = null): Record<string, unknown> {
-	return {
-		id: favorite.id,
-		createdAt: favorite.createdAt,
-		note: {
-			id: favorite.note.id,
-			text: favorite.note.text,
-			createdAt: favorite.note.createdAt,
-			fileIds: favorite.note.fileIds,
-			replyId: favorite.note.replyId,
-			renoteId: favorite.note.renoteId,
-			poll: poll,
-			cw: favorite.note.cw,
-			visibility: favorite.note.visibility,
-			visibleUserIds: favorite.note.visibleUserIds,
-			localOnly: favorite.note.localOnly,
-			reactionAcceptance: favorite.note.reactionAcceptance,
-			uri: favorite.note.uri,
-			url: favorite.note.url,
-			user: {
-				id: favorite.note.user.id,
-				name: favorite.note.user.name,
-				username: favorite.note.user.username,
-				host: favorite.note.user.host,
-				uri: favorite.note.user.uri,
+	private serialize(favorite: MiNoteFavorite & { note: MiNote & { user: MiUser } }, poll: MiPoll | null = null): Record<string, unknown> {
+		return {
+			id: favorite.id,
+			createdAt: this.idService.parse(favorite.id).date.toISOString(),
+			note: {
+				id: favorite.note.id,
+				text: favorite.note.text,
+				createdAt: this.idService.parse(favorite.note.id).date.toISOString(),
+				fileIds: favorite.note.fileIds,
+				replyId: favorite.note.replyId,
+				renoteId: favorite.note.renoteId,
+				poll: poll,
+				cw: favorite.note.cw,
+				visibility: favorite.note.visibility,
+				visibleUserIds: favorite.note.visibleUserIds,
+				localOnly: favorite.note.localOnly,
+				reactionAcceptance: favorite.note.reactionAcceptance,
+				uri: favorite.note.uri,
+				url: favorite.note.url,
+				user: {
+					id: favorite.note.user.id,
+					name: favorite.note.user.name,
+					username: favorite.note.user.username,
+					host: favorite.note.user.host,
+					uri: favorite.note.user.uri,
+				},
 			},
-		},
-	};
+		};
+	}
 }

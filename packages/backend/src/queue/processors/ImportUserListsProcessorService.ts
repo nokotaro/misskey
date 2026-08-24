@@ -1,12 +1,12 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 import { Inject, Injectable } from '@nestjs/common';
 import { IsNull } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type { UsersRepository, DriveFilesRepository, UserListJoiningsRepository, UserListsRepository } from '@/models/_.js';
+import type { UsersRepository, DriveFilesRepository, UserListMembershipsRepository, UserListsRepository } from '@/models/_.js';
 import type Logger from '@/logger.js';
 import * as Acct from '@/misc/acct.js';
 import { RemoteUserResolveService } from '@/core/RemoteUserResolveService.js';
@@ -33,8 +33,8 @@ export class ImportUserListsProcessorService {
 		@Inject(DI.userListsRepository)
 		private userListsRepository: UserListsRepository,
 
-		@Inject(DI.userListJoiningsRepository)
-		private userListJoiningsRepository: UserListJoiningsRepository,
+		@Inject(DI.userListMembershipsRepository)
+		private userListMembershipsRepository: UserListMembershipsRepository,
 
 		private utilityService: UtilityService,
 		private idService: IdService,
@@ -70,8 +70,19 @@ export class ImportUserListsProcessorService {
 			linenum++;
 
 			try {
-				const listName = line.split(',')[0].trim();
-				const { username, host } = Acct.parse(line.split(',')[1].trim());
+				const parts = line.split(',');
+				const listName = parts[0].trim();
+				const { username, host } = Acct.parse(parts[1].trim());
+				let withReplies = false;
+
+				for (const keyValue of parts.slice(2)) {
+					const [key, value] = keyValue.split('=');
+					switch (key) {
+						case 'withReplies':
+							withReplies = value === 'true';
+							break;
+					}
+				}
 
 				let list = await this.userListsRepository.findOneBy({
 					userId: user.id,
@@ -79,12 +90,11 @@ export class ImportUserListsProcessorService {
 				});
 
 				if (list == null) {
-					list = await this.userListsRepository.insert({
-						id: this.idService.genId(),
-						createdAt: new Date(),
+					list = await this.userListsRepository.insertOne({
+						id: this.idService.gen(),
 						userId: user.id,
 						name: listName,
-					}).then(x => this.userListsRepository.findOneByOrFail(x.identifiers[0]));
+					});
 				}
 
 				let target = this.utilityService.isSelfHost(host!) ? await this.usersRepository.findOneBy({
@@ -99,9 +109,11 @@ export class ImportUserListsProcessorService {
 					target = await this.remoteUserResolveService.resolveUser(username, host);
 				}
 
-				if (await this.userListJoiningsRepository.findOneBy({ userListId: list!.id, userId: target.id }) != null) continue;
+				if (await this.userListMembershipsRepository.findOneBy({ userListId: list!.id, userId: target.id }) != null) continue;
 
-				this.userListService.addMember(target, list!, user);
+				await this.userListService.addMember(target, list, user, {
+					withReplies: withReplies,
+				});
 			} catch (e) {
 				this.logger.warn(`Error in line:${linenum} ${e}`);
 			}

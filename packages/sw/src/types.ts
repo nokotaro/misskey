@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -23,6 +23,7 @@ type PushNotificationDataSourceMap = {
 		note: Misskey.entities.Note;
 	};
 	readAllNotifications: undefined;
+	newChatMessage: Misskey.entities.ChatMessage;
 };
 
 export type PushNotificationData<K extends keyof PushNotificationDataSourceMap> = {
@@ -41,6 +42,7 @@ export type BadgeNames =
 	| 'antenna'
 	| 'arrow-back-up'
 	| 'at'
+	| 'bell'
 	| 'chart-arrows'
 	| 'circle-check'
 	| 'medal'
@@ -49,4 +51,5 @@ export type BadgeNames =
 	| 'quote'
 	| 'repeat'
 	| 'user-plus'
-	| 'users';
+	| 'users'
+	| 'login-2';

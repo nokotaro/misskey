@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -24,11 +24,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
-import { GetFormResultType } from '@/scripts/form.js';
+import { ref } from 'vue';
+import * as Misskey from 'misskey-js';
+import { useWidgetPropsManager } from './widget.js';
+import type { WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
+import type { FormWithDefault, GetFormResultType } from '@/utility/form.js';
 import MkContainer from '@/components/MkContainer.vue';
 import * as os from '@/os.js';
-import { useInterval } from '@/scripts/use-interval.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
+import { useInterval } from '@@/js/use-interval.js';
 import { i18n } from '@/i18n.js';
 import MkButton from '@/components/MkButton.vue';
 
@@ -36,15 +40,16 @@ const name = 'userList';
 
 const widgetPropsDef = {
 	showHeader: {
-		type: 'boolean' as const,
+		type: 'boolean',
+		label: i18n.ts._widgetOptions.showHeader,
 		default: true,
 	},
 	listId: {
-		type: 'string' as const,
-		default: null,
+		type: 'string',
+		default: null as string | null,
 		hidden: true,
 	},
-};
+} satisfies FormWithDefault;
 
 type WidgetProps = GetFormResultType<typeof widgetPropsDef>;
 
@@ -57,21 +62,21 @@ const { widgetProps, configure, save } = useWidgetPropsManager(name,
 	emit,
 );
 
-let list = $ref();
-let users = $ref([]);
-let fetching = $ref(true);
+const list = ref<Misskey.entities.UserList | null>(null);
+const users = ref<Misskey.entities.UserDetailed[]>([]);
+const fetching = ref(true);
 
 async function chooseList() {
-	const lists = await os.api('users/lists/list');
-	const { canceled, result: list } = await os.select({
+	const lists = await misskeyApi('users/lists/list');
+	const { canceled, result: listId } = await os.select({
 		title: i18n.ts.selectList,
 		items: lists.map(x => ({
-			value: x, text: x.name,
+			value: x.id, label: x.name,
 		})),
 		default: widgetProps.listId,
 	});
-	if (canceled) return;
-
+	if (canceled || listId == null) return;
+	const list = lists.find(x => x.id === listId)!;
 	widgetProps.listId = list.id;
 	save();
 	fetch();
@@ -79,19 +84,19 @@ async function chooseList() {
 
 const fetch = () => {
 	if (widgetProps.listId == null) {
-		fetching = false;
+		fetching.value = false;
 		return;
 	}
 
-	os.api('users/lists/show', {
+	misskeyApi('users/lists/show', {
 		listId: widgetProps.listId,
 	}).then(_list => {
-		list = _list;
-		os.api('users/show', {
-			userIds: list.userIds,
+		list.value = _list;
+		misskeyApi('users/show', {
+			userIds: list.value.userIds ?? [],
 		}).then(_users => {
-			users = _users;
-			fetching = false;
+			users.value = _users;
+			fetching.value = false;
 		});
 	});
 };

@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -19,7 +19,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</MkInput>
 
 	<FormSection>
-		<template #label>{{ i18n.ts._webhookSettings.events }}</template>
+		<template #label>{{ i18n.ts._webhookSettings.trigger }}</template>
 
 		<div class="_gaps_s">
 			<MkSwitch v-model="event_follow">{{ i18n.ts._webhookSettings._events.follow }}</MkSwitch>
@@ -27,7 +27,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkSwitch v-model="event_note">{{ i18n.ts._webhookSettings._events.note }}</MkSwitch>
 			<MkSwitch v-model="event_reply">{{ i18n.ts._webhookSettings._events.reply }}</MkSwitch>
 			<MkSwitch v-model="event_renote">{{ i18n.ts._webhookSettings._events.renote }}</MkSwitch>
-			<MkSwitch v-model="event_reaction">{{ i18n.ts._webhookSettings._events.reaction }}</MkSwitch>
+			<MkSwitch v-model="event_reaction" :disabled="true">{{ i18n.ts._webhookSettings._events.reaction }}</MkSwitch>
 			<MkSwitch v-model="event_mention">{{ i18n.ts._webhookSettings._events.mention }}</MkSwitch>
 		</div>
 	</FormSection>
@@ -39,51 +39,52 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
+import { ref, computed } from 'vue';
+import * as Misskey from 'misskey-js';
 import MkInput from '@/components/MkInput.vue';
 import FormSection from '@/components/form/section.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import MkButton from '@/components/MkButton.vue';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { definePage } from '@/page.js';
 
-let name = $ref('');
-let url = $ref('');
-let secret = $ref('');
+const name = ref('');
+const url = ref('');
+const secret = ref('');
 
-let event_follow = $ref(true);
-let event_followed = $ref(true);
-let event_note = $ref(true);
-let event_reply = $ref(true);
-let event_renote = $ref(true);
-let event_reaction = $ref(true);
-let event_mention = $ref(true);
+const event_follow = ref(true);
+const event_followed = ref(true);
+const event_note = ref(true);
+const event_reply = ref(true);
+const event_renote = ref(true);
+const event_reaction = ref(true);
+const event_mention = ref(true);
 
 async function create(): Promise<void> {
-	const events = [];
-	if (event_follow) events.push('follow');
-	if (event_followed) events.push('followed');
-	if (event_note) events.push('note');
-	if (event_reply) events.push('reply');
-	if (event_renote) events.push('renote');
-	if (event_reaction) events.push('reaction');
-	if (event_mention) events.push('mention');
+	const events = [] as Misskey.entities.UserWebhook['on'];
+	if (event_follow.value) events.push('follow');
+	if (event_followed.value) events.push('followed');
+	if (event_note.value) events.push('note');
+	if (event_reply.value) events.push('reply');
+	if (event_renote.value) events.push('renote');
+	if (event_reaction.value) events.push('reaction');
+	if (event_mention.value) events.push('mention');
 
 	os.apiWithDialog('i/webhooks/create', {
-		name,
-		url,
-		secret,
+		name: name.value,
+		url: url.value,
+		secret: secret.value,
 		on: events,
 	});
 }
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePage(() => ({
 	title: 'Create new webhook',
 	icon: 'ti ti-webhook',
-});
+}));
 </script>

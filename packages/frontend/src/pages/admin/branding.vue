@@ -1,175 +1,235 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div>
-	<MkStickyContainer>
-		<template #header><XHeader :tabs="headerTabs"/></template>
-		<MkSpacer :contentMax="700" :marginMin="16" :marginMax="32">
-			<FormSuspense :p="init">
-				<div class="_gaps_m">
-					<MkInput v-model="iconUrl">
-						<template #prefix><i class="ti ti-link"></i></template>
-						<template #label>{{ i18n.ts._serverSettings.iconUrl }}</template>
-					</MkInput>
+<PageWithHeader :tabs="headerTabs">
+	<div class="_spacer" style="--MI_SPACER-w: 700px; --MI_SPACER-min: 16px; --MI_SPACER-max: 32px;">
+		<SearchMarker path="/admin/branding" :label="i18n.ts.branding" :keywords="['branding']" icon="ti ti-paint">
+			<div class="_gaps_m">
+				<SearchMarker :keywords="['entrance', 'welcome', 'landing', 'front', 'home', 'page', 'style']">
+					<MkRadios
+						v-model="entrancePageStyle"
+						:options="[
+							{ value: 'classic' },
+							{ value: 'simple' },
+						]"
+					>
+						<template #label><SearchLabel>{{ i18n.ts._serverSettings.entrancePageStyle }}</SearchLabel></template>
+					</MkRadios>
+				</SearchMarker>
 
-					<MkInput v-model="app192IconUrl">
+				<SearchMarker :keywords="['timeline']">
+					<MkSwitch v-model="showTimelineForVisitor">
+						<template #label><SearchLabel>{{ i18n.ts._serverSettings.showTimelineForVisitor }}</SearchLabel></template>
+					</MkSwitch>
+				</SearchMarker>
+
+				<SearchMarker :keywords="['activity', 'activities']">
+					<MkSwitch v-model="showActivitiesForVisitor">
+						<template #label><SearchLabel>{{ i18n.ts._serverSettings.showActivitiesForVisitor }}</SearchLabel></template>
+					</MkSwitch>
+				</SearchMarker>
+
+				<SearchMarker :keywords="['icon', 'image']">
+					<MkInput v-model="iconUrl" type="url">
 						<template #prefix><i class="ti ti-link"></i></template>
-						<template #label>{{ i18n.ts._serverSettings.iconUrl }} (App/192px)</template>
+						<template #label><SearchLabel>{{ i18n.ts._serverSettings.iconUrl }}</SearchLabel></template>
+					</MkInput>
+				</SearchMarker>
+
+				<SearchMarker :keywords="['icon', 'image']">
+					<MkInput v-model="app192IconUrl" type="url">
+						<template #prefix><i class="ti ti-link"></i></template>
+						<template #label><SearchLabel>{{ i18n.ts._serverSettings.iconUrl }} (App/192px)</SearchLabel></template>
 						<template #caption>
-							<div>{{ i18n.t('_serverSettings.appIconDescription', { host: instance.name ?? host }) }}</div>
+							<div>{{ i18n.tsx._serverSettings.appIconDescription({ host: instance.name ?? host }) }}</div>
 							<div>({{ i18n.ts._serverSettings.appIconUsageExample }})</div>
 							<div>{{ i18n.ts._serverSettings.appIconStyleRecommendation }}</div>
-							<div><strong>{{ i18n.t('_serverSettings.appIconResolutionMustBe', { resolution: '192x192px' }) }}</strong></div>
+							<div><strong>{{ i18n.tsx._serverSettings.appIconResolutionMustBe({ resolution: '192x192px' }) }}</strong></div>
 						</template>
 					</MkInput>
+				</SearchMarker>
 
-					<MkInput v-model="app512IconUrl">
+				<SearchMarker :keywords="['icon', 'image']">
+					<MkInput v-model="app512IconUrl" type="url">
 						<template #prefix><i class="ti ti-link"></i></template>
-						<template #label>{{ i18n.ts._serverSettings.iconUrl }} (App/512px)</template>
+						<template #label><SearchLabel>{{ i18n.ts._serverSettings.iconUrl }} (App/512px)</SearchLabel></template>
 						<template #caption>
-							<div>{{ i18n.t('_serverSettings.appIconDescription', { host: instance.name ?? host }) }}</div>
+							<div>{{ i18n.tsx._serverSettings.appIconDescription({ host: instance.name ?? host }) }}</div>
 							<div>({{ i18n.ts._serverSettings.appIconUsageExample }})</div>
 							<div>{{ i18n.ts._serverSettings.appIconStyleRecommendation }}</div>
-							<div><strong>{{ i18n.t('_serverSettings.appIconResolutionMustBe', { resolution: '512x512px' }) }}</strong></div>
+							<div><strong>{{ i18n.tsx._serverSettings.appIconResolutionMustBe({ resolution: '512x512px' }) }}</strong></div>
 						</template>
 					</MkInput>
+				</SearchMarker>
 
-					<MkInput v-model="bannerUrl">
+				<SearchMarker :keywords="['banner', 'image']">
+					<MkInput v-model="bannerUrl" type="url">
 						<template #prefix><i class="ti ti-link"></i></template>
-						<template #label>{{ i18n.ts.bannerUrl }}</template>
+						<template #label><SearchLabel>{{ i18n.ts.bannerUrl }}</SearchLabel></template>
 					</MkInput>
+				</SearchMarker>
 
-					<MkInput v-model="backgroundImageUrl">
+				<SearchMarker :keywords="['background', 'image']">
+					<MkInput v-model="backgroundImageUrl" type="url">
 						<template #prefix><i class="ti ti-link"></i></template>
-						<template #label>{{ i18n.ts.backgroundImageUrl }}</template>
+						<template #label><SearchLabel>{{ i18n.ts.backgroundImageUrl }}</SearchLabel></template>
 					</MkInput>
+				</SearchMarker>
 
-					<MkInput v-model="notFoundImageUrl">
+				<SearchMarker :keywords="['image']">
+					<MkInput v-model="notFoundImageUrl" type="url">
 						<template #prefix><i class="ti ti-link"></i></template>
-						<template #label>{{ i18n.ts.notFoundDescription }}</template>
+						<template #label><SearchLabel>{{ i18n.ts.notFoundDescription }}</SearchLabel></template>
 					</MkInput>
+				</SearchMarker>
 
-					<MkInput v-model="infoImageUrl">
+				<SearchMarker :keywords="['image']">
+					<MkInput v-model="infoImageUrl" type="url">
 						<template #prefix><i class="ti ti-link"></i></template>
-						<template #label>{{ i18n.ts.nothing }}</template>
+						<template #label><SearchLabel>{{ i18n.ts.nothing }}</SearchLabel></template>
 					</MkInput>
+				</SearchMarker>
 
-					<MkInput v-model="serverErrorImageUrl">
+				<SearchMarker :keywords="['image']">
+					<MkInput v-model="serverErrorImageUrl" type="url">
 						<template #prefix><i class="ti ti-link"></i></template>
-						<template #label>{{ i18n.ts.somethingHappened }}</template>
+						<template #label><SearchLabel>{{ i18n.ts.somethingHappened }}</SearchLabel></template>
 					</MkInput>
+				</SearchMarker>
 
+				<SearchMarker :keywords="['theme', 'color']">
 					<MkColorInput v-model="themeColor">
-						<template #label>{{ i18n.ts.themeColor }}</template>
+						<template #label><SearchLabel>{{ i18n.ts.themeColor }}</SearchLabel></template>
 					</MkColorInput>
+				</SearchMarker>
 
+				<SearchMarker :keywords="['theme', 'default', 'light']">
 					<MkTextarea v-model="defaultLightTheme">
-						<template #label>{{ i18n.ts.instanceDefaultLightTheme }}</template>
+						<template #label><SearchLabel>{{ i18n.ts.instanceDefaultLightTheme }}</SearchLabel></template>
 						<template #caption>{{ i18n.ts.instanceDefaultThemeDescription }}</template>
 					</MkTextarea>
+				</SearchMarker>
 
+				<SearchMarker :keywords="['theme', 'default', 'dark']">
 					<MkTextarea v-model="defaultDarkTheme">
-						<template #label>{{ i18n.ts.instanceDefaultDarkTheme }}</template>
+						<template #label><SearchLabel>{{ i18n.ts.instanceDefaultDarkTheme }}</SearchLabel></template>
 						<template #caption>{{ i18n.ts.instanceDefaultThemeDescription }}</template>
 					</MkTextarea>
+				</SearchMarker>
 
+				<SearchMarker>
+					<MkInput v-model="repositoryUrl" type="url">
+						<template #prefix><i class="ti ti-link"></i></template>
+						<template #label><SearchLabel>{{ i18n.ts.repositoryUrl }}</SearchLabel></template>
+					</MkInput>
+				</SearchMarker>
+
+				<SearchMarker>
+					<MkInput v-model="feedbackUrl" type="url">
+						<template #prefix><i class="ti ti-link"></i></template>
+						<template #label><SearchLabel>{{ i18n.ts.feedbackUrl }}</SearchLabel></template>
+					</MkInput>
+				</SearchMarker>
+
+				<SearchMarker>
 					<MkTextarea v-model="manifestJsonOverride">
-						<template #label>{{ i18n.ts._serverSettings.manifestJsonOverride }}</template>
+						<template #label><SearchLabel>{{ i18n.ts._serverSettings.manifestJsonOverride }}</SearchLabel></template>
 					</MkTextarea>
-				</div>
-			</FormSuspense>
-		</MkSpacer>
-		<template #footer>
-			<div :class="$style.footer">
-				<MkSpacer :contentMax="700" :marginMin="16" :marginMax="16">
-					<MkButton primary rounded @click="save"><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton>
-				</MkSpacer>
+				</SearchMarker>
 			</div>
-		</template>
-	</MkStickyContainer>
-</div>
+		</SearchMarker>
+	</div>
+	<template #footer>
+		<div :class="$style.footer">
+			<div class="_spacer" style="--MI_SPACER-w: 700px; --MI_SPACER-min: 16px; --MI_SPACER-max: 16px;">
+				<MkButton primary rounded @click="save"><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton>
+			</div>
+		</div>
+	</template>
+</PageWithHeader>
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
+import { ref, computed } from 'vue';
 import JSON5 from 'json5';
-import XHeader from './_header_.vue';
-import MkSwitch from '@/components/MkSwitch.vue';
+import * as Misskey from 'misskey-js';
+import { host } from '@@/js/config.js';
 import MkInput from '@/components/MkInput.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
-import FormSection from '@/components/form/section.vue';
-import FormSplit from '@/components/form/split.vue';
-import FormSuspense from '@/components/form/suspense.vue';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
 import { instance, fetchInstance } from '@/instance.js';
 import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { definePage } from '@/page.js';
 import MkButton from '@/components/MkButton.vue';
 import MkColorInput from '@/components/MkColorInput.vue';
-import { host } from '@/config.js';
+import MkRadios from '@/components/MkRadios.vue';
+import MkSwitch from '@/components/MkSwitch.vue';
 
-let iconUrl: string | null = $ref(null);
-let app192IconUrl: string | null = $ref(null);
-let app512IconUrl: string | null = $ref(null);
-let bannerUrl: string | null = $ref(null);
-let backgroundImageUrl: string | null = $ref(null);
-let themeColor: any = $ref(null);
-let defaultLightTheme: any = $ref(null);
-let defaultDarkTheme: any = $ref(null);
-let serverErrorImageUrl: string | null = $ref(null);
-let infoImageUrl: string | null = $ref(null);
-let notFoundImageUrl: string | null = $ref(null);
-let manifestJsonOverride: string = $ref('{}');
+const meta = await misskeyApi('admin/meta');
 
-async function init() {
-	const meta = await os.api('admin/meta');
-	iconUrl = meta.iconUrl;
-	app192IconUrl = meta.app192IconUrl;
-	app512IconUrl = meta.app512IconUrl;
-	bannerUrl = meta.bannerUrl;
-	backgroundImageUrl = meta.backgroundImageUrl;
-	themeColor = meta.themeColor;
-	defaultLightTheme = meta.defaultLightTheme;
-	defaultDarkTheme = meta.defaultDarkTheme;
-	serverErrorImageUrl = meta.serverErrorImageUrl;
-	infoImageUrl = meta.infoImageUrl;
-	notFoundImageUrl = meta.notFoundImageUrl;
-	manifestJsonOverride = meta.manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON.parse(meta.manifestJsonOverride), null, '\t');
-}
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+const entrancePageStyle = ref<Misskey.entities.MetaClientOptions['entrancePageStyle']>(meta.clientOptions.entrancePageStyle ?? 'classic');
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+const showTimelineForVisitor = ref<Misskey.entities.MetaClientOptions['showTimelineForVisitor']>(meta.clientOptions.showTimelineForVisitor ?? true);
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+const showActivitiesForVisitor = ref<Misskey.entities.MetaClientOptions['showActivitiesForVisitor']>(meta.clientOptions.showActivitiesForVisitor ?? true);
+
+const iconUrl = ref(meta.iconUrl);
+const app192IconUrl = ref(meta.app192IconUrl);
+const app512IconUrl = ref(meta.app512IconUrl);
+const bannerUrl = ref(meta.bannerUrl);
+const backgroundImageUrl = ref(meta.backgroundImageUrl);
+const themeColor = ref(meta.themeColor);
+const defaultLightTheme = ref(meta.defaultLightTheme);
+const defaultDarkTheme = ref(meta.defaultDarkTheme);
+const serverErrorImageUrl = ref(meta.serverErrorImageUrl);
+const infoImageUrl = ref(meta.infoImageUrl);
+const notFoundImageUrl = ref(meta.notFoundImageUrl);
+const repositoryUrl = ref(meta.repositoryUrl);
+const feedbackUrl = ref(meta.feedbackUrl);
+const manifestJsonOverride = ref(meta.manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON.parse(meta.manifestJsonOverride), null, '\t'));
 
 function save() {
 	os.apiWithDialog('admin/update-meta', {
-		iconUrl,
-		app192IconUrl,
-		app512IconUrl,
-		bannerUrl,
-		backgroundImageUrl,
-		themeColor: themeColor === '' ? null : themeColor,
-		defaultLightTheme: defaultLightTheme === '' ? null : defaultLightTheme,
-		defaultDarkTheme: defaultDarkTheme === '' ? null : defaultDarkTheme,
-		infoImageUrl,
-		notFoundImageUrl,
-		serverErrorImageUrl,
-		manifestJsonOverride: manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON5.parse(manifestJsonOverride)),
+		clientOptions: {
+			entrancePageStyle: entrancePageStyle.value,
+			showTimelineForVisitor: showTimelineForVisitor.value,
+			showActivitiesForVisitor: showActivitiesForVisitor.value,
+		},
+		iconUrl: iconUrl.value,
+		app192IconUrl: app192IconUrl.value,
+		app512IconUrl: app512IconUrl.value,
+		bannerUrl: bannerUrl.value,
+		backgroundImageUrl: backgroundImageUrl.value,
+		themeColor: themeColor.value === '' ? null : themeColor.value,
+		defaultLightTheme: defaultLightTheme.value === '' ? null : defaultLightTheme.value,
+		defaultDarkTheme: defaultDarkTheme.value === '' ? null : defaultDarkTheme.value,
+		infoImageUrl: infoImageUrl.value === '' ? null : infoImageUrl.value,
+		notFoundImageUrl: notFoundImageUrl.value === '' ? null : notFoundImageUrl.value,
+		serverErrorImageUrl: serverErrorImageUrl.value === '' ? null : serverErrorImageUrl.value,
+		repositoryUrl: repositoryUrl.value === '' ? null : repositoryUrl.value,
+		feedbackUrl: feedbackUrl.value === '' ? null : feedbackUrl.value,
+		manifestJsonOverride: manifestJsonOverride.value === '' ? '{}' : JSON.stringify(JSON5.parse(manifestJsonOverride.value)),
 	}).then(() => {
-		fetchInstance();
+		fetchInstance(true);
 	});
 }
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePage(() => ({
 	title: i18n.ts.branding,
 	icon: 'ti ti-paint',
-});
+}));
 </script>
 
 <style lang="scss" module>
 .footer {
-	-webkit-backdrop-filter: var(--blur, blur(15px));
-	backdrop-filter: var(--blur, blur(15px));
+	-webkit-backdrop-filter: var(--MI-blur, blur(15px));
+	backdrop-filter: var(--MI-blur, blur(15px));
 }
 </style>

@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -11,11 +11,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 	>
 		<iframe
 			v-if="player.url.startsWith('http://') || player.url.startsWith('https://')"
-			sandbox="allow-popups allow-scripts allow-storage-access-by-user-activation allow-same-origin"
+			sandbox="allow-popups allow-popups-to-escape-sandbox allow-scripts allow-storage-access-by-user-activation allow-same-origin"
 			scrolling="no"
-			:allow="player.allow.join(';')"
+			:allow="player.allow == null ? 'autoplay;encrypted-media;fullscreen' : player.allow.filter(x => ['autoplay', 'clipboard-write', 'fullscreen', 'encrypted-media', 'picture-in-picture', 'web-share'].includes(x)).join(';')"
 			:class="$style.playerIframe"
-			:src="player.url + (player.url.match(/\?/) ? '&autoplay=1&auto_play=1' : '?autoplay=1&auto_play=1')"
+			:src="transformPlayerUrl(player.url)"
 			:style="{ border: 0 }"
 		></iframe>
 		<span v-else>invalid url</span>
@@ -31,10 +31,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<iframe
 			ref="tweet"
 			allow="fullscreen;web-share"
-			sandbox="allow-popups allow-scripts allow-same-origin"
+			sandbox="allow-popups allow-popups-to-escape-sandbox allow-scripts allow-same-origin"
 			scrolling="no"
 			:style="{ position: 'relative', width: '100%', height: `${tweetHeight}px`, border: 0 }"
-			:src="`https://platform.twitter.com/embed/index.html?embedId=${embedId}&amp;hideCard=false&amp;hideThread=false&amp;lang=en&amp;theme=${defaultStore.state.darkMode ? 'dark' : 'light'}&amp;id=${tweetId}`"
+			:src="`https://platform.twitter.com/embed/index.html?embedId=${embedId}&amp;hideCard=false&amp;hideThread=false&amp;lang=en&amp;theme=${store.s.darkMode ? 'dark' : 'light'}&amp;id=${tweetId}`"
 		></iframe>
 	</div>
 	<div :class="$style.action">
@@ -44,8 +44,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</div>
 </template>
 <div v-else>
-	<component :is="self ? 'MkA' : 'a'" :class="[$style.link, { [$style.compact]: compact }]" :[attr]="self ? url.substring(local.length) : url" rel="nofollow noopener" :target="target" :title="url">
-		<div v-if="thumbnail" :class="$style.thumbnail" :style="defaultStore.state.enableDataSaverMode ? '' : `background-image: url('${thumbnail}')`">
+	<component :is="self ? 'MkA' : 'a'" :class="[$style.link, { [$style.compact]: compact }]" :[attr]="maybeRelativeUrl" rel="nofollow noopener" :target="target" :title="url">
+		<div v-if="thumbnail && !sensitive" :class="$style.thumbnail" :style="prefer.s.dataSaver.urlPreviewThumbnail ? '' : { backgroundImage: `url('${thumbnail}')` }">
 		</div>
 		<article :class="$style.body">
 			<header :class="$style.header">
@@ -83,17 +83,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, onUnmounted } from 'vue';
-import type { summaly } from 'summaly';
-import { url as local } from '@/config.js';
+import { computed, defineAsyncComponent, onDeactivated, onUnmounted, ref } from 'vue';
+import { url as local } from '@@/js/config.js';
+import { versatileLang } from '@@/js/intl-const.js';
+import type { SummalyResult } from '@misskey-dev/summaly';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
-import { deviceKind } from '@/scripts/device-kind.js';
+import { deviceKind } from '@/utility/device-kind.js';
 import MkButton from '@/components/MkButton.vue';
-import { versatileLang } from '@/scripts/intl-const.js';
-import { defaultStore } from '@/store.js';
-
-type SummalyResult = Awaited<ReturnType<typeof summaly>>;
+import { transformPlayerUrl } from '@/utility/url-preview.js';
+import { store } from '@/store.js';
+import { prefer } from '@/preferences.js';
+import { maybeMakeRelative } from '@@/js/url.js';
 
 const props = withDefaults(defineProps<{
 	url: string;
@@ -107,35 +108,38 @@ const props = withDefaults(defineProps<{
 });
 
 const MOBILE_THRESHOLD = 500;
-const isMobile = $ref(deviceKind === 'smartphone' || window.innerWidth <= MOBILE_THRESHOLD);
+const isMobile = ref(deviceKind === 'smartphone' || window.innerWidth <= MOBILE_THRESHOLD);
 
-const self = props.url.startsWith(local);
+const maybeRelativeUrl = maybeMakeRelative(props.url, local);
+const self = maybeRelativeUrl !== props.url;
 const attr = self ? 'to' : 'href';
 const target = self ? null : '_blank';
-let fetching = $ref(true);
-let title = $ref<string | null>(null);
-let description = $ref<string | null>(null);
-let thumbnail = $ref<string | null>(null);
-let icon = $ref<string | null>(null);
-let sitename = $ref<string | null>(null);
-let player = $ref({
-	url: null,
-	width: null,
-	height: null,
-} as SummalyResult['player']);
-let playerEnabled = $ref(false);
-let tweetId = $ref<string | null>(null);
-let tweetExpanded = $ref(props.detail);
+const fetching = ref(true);
+const summalyResult = ref<SummalyResult | null>(null);
+const title = computed(() => summalyResult.value?.title ?? null);
+const description = computed(() => summalyResult.value?.description ?? null);
+const thumbnail = computed(() => summalyResult.value?.thumbnail ?? null);
+const icon = computed(() => summalyResult.value?.icon ?? null);
+const sitename = computed(() => summalyResult.value?.sitename ?? null);
+const sensitive = computed(() => summalyResult.value?.sensitive ?? false);
+const player = computed(() => summalyResult.value?.player ?? { url: null, width: null, height: null });
+const playerEnabled = ref(false);
+const tweetId = ref<string | null>(null);
+const tweetExpanded = ref(props.detail);
 const embedId = `embed${Math.random().toString().replace(/\D/, '')}`;
-let tweetHeight = $ref(150);
-let unknownUrl = $ref(false);
+const tweetHeight = ref(150);
+const unknownUrl = ref(false);
 
-const requestUrl = new URL(props.url);
+onDeactivated(() => {
+	playerEnabled.value = false;
+});
+
+const requestUrl = new URL(props.url, window.location.href);
 if (!['http:', 'https:'].includes(requestUrl.protocol)) throw new Error('invalid url');
 
 if (requestUrl.hostname === 'twitter.com' || requestUrl.hostname === 'mobile.twitter.com' || requestUrl.hostname === 'x.com' || requestUrl.hostname === 'mobile.x.com') {
 	const m = requestUrl.pathname.match(/^\/.+\/status(?:es)?\/(\d+)/);
-	if (m) tweetId = m[1];
+	if (m) tweetId.value = m[1];
 }
 
 if (requestUrl.hostname === 'music.youtube.com' && requestUrl.pathname.match('^/(?:watch|channel)')) {
@@ -147,50 +151,52 @@ requestUrl.hash = '';
 window.fetch(`/url?url=${encodeURIComponent(requestUrl.href)}&lang=${versatileLang}`)
 	.then(res => {
 		if (!res.ok) {
-			fetching = false;
-			unknownUrl = true;
-			return;
+			if (_DEV_) {
+				console.warn(`[HTTP${res.status}] Failed to fetch url preview`);
+			}
+			return null;
 		}
 
 		return res.json();
 	})
-	.then((info: SummalyResult) => {
-		if (info.url == null) {
-			fetching = false;
-			unknownUrl = true;
+	.then((info: SummalyResult | null) => {
+		if (!info || info.url == null) {
+			fetching.value = false;
+			unknownUrl.value = true;
 			return;
 		}
 
-		fetching = false;
-		unknownUrl = false;
+		fetching.value = false;
+		unknownUrl.value = false;
 
-		title = info.title;
-		description = info.description;
-		thumbnail = info.thumbnail;
-		icon = info.icon;
-		sitename = info.sitename;
-		player = info.player;
+		summalyResult.value = info;
 	});
 
-function adjustTweetHeight(message: any) {
+function adjustTweetHeight(message: MessageEvent) {
 	if (message.origin !== 'https://platform.twitter.com') return;
 	const embed = message.data?.['twttr.embed'];
 	if (embed?.method !== 'twttr.private.resize') return;
 	if (embed?.id !== embedId) return;
 	const height = embed?.params[0]?.height;
-	if (height) tweetHeight = height;
+	if (height) tweetHeight.value = height;
 }
 
-const openPlayer = (): void => {
-	os.popup(defineAsyncComponent(() => import('@/components/MkYouTubePlayer.vue')), {
-		url: requestUrl.href,
-	});
-};
+function openPlayer(): void {
+	if (!summalyResult.value) return;
 
-(window as any).addEventListener('message', adjustTweetHeight);
+	const { dispose } = os.popup(defineAsyncComponent(() => import('@/components/MkYouTubePlayer.vue')), {
+		urlOrSummalyResult: summalyResult.value,
+	}, {
+		closed: () => {
+			dispose();
+		},
+	});
+}
+
+window.addEventListener('message', adjustTweetHeight);
 
 onUnmounted(() => {
-	(window as any).removeEventListener('message', adjustTweetHeight);
+	window.removeEventListener('message', adjustTweetHeight);
 });
 </script>
 
@@ -209,7 +215,7 @@ onUnmounted(() => {
 	height: 1.5em;
 	padding: 0;
 	margin: 0;
-	color: var(--fg);
+	color: var(--MI_THEME-fg);
 	background: rgba(128, 128, 128, 0.2);
 	opacity: 0.7;
 
@@ -230,9 +236,10 @@ onUnmounted(() => {
 	position: relative;
 	display: block;
 	font-size: 14px;
-	box-shadow: 0 0 0 1px var(--divider);
+	box-shadow: 0 0 0 1px var(--MI_THEME-divider);
 	border-radius: 8px;
 	overflow: clip;
+	text-align: left;
 
 	&:hover {
 		text-decoration: none;
@@ -260,7 +267,7 @@ onUnmounted(() => {
 	height: 100%;
 	background-position: center;
 	background-size: cover;
-	background-color: var(--bg);
+	background-color: var(--MI_THEME-bg);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -307,7 +314,6 @@ onUnmounted(() => {
 .siteName {
 	display: inline-block;
 	margin: 0;
-	color: var(--urlPreviewInfo);
 	font-size: 0.8em;
 	line-height: 16px;
 	vertical-align: top;

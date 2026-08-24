@@ -1,9 +1,10 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { App, defineAsyncComponent } from 'vue';
+import { defineAsyncComponent } from 'vue';
+import type { App } from 'vue';
 
 export default function(app: App) {
 	app.component('WidgetProfile', defineAsyncComponent(() => import('./WidgetProfile.vue')));
@@ -33,7 +34,15 @@ export default function(app: App) {
 	app.component('WidgetAichan', defineAsyncComponent(() => import('./WidgetAichan.vue')));
 	app.component('WidgetUserList', defineAsyncComponent(() => import('./WidgetUserList.vue')));
 	app.component('WidgetClicker', defineAsyncComponent(() => import('./WidgetClicker.vue')));
+	app.component('WidgetBirthdayFollowings', defineAsyncComponent(() => import('./WidgetBirthdayFollowings.vue')));
+	app.component('WidgetChat', defineAsyncComponent(() => import('./WidgetChat.vue')));
 }
+
+// 連合関連のウィジェット（連合無効時に隠す）
+export const federationWidgets = [
+	'federation',
+	'instanceCloud',
+] as const;
 
 export const widgets = [
 	'profile',
@@ -50,8 +59,6 @@ export const widgets = [
 	'photos',
 	'digitalClock',
 	'unixClock',
-	'federation',
-	'instanceCloud',
 	'postForm',
 	'slideshow',
 	'serverMetric',
@@ -63,4 +70,10 @@ export const widgets = [
 	'aichan',
 	'userList',
 	'clicker',
-];
+	'birthdayFollowings',
+	'chat',
+
+	...federationWidgets,
+] as const;
+
+export type WidgetName = typeof widgets[number];

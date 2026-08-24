@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -12,11 +12,12 @@ import { getIpHash } from '@/misc/get-ip-hash.js';
 import type { MiLocalUser, MiUser } from '@/models/User.js';
 import type { MiAccessToken } from '@/models/AccessToken.js';
 import type Logger from '@/logger.js';
-import type { UserIpsRepository } from '@/models/_.js';
-import { MetaService } from '@/core/MetaService.js';
+import type { MiMeta, UserIpsRepository } from '@/models/_.js';
 import { createTemp } from '@/misc/create-temp.js';
 import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
+import { TelemetryService } from '@/core/telemetry/TelemetryService.js';
+import type { Config } from '@/config.js';
 import { ApiError } from './error.js';
 import { RateLimiterService } from './RateLimiterService.js';
 import { ApiLoggerService } from './ApiLoggerService.js';
@@ -38,14 +39,20 @@ export class ApiCallService implements OnApplicationShutdown {
 	private userIpHistoriesClearIntervalId: NodeJS.Timeout;
 
 	constructor(
+		@Inject(DI.meta)
+		private meta: MiMeta,
+
+		@Inject(DI.config)
+		private config: Config,
+
 		@Inject(DI.userIpsRepository)
 		private userIpsRepository: UserIpsRepository,
 
-		private metaService: MetaService,
 		private authenticateService: AuthenticateService,
 		private rateLimiterService: RateLimiterService,
 		private roleService: RoleService,
 		private apiLoggerService: ApiLoggerService,
+		private telemetryService: TelemetryService,
 	) {
 		this.logger = this.apiLoggerService.logger;
 		this.userIpHistories = new Map<MiUser['id'], Set<string>>();
@@ -59,6 +66,16 @@ export class ApiCallService implements OnApplicationShutdown {
 		let statusCode = err.httpStatusCode;
 		if (err.httpStatusCode === 401) {
 			reply.header('WWW-Authenticate', 'Bearer realm="Misskey"');
+		} else if (err.code === 'RATE_LIMIT_EXCEEDED') {
+			const info: unknown = err.info;
+			const unixEpochInSeconds = Date.now();
+			if (typeof(info) === 'object' && info && 'resetMs' in info && typeof(info.resetMs) === 'number') {
+				const cooldownInSeconds = Math.ceil((info.resetMs - unixEpochInSeconds) / 1000);
+				// もしかするとマイナスになる可能性がなくはないのでマイナスだったら0にしておく
+				reply.header('Retry-After', Math.max(cooldownInSeconds, 0).toString(10));
+			} else {
+				this.logger.warn(`rate limit information has unexpected type ${typeof(err.info?.reset)}`);
+			}
 		} else if (err.kind === 'client') {
 			reply.header('WWW-Authenticate', `Bearer realm="Misskey", error="invalid_request", error_description="${err.message}"`);
 			statusCode = statusCode ?? 400;
@@ -88,12 +105,53 @@ export class ApiCallService implements OnApplicationShutdown {
 		}
 	}
 
+	#onExecError(ep: IEndpoint, data: any, err: Error, userId?: MiUser['id']): void {
+		if (err instanceof ApiError || err instanceof AuthenticationError) {
+			throw err;
+		} else {
+			const errId = randomUUID();
+			this.logger.write({
+				level: 'error',
+				eventName: 'api.endpoint.failed',
+				message: `Internal error occurred in ${ep.name}: ${err.message}`,
+				attributes: {
+					'api.endpoint': ep.name,
+					'error.id': errId,
+					'api.params': data,
+				},
+				error: err,
+			});
+
+			this.telemetryService.captureMessage(`Internal error occurred in ${ep.name}: ${err.message}`, {
+				level: 'error',
+				userId,
+				extra: {
+					ep: ep.name,
+					e: {
+						message: err.message,
+						code: err.name,
+						stack: err.stack,
+						id: errId,
+					},
+				},
+			});
+
+			throw new ApiError(null, {
+				e: {
+					message: err.message,
+					code: err.name,
+					id: errId,
+				},
+			});
+		}
+	}
+
 	@bindThis
 	public handleRequest(
 		endpoint: IEndpoint & { exec: any },
 		request: FastifyRequest<{ Body: Record<string, unknown> | undefined, Querystring: Record<string, unknown> }>,
 		reply: FastifyReply,
-	): void {
+	): Promise<void> {
 		const body = request.method === 'GET'
 			? request.query
 			: request.body;
@@ -104,10 +162,11 @@ export class ApiCallService implements OnApplicationShutdown {
 			: body?.['i'];
 		if (token != null && typeof token !== 'string') {
 			reply.code(400);
-			return;
+			return Promise.resolve();
 		}
-		this.authenticateService.authenticate(token).then(([user, app]) => {
-			this.call(endpoint, user, app, body, null, request).then((res) => {
+
+		return this.telemetryService.startSpan('API: ' + endpoint.name, () => this.authenticateService.authenticate(token).then(([user, app]) => {
+			const call = this.call(endpoint, user, app, body, null, request).then((res) => {
 				if (request.method === 'GET' && endpoint.meta.cacheSec && !token && !user) {
 					reply.header('Cache-Control', `public, max-age=${endpoint.meta.cacheSec}`);
 				}
@@ -119,9 +178,11 @@ export class ApiCallService implements OnApplicationShutdown {
 			if (user) {
 				this.logIp(request, user);
 			}
+
+			return call;
 		}).catch(err => {
 			this.#sendAuthenticationError(reply, err);
-		});
+		}));
 	}
 
 	@bindThis
@@ -138,39 +199,54 @@ export class ApiCallService implements OnApplicationShutdown {
 			reply.send();
 			return;
 		}
+		const [path, cleanup] = await createTemp();
 
-		const [path] = await createTemp();
-		await stream.pipeline(multipartData.file, fs.createWriteStream(path));
+		try {
+			await stream.pipeline(multipartData.file, fs.createWriteStream(path));
 
-		const fields = {} as Record<string, unknown>;
-		for (const [k, v] of Object.entries(multipartData.fields)) {
-			fields[k] = typeof v === 'object' && 'value' in v ? v.value : undefined;
-		}
-
-		// https://datatracker.ietf.org/doc/html/rfc6750.html#section-2.1 (case sensitive)
-		const token = request.headers.authorization?.startsWith('Bearer ')
-			? request.headers.authorization.slice(7)
-			: fields['i'];
-		if (token != null && typeof token !== 'string') {
-			reply.code(400);
-			return;
-		}
-		this.authenticateService.authenticate(token).then(([user, app]) => {
-			this.call(endpoint, user, app, fields, {
-				name: multipartData.filename,
-				path: path,
-			}, request).then((res) => {
-				this.send(reply, res);
-			}).catch((err: ApiError) => {
-				this.#sendApiError(reply, err);
-			});
-
-			if (user) {
-				this.logIp(request, user);
+			// ファイルサイズが制限を超えていた場合
+			// なお truncated はストリームを読み切ってからでないと機能しないため、stream.pipeline より後にある必要がある
+			if (multipartData.file.truncated) {
+				reply.code(413);
+				reply.send();
+				return;
 			}
-		}).catch(err => {
-			this.#sendAuthenticationError(reply, err);
-		});
+
+			const fields = {} as Record<string, unknown>;
+			for (const [k, v] of Object.entries(multipartData.fields)) {
+				fields[k] = typeof v === 'object' && 'value' in v ? v.value : undefined;
+			}
+
+			// https://datatracker.ietf.org/doc/html/rfc6750.html#section-2.1 (case sensitive)
+			const token = request.headers.authorization?.startsWith('Bearer ')
+				? request.headers.authorization.slice(7)
+				: fields['i'];
+			if (token != null && typeof token !== 'string') {
+				reply.code(400);
+				return;
+			}
+
+			return await this.telemetryService.startSpan('API: ' + endpoint.name, () => this.authenticateService.authenticate(token).then(([user, app]) => {
+				const call = this.call(endpoint, user, app, fields, {
+					name: multipartData.filename,
+					path: path,
+				}, request).then((res) => {
+					this.send(reply, res);
+				}).catch((err: ApiError) => {
+					this.#sendApiError(reply, err);
+				});
+
+				if (user) {
+					this.logIp(request, user);
+				}
+
+				return call;
+			}).catch(err => {
+				this.#sendAuthenticationError(reply, err);
+			}));
+		} finally {
+			cleanup();
+		}
 	}
 
 	@bindThis
@@ -196,9 +272,8 @@ export class ApiCallService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	private async logIp(request: FastifyRequest, user: MiLocalUser) {
-		const meta = await this.metaService.fetch();
-		if (!meta.enableIpLogging) return;
+	private logIp(request: FastifyRequest, user: MiLocalUser) {
+		if (!this.meta.enableIpLogging) return;
 		const ip = request.ip;
 		const ips = this.userIpHistories.get(user.id);
 		if (ips == null || !ips.has(ip)) {
@@ -238,11 +313,14 @@ export class ApiCallService implements OnApplicationShutdown {
 		}
 
 		if (ep.meta.limit) {
-			// koa will automatically load the `X-Forwarded-For` header if `proxy: true` is configured in the app.
-			let limitActor: string;
+			let limitActor: string | null = null;
 			if (user) {
 				limitActor = user.id;
-			} else {
+			} else if (this.config.enableIpRateLimit) {
+				if (process.env.NODE_ENV === 'production' && (request.ip === '::1' || request.ip === '127.0.0.1')) {
+					this.logger.warn('Recieved API request from localhost IP address for rate limiting in production environment. This is likely due to an improper trustProxy setting in the config file.');
+				}
+
 				limitActor = getIpHash(request.ip);
 			}
 
@@ -255,16 +333,17 @@ export class ApiCallService implements OnApplicationShutdown {
 			// TODO: 毎リクエスト計算するのもあれだしキャッシュしたい
 			const factor = user ? (await this.roleService.getUserPolicies(user.id)).rateLimitFactor : 1;
 
-			if (factor > 0) {
+			if (limitActor != null && factor > 0) {
 				// Rate limit
-				await this.rateLimiterService.limit(limit as IEndpointMeta['limit'] & { key: NonNullable<string> }, limitActor, factor).catch(err => {
+				const rateLimit = await this.rateLimiterService.limit(limit as IEndpointMeta['limit'] & { key: NonNullable<string> }, limitActor, factor);
+				if (rateLimit != null) {
 					throw new ApiError({
 						message: 'Rate limit exceeded. Please try again later.',
 						code: 'RATE_LIMIT_EXCEEDED',
 						id: 'd5826d14-3982-4d2e-8011-b9e9f02499ef',
 						httpStatusCode: 429,
-					});
-				});
+					}, rateLimit.info);
+				}
 			}
 		}
 
@@ -297,7 +376,7 @@ export class ApiCallService implements OnApplicationShutdown {
 			}
 		}
 
-		if ((ep.meta.requireModerator || ep.meta.requireAdmin) && !user!.isRoot) {
+		if ((ep.meta.requireModerator || ep.meta.requireAdmin) && (this.meta.rootUserId !== user!.id)) {
 			const myRoles = await this.roleService.getUserRoles(user!.id);
 			if (ep.meta.requireModerator && !myRoles.some(r => r.isModerator || r.isAdministrator)) {
 				throw new ApiError({
@@ -317,9 +396,10 @@ export class ApiCallService implements OnApplicationShutdown {
 			}
 		}
 
-		if (ep.meta.requireRolePolicy != null && !user!.isRoot) {
+		if (ep.meta.requiredRolePolicy != null && (this.meta.rootUserId !== user!.id)) {
+			const myRoles = await this.roleService.getUserRoles(user!.id);
 			const policies = await this.roleService.getUserPolicies(user!.id);
-			if (!policies[ep.meta.requireRolePolicy]) {
+			if (!policies[ep.meta.requiredRolePolicy] && !myRoles.some(r => r.isAdministrator)) {
 				throw new ApiError({
 					message: 'You are not assigned to a required role.',
 					code: 'ROLE_PERMISSION_DENIED',
@@ -329,7 +409,8 @@ export class ApiCallService implements OnApplicationShutdown {
 			}
 		}
 
-		if (token && ep.meta.kind && !token.permission.some(p => p === ep.meta.kind)) {
+		if (token && ((ep.meta.kind && !token.permission.some(p => p === ep.meta.kind))
+			|| (!ep.meta.kind && (ep.meta.requireCredential || ep.meta.requireModerator || ep.meta.requireAdmin)))) {
 			throw new ApiError({
 				message: 'Your app does not have the necessary permissions to use this endpoint.',
 				code: 'PERMISSION_DENIED',
@@ -345,7 +426,7 @@ export class ApiCallService implements OnApplicationShutdown {
 				if (['boolean', 'number', 'integer'].includes(param.type ?? '') && typeof data[k] === 'string') {
 					try {
 						data[k] = JSON.parse(data[k]);
-					} catch (e) {
+					} catch (_) {
 						throw new ApiError({
 							message: 'Invalid param.',
 							code: 'INVALID_PARAM',
@@ -359,32 +440,10 @@ export class ApiCallService implements OnApplicationShutdown {
 			}
 		}
 
-		// API invoking
-		return await ep.exec(data, user, token, file, request.ip, request.headers).catch((err: Error) => {
-			if (err instanceof ApiError || err instanceof AuthenticationError) {
-				throw err;
-			} else {
-				const errId = randomUUID();
-				this.logger.error(`Internal error occurred in ${ep.name}: ${err.message}`, {
-					ep: ep.name,
-					ps: data,
-					e: {
-						message: err.message,
-						code: err.name,
-						stack: err.stack,
-						id: errId,
-					},
-				});
-				console.error(err, errId);
-				throw new ApiError(null, {
-					e: {
-						message: err.message,
-						code: err.name,
-						id: errId,
-					},
-				});
-			}
-		});
+		// The API span starts in handleRequest/handleMultipartRequest so it also covers
+		// authentication, rate limiting, and parameter validation.
+		return await ep.exec(data, user, token, file, request.ip, request.headers)
+			.catch((err: Error) => this.#onExecError(ep, data, err, user?.id));
 	}
 
 	@bindThis

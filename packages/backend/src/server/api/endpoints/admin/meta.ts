@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -9,12 +9,14 @@ import { MetaService } from '@/core/MetaService.js';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import { DEFAULT_POLICIES } from '@/core/RoleService.js';
+import { SystemAccountService } from '@/core/SystemAccountService.js';
 
 export const meta = {
 	tags: ['meta'],
 
 	requireCredential: true,
 	requireAdmin: true,
+	kind: 'read:admin:meta',
 
 	res: {
 		type: 'object',
@@ -40,6 +42,18 @@ export const meta = {
 				type: 'string',
 				optional: false, nullable: true,
 			},
+			enableMcaptcha: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			mcaptchaSiteKey: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			mcaptchaInstanceUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
 			enableRecaptcha: {
 				type: 'boolean',
 				optional: false, nullable: false,
@@ -53,6 +67,14 @@ export const meta = {
 				optional: false, nullable: false,
 			},
 			turnstileSiteKey: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			enableTestcaptcha: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			googleAnalyticsMeasurementId: {
 				type: 'string',
 				optional: false, nullable: true,
 			},
@@ -105,35 +127,69 @@ export const meta = {
 				type: 'boolean',
 				optional: false, nullable: false,
 			},
-			userStarForReactionFallback: {
-				type: 'boolean',
-				optional: true, nullable: false,
+			silencedHosts: {
+				type: 'array',
+				optional: true,
+				nullable: false,
+				items: {
+					type: 'string',
+					optional: false,
+					nullable: false,
+				},
+			},
+			mediaSilencedHosts: {
+				type: 'array',
+				optional: false,
+				nullable: false,
+				items: {
+					type: 'string',
+					optional: false,
+					nullable: false,
+				},
 			},
 			pinnedUsers: {
 				type: 'array',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
 				items: {
 					type: 'string',
-					optional: false, nullable: false,
 				},
 			},
 			hiddenTags: {
 				type: 'array',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
 				items: {
 					type: 'string',
-					optional: false, nullable: false,
 				},
 			},
 			blockedHosts: {
 				type: 'array',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
 				items: {
 					type: 'string',
-					optional: false, nullable: false,
 				},
 			},
 			sensitiveWords: {
+				type: 'array',
+				optional: false, nullable: false,
+				items: {
+					type: 'string',
+				},
+			},
+			prohibitedWords: {
+				type: 'array',
+				optional: false, nullable: false,
+				items: {
+					type: 'string',
+				},
+			},
+			prohibitedWordsForNameOfUser: {
+				type: 'array',
+				optional: false, nullable: false,
+				items: {
+					type: 'string',
+				},
+			},
+			bannedEmailDomains: {
 				type: 'array',
 				optional: true, nullable: false,
 				items: {
@@ -146,135 +202,176 @@ export const meta = {
 				optional: false, nullable: false,
 				items: {
 					type: 'string',
-					optional: false, nullable: false,
 				},
 			},
 			hcaptchaSecretKey: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
+			},
+			mcaptchaSecretKey: {
+				type: 'string',
+				optional: false, nullable: true,
 			},
 			recaptchaSecretKey: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			turnstileSecretKey: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			sensitiveMediaDetection: {
 				type: 'string',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
+				enum: ['none', 'all', 'local', 'remote'],
 			},
 			sensitiveMediaDetectionSensitivity: {
 				type: 'string',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
+				enum: ['medium', 'low', 'high', 'veryLow', 'veryHigh'],
 			},
 			setSensitiveFlagAutomatically: {
 				type: 'boolean',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
 			},
 			enableSensitiveMediaDetectionForVideos: {
 				type: 'boolean',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
+			},
+			sensitiveMediaDetectionApiUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			sensitiveMediaDetectionApiKey: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			sensitiveMediaDetectionTimeout: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			sensitiveMediaDetectionMaxImagesPerRequest: {
+				type: 'number',
+				optional: false, nullable: false,
 			},
 			proxyAccountId: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: false,
 				format: 'id',
-			},
-			summaryProxy: {
-				type: 'string',
-				optional: true, nullable: true,
 			},
 			email: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			smtpSecure: {
 				type: 'boolean',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
 			},
 			smtpHost: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			smtpPort: {
 				type: 'number',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			smtpUser: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			smtpPass: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			swPrivateKey: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			useObjectStorage: {
 				type: 'boolean',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
 			},
 			objectStorageBaseUrl: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			objectStorageBucket: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			objectStoragePrefix: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			objectStorageEndpoint: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			objectStorageRegion: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			objectStoragePort: {
 				type: 'number',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			objectStorageAccessKey: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			objectStorageSecretKey: {
 				type: 'string',
-				optional: true, nullable: true,
+				optional: false, nullable: true,
 			},
 			objectStorageUseSSL: {
 				type: 'boolean',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
 			},
 			objectStorageUseProxy: {
 				type: 'boolean',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
 			},
 			objectStorageSetPublicRead: {
 				type: 'boolean',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
 			},
 			enableIpLogging: {
 				type: 'boolean',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
 			},
 			enableActiveEmailValidation: {
 				type: 'boolean',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
+			},
+			enableVerifymailApi: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			verifymailAuthKey: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			enableTruemailApi: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			truemailInstance: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			truemailAuthKey: {
+				type: 'string',
+				optional: false, nullable: true,
 			},
 			enableChartsForRemoteUser: {
 				type: 'boolean',
 				optional: false, nullable: false,
 			},
 			enableChartsForFederatedInstances: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			enableStatsForFederatedInstances: {
 				type: 'boolean',
 				optional: false, nullable: false,
 			},
@@ -288,10 +385,239 @@ export const meta = {
 			},
 			manifestJsonOverride: {
 				type: 'string',
-				optional: true, nullable: false,
+				optional: false, nullable: false,
 			},
 			policies: {
 				type: 'object',
+				optional: false, nullable: false,
+			},
+			enableFanoutTimeline: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			enableFanoutTimelineDbFallback: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			perLocalUserUserTimelineCacheMax: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			perRemoteUserUserTimelineCacheMax: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			perUserHomeTimelineCacheMax: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			perUserListTimelineCacheMax: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			enableReactionsBuffering: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			notesPerOneAd: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			backgroundImageUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			deeplAuthKey: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			deeplIsPro: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			defaultDarkTheme: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			defaultLightTheme: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			clientOptions: {
+				ref: 'MetaClientOptions',
+			},
+			description: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			disableRegistration: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			impressumUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			maintainerEmail: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			maintainerName: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			name: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			shortName: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			objectStorageS3ForcePathStyle: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			privacyPolicyUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			inquiryUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			repositoryUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			feedbackUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			summalyProxy: {
+				type: 'string',
+				optional: false, nullable: true,
+				deprecated: true,
+				description: '[Deprecated] Use "urlPreviewSummaryProxyUrl" instead.',
+			},
+			themeColor: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			tosUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			uri: {
+				type: 'string',
+				optional: false, nullable: false,
+			},
+			version: {
+				type: 'string',
+				optional: false, nullable: false,
+			},
+			urlPreviewEnabled: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			urlPreviewAllowRedirect: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			urlPreviewTimeout: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			urlPreviewMaximumContentLength: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			urlPreviewRequireContentLength: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			urlPreviewUserAgent: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			urlPreviewSummaryProxyUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			urlPreviewSensitiveList: {
+				type: 'array',
+				optional: false, nullable: false,
+				items: {
+					type: 'string',
+					optional: false, nullable: false,
+				},
+			},
+			federation: {
+				type: 'string',
+				enum: ['all', 'specified', 'none'],
+				optional: false, nullable: false,
+			},
+			federationHosts: {
+				type: 'array',
+				optional: false, nullable: false,
+				items: {
+					type: 'string',
+					optional: false, nullable: false,
+				},
+			},
+			deliverSuspendedSoftware: {
+				type: 'array',
+				optional: false, nullable: false,
+				items: {
+					type: 'object',
+					optional: false, nullable: false,
+					properties: {
+						software: {
+							type: 'string',
+							optional: false, nullable: false,
+						},
+						versionRange: {
+							type: 'string',
+							optional: false, nullable: false,
+						},
+					},
+				},
+			},
+			singleUserMode: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			ugcVisibilityForVisitor: {
+				type: 'string',
+				enum: ['all', 'local', 'none'],
+				optional: false, nullable: false,
+			},
+			proxyRemoteFiles: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			signToActivityPubGet: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			allowExternalApRedirect: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			enableRemoteNotesCleaning: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			remoteNotesCleaningExpiryDaysForEachNotes: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			remoteNotesCleaningMaxProcessingDurationInMinutes: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			showRoleBadgesOfRemoteUsers: {
+				type: 'boolean',
 				optional: false, nullable: false,
 			},
 		},
@@ -312,9 +638,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private config: Config,
 
 		private metaService: MetaService,
+		private systemAccountService: SystemAccountService,
 	) {
-		super(meta, paramDef, async (ps, me) => {
+		super(meta, paramDef, async () => {
 			const instance = await this.metaService.fetch(true);
+
+			const proxy = await this.systemAccountService.fetch('proxy');
 
 			return {
 				maintainerName: instance.maintainerName,
@@ -328,14 +657,22 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				tosUrl: instance.termsOfServiceUrl,
 				repositoryUrl: instance.repositoryUrl,
 				feedbackUrl: instance.feedbackUrl,
+				impressumUrl: instance.impressumUrl,
+				privacyPolicyUrl: instance.privacyPolicyUrl,
+				inquiryUrl: instance.inquiryUrl,
 				disableRegistration: instance.disableRegistration,
 				emailRequiredForSignup: instance.emailRequiredForSignup,
 				enableHcaptcha: instance.enableHcaptcha,
 				hcaptchaSiteKey: instance.hcaptchaSiteKey,
+				enableMcaptcha: instance.enableMcaptcha,
+				mcaptchaSiteKey: instance.mcaptchaSitekey,
+				mcaptchaInstanceUrl: instance.mcaptchaInstanceUrl,
 				enableRecaptcha: instance.enableRecaptcha,
 				recaptchaSiteKey: instance.recaptchaSiteKey,
 				enableTurnstile: instance.enableTurnstile,
 				turnstileSiteKey: instance.turnstileSiteKey,
+				enableTestcaptcha: instance.enableTestcaptcha,
+				googleAnalyticsMeasurementId: instance.googleAnalyticsMeasurementId,
 				swPublickey: instance.swPublicKey,
 				themeColor: instance.themeColor,
 				mascotImageUrl: instance.mascotImageUrl,
@@ -350,6 +687,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				logoImageUrl: instance.logoImageUrl,
 				defaultLightTheme: instance.defaultLightTheme,
 				defaultDarkTheme: instance.defaultDarkTheme,
+				clientOptions: instance.clientOptions,
 				enableEmail: instance.enableEmail,
 				enableServiceWorker: instance.enableServiceWorker,
 				translatorAvailable: instance.deeplAuthKey != null,
@@ -358,17 +696,25 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				pinnedUsers: instance.pinnedUsers,
 				hiddenTags: instance.hiddenTags,
 				blockedHosts: instance.blockedHosts,
+				silencedHosts: instance.silencedHosts,
+				mediaSilencedHosts: instance.mediaSilencedHosts,
 				sensitiveWords: instance.sensitiveWords,
+				prohibitedWords: instance.prohibitedWords,
+				prohibitedWordsForNameOfUser: instance.prohibitedWordsForNameOfUser,
 				preservedUsernames: instance.preservedUsernames,
 				hcaptchaSecretKey: instance.hcaptchaSecretKey,
+				mcaptchaSecretKey: instance.mcaptchaSecretKey,
 				recaptchaSecretKey: instance.recaptchaSecretKey,
 				turnstileSecretKey: instance.turnstileSecretKey,
 				sensitiveMediaDetection: instance.sensitiveMediaDetection,
 				sensitiveMediaDetectionSensitivity: instance.sensitiveMediaDetectionSensitivity,
 				setSensitiveFlagAutomatically: instance.setSensitiveFlagAutomatically,
 				enableSensitiveMediaDetectionForVideos: instance.enableSensitiveMediaDetectionForVideos,
-				proxyAccountId: instance.proxyAccountId,
-				summalyProxy: instance.summalyProxy,
+				sensitiveMediaDetectionApiUrl: instance.sensitiveMediaDetectionApiUrl,
+				sensitiveMediaDetectionApiKey: instance.sensitiveMediaDetectionApiKey,
+				sensitiveMediaDetectionTimeout: instance.sensitiveMediaDetectionTimeout,
+				sensitiveMediaDetectionMaxImagesPerRequest: instance.sensitiveMediaDetectionMaxImagesPerRequest,
+				proxyAccountId: proxy.id,
 				email: instance.email,
 				smtpSecure: instance.smtpSecure,
 				smtpHost: instance.smtpHost,
@@ -393,12 +739,48 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				deeplIsPro: instance.deeplIsPro,
 				enableIpLogging: instance.enableIpLogging,
 				enableActiveEmailValidation: instance.enableActiveEmailValidation,
+				enableVerifymailApi: instance.enableVerifymailApi,
+				verifymailAuthKey: instance.verifymailAuthKey,
+				enableTruemailApi: instance.enableTruemailApi,
+				truemailInstance: instance.truemailInstance,
+				truemailAuthKey: instance.truemailAuthKey,
 				enableChartsForRemoteUser: instance.enableChartsForRemoteUser,
 				enableChartsForFederatedInstances: instance.enableChartsForFederatedInstances,
+				enableStatsForFederatedInstances: instance.enableStatsForFederatedInstances,
 				enableServerMachineStats: instance.enableServerMachineStats,
 				enableIdenticonGeneration: instance.enableIdenticonGeneration,
+				bannedEmailDomains: instance.bannedEmailDomains,
 				policies: { ...DEFAULT_POLICIES, ...instance.policies },
 				manifestJsonOverride: instance.manifestJsonOverride,
+				enableFanoutTimeline: instance.enableFanoutTimeline,
+				enableFanoutTimelineDbFallback: instance.enableFanoutTimelineDbFallback,
+				perLocalUserUserTimelineCacheMax: instance.perLocalUserUserTimelineCacheMax,
+				perRemoteUserUserTimelineCacheMax: instance.perRemoteUserUserTimelineCacheMax,
+				perUserHomeTimelineCacheMax: instance.perUserHomeTimelineCacheMax,
+				perUserListTimelineCacheMax: instance.perUserListTimelineCacheMax,
+				enableReactionsBuffering: instance.enableReactionsBuffering,
+				notesPerOneAd: instance.notesPerOneAd,
+				summalyProxy: instance.urlPreviewSummaryProxyUrl,
+				urlPreviewEnabled: instance.urlPreviewEnabled,
+				urlPreviewAllowRedirect: instance.urlPreviewAllowRedirect,
+				urlPreviewTimeout: instance.urlPreviewTimeout,
+				urlPreviewMaximumContentLength: instance.urlPreviewMaximumContentLength,
+				urlPreviewRequireContentLength: instance.urlPreviewRequireContentLength,
+				urlPreviewUserAgent: instance.urlPreviewUserAgent,
+				urlPreviewSummaryProxyUrl: instance.urlPreviewSummaryProxyUrl,
+				urlPreviewSensitiveList: instance.urlPreviewSensitiveList,
+				federation: instance.federation,
+				federationHosts: instance.federationHosts,
+				deliverSuspendedSoftware: instance.deliverSuspendedSoftware,
+				singleUserMode: instance.singleUserMode,
+				ugcVisibilityForVisitor: instance.ugcVisibilityForVisitor,
+				proxyRemoteFiles: instance.proxyRemoteFiles,
+				signToActivityPubGet: instance.signToActivityPubGet,
+				allowExternalApRedirect: instance.allowExternalApRedirect,
+				enableRemoteNotesCleaning: instance.enableRemoteNotesCleaning,
+				remoteNotesCleaningExpiryDaysForEachNotes: instance.remoteNotesCleaningExpiryDaysForEachNotes,
+				remoteNotesCleaningMaxProcessingDurationInMinutes: instance.remoteNotesCleaningMaxProcessingDurationInMinutes,
+				showRoleBadgesOfRemoteUsers: instance.showRoleBadgesOfRemoteUsers,
 			};
 		});
 	}

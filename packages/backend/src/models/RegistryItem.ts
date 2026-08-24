@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -14,11 +14,6 @@ export class MiRegistryItem {
 	public id: string;
 
 	@Column('timestamp with time zone', {
-		comment: 'The created date of the RegistryItem.',
-	})
-	public createdAt: Date;
-
-	@Column('timestamp with time zone', {
 		comment: 'The updated date of the RegistryItem.',
 	})
 	public updatedAt: Date;
@@ -30,7 +25,7 @@ export class MiRegistryItem {
 	})
 	public userId: MiUser['id'];
 
-	@ManyToOne(type => MiUser, {
+	@ManyToOne(() => MiUser, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()

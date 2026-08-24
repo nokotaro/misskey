@@ -1,10 +1,10 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div v-if="hasDisconnected && defaultStore.state.serverDisconnectedBehavior === 'quiet'" :class="$style.root" class="_panel _shadow" @click="resetDisconnected">
+<div v-if="hasDisconnected && prefer.s.serverDisconnectedBehavior === 'quiet'" :class="$style.root" class="_panel _shadow" @click="resetDisconnected">
 	<div><i class="ti ti-alert-triangle"></i> {{ i18n.ts.disconnectedFromServer }}</div>
 	<div :class="$style.command" class="_buttons">
 		<MkButton small primary @click="reload">{{ i18n.ts.reload }}</MkButton>
@@ -14,42 +14,45 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onUnmounted } from 'vue';
+import { onUnmounted, ref } from 'vue';
 import { useStream } from '@/stream.js';
 import { i18n } from '@/i18n.js';
 import MkButton from '@/components/MkButton.vue';
 import * as os from '@/os.js';
-import { defaultStore } from '@/store.js';
+import { prefer } from '@/preferences.js';
+import { store } from '@/store.js';
 
 const zIndex = os.claimZIndex('high');
 
-let hasDisconnected = $ref(false);
+const hasDisconnected = ref(false);
 
 function onDisconnected() {
-	hasDisconnected = true;
+	hasDisconnected.value = true;
 }
 
 function resetDisconnected() {
-	hasDisconnected = false;
+	hasDisconnected.value = false;
 }
 
 function reload() {
-	location.reload();
+	window.location.reload();
 }
 
-useStream().on('_disconnected_', onDisconnected);
+if (store.s.realtimeMode) {
+	useStream().on('_disconnected_', onDisconnected);
 
-onUnmounted(() => {
-	useStream().off('_disconnected_', onDisconnected);
-});
+	onUnmounted(() => {
+		useStream().off('_disconnected_', onDisconnected);
+	});
+}
 </script>
 
 <style lang="scss" module>
 .root {
 	position: fixed;
 	z-index: v-bind(zIndex);
-	bottom: calc(var(--minBottomSpacing) + var(--margin));
-	right: var(--margin);
+	bottom: calc(var(--MI-minBottomSpacing) + var(--MI-margin));
+	right: var(--MI-margin);
 	margin: 0;
 	padding: 12px;
 	font-size: 0.9em;

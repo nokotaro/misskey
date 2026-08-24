@@ -1,45 +1,51 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Injectable } from '@nestjs/common';
-import { checkWordMute } from '@/misc/check-word-mute.js';
-import { isUserRelated } from '@/misc/is-user-related.js';
-import { isInstanceMuted } from '@/misc/is-instance-muted.js';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import type { Packed } from '@/misc/json-schema.js';
 import { MetaService } from '@/core/MetaService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
+import { NoteStreamingHidingService } from '../NoteStreamingHidingService.js';
 import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
-import Channel from '../channel.js';
+import { isRenotePacked, isQuotePacked } from '@/misc/is-renote.js';
+import type { JsonObject } from '@/misc/json-value.js';
+import Channel, { type ChannelRequest } from '../channel.js';
+import { REQUEST } from '@nestjs/core';
 
-class HybridTimelineChannel extends Channel {
+@Injectable({ scope: Scope.TRANSIENT })
+export class HybridTimelineChannel extends Channel {
 	public readonly chName = 'hybridTimeline';
-	public static shouldShare = true;
-	public static requireCredential = true;
-	private withReplies: boolean;
+	public static shouldShare = false;
+	public static requireCredential = true as const;
+	public static kind = 'read:account';
 	private withRenotes: boolean;
+	private withReplies: boolean;
+	private withFiles: boolean;
 
 	constructor(
+		@Inject(REQUEST)
+		request: ChannelRequest,
+
 		private metaService: MetaService,
 		private roleService: RoleService,
 		private noteEntityService: NoteEntityService,
-
-		id: string,
-		connection: Channel['connection'],
+		private noteStreamingHidingService: NoteStreamingHidingService,
 	) {
-		super(id, connection);
+		super(request);
 		//this.onNote = this.onNote.bind(this);
 	}
 
 	@bindThis
-	public async init(params: any): Promise<void> {
+	public async init(params: JsonObject): Promise<void> {
 		const policies = await this.roleService.getUserPolicies(this.user ? this.user.id : null);
 		if (!policies.ltlAvailable) return;
 
-		this.withReplies = params.withReplies ?? false;
-		this.withRenotes = params.withRenotes ?? true;
+		this.withRenotes = !!(params.withRenotes ?? true);
+		this.withReplies = !!(params.withReplies ?? false);
+		this.withFiles = !!(params.withFiles ?? false);
 
 		// Subscribe events
 		this.subscriber.on('notesStream', this.onNote);
@@ -47,67 +53,67 @@ class HybridTimelineChannel extends Channel {
 
 	@bindThis
 	private async onNote(note: Packed<'Note'>) {
-		// チャンネルの投稿ではなく、自分自身の投稿 または
-		// チャンネルの投稿ではなく、その投稿のユーザーをフォローしている または
-		// チャンネルの投稿ではなく、全体公開のローカルの投稿 または
-		// フォローしているチャンネルの投稿 の場合だけ
-		if (!(
-			(note.channelId == null && this.user!.id === note.userId) ||
-			(note.channelId == null && this.following.has(note.userId)) ||
-			(note.channelId == null && (note.user.host == null && note.visibility === 'public')) ||
-			(note.channelId != null && this.followingChannels.has(note.channelId))
-		)) return;
+		const isMe = this.user!.id === note.userId;
 
-		if (['followers', 'specified'].includes(note.visibility)) {
-			note = await this.noteEntityService.pack(note.id, this.user!, {
-				detail: true,
-			});
+		if (this.withFiles && (note.fileIds == null || note.fileIds.length === 0)) return;
 
-			if (note.isHidden) {
+		if (!note.channelId) {
+			// 以下の条件に該当するノートのみ後続処理に通す（ので、以下のif文は該当しないノートをすべて弾くようにする）
+			// - 自分自身の投稿
+			// - その投稿のユーザーをフォローしている
+			// - 全体公開のローカルの投稿
+			if (!(
+				isMe ||
+				Object.hasOwn(this.following, note.userId) ||
+				(note.user.host == null && note.visibility === 'public')
+			)) {
 				return;
 			}
 		} else {
-			// リプライなら再pack
-			if (note.replyId != null) {
-				note.reply = await this.noteEntityService.pack(note.replyId, this.user!, {
-					detail: true,
-				});
-			}
-			// Renoteなら再pack
-			if (note.renoteId != null) {
-				note.renote = await this.noteEntityService.pack(note.renoteId, this.user!, {
-					detail: true,
-				});
+			// 以下の条件に該当するノートのみ後続処理に通す（ので、以下のif文は該当しないノートをすべて弾くようにする）
+			// - フォローしているチャンネルの投稿
+			if (!this.followingChannels.has(note.channelId)) {
+				return;
 			}
 		}
 
-		// Ignore notes from instances the user has muted
-		if (isInstanceMuted(note, new Set<string>(this.userProfile!.mutedInstances ?? []))) return;
+		if (!this.isNoteVisibleForMe(note)) return;
+		if (this.isNoteMutedOrBlocked(note)) return;
 
-		// 関係ない返信は除外
-		if (note.reply && !this.withReplies) {
+		if (note.reply) {
 			const reply = note.reply;
-			// 「チャンネル接続主への返信」でもなければ、「チャンネル接続主が行った返信」でもなければ、「投稿者の投稿者自身への返信」でもない場合
-			if (reply.userId !== this.user!.id && note.userId !== this.user!.id && reply.userId !== note.userId) return;
+			if ((this.following[note.userId]?.withReplies ?? false) || this.withReplies) {
+				// 自分のフォローしていないユーザーの visibility: followers な投稿への返信は弾く
+				if (reply.visibility === 'followers' && !Object.hasOwn(this.following, reply.userId) && reply.userId !== this.user!.id) return;
+			} else {
+				// 「チャンネル接続主への返信」でもなければ、「チャンネル接続主が行った返信」でもなければ、「投稿者の投稿者自身への返信」でもない場合
+				if (reply.userId !== this.user!.id && !isMe && reply.userId !== note.userId) return;
+			}
 		}
 
-		if (note.renote && note.text == null && (note.fileIds == null || note.fileIds.length === 0) && !this.withRenotes) return;
+		// 純粋なリノート（引用リノートでないリノート）の場合
+		if (isRenotePacked(note) && !isQuotePacked(note) && note.renote) {
+			if (!this.withRenotes) return;
+			if (note.renote.reply) {
+				const reply = note.renote.reply;
+				// 自分のフォローしていないユーザーの visibility: followers な投稿への返信のリノートは弾く
+				if (reply.visibility === 'followers' && !Object.hasOwn(this.following, reply.userId) && reply.userId !== this.user!.id) return;
+			}
+		}
 
-		// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
-		if (isUserRelated(note, this.userIdsWhoMeMuting)) return;
-		// 流れてきたNoteがブロックされているユーザーが関わるものだったら無視する
-		if (isUserRelated(note, this.userIdsWhoBlockingMe)) return;
+		const filtered = await this.noteStreamingHidingService.filter(note, this.user?.id ?? null);
+		if (!filtered) return;
+		// eslint-disable-next-line no-param-reassign -- これ以降元の Note オブジェクトは見てはいけないので、いっそ再代入した方が安全
+		note = filtered;
 
-		if (note.renote && !note.text && isUserRelated(note, this.userIdsWhoMeMutingRenotes)) return;
-
-		// 流れてきたNoteがミュートすべきNoteだったら無視する
-		// TODO: 将来的には、単にMutedNoteテーブルにレコードがあるかどうかで判定したい(以下の理由により難しそうではある)
-		// 現状では、ワードミュートにおけるMutedNoteレコードの追加処理はストリーミングに流す処理と並列で行われるため、
-		// レコードが追加されるNoteでも追加されるより先にここのストリーミングの処理に到達することが起こる。
-		// そのためレコードが存在するかのチェックでは不十分なので、改めてcheckWordMuteを呼んでいる
-		if (this.userProfile && await checkWordMute(note, this.user, this.userProfile.mutedWords)) return;
-
-		this.connection.cacheNote(note);
+		if (this.user) {
+			if (isRenotePacked(note) && !isQuotePacked(note)) {
+				if (note.renote && Object.keys(note.renote.reactions).length > 0) {
+					const myRenoteReaction = await this.noteEntityService.populateMyReaction(note.renote, this.user.id);
+					note.renote.myReaction = myRenoteReaction;
+				}
+			}
+		}
 
 		this.send('note', note);
 	}
@@ -116,29 +122,5 @@ class HybridTimelineChannel extends Channel {
 	public dispose(): void {
 		// Unsubscribe events
 		this.subscriber.off('notesStream', this.onNote);
-	}
-}
-
-@Injectable()
-export class HybridTimelineChannelService {
-	public readonly shouldShare = HybridTimelineChannel.shouldShare;
-	public readonly requireCredential = HybridTimelineChannel.requireCredential;
-
-	constructor(
-		private metaService: MetaService,
-		private roleService: RoleService,
-		private noteEntityService: NoteEntityService,
-	) {
-	}
-
-	@bindThis
-	public create(id: string, connection: Channel['connection']): HybridTimelineChannel {
-		return new HybridTimelineChannel(
-			this.metaService,
-			this.roleService,
-			this.noteEntityService,
-			id,
-			connection,
-		);
 	}
 }

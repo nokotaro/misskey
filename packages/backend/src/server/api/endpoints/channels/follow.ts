@@ -1,13 +1,14 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
-import type { ChannelFollowingsRepository, ChannelsRepository } from '@/models/_.js';
-import { IdService } from '@/core/IdService.js';
+import type { ChannelsRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
+import { ChannelFollowingService } from '@/core/ChannelFollowingService.js';
+import { IdentifiableError } from '@/misc/identifiable-error.js';
 import { ApiError } from '../../error.js';
 
 export const meta = {
@@ -25,6 +26,11 @@ export const meta = {
 			code: 'NO_SUCH_CHANNEL',
 			id: 'c0031718-d573-4e85-928e-10039f1fbb68',
 		},
+		alreadyFollowing: {
+			message: 'You are already following that channel.',
+			code: 'ALREADY_FOLLOWING',
+			id: '7db31665-651e-40c1-8e6e-28e9ad829a2d',
+		},
 	},
 } as const;
 
@@ -41,11 +47,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 	constructor(
 		@Inject(DI.channelsRepository)
 		private channelsRepository: ChannelsRepository,
-
-		@Inject(DI.channelFollowingsRepository)
-		private channelFollowingsRepository: ChannelFollowingsRepository,
-
-		private idService: IdService,
+		private channelFollowingService: ChannelFollowingService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const channel = await this.channelsRepository.findOneBy({
@@ -56,12 +58,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				throw new ApiError(meta.errors.noSuchChannel);
 			}
 
-			await this.channelFollowingsRepository.insert({
-				id: this.idService.genId(),
-				createdAt: new Date(),
-				followerId: me.id,
-				followeeId: channel.id,
-			});
+			try {
+				await this.channelFollowingService.follow(me, channel);
+			} catch (e) {
+				if (e instanceof IdentifiableError) {
+					if (e.id === '6e335e39-0203-4418-a936-b3f2dc987845') throw new ApiError(meta.errors.alreadyFollowing);
+				}
+				throw e;
+			}
 		});
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -13,11 +13,6 @@ export class MiAuthSession {
 	@PrimaryColumn(id())
 	public id: string;
 
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the AuthSession.',
-	})
-	public createdAt: Date;
-
 	@Index()
 	@Column('varchar', {
 		length: 128,
@@ -30,7 +25,7 @@ export class MiAuthSession {
 	})
 	public userId: MiUser['id'] | null;
 
-	@ManyToOne(type => MiUser, {
+	@ManyToOne(() => MiUser, {
 		onDelete: 'CASCADE',
 		nullable: true,
 	})
@@ -40,7 +35,7 @@ export class MiAuthSession {
 	@Column(id())
 	public appId: MiApp['id'];
 
-	@ManyToOne(type => MiApp, {
+	@ManyToOne(() => MiApp, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()

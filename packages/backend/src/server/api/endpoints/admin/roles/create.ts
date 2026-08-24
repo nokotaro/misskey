@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -13,6 +13,13 @@ export const meta = {
 
 	requireCredential: true,
 	requireAdmin: true,
+	kind: 'write:admin:roles',
+
+	res: {
+		type: 'object',
+		optional: false, nullable: false,
+		ref: 'Role',
+	},
 } as const;
 
 export const paramDef = {
@@ -29,6 +36,7 @@ export const paramDef = {
 		isAdministrator: { type: 'boolean' },
 		isExplorable: { type: 'boolean', default: false }, // optional for backward compatibility
 		asBadge: { type: 'boolean' },
+		preserveAssignmentOnMoveAccount: { type: 'boolean' },
 		canEditMembersByModerator: { type: 'boolean' },
 		displayOrder: { type: 'number' },
 		policies: {

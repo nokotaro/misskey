@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -15,11 +15,22 @@ export const meta = {
 } as const;
 
 export const paramDef = {
-	type: 'object',
-	properties: {
-		tokenId: { type: 'string', format: 'misskey:id' },
-	},
-	required: ['tokenId'],
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				tokenId: { type: 'string', format: 'misskey:id' },
+			},
+			required: ['tokenId'],
+		},
+		{
+			type: 'object',
+			properties: {
+				token: { type: 'string', nullable: true },
+			},
+			required: ['token'],
+		},
+	],
 } as const;
 
 @Injectable()
@@ -29,13 +40,24 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private accessTokensRepository: AccessTokensRepository,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const tokenExist = await this.accessTokensRepository.exist({ where: { id: ps.tokenId } });
+			if ('tokenId' in ps) {
+				const tokenExist = await this.accessTokensRepository.exists({ where: { id: ps.tokenId } });
 
-			if (tokenExist) {
-				await this.accessTokensRepository.delete({
-					id: ps.tokenId,
-					userId: me.id,
-				});
+				if (tokenExist) {
+					await this.accessTokensRepository.delete({
+						id: ps.tokenId,
+						userId: me.id,
+					});
+				}
+			} else if (ps.token) {
+				const tokenExist = await this.accessTokensRepository.exists({ where: { token: ps.token } });
+
+				if (tokenExist) {
+					await this.accessTokensRepository.delete({
+						token: ps.token,
+						userId: me.id,
+					});
+				}
 			}
 		});
 	}

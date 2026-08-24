@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -12,6 +12,7 @@ import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiRenoteMuting } from '@/models/RenoteMuting.js';
 import { bindThis } from '@/decorators.js';
+import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 
 @Injectable()
@@ -21,6 +22,7 @@ export class RenoteMutingEntityService {
 		private renoteMutingsRepository: RenoteMutingsRepository,
 
 		private userEntityService: UserEntityService,
+		private idService: IdService,
 	) {
 	}
 
@@ -28,25 +30,31 @@ export class RenoteMutingEntityService {
 	public async pack(
 		src: MiRenoteMuting['id'] | MiRenoteMuting,
 		me?: { id: MiUser['id'] } | null | undefined,
+		hints?: {
+			packedMutee?: Packed<'UserDetailedNotMe'>
+		},
 	): Promise<Packed<'RenoteMuting'>> {
 		const muting = typeof src === 'object' ? src : await this.renoteMutingsRepository.findOneByOrFail({ id: src });
 
 		return await awaitAll({
 			id: muting.id,
-			createdAt: muting.createdAt.toISOString(),
+			createdAt: this.idService.parse(muting.id).date.toISOString(),
 			muteeId: muting.muteeId,
-			mutee: this.userEntityService.pack(muting.muteeId, me, {
-				detail: true,
+			mutee: hints?.packedMutee ?? this.userEntityService.pack(muting.muteeId, me, {
+				schema: 'UserDetailedNotMe',
 			}),
 		});
 	}
 
 	@bindThis
-	public packMany(
-		mutings: any[],
+	public async packMany(
+		mutings: MiRenoteMuting[],
 		me: { id: MiUser['id'] },
 	) {
-		return Promise.all(mutings.map(x => this.pack(x, me)));
+		const _users = mutings.map(({ mutee, muteeId }) => mutee ?? muteeId);
+		const _userMap = await this.userEntityService.packMany(_users, me, { schema: 'UserDetailedNotMe' })
+			.then(users => new Map(users.map(u => [u.id, u])));
+		return Promise.all(mutings.map(muting => this.pack(muting, me, { packedMutee: _userMap.get(muting.muteeId) })));
 	}
 }
 

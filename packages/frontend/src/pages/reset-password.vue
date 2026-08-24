@@ -1,12 +1,11 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer v-if="token" :contentMax="700" :marginMin="16" :marginMax="32">
+<PageWithHeader :actions="headerActions" :tabs="headerTabs">
+	<div v-if="token" class="_spacer" style="--MI_SPACER-w: 700px; --MI_SPACER-min: 16px; --MI_SPACER-max: 32px;">
 		<div class="_gaps_m">
 			<MkInput v-model="password" type="password">
 				<template #prefix><i class="ti ti-lock"></i></template>
@@ -15,46 +14,49 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 			<MkButton primary @click="save">{{ i18n.ts.save }}</MkButton>
 		</div>
-	</MkSpacer>
-</MkStickyContainer>
+	</div>
+</PageWithHeader>
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, onMounted } from 'vue';
+import { defineAsyncComponent, onMounted, ref, computed } from 'vue';
 import MkInput from '@/components/MkInput.vue';
 import MkButton from '@/components/MkButton.vue';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
+import { definePage } from '@/page.js';
 import { mainRouter } from '@/router.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
 
 const props = defineProps<{
 	token?: string;
 }>();
 
-let password = $ref('');
+const password = ref('');
 
 async function save() {
+	if (props.token == null) return;
 	await os.apiWithDialog('reset-password', {
 		token: props.token,
-		password: password,
+		password: password.value,
 	});
 	mainRouter.push('/');
 }
 
-onMounted(() => {
+onMounted(async () => {
 	if (props.token == null) {
-		os.popup(defineAsyncComponent(() => import('@/components/MkForgotPassword.vue')), {}, {}, 'closed');
+		const { dispose } = await os.popupAsyncWithDialog(import('@/components/MkForgotPassword.vue').then(x => x.default), {}, {
+			closed: () => dispose(),
+		});
 		mainRouter.push('/');
 	}
 });
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePage(() => ({
 	title: i18n.ts.resetPassword,
 	icon: 'ti ti-lock',
-});
+}));
 </script>

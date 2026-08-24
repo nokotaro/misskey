@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -27,6 +27,12 @@ export const meta = {
 
 	errors: {
 	},
+
+	res: {
+		type: 'object',
+		optional: false, nullable: false,
+		ref: 'Flash',
+	},
 } as const;
 
 export const paramDef = {
@@ -38,6 +44,7 @@ export const paramDef = {
 		permissions: { type: 'array', items: {
 			type: 'string',
 		} },
+		visibility: { type: 'string', enum: ['public', 'private'], default: 'public' },
 	},
 	required: ['title', 'summary', 'script', 'permissions'],
 } as const;
@@ -52,16 +59,16 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private idService: IdService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const flash = await this.flashsRepository.insert({
-				id: this.idService.genId(),
+			const flash = await this.flashsRepository.insertOne({
+				id: this.idService.gen(),
 				userId: me.id,
-				createdAt: new Date(),
 				updatedAt: new Date(),
 				title: ps.title,
 				summary: ps.summary,
 				script: ps.script,
 				permissions: ps.permissions,
-			}).then(x => this.flashsRepository.findOneByOrFail(x.identifiers[0]));
+				visibility: ps.visibility,
+			});
 
 			return await this.flashEntityService.pack(flash);
 		});

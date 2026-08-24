@@ -1,22 +1,16 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
 <div class="_gaps">
-	<MkButton v-if="$i && ($i.isModerator || $i.policies.canManageCustomEmojis)" primary link to="/custom-emojis-manager">{{ i18n.ts.manageCustomEmojis }}</MkButton>
+	<MkButton v-if="$i && ($i.isModerator || $i.policies.canManageCustomEmojis)" primary type="routerLink" to="/custom-emojis-manager">{{ i18n.ts.manageCustomEmojis }}</MkButton>
 
 	<div class="query">
-		<MkInput v-model="q" class="" :placeholder="i18n.ts.search">
+		<MkInput v-model="q" class="" :placeholder="i18n.ts.search" autocapitalize="off">
 			<template #prefix><i class="ti ti-search"></i></template>
 		</MkInput>
-
-		<!-- たくさんあると邪魔
-		<div class="tags">
-			<span class="tag _button" v-for="tag in customEmojiTags" :class="{ active: selectedTags.has(tag) }" @click="toggleTag(tag)">{{ tag }}</span>
-		</div>
-		-->
 	</div>
 
 	<MkFoldableSection v-if="searchEmojis">
@@ -26,7 +20,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</div>
 	</MkFoldableSection>
 
-	<MkFoldableSection v-for="category in customEmojiCategories" v-once :key="category">
+	<MkFoldableSection v-for="category in customEmojiCategories" v-once :key="category ?? '___root___'" :expanded="false">
 		<template #header>{{ category || i18n.ts.other }}</template>
 		<div :class="$style.emojis">
 			<XEmoji v-for="emoji in customEmojis.filter(e => e.category === category)" :key="emoji.name" :emoji="emoji"/>
@@ -36,57 +30,39 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { watch } from 'vue';
+import { watch, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import XEmoji from './emojis.emoji.vue';
 import MkButton from '@/components/MkButton.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkFoldableSection from '@/components/MkFoldableSection.vue';
-import { customEmojis, customEmojiCategories, getCustomEmojiTags } from '@/custom-emojis.js';
+import { customEmojis, customEmojiCategories } from '@/custom-emojis.js';
 import { i18n } from '@/i18n.js';
-import { $i } from '@/account.js';
+import { $i } from '@/i.js';
 
-const customEmojiTags = getCustomEmojiTags();
-let q = $ref('');
-let searchEmojis = $ref<Misskey.entities.CustomEmoji[]>(null);
-let selectedTags = $ref(new Set());
+const q = ref('');
+const searchEmojis = ref<Misskey.entities.EmojiSimple[] | null>(null);
 
 function search() {
-	if ((q === '' || q == null) && selectedTags.size === 0) {
-		searchEmojis = null;
+	if (q.value === '' || q.value == null) {
+		searchEmojis.value = null;
 		return;
 	}
 
-	if (selectedTags.size === 0) {
-		const queryarry = q.match(/\:([a-z0-9_]*)\:/g);
+	const queryarry = q.value.match(/\:([a-z0-9_]*)\:/g);
 
-		if (queryarry) {
-			searchEmojis = customEmojis.value.filter(emoji =>
-				queryarry.includes(`:${emoji.name}:`),
-			);
-		} else {
-			searchEmojis = customEmojis.value.filter(emoji => emoji.name.includes(q) || emoji.aliases.includes(q));
-		}
+	if (queryarry) {
+		searchEmojis.value = customEmojis.value.filter(emoji =>
+			queryarry.includes(`:${emoji.name}:`),
+		);
 	} else {
-		searchEmojis = customEmojis.value.filter(emoji => (emoji.name.includes(q) || emoji.aliases.includes(q)) && [...selectedTags].every(t => emoji.aliases.includes(t)));
+		searchEmojis.value = customEmojis.value.filter(emoji => emoji.name.includes(q.value) || emoji.aliases.includes(q.value));
 	}
 }
 
-function toggleTag(tag) {
-	if (selectedTags.has(tag)) {
-		selectedTags.delete(tag);
-	} else {
-		selectedTags.add(tag);
-	}
-}
-
-watch($$(q), () => {
+watch(q, () => {
 	search();
 });
-
-watch($$(selectedTags), () => {
-	search();
-}, { deep: true });
 </script>
 
 <style lang="scss" module>

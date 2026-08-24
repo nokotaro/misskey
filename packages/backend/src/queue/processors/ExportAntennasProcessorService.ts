@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -8,12 +8,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { format as DateFormat } from 'date-fns';
 import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type { AntennasRepository, UsersRepository, UserListJoiningsRepository, MiUser } from '@/models/_.js';
+import type { AntennasRepository, UsersRepository, UserListMembershipsRepository, MiUser } from '@/models/_.js';
 import Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import { bindThis } from '@/decorators.js';
 import { createTemp } from '@/misc/create-temp.js';
 import { UtilityService } from '@/core/UtilityService.js';
+import { NotificationService } from '@/core/NotificationService.js';
+import { ExportedAntenna } from '@/queue/processors/ImportAntennasProcessorService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type { DBExportAntennasData } from '../types.js';
 import type * as Bull from 'bullmq';
@@ -29,12 +31,13 @@ export class ExportAntennasProcessorService {
 		@Inject(DI.antennasRepository)
 		private antennsRepository: AntennasRepository,
 
-		@Inject(DI.userListJoiningsRepository)
-		private userListJoiningsRepository: UserListJoiningsRepository,
+		@Inject(DI.userListMembershipsRepository)
+		private userListMembershipsRepository: UserListMembershipsRepository,
 
 		private driveService: DriveService,
 		private utilityService: UtilityService,
 		private queueLoggerService: QueueLoggerService,
+		private notificationService: NotificationService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('export-antennas');
 	}
@@ -65,9 +68,9 @@ export class ExportAntennasProcessorService {
 			for (const [index, antenna] of antennas.entries()) {
 				let users: MiUser[] | undefined;
 				if (antenna.userListId !== null) {
-					const joinings = await this.userListJoiningsRepository.findBy({ userListId: antenna.userListId });
+					const memberships = await this.userListMembershipsRepository.findBy({ userListId: antenna.userListId });
 					users = await this.usersRepository.findBy({
-						id: In(joinings.map(j => j.userId)),
+						id: In(memberships.map(j => j.userId)),
 					});
 				}
 				write(JSON.stringify({
@@ -80,10 +83,12 @@ export class ExportAntennasProcessorService {
 						return this.utilityService.getFullApAccount(u.username, u.host); // acct
 					}) : null,
 					caseSensitive: antenna.caseSensitive,
+					localOnly: antenna.localOnly,
+					excludeBots: antenna.excludeBots,
 					withReplies: antenna.withReplies,
 					withFile: antenna.withFile,
-					notify: antenna.notify,
-				}));
+					excludeNotesInSensitiveChannel: antenna.excludeNotesInSensitiveChannel,
+				} satisfies Required<ExportedAntenna>));
 				if (antennas.length - 1 !== index) {
 					write(', ');
 				}
@@ -94,6 +99,11 @@ export class ExportAntennasProcessorService {
 			const fileName = 'antennas-' + DateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss') + '.json';
 			const driveFile = await this.driveService.addFile({ user, path, name: fileName, force: true, ext: 'json' });
 			this.logger.succ('Exported to: ' + driveFile.id);
+
+			this.notificationService.createNotification(user.id, 'exportCompleted', {
+				exportedEntity: 'antenna',
+				fileId: driveFile.id,
+			});
 		} finally {
 			cleanup();
 		}

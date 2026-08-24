@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -11,12 +11,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 	@click="cancel()"
 	@close="cancel()"
 	@ok="ok()"
-	@closed="$emit('closed')"
+	@closed="emit('closed')"
 >
 	<template #header>{{ i18n.ts.selectUser }}</template>
 	<div>
 		<div :class="$style.form">
-			<FormSplit :minWidth="170">
+			<MkInput v-if="computedLocalOnly" v-model="username" :autofocus="true" @update:modelValue="search">
+				<template #label>{{ i18n.ts.username }}</template>
+				<template #prefix>@</template>
+			</MkInput>
+			<FormSplit v-else :minWidth="170">
 				<MkInput v-model="username" :autofocus="true" @update:modelValue="search">
 					<template #label>{{ i18n.ts.username }}</template>
 					<template #prefix>@</template>
@@ -57,16 +61,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue';
+import { onMounted, ref, computed, useTemplateRef } from 'vue';
 import * as Misskey from 'misskey-js';
+import { host as currentHost, hostname } from '@@/js/config.js';
 import MkInput from '@/components/MkInput.vue';
 import FormSplit from '@/components/form/split.vue';
 import MkModalWindow from '@/components/MkModalWindow.vue';
-import * as os from '@/os.js';
-import { defaultStore } from '@/store.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
+import { store } from '@/store.js';
 import { i18n } from '@/i18n.js';
-import { $i } from '@/account.js';
-import { hostname } from '@/config.js';
+import { $i } from '@/i.js';
+import { instance } from '@/instance.js';
 
 const emit = defineEmits<{
 	(ev: 'ok', selected: Misskey.entities.UserDetailed): void;
@@ -74,58 +79,86 @@ const emit = defineEmits<{
 	(ev: 'closed'): void;
 }>();
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 	includeSelf?: boolean;
-}>();
+	localOnly?: boolean;
+}>(), {
+	includeSelf: false,
+	localOnly: false,
+});
 
-let username = $ref('');
-let host = $ref('');
-let users: Misskey.entities.UserDetailed[] = $ref([]);
-let recentUsers: Misskey.entities.UserDetailed[] = $ref([]);
-let selected: Misskey.entities.UserDetailed | null = $ref(null);
-let dialogEl = $ref();
+const computedLocalOnly = computed(() => props.localOnly || instance.federation === 'none');
 
-const search = () => {
-	if (username === '' && host === '') {
-		users = [];
+const username = ref('');
+const host = ref('');
+const users = ref<Misskey.entities.UserLite[]>([]);
+const recentUsers = ref<Misskey.entities.UserDetailed[]>([]);
+const selected = ref<Misskey.entities.UserLite | null>(null);
+const dialogEl = useTemplateRef('dialogEl');
+
+function search() {
+	if (username.value === '' && host.value === '') {
+		users.value = [];
 		return;
 	}
-	os.api('users/search-by-username-and-host', {
-		username: username,
-		host: host,
+	misskeyApi('users/search-by-username-and-host', {
+		username: username.value,
+		host: computedLocalOnly.value ? '.' : host.value,
 		limit: 10,
 		detail: false,
 	}).then(_users => {
-		users = _users;
+		users.value = _users.filter((u) => {
+			if (props.includeSelf) {
+				return true;
+			} else {
+				return u.id !== $i?.id;
+			}
+		});
 	});
-};
+}
 
-const ok = () => {
-	if (selected == null) return;
-	emit('ok', selected);
-	dialogEl.close();
+async function ok() {
+	if (selected.value == null) return;
+
+	const user = await misskeyApi('users/show', {
+		userId: selected.value.id,
+	});
+	emit('ok', user);
+
+	dialogEl.value?.close();
 
 	// 最近使ったユーザー更新
-	let recents = defaultStore.state.recentlyUsedUsers;
-	recents = recents.filter(x => x !== selected.id);
-	recents.unshift(selected.id);
-	defaultStore.set('recentlyUsedUsers', recents.splice(0, 16));
-};
+	let recents = store.s.recentlyUsedUsers;
+	recents = recents.filter(x => x !== selected.value?.id);
+	recents.unshift(selected.value.id);
+	store.set('recentlyUsedUsers', recents.splice(0, 16));
+}
 
-const cancel = () => {
+function cancel() {
 	emit('cancel');
-	dialogEl.close();
-};
+	dialogEl.value?.close();
+}
 
 onMounted(() => {
-	os.api('users/show', {
-		userIds: defaultStore.state.recentlyUsedUsers,
-	}).then(users => {
-		if (props.includeSelf && users.find(x => $i ? x.id === $i.id : true) == null) {
-			recentUsers = [$i, ...users];
-		} else {
-			recentUsers = users;
-		}
+	misskeyApi('users/show', {
+		userIds: store.s.recentlyUsedUsers,
+	}).then(foundUsers => {
+		let _users = foundUsers;
+		_users = _users.filter((u) => {
+			if (computedLocalOnly.value) {
+				return u.host == null;
+			} else {
+				return true;
+			}
+		});
+		_users = _users.filter((u) => {
+			if (props.includeSelf) {
+				return true;
+			} else {
+				return u.id !== $i?.id;
+			}
+		});
+		recentUsers.value = _users;
 	});
 });
 </script>
@@ -133,7 +166,7 @@ onMounted(() => {
 <style lang="scss" module>
 
 .form {
-	padding: 0 var(--root-margin);
+	padding: calc(var(--root-margin) / 2) var(--root-margin);
 }
 
 .result,
@@ -165,11 +198,11 @@ onMounted(() => {
 	font-size: 14px;
 
 	&:hover {
-		background: var(--X7);
+		background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
 	}
 
 	&.selected {
-		background: var(--accent);
+		background: var(--MI_THEME-accent);
 		color: #fff;
 	}
 }

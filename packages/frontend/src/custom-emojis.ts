@@ -1,16 +1,15 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 import { shallowRef, computed, markRaw, watch } from 'vue';
 import * as Misskey from 'misskey-js';
-import { api, apiGet } from '@/os.js';
-import { useStream } from '@/stream.js';
-import { get, set } from '@/scripts/idb-proxy.js';
+import { misskeyApi, misskeyApiGet } from '@/utility/misskey-api.js';
+import { get, set } from '@/utility/idb-proxy.js';
 
 const storageCache = await get('emojis');
-export const customEmojis = shallowRef<Misskey.entities.CustomEmoji[]>(Array.isArray(storageCache) ? storageCache : []);
+export const customEmojis = shallowRef<Misskey.entities.EmojiSimple[]>(Array.isArray(storageCache) ? storageCache : []);
 export const customEmojiCategories = computed<[ ...string[], null ]>(() => {
 	const categories = new Set<string>();
 	for (const emoji of customEmojis.value) {
@@ -21,7 +20,7 @@ export const customEmojiCategories = computed<[ ...string[], null ]>(() => {
 	return markRaw([...Array.from(categories), null]);
 });
 
-export const customEmojisMap = new Map<string, Misskey.entities.CustomEmoji>();
+export const customEmojisMap = new Map<string, Misskey.entities.EmojiSimple>();
 watch(customEmojis, emojis => {
 	customEmojisMap.clear();
 	for (const emoji of emojis) {
@@ -29,34 +28,31 @@ watch(customEmojis, emojis => {
 	}
 }, { immediate: true });
 
-// TODO: ここら辺副作用なのでいい感じにする
-const stream = useStream();
-
-stream.on('emojiAdded', emojiData => {
-	customEmojis.value = [emojiData.emoji, ...customEmojis.value];
+export function addCustomEmoji(emoji: Misskey.entities.EmojiSimple) {
+	customEmojis.value = [emoji, ...customEmojis.value];
 	set('emojis', customEmojis.value);
-});
+}
 
-stream.on('emojiUpdated', emojiData => {
-	customEmojis.value = customEmojis.value.map(item => emojiData.emojis.find(search => search.name === item.name) as Misskey.entities.CustomEmoji ?? item);
+export function updateCustomEmojis(emojis: Misskey.entities.EmojiSimple[]) {
+	customEmojis.value = customEmojis.value.map(item => emojis.find(search => search.name === item.name) ?? item);
 	set('emojis', customEmojis.value);
-});
+}
 
-stream.on('emojiDeleted', emojiData => {
-	customEmojis.value = customEmojis.value.filter(item => !emojiData.emojis.some(search => search.name === item.name));
+export function removeCustomEmojis(emojis: Misskey.entities.EmojiSimple[]) {
+	customEmojis.value = customEmojis.value.filter(item => !emojis.some(search => search.name === item.name));
 	set('emojis', customEmojis.value);
-});
+}
 
 export async function fetchCustomEmojis(force = false) {
 	const now = Date.now();
 
 	let res;
 	if (force) {
-		res = await api('emojis', {});
+		res = await misskeyApi('emojis', {});
 	} else {
 		const lastFetchedAt = await get('lastEmojisFetchedAt');
 		if (lastFetchedAt && (now - lastFetchedAt) < 1000 * 60 * 60) return;
-		res = await apiGet('emojis', {});
+		res = await misskeyApiGet('emojis', {});
 	}
 
 	customEmojis.value = res.emojis;
@@ -64,11 +60,11 @@ export async function fetchCustomEmojis(force = false) {
 	set('lastEmojisFetchedAt', now);
 }
 
-let cachedTags;
+let cachedTags: string[] | null = null;
 export function getCustomEmojiTags() {
 	if (cachedTags) return cachedTags;
 
-	const tags = new Set();
+	const tags = new Set<string>();
 	for (const emoji of customEmojis.value) {
 		for (const tag of emoji.aliases) {
 			tags.add(tag);

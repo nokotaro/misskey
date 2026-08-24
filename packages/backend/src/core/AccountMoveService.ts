@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -9,7 +9,7 @@ import { IsNull, In, MoreThan, Not } from 'typeorm';
 import { bindThis } from '@/decorators.js';
 import { DI } from '@/di-symbols.js';
 import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/User.js';
-import type { BlockingsRepository, FollowingsRepository, InstancesRepository, MutingsRepository, UserListJoiningsRepository, UsersRepository } from '@/models/_.js';
+import type { BlockingsRepository, FollowingsRepository, InstancesRepository, MiMeta, MutingsRepository, UserListMembershipsRepository, UsersRepository } from '@/models/_.js';
 import type { RelationshipJobData, ThinUser } from '@/queue/types.js';
 
 import { IdService } from '@/core/IdService.js';
@@ -20,16 +20,19 @@ import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
 import { ApDeliverManagerService } from '@/core/activitypub/ApDeliverManagerService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { CacheService } from '@/core/CacheService.js';
-import { ProxyAccountService } from '@/core/ProxyAccountService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
-import { MetaService } from '@/core/MetaService.js';
 import InstanceChart from '@/core/chart/charts/instance.js';
 import PerUserFollowingChart from '@/core/chart/charts/per-user-following.js';
+import { SystemAccountService } from '@/core/SystemAccountService.js';
+import { RoleService } from '@/core/RoleService.js';
+import { AntennaService } from '@/core/AntennaService.js';
 
 @Injectable()
 export class AccountMoveService {
 	constructor(
+		@Inject(DI.meta)
+		private meta: MiMeta,
+
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
@@ -42,8 +45,8 @@ export class AccountMoveService {
 		@Inject(DI.mutingsRepository)
 		private mutingsRepository: MutingsRepository,
 
-		@Inject(DI.userListJoiningsRepository)
-		private userListJoiningsRepository: UserListJoiningsRepository,
+		@Inject(DI.userListMembershipsRepository)
+		private userListMembershipsRepository: UserListMembershipsRepository,
 
 		@Inject(DI.instancesRepository)
 		private instancesRepository: InstancesRepository,
@@ -54,14 +57,14 @@ export class AccountMoveService {
 		private apRendererService: ApRendererService,
 		private apDeliverManagerService: ApDeliverManagerService,
 		private globalEventService: GlobalEventService,
-		private proxyAccountService: ProxyAccountService,
 		private perUserFollowingChart: PerUserFollowingChart,
 		private federatedInstanceService: FederatedInstanceService,
 		private instanceChart: InstanceChart,
-		private metaService: MetaService,
 		private relayService: RelayService,
-		private cacheService: CacheService,
 		private queueService: QueueService,
+		private systemAccountService: SystemAccountService,
+		private roleService: RoleService,
+		private antennaService: AntennaService,
 	) {
 	}
 
@@ -72,7 +75,7 @@ export class AccountMoveService {
 	 */
 	@bindThis
 	public async moveFromLocal(src: MiLocalUser, dst: MiLocalUser | MiRemoteUser): Promise<unknown> {
-		const srcUri = this.userEntityService.getUserUri(src);
+		const _srcUri = this.userEntityService.getUserUri(src);
 		const dstUri = this.userEntityService.getUserUri(dst);
 
 		// add movedToUri to indicate that the user has moved
@@ -84,7 +87,7 @@ export class AccountMoveService {
 		Object.assign(src, update);
 
 		// Update cache
-		this.cacheService.uriPersonCache.set(srcUri, src);
+		this.globalEventService.publishInternalEvent('localUserUpdated', src);
 
 		const srcPerson = await this.apRendererService.renderPerson(src);
 		const updateAct = this.apRendererService.addContext(this.apRendererService.renderUpdate(srcPerson, src));
@@ -96,7 +99,7 @@ export class AccountMoveService {
 		await this.apDeliverManagerService.deliverToFollowers(src, moveAct);
 
 		// Publish meUpdated event
-		const iObj = await this.userEntityService.pack<true, true>(src.id, src, { detail: true, includeSecrets: true });
+		const iObj = await this.userEntityService.pack(src.id, src, { schema: 'MeDetailed', includeSecrets: true });
 		this.globalEventService.publishMainStream(src.id, 'meUpdated', iObj);
 
 		// Unfollow after 24 hours
@@ -120,18 +123,20 @@ export class AccountMoveService {
 			await Promise.all([
 				this.copyBlocking(src, dst),
 				this.copyMutings(src, dst),
+				this.copyRoles(src, dst),
 				this.updateLists(src, dst),
+				this.antennaService.onMoveAccount(src, dst),
 			]);
 		} catch {
 			/* skip if any error happens */
 		}
 
 		// follow the new account
-		const proxy = await this.proxyAccountService.fetch();
+		const proxy = await this.systemAccountService.fetch('proxy');
 		const followings = await this.followingsRepository.findBy({
 			followeeId: src.id,
 			followerHost: IsNull(), // follower is local
-			followerId: proxy ? Not(proxy.id) : undefined,
+			followerId: Not(proxy.id),
 		});
 		const followJobs = followings.map(following => ({
 			from: { id: following.followerId },
@@ -180,13 +185,13 @@ export class AccountMoveService {
 			{ muteeId: dst.id, expiresAt: IsNull() },
 		).then(mutings => mutings.map(muting => muting.muterId));
 
-		const newMutings: Map<string, { muterId: string; muteeId: string; createdAt: Date; expiresAt: Date | null; }> = new Map();
+		const newMutings: Map<string, { muterId: string; muteeId: string; expiresAt: Date | null; }> = new Map();
 
 		// 重複しないようにIDを生成
 		const genId = (): string => {
 			let id: string;
 			do {
-				id = this.idService.genId();
+				id = this.idService.gen();
 			} while (newMutings.has(id));
 			return id;
 		};
@@ -194,13 +199,38 @@ export class AccountMoveService {
 			if (existingMutingsMuterUserIds.includes(muting.muterId)) continue; // skip if already muted indefinitely
 			newMutings.set(genId(), {
 				...muting,
-				createdAt: new Date(),
 				muteeId: dst.id,
 			});
 		}
 
 		const arrayToInsert = Array.from(newMutings.entries()).map(entry => ({ ...entry[1], id: entry[0] }));
 		await this.mutingsRepository.insert(arrayToInsert);
+	}
+
+	@bindThis
+	public async copyRoles(src: ThinUser, dst: ThinUser): Promise<void> {
+		// Insert new roles with the same values except userId
+		// role service may have cache for roles so retrieve roles from service
+		const [oldRoleAssignments, roles] = await Promise.all([
+			this.roleService.getUserAssigns(src.id),
+			this.roleService.getRoles(),
+		]);
+
+		if (oldRoleAssignments.length === 0) return;
+
+		// No promise all since the only async operation is writing to the database
+		for (const oldRoleAssignment of oldRoleAssignments) {
+			const role = roles.find(x => x.id === oldRoleAssignment.roleId);
+			if (role == null) continue; // Very unlikely however removing role may cause this case
+			if (!role.preserveAssignmentOnMoveAccount) continue;
+
+			try {
+				await this.roleService.assign(dst.id, role.id, oldRoleAssignment.expiresAt);
+			} catch (e) {
+				if (e instanceof RoleService.AlreadyAssignedError) continue;
+				throw e;
+			}
+		}
 	}
 
 	/**
@@ -215,47 +245,45 @@ export class AccountMoveService {
 	@bindThis
 	public async updateLists(src: ThinUser, dst: MiUser): Promise<void> {
 		// Return if there is no list to be updated.
-		const oldJoinings = await this.userListJoiningsRepository.find({
+		const oldMemberships = await this.userListMembershipsRepository.find({
 			where: {
 				userId: src.id,
 			},
 		});
-		if (oldJoinings.length === 0) return;
+		if (oldMemberships.length === 0) return;
 
-		const existingUserListIds = await this.userListJoiningsRepository.find({
+		const existingUserListIds = await this.userListMembershipsRepository.find({
 			where: {
 				userId: dst.id,
 			},
-		}).then(joinings => joinings.map(joining => joining.userListId));
+		}).then(memberships => memberships.map(membership => membership.userListId));
 
-		const newJoinings: Map<string, { createdAt: Date; userId: string; userListId: string; }> = new Map();
+		const newMemberships: Map<string, { userId: string; userListId: string; userListUserId: string; }> = new Map();
 
 		// 重複しないようにIDを生成
 		const genId = (): string => {
 			let id: string;
 			do {
-				id = this.idService.genId();
-			} while (newJoinings.has(id));
+				id = this.idService.gen();
+			} while (newMemberships.has(id));
 			return id;
 		};
-		for (const joining of oldJoinings) {
-			if (existingUserListIds.includes(joining.userListId)) continue; // skip if dst exists in this user's list
-			newJoinings.set(genId(), {
-				createdAt: new Date(),
+		for (const membership of oldMemberships) {
+			if (existingUserListIds.includes(membership.userListId)) continue; // skip if dst exists in this user's list
+			newMemberships.set(genId(), {
 				userId: dst.id,
-				userListId: joining.userListId,
+				userListId: membership.userListId,
+				userListUserId: membership.userListUserId,
 			});
 		}
 
-		const arrayToInsert = Array.from(newJoinings.entries()).map(entry => ({ ...entry[1], id: entry[0] }));
-		await this.userListJoiningsRepository.insert(arrayToInsert);
+		const arrayToInsert = Array.from(newMemberships.entries()).map(entry => ({ ...entry[1], id: entry[0] }));
+		await this.userListMembershipsRepository.insert(arrayToInsert);
 
 		// Have the proxy account follow the new account in the same way as UserListService.push
 		if (this.userEntityService.isRemoteUser(dst)) {
-			const proxy = await this.proxyAccountService.fetch();
-			if (proxy) {
-				this.queueService.createFollowJob([{ from: { id: proxy.id }, to: { id: dst.id } }]);
-			}
+			const proxy = await this.systemAccountService.fetch('proxy');
+			this.queueService.createFollowJob([{ from: { id: proxy.id }, to: { id: dst.id } }]);
 		}
 	}
 
@@ -276,13 +304,15 @@ export class AccountMoveService {
 		}
 
 		// Update instance stats by decreasing remote followers count by the number of local followers who were following the old account.
-		if (this.userEntityService.isRemoteUser(oldAccount)) {
-			this.federatedInstanceService.fetch(oldAccount.host).then(async i => {
-				this.instancesRepository.decrement({ id: i.id }, 'followersCount', localFollowerIds.length);
-				if ((await this.metaService.fetch()).enableChartsForFederatedInstances) {
-					this.instanceChart.updateFollowers(i.host, false);
-				}
-			});
+		if (this.meta.enableStatsForFederatedInstances) {
+			if (this.userEntityService.isRemoteUser(oldAccount)) {
+				this.federatedInstanceService.fetchOrRegister(oldAccount.host).then(async i => {
+					this.instancesRepository.decrement({ id: i.id }, 'followersCount', localFollowerIds.length);
+					if (this.meta.enableChartsForFederatedInstances) {
+						this.instanceChart.updateFollowers(i.host, false);
+					}
+				});
+			}
 		}
 
 		// FIXME: expensive?
@@ -308,7 +338,7 @@ export class AccountMoveService {
 		let resultUser: MiLocalUser | MiRemoteUser | null = null;
 
 		if (this.userEntityService.isRemoteUser(dst)) {
-			if ((new Date()).getTime() - (dst.lastFetchedAt?.getTime() ?? 0) > 10 * 1000) {
+			if (Date.now() - (dst.lastFetchedAt?.getTime() ?? 0) > 10 * 1000) {
 				await this.apPersonService.updatePerson(dst.uri);
 			}
 			dst = await this.apPersonService.fetchPerson(dst.uri) ?? dst;
@@ -324,7 +354,7 @@ export class AccountMoveService {
 				if (!src) continue; // oldAccountを探してもこのサーバーに存在しない場合はフォロー関係もないということなのでスルー
 
 				if (this.userEntityService.isRemoteUser(dst)) {
-					if ((new Date()).getTime() - (src.lastFetchedAt?.getTime() ?? 0) > 10 * 1000) {
+					if (Date.now() - (src.lastFetchedAt?.getTime() ?? 0) > 10 * 1000) {
 						await this.apPersonService.updatePerson(srcUri);
 					}
 

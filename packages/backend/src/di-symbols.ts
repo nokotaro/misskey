@@ -1,15 +1,18 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 export const DI = {
 	config: Symbol('config'),
 	db: Symbol('db'),
+	meta: Symbol('meta'),
 	meilisearch: Symbol('meilisearch'),
 	redis: Symbol('redis'),
 	redisForPub: Symbol('redisForPub'),
 	redisForSub: Symbol('redisForSub'),
+	redisForTimelines: Symbol('redisForTimelines'),
+	redisForReactions: Symbol('redisForReactions'),
 
 	//#region Repositories
 	usersRepository: Symbol('usersRepository'),
@@ -17,10 +20,10 @@ export const DI = {
 	announcementsRepository: Symbol('announcementsRepository'),
 	announcementReadsRepository: Symbol('announcementReadsRepository'),
 	appsRepository: Symbol('appsRepository'),
+	avatarDecorationsRepository: Symbol('avatarDecorationsRepository'),
 	noteFavoritesRepository: Symbol('noteFavoritesRepository'),
 	noteThreadMutingsRepository: Symbol('noteThreadMutingsRepository'),
 	noteReactionsRepository: Symbol('noteReactionsRepository'),
-	noteUnreadsRepository: Symbol('noteUnreadsRepository'),
 	pollsRepository: Symbol('pollsRepository'),
 	pollVotesRepository: Symbol('pollVotesRepository'),
 	userProfilesRepository: Symbol('userProfilesRepository'),
@@ -30,7 +33,7 @@ export const DI = {
 	userPublickeysRepository: Symbol('userPublickeysRepository'),
 	userListsRepository: Symbol('userListsRepository'),
 	userListFavoritesRepository: Symbol('userListFavoritesRepository'),
-	userListJoiningsRepository: Symbol('userListJoiningsRepository'),
+	userListMembershipsRepository: Symbol('userListMembershipsRepository'),
 	userNotePiningsRepository: Symbol('userNotePiningsRepository'),
 	userIpsRepository: Symbol('userIpsRepository'),
 	usedUsernamesRepository: Symbol('usedUsernamesRepository'),
@@ -47,6 +50,7 @@ export const DI = {
 	swSubscriptionsRepository: Symbol('swSubscriptionsRepository'),
 	hashtagsRepository: Symbol('hashtagsRepository'),
 	abuseUserReportsRepository: Symbol('abuseUserReportsRepository'),
+	abuseReportNotificationRecipientRepository: Symbol('abuseReportNotificationRecipientRepository'),
 	registrationTicketsRepository: Symbol('registrationTicketsRepository'),
 	authSessionsRepository: Symbol('authSessionsRepository'),
 	accessTokensRepository: Symbol('accessTokensRepository'),
@@ -63,12 +67,14 @@ export const DI = {
 	promoNotesRepository: Symbol('promoNotesRepository'),
 	promoReadsRepository: Symbol('promoReadsRepository'),
 	relaysRepository: Symbol('relaysRepository'),
-	mutedNotesRepository: Symbol('mutedNotesRepository'),
 	channelsRepository: Symbol('channelsRepository'),
 	channelFollowingsRepository: Symbol('channelFollowingsRepository'),
 	channelFavoritesRepository: Symbol('channelFavoritesRepository'),
+	channelMutingRepository: Symbol('channelMutingRepository'),
 	registryItemsRepository: Symbol('registryItemsRepository'),
 	webhooksRepository: Symbol('webhooksRepository'),
+	systemWebhooksRepository: Symbol('systemWebhooksRepository'),
+	systemAccountsRepository: Symbol('systemAccountsRepository'),
 	adsRepository: Symbol('adsRepository'),
 	passwordResetRequestsRepository: Symbol('passwordResetRequestsRepository'),
 	retentionAggregationsRepository: Symbol('retentionAggregationsRepository'),
@@ -77,5 +83,13 @@ export const DI = {
 	flashsRepository: Symbol('flashsRepository'),
 	flashLikesRepository: Symbol('flashLikesRepository'),
 	userMemosRepository: Symbol('userMemosRepository'),
+	chatMessagesRepository: Symbol('chatMessagesRepository'),
+	chatApprovalsRepository: Symbol('chatApprovalsRepository'),
+	chatRoomsRepository: Symbol('chatRoomsRepository'),
+	chatRoomMembershipsRepository: Symbol('chatRoomMembershipsRepository'),
+	chatRoomInvitationsRepository: Symbol('chatRoomInvitationsRepository'),
+	bubbleGameRecordsRepository: Symbol('bubbleGameRecordsRepository'),
+	reversiGamesRepository: Symbol('reversiGamesRepository'),
+	noteDraftsRepository: Symbol('noteDraftsRepository'),
 	//#endregion
 };

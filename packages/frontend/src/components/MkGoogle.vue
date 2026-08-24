@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -21,7 +21,9 @@ const props = defineProps<{
 const query = ref(props.q);
 
 const search = () => {
-	window.open(`https://www.google.com/search?q=${query.value}`, '_blank');
+	const sp = new URLSearchParams();
+	sp.append('q', query.value);
+	window.open(`https://www.google.com/search?${sp.toString()}`, '_blank', 'noopener');
 };
 </script>
 
@@ -37,7 +39,7 @@ const search = () => {
 	width: 100%;
 	height: 40px;
 	font-size: 16px;
-	border: solid 1px var(--divider);
+	border: solid 1px var(--MI_THEME-divider);
 	border-radius: 4px 0 0 4px;
 	-webkit-appearance: textfield;
 }
@@ -46,7 +48,7 @@ const search = () => {
 	flex-shrink: 0;
 	margin: 0;
 	padding: 0 16px;
-	border: solid 1px var(--divider);
+	border: solid 1px var(--MI_THEME-divider);
 	border-left: none;
 	border-radius: 0 4px 4px 0;
 

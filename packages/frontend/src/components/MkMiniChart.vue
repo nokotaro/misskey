@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -22,8 +22,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 		stroke-width="2"
 	/>
 	<circle
-		:cx="headX"
-		:cy="headY"
+		:cx="headX ?? undefined"
+		:cy="headY ?? undefined"
 		r="3"
 		:fill="color"
 	/>
@@ -31,10 +31,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { watch } from 'vue';
-import { v4 as uuid } from 'uuid';
+import { watch, ref } from 'vue';
+import { genId } from '@/utility/id.js';
+import { themeManager } from '@/theme.js';
 import tinycolor from 'tinycolor2';
-import { useInterval } from '@/scripts/use-interval.js';
+import { useInterval } from '@@/js/use-interval.js';
 
 const props = defineProps<{
 	src: number[];
@@ -42,13 +43,12 @@ const props = defineProps<{
 
 const viewBoxX = 50;
 const viewBoxY = 50;
-const gradientId = uuid();
-let polylinePoints = $ref('');
-let polygonPoints = $ref('');
-let headX = $ref<number | null>(null);
-let headY = $ref<number | null>(null);
-let clock = $ref<number | null>(null);
-const accent = tinycolor(getComputedStyle(document.documentElement).getPropertyValue('--accent'));
+const gradientId = genId();
+const polylinePoints = ref('');
+const polygonPoints = ref('');
+const headX = ref<number | null>(null);
+const headY = ref<number | null>(null);
+const accent = tinycolor(themeManager.currentCompiledTheme!.accent);
 const color = accent.toRgbString();
 
 function draw(): void {
@@ -60,12 +60,12 @@ function draw(): void {
 		(1 - (n / peak)) * viewBoxY,
 	]);
 
-	polylinePoints = _polylinePoints.map(xy => `${xy[0]},${xy[1]}`).join(' ');
+	polylinePoints.value = _polylinePoints.map(xy => `${xy[0]},${xy[1]}`).join(' ');
 
-	polygonPoints = `0,${ viewBoxY } ${ polylinePoints } ${ viewBoxX },${ viewBoxY }`;
+	polygonPoints.value = `0,${ viewBoxY } ${ polylinePoints.value } ${ viewBoxX },${ viewBoxY }`;
 
-	headX = _polylinePoints.at(-1)![0];
-	headY = _polylinePoints.at(-1)![1];
+	headX.value = _polylinePoints.at(-1)![0];
+	headY.value = _polylinePoints.at(-1)![1];
 }
 
 watch(() => props.src, draw, { immediate: true });

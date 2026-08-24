@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -15,16 +15,10 @@ export class MiNoteReaction {
 	public id: string;
 
 	@Index()
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the NoteReaction.',
-	})
-	public createdAt: Date;
-
-	@Index()
 	@Column(id())
 	public userId: MiUser['id'];
 
-	@ManyToOne(type => MiUser, {
+	@ManyToOne(() => MiUser, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
@@ -34,7 +28,7 @@ export class MiNoteReaction {
 	@Column(id())
 	public noteId: MiNote['id'];
 
-	@ManyToOne(type => MiNote, {
+	@ManyToOne(() => MiNote, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()

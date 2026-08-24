@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -14,11 +14,6 @@ export class MiRoleAssignment {
 	@PrimaryColumn(id())
 	public id: string;
 
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the RoleAssignment.',
-	})
-	public createdAt: Date;
-
 	@Index()
 	@Column({
 		...id(),
@@ -26,7 +21,7 @@ export class MiRoleAssignment {
 	})
 	public userId: MiUser['id'];
 
-	@ManyToOne(type => MiUser, {
+	@ManyToOne(() => MiUser, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
@@ -39,7 +34,7 @@ export class MiRoleAssignment {
 	})
 	public roleId: MiRole['id'];
 
-	@ManyToOne(type => MiRole, {
+	@ManyToOne(() => MiRole, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()

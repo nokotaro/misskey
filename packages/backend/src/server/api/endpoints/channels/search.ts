@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -35,6 +35,8 @@ export const paramDef = {
 		type: { type: 'string', enum: ['nameAndDescription', 'nameOnly'], default: 'nameAndDescription' },
 		sinceId: { type: 'string', format: 'misskey:id' },
 		untilId: { type: 'string', format: 'misskey:id' },
+		sinceDate: { type: 'integer' },
+		untilDate: { type: 'integer' },
 		limit: { type: 'integer', minimum: 1, maximum: 100, default: 5 },
 	},
 	required: ['query'],
@@ -50,14 +52,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private queryService: QueryService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const query = this.queryService.makePaginationQuery(this.channelsRepository.createQueryBuilder('channel'), ps.sinceId, ps.untilId)
+			const query = this.queryService.makePaginationQuery(this.channelsRepository.createQueryBuilder('channel'), ps.sinceId, ps.untilId, ps.sinceDate, ps.untilDate)
 				.andWhere('channel.isArchived = FALSE');
 
 			if (ps.query !== '') {
 				if (ps.type === 'nameAndDescription') {
-					query.andWhere(new Brackets(qb => { qb
-						.where('channel.name ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` })
-						.orWhere('channel.description ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` });
+					query.andWhere(new Brackets(qb => {
+						qb
+							.where('channel.name ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` })
+							.orWhere('channel.description ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` });
 					}));
 				} else {
 					query.andWhere('channel.name ILIKE :q', { q: `%${ sqlLikeEscape(ps.query) }%` });

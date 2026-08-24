@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -7,16 +7,13 @@ import { Entity, Index, JoinColumn, Column, PrimaryColumn, ManyToOne } from 'typ
 import { id } from './util/id.js';
 import { MiUser } from './User.js';
 
+export const flashVisibility = ['public', 'private'] as const;
+export type FlashVisibility = typeof flashVisibility[number];
+
 @Entity('flash')
 export class MiFlash {
 	@PrimaryColumn(id())
 	public id: string;
-
-	@Index()
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the Flash.',
-	})
-	public createdAt: Date;
 
 	@Index()
 	@Column('timestamp with time zone', {
@@ -41,7 +38,7 @@ export class MiFlash {
 	})
 	public userId: MiUser['id'];
 
-	@ManyToOne(type => MiUser, {
+	@ManyToOne(() => MiUser, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
@@ -69,5 +66,5 @@ export class MiFlash {
 	@Column('varchar', {
 		length: 512, default: 'public',
 	})
-	public visibility: 'public' | 'private';
+	public visibility: FlashVisibility;
 }

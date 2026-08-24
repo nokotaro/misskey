@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -72,10 +72,8 @@ export class PollService {
 			throw new Error('already voted');
 		}
 
-		// Create vote
 		await this.pollVotesRepository.insert({
-			id: this.idService.genId(),
-			createdAt: new Date(),
+			id: this.idService.gen(),
 			noteId: note.id,
 			userId: user.id,
 			choice: choice,
@@ -85,7 +83,7 @@ export class PollService {
 		const index = choice + 1; // In SQL, array index is 1 based
 		await this.pollsRepository.query(`UPDATE poll SET votes[${index}] = votes[${index}] + 1 WHERE "noteId" = '${poll.noteId}'`);
 
-		this.globalEventService.publishNoteStream(note.id, 'pollVoted', {
+		this.globalEventService.publishNoteStream(note, 'pollVoted', {
 			choice: choice,
 			userId: user.id,
 		});
@@ -95,6 +93,8 @@ export class PollService {
 	public async deliverQuestionUpdate(noteId: MiNote['id']) {
 		const note = await this.notesRepository.findOneBy({ id: noteId });
 		if (note == null) throw new Error('note not found');
+
+		if (note.localOnly) return;
 
 		const user = await this.usersRepository.findOneBy({ id: note.userId });
 		if (user == null) throw new Error('note not found');

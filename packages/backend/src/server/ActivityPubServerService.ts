@@ -1,8 +1,9 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import * as crypto from 'node:crypto';
 import { IncomingMessage } from 'node:http';
 import { Inject, Injectable } from '@nestjs/common';
 import fastifyAccepts from '@fastify/accepts';
@@ -10,8 +11,9 @@ import httpSignature from '@peertube/http-signature';
 import { Brackets, In, IsNull, LessThan, Not } from 'typeorm';
 import accepts from 'accepts';
 import vary from 'vary';
+import secureJson from 'secure-json-parse';
 import { DI } from '@/di-symbols.js';
-import type { FollowingsRepository, NotesRepository, EmojisRepository, NoteReactionsRepository, UserProfilesRepository, UserNotePiningsRepository, UsersRepository, FollowRequestsRepository } from '@/models/_.js';
+import type { FollowingsRepository, NotesRepository, EmojisRepository, NoteReactionsRepository, UserProfilesRepository, UserNotePiningsRepository, UsersRepository, FollowRequestsRepository, MiMeta } from '@/models/_.js';
 import * as url from '@/misc/prelude/url.js';
 import type { Config } from '@/config.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
@@ -26,7 +28,10 @@ import { UtilityService } from '@/core/UtilityService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { IActivity } from '@/core/activitypub/type.js';
-import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginOptions } from 'fastify';
+import { isQuote, isRenote } from '@/misc/is-renote.js';
+import * as Acct from '@/misc/acct.js';
+import { FanoutTimelineEndpointService } from '@/core/FanoutTimelineEndpointService.js';
+import type { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginOptions, FastifyBodyParser } from 'fastify';
 import type { FindOptionsWhere } from 'typeorm';
 
 const ACTIVITY_JSON = 'application/activity+json; charset=utf-8';
@@ -37,6 +42,9 @@ export class ActivityPubServerService {
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
+
+		@Inject(DI.meta)
+		private meta: MiMeta,
 
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
@@ -68,6 +76,7 @@ export class ActivityPubServerService {
 		private queueService: QueueService,
 		private userKeypairService: UserKeypairService,
 		private queryService: QueryService,
+		private fanoutTimelineEndpointService: FanoutTimelineEndpointService,
 	) {
 		//this.createServer = this.createServer.bind(this);
 	}
@@ -88,7 +97,7 @@ export class ActivityPubServerService {
 	 */
 	@bindThis
 	private async packActivity(note: MiNote): Promise<any> {
-		if (note.renoteId && note.text == null && !note.hasPoll && (note.fileIds == null || note.fileIds.length === 0)) {
+		if (isRenote(note) && !isQuote(note)) {
 			const renote = await this.notesRepository.findOneByOrFail({ id: note.renoteId });
 			return this.apRendererService.renderAnnounce(renote.uri ? renote.uri : `${this.config.url}/notes/${renote.id}`, note);
 		}
@@ -98,17 +107,84 @@ export class ActivityPubServerService {
 
 	@bindThis
 	private inbox(request: FastifyRequest, reply: FastifyReply) {
+		if (this.meta.federation === 'none') {
+			reply.code(403);
+			return;
+		}
+
 		let signature;
 
 		try {
-			signature = httpSignature.parseRequest(request.raw, { 'headers': [] });
-		} catch (e) {
+			signature = httpSignature.parseRequest(request.raw, { 'headers': ['(request-target)', 'host', 'date'], authorizationHeaderName: 'signature' });
+		} catch (_) {
 			reply.code(401);
 			return;
 		}
 
-		// TODO: request.bodyのバリデーション？
-		this.queueService.inbox(request.body as IActivity, signature);
+		if (signature.params.headers.indexOf('host') === -1
+			|| request.headers.host !== this.config.host) {
+			// Host not specified or not match.
+			reply.code(401);
+			return;
+		}
+
+		if (signature.params.headers.indexOf('digest') === -1) {
+			// Digest not found.
+			reply.code(401);
+			return;
+		} else {
+			const digest = request.headers.digest;
+
+			if (typeof digest !== 'string') {
+				// Huh?
+				reply.code(401);
+				return;
+			}
+
+			const re = /^([a-zA-Z0-9\-]+)=(.+)$/;
+			const match = digest.match(re);
+
+			if (match == null) {
+				// Invalid digest
+				reply.code(401);
+				return;
+			}
+
+			const algo = match[1].toUpperCase();
+			const digestValue = match[2];
+
+			if (algo !== 'SHA-256') {
+				// Unsupported digest algorithm
+				reply.code(401);
+				return;
+			}
+
+			if (request.rawBody == null) {
+				// Bad request
+				reply.code(400);
+				return;
+			}
+
+			const hash = crypto.createHash('sha256').update(request.rawBody).digest('base64');
+
+			if (hash !== digestValue) {
+				// Invalid digest
+				reply.code(401);
+				return;
+			}
+		}
+
+		const body = request.body;
+
+		// Reject structurally invalid activities (e.g. missing actor) here instead
+		// of letting them fail deep inside the inbox processor. An actor-less
+		// activity can never be authenticated, so there is no point enqueueing it.
+		if (typeof body !== 'object' || body == null || !('actor' in body) || body.actor == null) {
+			reply.code(400);
+			return;
+		}
+
+		this.queueService.inbox(body as IActivity, signature);
 
 		reply.code(202);
 	}
@@ -118,6 +194,11 @@ export class ActivityPubServerService {
 		request: FastifyRequest<{ Params: { user: string; }; Querystring: { cursor?: string; page?: string; }; }>,
 		reply: FastifyReply,
 	) {
+		if (this.meta.federation === 'none') {
+			reply.code(403);
+			return;
+		}
+
 		const userId = request.params.user;
 
 		const cursor = request.query.cursor;
@@ -141,11 +222,11 @@ export class ActivityPubServerService {
 		//#region Check ff visibility
 		const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
 
-		if (profile.ffVisibility === 'private') {
+		if (profile.followersVisibility === 'private') {
 			reply.code(403);
 			reply.header('Cache-Control', 'public, max-age=30');
 			return;
-		} else if (profile.ffVisibility === 'followers') {
+		} else if (profile.followersVisibility === 'followers') {
 			reply.code(403);
 			reply.header('Cache-Control', 'public, max-age=30');
 			return;
@@ -210,6 +291,11 @@ export class ActivityPubServerService {
 		request: FastifyRequest<{ Params: { user: string; }; Querystring: { cursor?: string; page?: string; }; }>,
 		reply: FastifyReply,
 	) {
+		if (this.meta.federation === 'none') {
+			reply.code(403);
+			return;
+		}
+
 		const userId = request.params.user;
 
 		const cursor = request.query.cursor;
@@ -233,11 +319,11 @@ export class ActivityPubServerService {
 		//#region Check ff visibility
 		const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
 
-		if (profile.ffVisibility === 'private') {
+		if (profile.followingVisibility === 'private') {
 			reply.code(403);
 			reply.header('Cache-Control', 'public, max-age=30');
 			return;
-		} else if (profile.ffVisibility === 'followers') {
+		} else if (profile.followingVisibility === 'followers') {
 			reply.code(403);
 			reply.header('Cache-Control', 'public, max-age=30');
 			return;
@@ -299,6 +385,11 @@ export class ActivityPubServerService {
 
 	@bindThis
 	private async featured(request: FastifyRequest<{ Params: { user: string; }; }>, reply: FastifyReply) {
+		if (this.meta.federation === 'none') {
+			reply.code(403);
+			return;
+		}
+
 		const userId = request.params.user;
 
 		const user = await this.usersRepository.findOneBy({
@@ -316,8 +407,9 @@ export class ActivityPubServerService {
 			order: { id: 'DESC' },
 		});
 
-		const pinnedNotes = await Promise.all(pinings.map(pining =>
-			this.notesRepository.findOneByOrFail({ id: pining.noteId })));
+		const pinnedNotes = (await Promise.all(pinings.map(pining =>
+			this.notesRepository.findOneByOrFail({ id: pining.noteId }))))
+			.filter(note => !note.localOnly && ['public', 'home'].includes(note.visibility));
 
 		const renderedNotes = await Promise.all(pinnedNotes.map(note => this.apRendererService.renderNote(note)));
 
@@ -342,6 +434,11 @@ export class ActivityPubServerService {
 		}>,
 		reply: FastifyReply,
 	) {
+		if (this.meta.federation === 'none') {
+			reply.code(403);
+			return;
+		}
+
 		const userId = request.params.user;
 
 		const sinceId = request.query.since_id;
@@ -377,15 +474,38 @@ export class ActivityPubServerService {
 		const partOf = `${this.config.url}/users/${userId}/outbox`;
 
 		if (page) {
-			const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), sinceId, untilId)
-				.andWhere('note.userId = :userId', { userId: user.id })
-				.andWhere(new Brackets(qb => { qb
-					.where('note.visibility = \'public\'')
-					.orWhere('note.visibility = \'home\'');
-				}))
-				.andWhere('note.localOnly = FALSE');
-
-			const notes = await query.limit(limit).getMany();
+			const notes = this.meta.enableFanoutTimeline ? await this.fanoutTimelineEndpointService.getMiNotes({
+				sinceId: sinceId ?? null,
+				untilId: untilId ?? null,
+				limit: limit,
+				allowPartial: false, // Possibly true? IDK it's OK for ordered collection.
+				me: null,
+				redisTimelines: [
+					`userTimeline:${user.id}`,
+					`userTimelineWithReplies:${user.id}`,
+				],
+				useDbFallback: true,
+				ignoreAuthorFromMute: true,
+				excludePureRenotes: false,
+				noteFilter: (note) => {
+					if (note.visibility !== 'home' && note.visibility !== 'public') return false;
+					if (note.localOnly) return false;
+					return true;
+				},
+				dbFallback: async (untilId, sinceId, limit) => {
+					return await this.getUserNotesFromDb({
+						untilId,
+						sinceId,
+						limit,
+						userId: user.id,
+					});
+				},
+			}) : await this.getUserNotesFromDb({
+				untilId: untilId ?? null,
+				sinceId: sinceId ?? null,
+				limit,
+				userId: user.id,
+			});
 
 			if (sinceId) notes.reverse();
 
@@ -424,9 +544,43 @@ export class ActivityPubServerService {
 	}
 
 	@bindThis
+	private async getUserNotesFromDb(ps: {
+		untilId: string | null,
+		sinceId: string | null,
+		limit: number,
+		userId: MiUser['id'],
+	}) {
+		return await this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), ps.sinceId, ps.untilId)
+			.andWhere('note.userId = :userId', { userId: ps.userId })
+			.andWhere(new Brackets(qb => {
+				qb
+					.where('note.visibility = \'public\'')
+					.orWhere('note.visibility = \'home\'');
+			}))
+			.andWhere('note.localOnly = FALSE')
+			.limit(ps.limit)
+			.getMany();
+	}
+
+	@bindThis
 	private async userInfo(request: FastifyRequest, reply: FastifyReply, user: MiUser | null) {
+		if (this.meta.federation === 'none') {
+			reply.code(403);
+			return;
+		}
+
 		if (user == null) {
 			reply.code(404);
+			return;
+		}
+
+		// リモートだったらリダイレクト
+		if (user.host != null) {
+			if (user.uri == null || this.utilityService.isSelfHost(user.host)) {
+				reply.code(500);
+				return;
+			}
+			reply.redirect(user.uri, 301);
 			return;
 		}
 
@@ -437,8 +591,7 @@ export class ActivityPubServerService {
 
 	@bindThis
 	public createServer(fastify: FastifyInstance, options: FastifyPluginOptions, done: (err?: Error) => void) {
-		// addConstraintStrategy の型定義がおかしいため
-		(fastify.addConstraintStrategy as any)({
+		fastify.addConstraintStrategy({
 			name: 'apOrHtml',
 			storage() {
 				const store = {} as any;
@@ -453,14 +606,33 @@ export class ActivityPubServerService {
 			},
 			deriveConstraint(request: IncomingMessage) {
 				const accepted = accepts(request).type(['html', ACTIVITY_JSON, LD_JSON]);
-				const isAp = typeof accepted === 'string' && !accepted.match(/html/);
-				return isAp ? 'ap' : 'html';
+				if (accepted === false) return null;
+				return accepted !== 'html' ? 'ap' : 'html';
 			},
 		});
 
+		const almostDefaultJsonParser: FastifyBodyParser<Buffer> = function (request, rawBody, done) {
+			if (rawBody.length === 0) {
+				const err = new Error('Body cannot be empty!') as any;
+				err.statusCode = 400;
+				return done(err);
+			}
+
+			try {
+				const json = secureJson.parse(rawBody.toString('utf8'), null, {
+					protoAction: 'ignore',
+					constructorAction: 'ignore',
+				});
+				done(null, json);
+			} catch (err: any) {
+				err.statusCode = 400;
+				return done(err);
+			}
+		};
+
 		fastify.register(fastifyAccepts);
-		fastify.addContentTypeParser('application/activity+json', { parseAs: 'string' }, fastify.getDefaultJsonParser('ignore', 'ignore'));
-		fastify.addContentTypeParser('application/ld+json', { parseAs: 'string' }, fastify.getDefaultJsonParser('ignore', 'ignore'));
+		fastify.addContentTypeParser('application/activity+json', { parseAs: 'buffer' }, almostDefaultJsonParser);
+		fastify.addContentTypeParser('application/ld+json', { parseAs: 'buffer' }, almostDefaultJsonParser);
 
 		fastify.addHook('onRequest', (request, reply, done) => {
 			reply.header('Access-Control-Allow-Headers', 'Accept');
@@ -472,12 +644,17 @@ export class ActivityPubServerService {
 
 		//#region Routing
 		// inbox (limit: 64kb)
-		fastify.post('/inbox', { bodyLimit: 1024 * 64 }, async (request, reply) => await this.inbox(request, reply));
-		fastify.post('/users/:user/inbox', { bodyLimit: 1024 * 64 }, async (request, reply) => await this.inbox(request, reply));
+		fastify.post('/inbox', { config: { rawBody: true }, bodyLimit: 1024 * 64 }, async (request, reply) => await this.inbox(request, reply));
+		fastify.post('/users/:user/inbox', { config: { rawBody: true }, bodyLimit: 1024 * 64 }, async (request, reply) => await this.inbox(request, reply));
 
 		// note
 		fastify.get<{ Params: { note: string; } }>('/notes/:note', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
 			vary(reply.raw, 'Accept');
+
+			if (this.meta.federation === 'none') {
+				reply.code(403);
+				return;
+			}
 
 			const note = await this.notesRepository.findOneBy({
 				id: request.params.note,
@@ -508,6 +685,11 @@ export class ActivityPubServerService {
 		// note activity
 		fastify.get<{ Params: { note: string; } }>('/notes/:note/activity', async (request, reply) => {
 			vary(reply.raw, 'Accept');
+
+			if (this.meta.federation === 'none') {
+				reply.code(403);
+				return;
+			}
 
 			const note = await this.notesRepository.findOneBy({
 				id: request.params.note,
@@ -549,6 +731,11 @@ export class ActivityPubServerService {
 
 		// publickey
 		fastify.get<{ Params: { user: string; } }>('/users/:user/publickey', async (request, reply) => {
+			if (this.meta.federation === 'none') {
+				reply.code(403);
+				return;
+			}
+
 			const userId = request.params.user;
 
 			const user = await this.usersRepository.findOneBy({
@@ -574,21 +761,38 @@ export class ActivityPubServerService {
 		});
 
 		fastify.get<{ Params: { user: string; } }>('/users/:user', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
+			vary(reply.raw, 'Accept');
+
+			if (this.meta.federation === 'none') {
+				reply.code(403);
+				return;
+			}
+
 			const userId = request.params.user;
 
 			const user = await this.usersRepository.findOneBy({
 				id: userId,
-				host: IsNull(),
 				isSuspended: false,
 			});
 
 			return await this.userInfo(request, reply, user);
 		});
 
-		fastify.get<{ Params: { user: string; } }>('/@:user', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
+		fastify.get<{ Params: { acct: string; } }>('/@:acct', { constraints: { apOrHtml: 'ap' } }, async (request, reply) => {
+			vary(reply.raw, 'Accept');
+
+			if (this.meta.federation === 'none') {
+				reply.code(403);
+				return;
+			}
+
+			const acct = Acct.parse(request.params.acct);
+			// normalize acct host
+			if (this.utilityService.isSelfHost(acct.host)) acct.host = null;
+
 			const user = await this.usersRepository.findOneBy({
-				usernameLower: request.params.user.toLowerCase(),
-				host: IsNull(),
+				usernameLower: acct.username.toLowerCase(),
+				host: acct.host ?? IsNull(),
 				isSuspended: false,
 			});
 
@@ -598,6 +802,11 @@ export class ActivityPubServerService {
 
 		// emoji
 		fastify.get<{ Params: { emoji: string; } }>('/emojis/:emoji', async (request, reply) => {
+			if (this.meta.federation === 'none') {
+				reply.code(403);
+				return;
+			}
+
 			const emoji = await this.emojisRepository.findOneBy({
 				host: IsNull(),
 				name: request.params.emoji,
@@ -615,6 +824,11 @@ export class ActivityPubServerService {
 
 		// like
 		fastify.get<{ Params: { like: string; } }>('/likes/:like', async (request, reply) => {
+			if (this.meta.federation === 'none') {
+				reply.code(403);
+				return;
+			}
+
 			const reaction = await this.noteReactionsRepository.findOneBy({ id: request.params.like });
 
 			if (reaction == null) {
@@ -636,6 +850,11 @@ export class ActivityPubServerService {
 
 		// follow
 		fastify.get<{ Params: { follower: string; followee: string; } }>('/follows/:follower/:followee', async (request, reply) => {
+			if (this.meta.federation === 'none') {
+				reply.code(403);
+				return;
+			}
+
 			// This may be used before the follow is completed, so we do not
 			// check if the following exists.
 
@@ -661,7 +880,12 @@ export class ActivityPubServerService {
 		});
 
 		// follow
-		fastify.get<{ Params: { followRequestId: string ; } }>('/follows/:followRequestId', async (request, reply) => {
+		fastify.get<{ Params: { followRequestId: string; } }>('/follows/:followRequestId', async (request, reply) => {
+			if (this.meta.federation === 'none') {
+				reply.code(403);
+				return;
+			}
+
 			// This may be used before the follow is completed, so we do not
 			// check if the following exists and only check if the follow request exists.
 

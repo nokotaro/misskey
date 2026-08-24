@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -12,11 +12,6 @@ import { MiApp } from './App.js';
 export class MiAccessToken {
 	@PrimaryColumn(id())
 	public id: string;
-
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the AccessToken.',
-	})
-	public createdAt: Date;
 
 	@Column('timestamp with time zone', {
 		nullable: true,
@@ -46,7 +41,7 @@ export class MiAccessToken {
 	@Column(id())
 	public userId: MiUser['id'];
 
-	@ManyToOne(type => MiUser, {
+	@ManyToOne(() => MiUser, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
@@ -58,7 +53,7 @@ export class MiAccessToken {
 	})
 	public appId: MiApp['id'] | null;
 
-	@ManyToOne(type => MiApp, {
+	@ManyToOne(() => MiApp, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()

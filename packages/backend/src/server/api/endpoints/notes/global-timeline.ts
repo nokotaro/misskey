@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -40,7 +40,6 @@ export const paramDef = {
 	type: 'object',
 	properties: {
 		withFiles: { type: 'boolean', default: false },
-		withReplies: { type: 'boolean', default: false },
 		withRenotes: { type: 'boolean', default: true },
 		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
 		sinceId: { type: 'string', format: 'misskey:id' },
@@ -79,13 +78,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				.leftJoinAndSelect('reply.user', 'replyUser')
 				.leftJoinAndSelect('renote.user', 'renoteUser');
 
-			this.queryService.generateRepliesQuery(query, ps.withReplies, me);
-			if (me) {
-				this.queryService.generateMutedUserQuery(query, me);
-				this.queryService.generateMutedNoteQuery(query, me);
-				this.queryService.generateBlockedUserQuery(query, me);
-				this.queryService.generateMutedUserRenotesQueryForNotes(query, me);
-			}
+			this.queryService.generateBaseNoteFilteringQuery(query, me);
+			if (me) this.queryService.generateMutedUserRenotesQueryForNotes(query, me);
 
 			if (ps.withFiles) {
 				query.andWhere('note.fileIds != \'{}\'');
@@ -93,10 +87,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (ps.withRenotes === false) {
 				query.andWhere(new Brackets(qb => {
-					qb.orWhere('note.renoteId IS NULL');
+					qb.where('note.renoteId IS NULL');
 					qb.orWhere(new Brackets(qb => {
-						qb.orWhere('note.text IS NOT NULL');
+						qb.where('note.text IS NOT NULL');
 						qb.orWhere('note.fileIds != \'{}\'');
+						qb.orWhere('0 < (SELECT COUNT(*) FROM poll WHERE poll."noteId" = note.id)');
 					}));
 				}));
 			}

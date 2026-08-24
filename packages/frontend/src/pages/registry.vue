@@ -1,38 +1,42 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkStickyContainer>
-	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :contentMax="600" :marginMin="16">
+<PageWithHeader :actions="headerActions" :tabs="headerTabs">
+	<div class="_spacer" style="--MI_SPACER-w: 600px; --MI_SPACER-min: 16px;">
 		<MkButton primary @click="createKey">{{ i18n.ts._registry.createKey }}</MkButton>
 
-		<FormSection v-if="scopes">
-			<template #label>{{ i18n.ts.system }}</template>
-			<div class="_formLinks">
-				<FormLink v-for="scope in scopes" :to="`/registry/keys/system/${scope.join('/')}`" class="_monospace">{{ scope.join('/') }}</FormLink>
-			</div>
-		</FormSection>
-	</MkSpacer>
-</MkStickyContainer>
+		<div v-if="scopesWithDomain" class="_gaps_m">
+			<FormSection v-for="domain in scopesWithDomain" :key="domain.domain ?? 'system'">
+				<template #label>{{ domain.domain ? domain.domain.toUpperCase() : i18n.ts.system }}</template>
+				<div class="_gaps_s">
+					<FormLink v-for="scope in domain.scopes" :to="`/registry/keys/${domain.domain ?? '@'}/${scope.join('/')}`" class="_monospace">{{ scope.length === 0 ? '(root)' : scope.join('/') }}</FormLink>
+				</div>
+			</FormSection>
+		</div>
+	</div>
+</PageWithHeader>
 </template>
 
 <script lang="ts" setup>
+import { ref, computed } from 'vue';
+import * as Misskey from 'misskey-js';
 import JSON5 from 'json5';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
 import { i18n } from '@/i18n.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { definePage } from '@/page.js';
 import FormLink from '@/components/form/link.vue';
 import FormSection from '@/components/form/section.vue';
 import MkButton from '@/components/MkButton.vue';
 
-let scopes = $ref(null);
+const scopesWithDomain = ref<Misskey.entities.IRegistryScopesWithDomainResponse | null>(null);
 
 function fetchScopes() {
-	os.api('i/registry/scopes').then(res => {
-		scopes = res.slice().sort((a, b) => a.join('/').localeCompare(b.join('/')));
+	misskeyApi('i/registry/scopes-with-domain').then(res => {
+		scopesWithDomain.value = res;
 	});
 }
 
@@ -52,7 +56,9 @@ async function createKey() {
 			label: i18n.ts._registry.scope,
 		},
 	});
+
 	if (canceled) return;
+
 	os.apiWithDialog('i/registry/set', {
 		scope: result.scope.split('/'),
 		key: result.key,
@@ -64,12 +70,12 @@ async function createKey() {
 
 fetchScopes();
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePage(() => ({
 	title: i18n.ts.registry,
 	icon: 'ti ti-adjustments',
-});
+}));
 </script>
