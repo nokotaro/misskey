@@ -2,10 +2,16 @@
 
 ARG NODE_VERSION=26.4.0-trixie
 
-FROM node:${NODE_VERSION} AS builder
+# build assets & compile TypeScript
 
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends \
+FROM --platform=$BUILDPLATFORM node:${NODE_VERSION} AS native-builder
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+	--mount=type=cache,target=/var/lib/apt,sharing=locked \
+	rm -f /etc/apt/apt.conf.d/docker-clean \
+	; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
+	&& apt-get update \
+	&& apt-get install -yqq --no-install-recommends \
 	build-essential
 
 WORKDIR /misskey
@@ -29,9 +35,10 @@ ARG NODE_ENV=production
 
 RUN node -e "console.log(JSON.parse(require('node:fs').readFileSync('./package.json')).packageManager)" | xargs npm install -g
 
-RUN pnpm i --frozen-lockfile
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store,sharing=locked \
+	pnpm i --frozen-lockfile --aggregate-output
 
-COPY . ./
+COPY --link . ./
 
 RUN git submodule update --init
 RUN pnpm build

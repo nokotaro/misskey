@@ -45,7 +45,7 @@ export class foreignKeyReports1651224615271 {
             queryRunner.query(`ALTER TABLE "user_publickey" ADD CONSTRAINT "UQ_10c146e4b39b443ede016f6736d" UNIQUE ("userId")`),
             queryRunner.query(`ALTER TABLE "promo_note" ADD CONSTRAINT "UQ_e263909ca4fe5d57f8d4230dd5c" UNIQUE ("noteId")`),
 
-            // queryRunner.query(`ALTER TABLE "page" RENAME CONSTRAINT "FK_3126dd7c502c9e4d7597ef7ef10" TO "FK_a9ca79ad939bf06066b81c9d3aa"`),
+            queryRunner.query(`ALTER TABLE "page" RENAME CONSTRAINT "FK_3126dd7c502c9e4d7597ef7ef10" TO "FK_a9ca79ad939bf06066b81c9d3aa"`),
 
             queryRunner.query(`ALTER TYPE "public"."user_profile_mutingnotificationtypes_enum" ADD VALUE 'pollEnded' AFTER 'pollVote'`),
         ]);
