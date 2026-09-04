@@ -5,7 +5,7 @@
 
 import { Brackets } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
-import type { MiMeta, NotesRepository } from '@/models/_.js';
+import type { MiMeta, MiNote, NoteReactionsRepository, NotesRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { DI } from '@/di-symbols.js';
@@ -18,8 +18,14 @@ import { FanoutTimelineName } from '@/core/FanoutTimelineService.js';
 import { ApiError } from '@/server/api/error.js';
 import { ChannelMutingService } from '@/core/ChannelMutingService.js';
 
+type NoteWithSortScore = MiNote & { _sortScore?: number };
+
 export const meta = {
 	tags: ['users', 'notes'],
+	limit: {
+		duration: 60 * 1000,
+		max: 120,
+	},
 
 	res: {
 		type: 'array',
@@ -27,7 +33,21 @@ export const meta = {
 		items: {
 			type: 'object',
 			optional: false, nullable: false,
-			ref: 'Note',
+			allOf: [
+				{
+					type: 'object',
+					ref: 'Note',
+				},
+				{
+					type: 'object',
+					properties: {
+						sortScore: {
+							type: 'integer',
+							optional: true, nullable: false,
+						},
+					},
+				},
+			],
 		},
 	},
 
@@ -64,8 +84,11 @@ export const paramDef = {
 		untilId: { type: 'string', format: 'misskey:id' },
 		sinceDate: { type: 'integer' },
 		untilDate: { type: 'integer' },
+		sinceScore: { type: 'integer', minimum: 0 },
+		untilScore: { type: 'integer', minimum: 0 },
 		allowPartial: { type: 'boolean', default: false }, // true is recommended but for compatibility false by default
 		withFiles: { type: 'boolean', default: false },
+		sortBy: { type: 'string', enum: ['renoteCount', 'reactionCount'] },
 	},
 	required: ['userId'],
 } as const;
@@ -78,6 +101,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
+		@Inject(DI.noteReactionsRepository)
+		private noteReactionsRepository: NoteReactionsRepository,
 		private noteEntityService: NoteEntityService,
 		private queryService: QueryService,
 		private cacheService: CacheService,
@@ -86,8 +111,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private channelMutingService: ChannelMutingService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const untilId = ps.untilId ?? (ps.untilDate ? this.idService.gen(ps.untilDate!) : null);
-			const sinceId = ps.sinceId ?? (ps.sinceDate ? this.idService.gen(ps.sinceDate!) : null);
+			const untilId = ps.untilId ?? (ps.sortBy == null && ps.untilDate ? this.idService.gen(ps.untilDate) : null);
+			const sinceId = ps.sinceId ?? (ps.sortBy == null && ps.sinceDate ? this.idService.gen(ps.sinceDate) : null);
 			const isSelf = me && (me.id === ps.userId);
 
 			if (ps.withReplies && ps.withFiles) throw new ApiError(meta.errors.bothWithRepliesAndWithFiles);
@@ -100,18 +125,34 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				}
 			}
 
-			if (!this.serverSettings.enableFanoutTimeline) {
+			const dbQueryOptions = {
+				userId: ps.userId,
+				withChannelNotes: ps.withChannelNotes,
+				withFiles: ps.withFiles,
+				withRenotes: ps.withRenotes,
+				withReplies: ps.withReplies,
+				sortBy: ps.sortBy,
+				sinceDate: ps.sinceDate,
+				untilDate: ps.untilDate,
+				sinceScore: ps.sinceScore,
+				untilScore: ps.untilScore,
+			};
+
+			if (!this.serverSettings.enableFanoutTimeline || ps.sortBy != null) {
 				const timeline = await this.getFromDb({
+					...dbQueryOptions,
 					untilId,
 					sinceId,
 					limit: ps.limit,
-					userId: ps.userId,
-					withChannelNotes: ps.withChannelNotes,
-					withFiles: ps.withFiles,
-					withRenotes: ps.withRenotes,
 				}, me);
 
-				return await this.noteEntityService.packMany(timeline, me);
+				const packed = await this.noteEntityService.packMany(timeline, me);
+				return ps.sortBy == null
+					? packed
+					: packed.map((note, index) => ({
+						...note,
+						sortScore: timeline[index]._sortScore!,
+					}));
 			}
 
 			const redisTimelines: FanoutTimelineName[] = [ps.withFiles ? `userTimelineWithFiles:${ps.userId}` : `userTimeline:${ps.userId}`];
@@ -143,13 +184,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					return true;
 				},
 				dbFallback: async (untilId, sinceId, limit) => await this.getFromDb({
+					...dbQueryOptions,
 					untilId,
 					sinceId,
 					limit,
-					userId: ps.userId,
-					withChannelNotes: ps.withChannelNotes,
-					withFiles: ps.withFiles,
-					withRenotes: ps.withRenotes,
 				}, me),
 			});
 
@@ -165,7 +203,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		withChannelNotes: boolean,
 		withFiles: boolean,
 		withRenotes: boolean,
-	}, me: MiLocalUser | null) {
+		withReplies: boolean,
+		sortBy?: 'renoteCount' | 'reactionCount',
+		sinceDate?: number,
+		untilDate?: number,
+		sinceScore?: number,
+		untilScore?: number,
+	}, me: MiLocalUser | null): Promise<NoteWithSortScore[]> {
 		const mutingChannelIds = me
 			? await this.channelMutingService
 				.list({ requestUserId: me.id }, { idOnly: true })
@@ -173,7 +217,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			: [];
 		const isSelf = me && (me.id === ps.userId);
 
-		const query = this.queryService.makePaginationQuery(this.notesRepository.createQueryBuilder('note'), ps.sinceId, ps.untilId)
+		const query = this.notesRepository.createQueryBuilder('note')
 			.andWhere('note.userId = :userId', { userId: ps.userId })
 			.innerJoinAndSelect('note.user', 'user')
 			.leftJoinAndSelect('note.reply', 'reply')
@@ -181,6 +225,53 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			.leftJoinAndSelect('note.channel', 'channel')
 			.leftJoinAndSelect('reply.user', 'replyUser')
 			.leftJoinAndSelect('renote.user', 'renoteUser');
+
+		if (ps.sortBy == null) {
+			this.queryService.makePaginationQuery(query, ps.sinceId, ps.untilId);
+		} else {
+			const scoreExpression = ps.sortBy === 'renoteCount'
+				? 'note.renoteCount'
+				: '(SELECT COUNT(*) FROM note_reaction reaction WHERE reaction."noteId" = note.id)';
+			query.addSelect(scoreExpression, 'note_sortScore');
+			const [sinceCursorScore, untilCursorScore] = await Promise.all([
+				ps.sinceId && ps.sinceScore == null ? this.getCursorScore(ps.sinceId, ps.sortBy) : null,
+				ps.untilId && ps.untilScore == null ? this.getCursorScore(ps.untilId, ps.sortBy) : null,
+			]);
+
+			if (ps.sinceDate) query.andWhere('note.id > :sinceDateId', { sinceDateId: this.idService.gen(ps.sinceDate) });
+			if (ps.untilDate) query.andWhere('note.id < :untilDateId', { untilDateId: this.idService.gen(ps.untilDate) });
+
+			if (ps.sinceId) {
+				const sinceScore = ps.sinceScore ?? sinceCursorScore;
+				if (sinceScore == null) {
+					query.andWhere('FALSE');
+				} else {
+					query.andWhere(new Brackets(qb => {
+						qb.where(`${scoreExpression} > :sinceScore`, { sinceScore });
+						qb.orWhere(`(${scoreExpression} = :sinceScore AND note.id > :sinceId)`, { sinceScore, sinceId: ps.sinceId });
+					}));
+				}
+			}
+
+			if (ps.untilId) {
+				const untilScore = ps.untilScore ?? untilCursorScore;
+				if (untilScore == null) {
+					query.andWhere('FALSE');
+				} else {
+					query.andWhere(new Brackets(qb => {
+						qb.where(`${scoreExpression} < :untilScore`, { untilScore });
+						qb.orWhere(`(${scoreExpression} = :untilScore AND note.id < :untilId)`, { untilScore, untilId: ps.untilId });
+					}));
+				}
+			}
+
+			const direction = ps.sinceId && !ps.untilId ? 'ASC' : 'DESC';
+			query.orderBy(scoreExpression, direction).addOrderBy('note.id', direction);
+		}
+
+		if (!ps.withReplies) {
+			query.andWhere('note.replyId IS NULL');
+		}
 
 		if (ps.withChannelNotes) {
 			query.andWhere(new Brackets(qb => {
@@ -230,6 +321,24 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			}));
 		}
 
-		return await query.limit(ps.limit).getMany();
+		query.limit(ps.limit);
+		if (ps.sortBy == null) return await query.getMany();
+
+		const { entities, raw } = await query.getRawAndEntities();
+		return entities.map((note, index): NoteWithSortScore => Object.assign(note, {
+			_sortScore: Number(raw[index].note_sortScore),
+		}));
+	}
+
+	private async getCursorScore(noteId: string, sortBy: 'renoteCount' | 'reactionCount'): Promise<number | null> {
+		if (sortBy === 'reactionCount') {
+			return await this.noteReactionsRepository.countBy({ noteId });
+		}
+
+		const note = await this.notesRepository.findOne({
+			select: { renoteCount: true },
+			where: { id: noteId },
+		});
+		return note?.renoteCount ?? null;
 	}
 }

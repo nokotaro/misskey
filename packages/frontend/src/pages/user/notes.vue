@@ -21,7 +21,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</MkTab>
 			</template>
 			<MkNotesTimeline v-if="tab === 'featured'" :noGap="true" :paginator="featuredPaginator" :class="$style.tl"/>
-			<MkNotesTimeline v-else :noGap="true" :paginator="notesPaginator" :class="$style.tl"/>
+			<MkNotesTimeline v-else :noGap="true" :paginator="notesPaginator" :orderOptions="userNotesOrderOptions" :selectedOrder="sortOrder" :showDateSeparators="isChronologicalUserNotesOrder(sortOrder)" :class="$style.tl" @update:order="sortOrder = $event as UserNotesSortOrder"/>
 		</MkStickyContainer>
 	</div>
 </div>
@@ -34,12 +34,15 @@ import MkNotesTimeline from '@/components/MkNotesTimeline.vue';
 import MkTab from '@/components/MkTab.vue';
 import { i18n } from '@/i18n.js';
 import { Paginator } from '@/utility/paginator.js';
+import { getUserNotesCursorParams, getUserNotesSortBy, isChronologicalUserNotesOrder, userNotesOrderOptions } from '@/pages/user/user-notes-sort.js';
+import type { UserNotesSortOrder } from '@/pages/user/user-notes-sort.js';
 
 const props = defineProps<{
 	user: Misskey.entities.UserDetailed;
 }>();
 
 const tab = ref<'featured' | 'notes' | 'all' | 'files'>('all');
+const sortOrder = ref<UserNotesSortOrder>('newest');
 
 const featuredPaginator = markRaw(new Paginator('users/featured-notes', {
 	limit: 10,
@@ -56,7 +59,10 @@ const notesPaginator = markRaw(new Paginator('users/notes', {
 		withReplies: tab.value === 'all',
 		withChannelNotes: tab.value === 'all',
 		withFiles: tab.value === 'files',
+		sortBy: getUserNotesSortBy(sortOrder.value),
 	})),
+	cursorFromItemOrder: true,
+	cursorParams: getUserNotesCursorParams,
 }));
 </script>
 

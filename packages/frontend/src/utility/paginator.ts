@@ -107,6 +107,8 @@ export class Paginator<
 	private canFetchDetection: 'safe' | 'limit' | null = null;
 	private aheadQueue: T[] = [];
 	private useShallowRef: SRef;
+	private cursorFromItemOrder: boolean;
+	private cursorParams: ((item: T, direction: 'newer' | 'older') => Partial<E['req']>) | null;
 
 	// 配列内の要素をどのような順序で並べるか
 	// newest: 新しいものが先頭 (default)
@@ -138,11 +140,20 @@ export class Paginator<
 
 		useShallowRef?: SRef;
 
+		/**
+		 * ID の大小ではなく、現在の表示順の先頭・末尾をページングカーソルとして使う。
+		 * ID 以外の値でソートされるエンドポイント向け。
+		 */
+		cursorFromItemOrder?: boolean;
+		cursorParams?: (item: T, direction: 'newer' | 'older') => Partial<E['req']>;
+
 		canSearch?: boolean;
 		searchParamName?: keyof E['req'];
 	}) {
 		this.endpoint = endpoint;
 		this.useShallowRef = (props.useShallowRef ?? false) as SRef;
+		this.cursorFromItemOrder = props.cursorFromItemOrder ?? false;
+		this.cursorParams = props.cursorParams ?? null;
 		if (this.useShallowRef) {
 			this.items = shallowRef<T[]>([]);
 		} else {
@@ -178,6 +189,10 @@ export class Paginator<
 	}
 
 	private getNewestId(): string | null | undefined {
+		if (this.cursorFromItemOrder) {
+			return this.order.value === 'oldest' ? this.items.value.at(-1)?.id : this.items.value[0]?.id;
+		}
+
 		// 様々な要因により並び順は保証されないのでソートが必要
 		if (this.aheadQueue.length > 0) {
 			return this.aheadQueue.map(x => x.id).sort().at(-1);
@@ -186,8 +201,21 @@ export class Paginator<
 	}
 
 	private getOldestId(): string | null | undefined {
+		if (this.cursorFromItemOrder) {
+			return this.order.value === 'oldest' ? this.items.value[0]?.id : this.items.value.at(-1)?.id;
+		}
+
 		// 様々な要因により並び順は保証されないのでソートが必要
 		return this.items.value.map(x => x.id).sort().at(0);
+	}
+
+	private getCursorItem(cursorId: string | null | undefined, direction: 'newer' | 'older'): T | undefined {
+		if (this.cursorFromItemOrder) {
+			const useFirstItem = (direction === 'newer') === (this.order.value === 'newest');
+			return useFirstItem ? this.items.value[0] : this.items.value.at(-1);
+		}
+
+		return cursorId ? this.items.value.find(item => item.id === cursorId) : undefined;
 	}
 
 	public async init(): Promise<void> {
@@ -260,6 +288,8 @@ export class Paginator<
 	public async fetchOlder(): Promise<void> {
 		if (!this.canFetchOlder.value || this.fetching.value || this.fetchingOlder.value || this.items.value.length === 0) return;
 		this.fetchingOlder.value = true;
+		const cursorId = this.getOldestId();
+		const cursorItem = this.getCursorItem(cursorId, 'older');
 
 		const data: E['req'] = {
 			...(typeof this.params === 'function' ? this.params() : this.params),
@@ -269,7 +299,8 @@ export class Paginator<
 			...(this.offsetMode ? {
 				offset: this.items.value.length,
 			} : {
-				untilId: this.getOldestId(),
+				untilId: cursorId,
+				...(cursorItem && this.cursorParams ? this.cursorParams(cursorItem as T, 'older') : {}),
 			}),
 		};
 
@@ -313,6 +344,8 @@ export class Paginator<
 		toQueue?: boolean;
 	} = {}): Promise<void> {
 		this.fetchingNewer.value = true;
+		const cursorId = this.getNewestId();
+		const cursorItem = this.getCursorItem(cursorId, 'newer');
 
 		const data: E['req'] = {
 			...(typeof this.params === 'function' ? this.params() : this.params),
@@ -322,7 +355,8 @@ export class Paginator<
 			...(this.offsetMode ? {
 				offset: this.items.value.length,
 			} : {
-				sinceId: this.getNewestId(),
+				sinceId: cursorId,
+				...(cursorItem && this.cursorParams ? this.cursorParams(cursorItem as T, 'newer') : {}),
 			}),
 		};
 
