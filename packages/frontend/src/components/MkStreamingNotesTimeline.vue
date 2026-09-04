@@ -90,12 +90,14 @@ const props = withDefaults(defineProps<{
 	withRenotes?: boolean;
 	withReplies?: boolean;
 	withSensitive?: boolean;
+	withLocalOnly?: boolean;
 	onlyFiles?: boolean;
 }>(), {
 	withRenotes: true,
 	withReplies: false,
 	withSensitive: true,
 	onlyFiles: false,
+	withLocalOnly: true,
 	sound: false,
 	customSound: null,
 });
@@ -144,6 +146,26 @@ if (props.src === 'antenna') {
 		computedParams: computed(() => ({
 			withRenotes: props.withRenotes,
 			withFiles: props.onlyFiles ? true : undefined,
+		})),
+		useShallowRef: true,
+	}));
+} else if (props.src === 'vmimi-relay') {
+	paginator = markRaw(new Paginator('notes/vmimi-relay-timeline', {
+		computedParams: computed(() => ({
+			withRenotes: props.withRenotes,
+			withReplies: props.withReplies,
+			withFiles: props.onlyFiles ? true : undefined,
+			withLocalOnly: props.withLocalOnly,
+		})),
+		useShallowRef: true,
+	}));
+} else if (props.src === 'vmimi-relay-social') {
+	paginator = markRaw(new Paginator('notes/vmimi-relay-hybrid-timeline', {
+		computedParams: computed(() => ({
+			withRenotes: props.withRenotes,
+			withReplies: props.withReplies,
+			withFiles: props.onlyFiles ? true : undefined,
+			withLocalOnly: props.withLocalOnly,
 		})),
 		useShallowRef: true,
 	}));
@@ -316,6 +338,8 @@ const connections = {
 	userList: null as Misskey.IChannelConnection<Misskey.Channels['userList']> | null,
 	channel: null as Misskey.IChannelConnection<Misskey.Channels['channel']> | null,
 	roleTimeline: null as Misskey.IChannelConnection<Misskey.Channels['roleTimeline']> | null,
+	vmimiRelayTimeline: null as Misskey.IChannelConnection<Misskey.Channels['vmimiRelayTimeline']> | null,
+	vmimiRelayHybridTimeline: null as Misskey.IChannelConnection<Misskey.Channels['vmimiRelayHybridTimeline']> | null,
 };
 
 function connectChannel() {
@@ -353,6 +377,22 @@ function connectChannel() {
 			withFiles: props.onlyFiles ? true : undefined,
 		});
 		connections.globalTimeline.on('note', prepend);
+	} else if (props.src === 'vmimi-relay') {
+		connections.vmimiRelayTimeline = stream.useChannel('vmimiRelayTimeline', {
+			withRenotes: props.withRenotes,
+			withFiles: props.onlyFiles ? true : undefined,
+			withReplies: props.withReplies,
+			withLocalOnly: props.withLocalOnly,
+		});
+		connections.vmimiRelayTimeline.on('note', prepend);
+	} else if (props.src === 'vmimi-relay-social') {
+		connections.vmimiRelayHybridTimeline = stream.useChannel('vmimiRelayHybridTimeline', {
+			withRenotes: props.withRenotes,
+			withFiles: props.onlyFiles ? true : undefined,
+			withReplies: props.withReplies,
+			withLocalOnly: props.withLocalOnly,
+		});
+		connections.vmimiRelayHybridTimeline.on('note', prepend);
 	} else if (props.src === 'mentions') {
 		connections.main = stream.useChannel('main');
 		connections.main.on('mention', prepend);

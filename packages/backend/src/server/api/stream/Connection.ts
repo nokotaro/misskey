@@ -22,6 +22,8 @@ import { HomeTimelineChannel } from '@/server/api/stream/channels/home-timeline.
 import { LocalTimelineChannel } from '@/server/api/stream/channels/local-timeline.js';
 import { HybridTimelineChannel } from '@/server/api/stream/channels/hybrid-timeline.js';
 import { GlobalTimelineChannel } from '@/server/api/stream/channels/global-timeline.js';
+import { VmimiRelayTimelineChannel } from '@/server/api/stream/channels/vmimi-relay-timeline.js';
+import { VmimiRelayHybridTimelineChannel } from '@/server/api/stream/channels/vmimi-relay-hybrid-timeline.js';
 import { UserListChannel } from '@/server/api/stream/channels/user-list.js';
 import { HashtagChannel } from '@/server/api/stream/channels/hashtag.js';
 import { RoleTimelineChannel } from '@/server/api/stream/channels/role-timeline.js';
@@ -325,6 +327,8 @@ export default class Connection {
 			case 'localTimeline': return LocalTimelineChannel;
 			case 'hybridTimeline': return HybridTimelineChannel;
 			case 'globalTimeline': return GlobalTimelineChannel;
+			case 'vmimiRelayTimeline': return VmimiRelayTimelineChannel;
+			case 'vmimiRelayHybridTimeline': return VmimiRelayHybridTimelineChannel;
 			case 'userList': return UserListChannel;
 			case 'hashtag': return HashtagChannel;
 			case 'roleTimeline': return RoleTimelineChannel;
