@@ -125,7 +125,10 @@ describe('users/notes', () => {
 			assert.strictEqual(firstPage.status, 200);
 			assert.strictEqual(secondPage.status, 200);
 			assert.strictEqual(thirdPage.status, 200);
-			assert.deepStrictEqual([...firstPage.body, ...secondPage.body, ...thirdPage.body].map(note => note.id), [equallyRenotedNote.id, moreRenotedNote.id, lessRenotedNote.id]);
+			const notes = [...firstPage.body, ...secondPage.body, ...thirdPage.body];
+			assert.deepStrictEqual(notes.map(note => note.id), [equallyRenotedNote.id, moreRenotedNote.id, lessRenotedNote.id]);
+			assert.deepStrictEqual(notes.map(note => note.renoteCount), [2, 2, 1]);
+			assert.deepStrictEqual(notes.map(note => note.sortScore), [2, 2, 1]);
 		}, waitForPushToTlOptions);
 	});
 
