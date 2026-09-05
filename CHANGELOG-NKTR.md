@@ -4,7 +4,7 @@
 
 Misskey本体の変更履歴については `CHANGELOG.md`、Vmimi Relay Timelineの実装元における変更履歴については `CHANGELOG-VRTL.md` を参照してください。
 
-## Unreleased
+## 2026.7.0-nktr.3
 
 - 「リノートが多い順」でノートのリノート数が表示されない問題を修正しました。
 
