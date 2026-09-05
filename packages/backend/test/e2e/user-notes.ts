@@ -133,7 +133,10 @@ describe('users/notes', () => {
 		const bob = await signup({ username: 'frank' });
 		const rootNote = await post(bob, { text: 'root' });
 		const reply = await post(alice, { text: 'reply', replyId: rootNote.id });
+		const selfReplyRoot = await post(alice, { text: 'self reply root' });
+		const selfReply = await post(alice, { text: 'self reply', replyId: selfReplyRoot.id });
 		await react(bob, reply, '👍');
+		await react(bob, selfReply, '👍');
 
 		const withoutReplies = await api('users/notes', {
 			userId: alice.id,
@@ -153,6 +156,7 @@ describe('users/notes', () => {
 		assert.strictEqual(withoutReplies.status, 200);
 		assert.strictEqual(withReplies.status, 200);
 		assert.strictEqual(withoutReplies.body.some(note => note.id === reply.id), false);
+		assert.strictEqual(withoutReplies.body.some(note => note.id === selfReply.id), true);
 		assert.strictEqual(withReplies.body.some(note => note.id === reply.id), true);
 	});
 });

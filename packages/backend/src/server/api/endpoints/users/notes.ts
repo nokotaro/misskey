@@ -270,7 +270,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		}
 
 		if (!ps.withReplies) {
-			query.andWhere('note.replyId IS NULL');
+			query.andWhere(new Brackets(qb => {
+				qb
+					.where('note.replyId IS NULL')
+					.orWhere(new Brackets(qb => {
+						qb
+							.where('note.replyId IS NOT NULL')
+							.andWhere('note.replyUserId = note.userId');
+					}));
+			}));
 		}
 
 		if (ps.withChannelNotes) {
