@@ -232,7 +232,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			const scoreExpression = ps.sortBy === 'renoteCount'
 				? 'note.renoteCount'
 				: '(SELECT COUNT(*) FROM note_reaction reaction WHERE reaction."noteId" = note.id)';
-			query.addSelect(scoreExpression, 'note_sortScore');
+			if (ps.sortBy === 'reactionCount') {
+				query.addSelect(scoreExpression, 'note_sortScore');
+			}
 			const [sinceCursorScore, untilCursorScore] = await Promise.all([
 				ps.sinceId && ps.sinceScore == null ? this.getCursorScore(ps.sinceId, ps.sortBy) : null,
 				ps.untilId && ps.untilScore == null ? this.getCursorScore(ps.untilId, ps.sortBy) : null,
@@ -334,7 +336,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 		const { entities, raw } = await query.getRawAndEntities();
 		return entities.map((note, index): NoteWithSortScore => Object.assign(note, {
-			_sortScore: Number(raw[index].note_sortScore),
+			_sortScore: ps.sortBy === 'renoteCount'
+				? note.renoteCount
+				: Number(raw[index].note_sortScore),
 		}));
 	}
 
