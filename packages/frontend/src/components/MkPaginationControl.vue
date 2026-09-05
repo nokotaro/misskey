@@ -3,6 +3,16 @@ SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
+<script lang="ts">
+export type PaginationOrderOption = {
+	label: string;
+	value: string;
+	paginatorOrder: 'newest' | 'oldest';
+	initialDirection: 'newer' | 'older';
+	supportsDate?: boolean;
+};
+</script>
+
 <template>
 <div :class="$style.root">
 	<div :class="$style.control">
@@ -11,7 +21,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</MkSelect>
 		<MkButton v-if="paginator.canSearch" v-tooltip="i18n.ts.search" iconOnly transparent rounded :active="searchOpened" @click="searchOpened = !searchOpened"><i class="ti ti-search"></i></MkButton>
 		<MkButton v-if="canFilter" v-tooltip="i18n.ts.filter" iconOnly transparent rounded :active="filterOpened" @click="filterOpened = !filterOpened"><i class="ti ti-filter"></i></MkButton>
-		<MkButton v-tooltip="i18n.ts.dateAndTime" iconOnly transparent rounded :active="date != null" @click="date = date == null ? Date.now() : null"><i class="ti ti-calendar-clock"></i></MkButton>
+		<MkButton v-if="selectedOrderOption?.supportsDate !== false" v-tooltip="i18n.ts.dateAndTime" iconOnly transparent rounded :active="date != null" @click="date = date == null ? Date.now() : null"><i class="ti ti-calendar-clock"></i></MkButton>
 		<MkButton v-tooltip="i18n.ts.reload" iconOnly transparent rounded @click="paginator.reload()"><i class="ti ti-refresh"></i></MkButton>
 	</div>
 
@@ -38,8 +48,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup generic="T extends IPaginator">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { IPaginator } from '@/utility/paginator.js';
+import type { MkSelectItem } from '@/components/MkSelect.vue';
 import MkButton from '@/components/MkButton.vue';
 import { i18n } from '@/i18n.js';
 import MkSelect from '@/components/MkSelect.vue';
@@ -51,34 +62,56 @@ const props = withDefaults(defineProps<{
 	paginator: T;
 	canFilter?: boolean;
 	filterOpened?: boolean;
+	orderOptions?: PaginationOrderOption[];
+	selectedOrder?: string;
 }>(), {
 	canFilter: false,
 	filterOpened: false,
 });
 
+const emit = defineEmits<{
+	(ev: 'update:order', value: string): void;
+}>();
+
 const searchOpened = ref(false);
 const filterOpened = ref(props.filterOpened);
+
+const defaultOrderOptions: PaginationOrderOption[] = [
+	{ label: i18n.ts._order.newest, value: 'newest', paginatorOrder: 'newest', initialDirection: 'older' },
+	{ label: i18n.ts._order.oldest, value: 'oldest', paginatorOrder: 'oldest', initialDirection: 'newer' },
+];
+const orderOptions = props.orderOptions ?? defaultOrderOptions;
 
 const {
 	model: order,
 	def: orderDef,
 } = useMkSelect({
-	items: [
-		{ label: i18n.ts._order.newest, value: 'newest' },
-		{ label: i18n.ts._order.oldest, value: 'oldest' },
-	],
-	initialValue: 'newest',
+	items: orderOptions satisfies MkSelectItem[],
+	initialValue: props.selectedOrder ?? orderOptions[0].value,
 });
 const date = ref<number | null>(null);
 const q = ref<string | null>(null);
+const selectedOrderOption = computed(() => orderOptions.find(option => option.value === order.value));
 
 watch(order, () => {
-	props.paginator.order.value = order.value;
-	props.paginator.initialDirection = order.value === 'oldest' ? 'newer' : 'older';
+	const option = selectedOrderOption.value;
+	if (option == null) return;
+
+	props.paginator.order.value = option.paginatorOrder;
+	props.paginator.initialDirection = option.initialDirection;
+	if (option.supportsDate === false) date.value = null;
+	if (props.orderOptions != null) {
+		emit('update:order', option.value);
+		return;
+	}
 	props.paginator.reload();
 });
 
 watch(date, () => {
+	if (selectedOrderOption.value?.supportsDate === false) {
+		props.paginator.initialDate = null;
+		return;
+	}
 	props.paginator.initialDate = date.value;
 	props.paginator.reload();
 });

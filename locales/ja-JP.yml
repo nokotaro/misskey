@@ -1478,6 +1478,8 @@ _compression:
 _order:
   newest: "新しい順"
   oldest: "古い順"
+  mostRenoted: "リノートが多い順"
+  mostReacted: "リアクションが多い順"
 
 _chat:
   messages: "メッセージ"

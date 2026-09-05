@@ -1,4 +1,4 @@
-import { describe, test, beforeAll } from 'vitest';
+import { describe, test, beforeAll, vi } from 'vitest';
 import assert, { rejects, strictEqual } from 'node:assert';
 import * as Misskey from 'misskey-js';
 import { createAccount, deepStrictEqualWithExcludedFields, fetchAdmin, type LoginUser, resolveRemoteNote, resolveRemoteUser, sleep } from './utils.js';
@@ -139,13 +139,19 @@ describe('User', () => {
 
 			test('Becoming a cat is sent to their followers', async () => {
 				await bob.client.request('following/create', { userId: aliceInB.id });
-				await sleep();
+				// Update は配送時点のフォロワーにのみ配送されるため、
+				// フォローが a.test 側に反映されてからプロフィールを更新する。
+				await vi.waitFor(async () => {
+					const followers = await alice.client.request('users/followers', { userId: alice.id });
+					strictEqual(followers.length, 1);
+				}, { timeout: 10_000, interval: 250 });
 
 				await alice.client.request('i/update', { isCat: true });
-				await sleep();
 
-				const res = await bob.client.request('users/show', { userId: aliceInB.id });
-				strictEqual(res.isCat, true);
+				await vi.waitFor(async () => {
+					const res = await bob.client.request('users/show', { userId: aliceInB.id });
+					strictEqual(res.isCat, true);
+				}, { timeout: 10_000, interval: 250 });
 			});
 		});
 

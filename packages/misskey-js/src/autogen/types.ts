@@ -36563,10 +36563,14 @@ export interface operations {
                     untilId?: string;
                     sinceDate?: number;
                     untilDate?: number;
+                    sinceScore?: number;
+                    untilScore?: number;
                     /** @default false */
                     allowPartial?: boolean;
                     /** @default false */
                     withFiles?: boolean;
+                    /** @enum {string} */
+                    sortBy?: 'renoteCount' | 'reactionCount';
                 };
             };
         };
@@ -36577,7 +36581,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    'application/json': components['schemas']['Note'][];
+                    'application/json': (components['schemas']['Note'] & {
+                        sortScore?: number;
+                    })[];
                 };
             };
             /** @description Client error */
@@ -36609,6 +36615,15 @@ export interface operations {
             };
             /** @description I'm Ai */
             418: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    'application/json': components['schemas']['Error'];
+                };
+            };
+            /** @description Too many requests */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -5896,6 +5896,14 @@ export interface Locale extends ILocale {
          * 古い順
          */
         "oldest": string;
+        /**
+         * リノートが多い順
+         */
+        "mostRenoted": string;
+        /**
+         * リアクションが多い順
+         */
+        "mostReacted": string;
     };
     "_chat": {
         /**

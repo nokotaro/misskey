@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <component :is="prefer.s.enablePullToRefresh && pullToRefresh ? MkPullToRefresh : 'div'" :refresher="() => paginator.reload()" @contextmenu.prevent.stop="onContextmenu">
 	<div>
-		<MkPaginationControl v-if="props.withControl" :paginator="paginator" style="margin-bottom: 10px"/>
+		<MkPaginationControl v-if="props.withControl" :paginator="paginator" :orderOptions="orderOptions" :selectedOrder="selectedOrder" style="margin-bottom: 10px" @update:order="emit('update:order', $event)"/>
 
 		<!-- :css="prefer.s.animation" にしたいけどバグる(おそらくvueのバグ) https://github.com/misskey-dev/misskey/issues/16078 -->
 		<Transition
@@ -45,6 +45,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts">
+import type { PaginationOrderOption } from '@/components/MkPaginationControl.vue';
+
 export type MkPaginationOptions = {
 	autoLoad?: boolean;
 	/**
@@ -59,6 +61,8 @@ export type MkPaginationOptions = {
 	pullToRefresh?: boolean;
 	withControl?: boolean;
 	forceDisableInfiniteScroll?: boolean;
+	orderOptions?: PaginationOrderOption[];
+	selectedOrder?: string;
 };
 </script>
 
@@ -83,6 +87,10 @@ const props = withDefaults(defineProps<MkPaginationOptions & {
 	withControl: false,
 	forceDisableInfiniteScroll: false,
 });
+
+const emit = defineEmits<{
+	(ev: 'update:order', value: string): void;
+}>();
 
 const shouldEnableInfiniteScroll = computed(() => {
 	return prefer.r.enableInfiniteScroll.value && !props.forceDisableInfiniteScroll;

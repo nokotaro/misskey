@@ -4,14 +4,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkPagination :paginator="paginator" :direction="direction" :autoLoad="autoLoad" :pullToRefresh="pullToRefresh" :withControl="withControl" :forceDisableInfiniteScroll="forceDisableInfiniteScroll">
+<MkPagination :paginator="paginator" :direction="direction" :autoLoad="autoLoad" :pullToRefresh="pullToRefresh" :withControl="withControl" :forceDisableInfiniteScroll="forceDisableInfiniteScroll" :orderOptions="orderOptions" :selectedOrder="selectedOrder" @update:order="emit('update:order', $event)">
 	<template #empty><MkResult type="empty" :text="i18n.ts.noNotes"/></template>
 
 	<template #default="{ items: notes }">
 		<div :class="[$style.root, { [$style.noGap]: noGap, '_gaps': !noGap }]">
 			<template v-for="(note, i) in notes" :key="note.id">
 				<div
-					v-if="i > 0 && isSeparatorNeeded(paginator.items.value[i - 1].createdAt, note.createdAt)"
+					v-if="showDateSeparators && i > 0 && isSeparatorNeeded(paginator.items.value[i - 1].createdAt, note.createdAt)"
 					:data-scroll-anchor="note.id"
 					:class="{ '_gaps': !noGap }"
 				>
@@ -51,13 +51,19 @@ import { isSeparatorNeeded, getSeparatorInfo } from '@/utility/timeline-date-sep
 const props = withDefaults(defineProps<MkPaginationOptions & {
 	paginator: T;
 	noGap?: boolean;
+	showDateSeparators?: boolean;
 }>(), {
 	autoLoad: true,
 	direction: 'down',
 	pullToRefresh: true,
 	withControl: true,
 	forceDisableInfiniteScroll: false,
+	showDateSeparators: true,
 });
+
+const emit = defineEmits<{
+	(ev: 'update:order', value: string): void;
+}>();
 
 useGlobalEvent('noteDeleted', (noteId) => {
 	props.paginator.removeItem(noteId);
