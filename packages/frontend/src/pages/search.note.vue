@@ -48,31 +48,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div v-if="searchScope === 'user'" :class="$style.subOptionRoot">
 					<div :class="$style.userSelectLabel">{{ i18n.ts._search.pleaseSelectUser }}</div>
 					<div class="_gaps">
-						<div v-if="user == null" :class="$style.userSelectButtons">
-							<div v-if="$i != null">
-								<MkButton
-									transparent
-									:class="$style.userSelectButton"
-									@click="selectSelf"
-								>
-									<div :class="$style.userSelectButtonInner">
-										<span><i class="ti ti-plus"></i><i class="ti ti-user"></i></span>
-										<span>{{ i18n.ts.selectSelf }}</span>
-									</div>
-								</MkButton>
-							</div>
-							<div :style="$i == null ? 'grid-column: span 2;' : undefined">
-								<MkButton
-									transparent
-									:class="$style.userSelectButton"
-									@click="selectUser"
-								>
-									<div :class="$style.userSelectButtonInner">
-										<span><i class="ti ti-plus"></i></span>
-										<span>{{ i18n.ts.selectUser }}</span>
-									</div>
-								</MkButton>
-							</div>
+						<div v-if="user == null">
+							<MkButton
+								transparent
+								:class="$style.userSelectButton"
+								@click="selectUser"
+							>
+								<div :class="$style.userSelectButtonInner">
+									<span><i class="ti ti-plus"></i></span>
+									<span>{{ i18n.ts.selectUser }}</span>
+								</div>
+							</MkButton>
 						</div>
 						<div v-else :class="$style.userSelectedButtons">
 							<div style="overflow: hidden;">
@@ -187,7 +173,7 @@ if (fetchedUser != null) {
 }
 //#endregion
 
-const searchScope = ref<'all' | 'local' | 'server' | 'user'>((() => {
+const searchScope = ref<'all' | 'local' | 'server' | 'user' | 'self'>((() => {
 	if (user.value != null) return 'user';
 	if (noteSearchableScope === 'local') return 'local';
 	if (hostInput.value) return 'server';
@@ -208,6 +194,10 @@ const searchScopeDef = computed<MkRadiosOption[]>(() => {
 	}
 
 	options.push({ value: 'user', label: i18n.ts._search.searchScopeUser });
+
+	if ($i != null) {
+		options.push({ value: 'self', label: i18n.ts._search.searchScopeSelf });
+	}
 
 	return options;
 });
@@ -235,6 +225,16 @@ const searchRange = () => {
 const searchParams = computed<SearchParams | null>(() => {
 	const trimmedQuery = searchQuery.value.trim();
 	if (!trimmedQuery) return null;
+
+	if (searchScope.value === 'self') {
+		if ($i == null) return null;
+		return {
+			query: trimmedQuery,
+			host: '.',
+			userId: $i.id,
+			...searchRange(),
+		};
+	}
 
 	if (searchScope.value === 'user') {
 		if (user.value == null) return null;
@@ -282,10 +282,6 @@ function selectUser() {
 	}).then(_user => {
 		user.value = _user;
 	});
-}
-
-function selectSelf() {
-	user.value = $i;
 }
 
 function removeUser() {
@@ -373,12 +369,6 @@ async function search() {
 	font-size: 0.85em;
 	padding: 0 0 8px;
 	user-select: none;
-}
-
-.userSelectButtons {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	gap: 16px;
 }
 
 .userSelectButton {

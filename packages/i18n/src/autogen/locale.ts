@@ -12654,6 +12654,10 @@ export interface Locale extends ILocale {
          */
         "searchScopeUser": string;
         /**
+         * 自分
+         */
+        "searchScopeSelf": string;
+        /**
          * サーバーのホストを入力してください
          */
         "pleaseEnterServerHost": string;

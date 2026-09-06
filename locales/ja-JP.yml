@@ -3383,6 +3383,7 @@ _search:
   searchScopeLocal: "ローカル"
   searchScopeServer: "サーバー指定"
   searchScopeUser: "ユーザー指定"
+  searchScopeSelf: "自分"
   pleaseEnterServerHost: "サーバーのホストを入力してください"
   pleaseSelectUser: "ユーザーを選択してください"
   serverHostPlaceholder: "例: misskey.example.com"
