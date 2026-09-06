@@ -4,7 +4,7 @@
 
 Misskey本体の変更履歴については `CHANGELOG.md`、Vmimi Relay Timelineの実装元における変更履歴については `CHANGELOG-VRTL.md` を参照してください。
 
-## Unreleased
+## 2026.7.0-nktr.4
 
 - 検索画面の「ユーザー指定」内にある「自分を選択」を、独立した検索オプション「自分」に変更しました。
 
