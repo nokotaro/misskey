@@ -1,12 +1,3 @@
-## Unreleased
-
-### General
-
-### Client
-- Enhance: 検索画面の「自分を選択」を独立した検索オプション「自分」に変更
-
-### Server
-
 ## 2026.7.0
 
 ### Note
